@@ -156,36 +156,103 @@ export function topScorerRace(players, matches, appearances, limit = 5) {
     if (!appsByMatch.has(app.match_id)) appsByMatch.set(app.match_id, []);
     appsByMatch.get(app.match_id).push(app);
   }
-  const points = played.map((m) => {
+  const points = played.map((m, i) => {
     for (const app of appsByMatch.get(m.id) ?? []) {
       running[app.player_id] += app.goals;
     }
-    return { date: m.date, label: `vs ${m.opponent}`, ...running };
+    return { matchday: i + 1, date: m.date, label: `vs ${m.opponent}`, ...running };
   });
-  return { players: totals.map((r) => ({ id: r.player.id, name: r.player.name })), points };
+  return {
+    players: totals.map((r) => ({ id: r.player.id, name: r.player.name, goals: r.goals })),
+    points,
+  };
 }
 
 /**
- * Match-by-match season trend (oldest first): cumulative points (W=3 D=1) and
- * goals for/against per game — data for the season trend chart.
+ * Stable colour slots keyed on player identity, derived from all-time goals so
+ * that changing the season filter never repaints the players who remain.
+ */
+export function stableColourSlots(players, matches, appearances) {
+  const ranked = playerTotals(players, matches, appearances)
+    .slice()
+    .sort((a, b) => b.goals - a.goals || a.player.name.localeCompare(b.player.name));
+  return new Map(ranked.map((r, i) => [r.player.id, i]));
+}
+
+/**
+ * Match-by-match season trend (oldest first): cumulative points (W=3 D=1),
+ * goals for/against per game, and running goal difference. `matchday` is the
+ * 1-based game number within the supplied set, so separate seasons can be
+ * overlaid on a common x-axis.
  */
 export function seasonTrend(matches) {
   let cumPoints = 0;
+  let cumGD = 0;
   return playedMatches(matches)
     .slice()
     .reverse()
-    .map((m) => {
+    .map((m, i) => {
       const r = resultOf(m);
       cumPoints += r === 'W' ? 3 : r === 'D' ? 1 : 0;
+      const gd = m.goals_for - m.goals_against;
+      cumGD += gd;
       return {
+        matchday: i + 1,
         date: m.date,
         label: `vs ${m.opponent}`,
         result: r,
         points: cumPoints,
         goalsFor: m.goals_for,
         goalsAgainst: m.goals_against,
+        goalDifference: gd,
+        cumulativeGD: cumGD,
       };
     });
+}
+
+/**
+ * Cumulative points for every season on a shared matchday axis, for overlaying
+ * past seasons behind the current one. Returns
+ * { seasons: ['2025/26', …] (newest first), points: [{ matchday, [season]: pts }] }.
+ */
+export function seasonPointsComparison(matches) {
+  const seasons = seasonsOf(matches);
+  const bySeason = seasons.map((s) => ({
+    season: s,
+    trend: seasonTrend(matches.filter((m) => m.season === s)),
+  }));
+  const longest = Math.max(0, ...bySeason.map((s) => s.trend.length));
+  const points = [];
+  for (let i = 0; i < longest; i++) {
+    const row = { matchday: i + 1 };
+    for (const { season, trend } of bySeason) {
+      // Leave the key absent past a season's final game so its line simply ends.
+      if (i < trend.length) {
+        row[season] = trend[i].points;
+        row[`${season}__label`] = trend[i].label;
+      }
+    }
+    points.push(row);
+  }
+  return { seasons, points };
+}
+
+/**
+ * Per-player scatter data: appearances against goal involvements, for spotting
+ * who contributes most per game played. Only players with an appearance.
+ */
+export function involvementScatter(players, matches, appearances) {
+  return playerTotals(players, matches, appearances)
+    .filter((r) => r.appearances > 0)
+    .map((r) => ({
+      id: r.player.id,
+      name: r.player.name,
+      appearances: r.appearances,
+      goals: r.goals,
+      assists: r.assists,
+      goalInvolvements: r.goalInvolvements,
+      involvementsPerGame: r.involvementsPerGame,
+    }));
 }
 
 export function formatDate(iso) {

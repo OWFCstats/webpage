@@ -3,15 +3,18 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import { ErrorNote, SeasonSelect, Spinner } from '../components/bits';
 import SortableTable from '../components/SortableTable';
+import BarBoard from '../components/BarBoard';
 import { playerTotals, seasonsOf } from '../lib/stats';
 
+// Club gold leads; the light-blue and orange accents appear sparingly so the
+// boards stay distinguishable without turning into a colour chart.
 const STATS = [
-  { key: 'goals', label: 'Goals' },
-  { key: 'assists', label: 'Assists' },
-  { key: 'goalInvolvements', label: 'G+A' },
-  { key: 'appearances', label: 'Appearances' },
-  { key: 'motm', label: 'MOTM' },
-  { key: 'cleanSheets', label: 'Clean sheets' },
+  { key: 'goals', label: 'Goals', accent: '#b8860b' },
+  { key: 'assists', label: 'Assists', accent: '#5ba3c9' },
+  { key: 'goalInvolvements', label: 'G+A', accent: '#e8772e' },
+  { key: 'appearances', label: 'Appearances', accent: '#3f4149' },
+  { key: 'motm', label: 'MOTM', accent: '#b8860b' },
+  { key: 'cleanSheets', label: 'Clean sheets', accent: '#5ba3c9' },
 ];
 
 export default function Leaderboards() {
@@ -42,7 +45,20 @@ export default function Leaderboards() {
         ))}
       </div>
       <SeasonSelect seasons={seasons} value={season} onChange={setSeason} />
-      <div className="card">
+
+      <div className="grid boards section">
+        {STATS.map((s) => (
+          <BarBoard
+            key={s.key}
+            title={s.label}
+            rows={rows}
+            statKey={s.key}
+            accent={s.accent}
+          />
+        ))}
+      </div>
+
+      <div className="card section">
         <p className="muted">
           Clean sheets are credited to everyone who played in a match with no
           goals conceded. Click any column to sort.

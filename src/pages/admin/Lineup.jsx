@@ -1,11 +1,25 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useData } from '../../context/DataContext';
 import { Spinner } from '../../components/bits';
+import PlayerPicker from '../../components/PlayerPicker';
 import { formatDate } from '../../lib/stats';
 
-const BLANK_STATS = { started: true, dropout: false, goals: 0, assists: 0, yellows: 0, reds: 0, motm: false };
+// A matchday squad is usually 11 + subs; start with enough slots for that and
+// let the admin add more if needed.
+const DEFAULT_SLOTS = 15;
+
+const blankSlot = () => ({
+  playerId: null,
+  started: true,
+  dropout: false,
+  goals: 0,
+  assists: 0,
+  yellows: 0,
+  reds: 0,
+  motm: false,
+});
 
 export default function Lineup() {
   const { matchId } = useParams();
@@ -15,24 +29,26 @@ export default function Lineup() {
   if (loading) return <Spinner />;
   if (!match) return <Navigate to="/admin/matches" replace />;
 
-  const existing = appearances.filter((a) => a.match_id === matchId);
   return (
     <LineupInner
       key={matchId}
       match={match}
       players={players}
-      existing={existing}
+      existing={appearances.filter((a) => a.match_id === matchId)}
     />
   );
 }
 
 function LineupInner({ match, players, existing }) {
   const { refresh } = useData();
-  // rows: playerId -> stats (present = in the squad for this match)
-  const [rows, setRows] = useState(() => {
-    const map = new Map();
-    for (const a of existing) {
-      map.set(a.player_id, {
+
+  // Saved appearances fill the first slots; the rest start empty.
+  const [slots, setSlots] = useState(() => {
+    const filled = existing
+      .slice()
+      .sort((a, b) => b.started - a.started)
+      .map((a) => ({
+        playerId: a.player_id,
         started: a.started,
         dropout: a.dropout ?? false,
         goals: a.goals,
@@ -40,71 +56,48 @@ function LineupInner({ match, players, existing }) {
         yellows: a.yellows,
         reds: a.reds,
         motm: a.motm,
-      });
-    }
-    return map;
+      }));
+    const pad = Math.max(DEFAULT_SLOTS - filled.length, 1);
+    return [...filled, ...Array.from({ length: pad }, blankSlot)];
   });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
   const [saved, setSaved] = useState(false);
 
-  const ordered = useMemo(() => {
-    const posRank = { GK: 0, DEF: 1, MID: 2, FWD: 3 };
-    return players
-      .slice()
-      .sort(
-        (a, b) =>
-          (a.status === 'inactive') - (b.status === 'inactive') ||
-          posRank[a.position] - posRank[b.position] ||
-          a.name.localeCompare(b.name),
-      );
-  }, [players]);
-
-  const active = [...rows.values()].filter((r) => !r.dropout);
-  const selectedCount = active.length;
-  const starterCount = active.filter((r) => r.started).length;
-  const dropoutCount = rows.size - active.length;
-  const goalsTotal = active.reduce((sum, r) => sum + Number(r.goals || 0), 0);
+  const used = slots.filter((s) => s.playerId);
+  const taken = new Set(used.map((s) => s.playerId));
+  const active = used.filter((s) => !s.dropout);
+  const starterCount = active.filter((s) => s.started).length;
+  const dropoutCount = used.length - active.length;
+  const goalsTotal = active.reduce((sum, s) => sum + Number(s.goals || 0), 0);
   const ownGoals = match.own_goals_for ?? 0;
-  const goalsMismatch =
-    match.goals_for != null && goalsTotal + ownGoals !== match.goals_for;
+  const goalsMismatch = match.goals_for != null && goalsTotal + ownGoals !== match.goals_for;
 
-  function toggle(playerId) {
-    setRows((prev) => {
-      const next = new Map(prev);
-      if (next.has(playerId)) next.delete(playerId);
-      else next.set(playerId, { ...BLANK_STATS });
-      return next;
-    });
+  function update(index, patch) {
+    setSlots((prev) => prev.map((s, i) => (i === index ? { ...s, ...patch } : s)));
     setSaved(false);
   }
 
-  function update(playerId, key, value) {
-    setRows((prev) => {
-      const next = new Map(prev);
-      next.set(playerId, { ...next.get(playerId), [key]: value });
-      return next;
-    });
+  function removeSlot(index) {
+    setSlots((prev) => (prev.length <= 1 ? [blankSlot()] : prev.filter((_, i) => i !== index)));
     setSaved(false);
   }
 
   async function save() {
     setBusy(true);
     setError(null);
-    const upserts = [...rows.entries()].map(([player_id, r]) => ({
+    const upserts = used.map((s) => ({
       match_id: match.id,
-      player_id,
-      started: r.dropout ? false : r.started,
-      dropout: r.dropout,
-      goals: r.dropout ? 0 : Number(r.goals) || 0,
-      assists: r.dropout ? 0 : Number(r.assists) || 0,
-      yellows: r.dropout ? 0 : Number(r.yellows) || 0,
-      reds: r.dropout ? 0 : Number(r.reds) || 0,
-      motm: r.dropout ? false : r.motm,
+      player_id: s.playerId,
+      started: s.dropout ? false : s.started,
+      dropout: s.dropout,
+      goals: s.dropout ? 0 : Number(s.goals) || 0,
+      assists: s.dropout ? 0 : Number(s.assists) || 0,
+      yellows: s.dropout ? 0 : Number(s.yellows) || 0,
+      reds: s.dropout ? 0 : Number(s.reds) || 0,
+      motm: s.dropout ? false : s.motm,
     }));
-    const removedIds = existing
-      .filter((a) => !rows.has(a.player_id))
-      .map((a) => a.id);
+    const removedIds = existing.filter((a) => !taken.has(a.player_id)).map((a) => a.id);
 
     let err = null;
     if (upserts.length > 0) {
@@ -127,17 +120,14 @@ function LineupInner({ match, players, existing }) {
   return (
     <div className="section">
       <div className="section-head">
-        <h2>
-          Lineup & stats — vs {match.opponent}, {formatDate(match.date)}
-        </h2>
+        <h2>Lineup &amp; stats — vs {match.opponent}, {formatDate(match.date)}</h2>
         <Link className="btn secondary small" to={`/admin/matches/${match.id}`}>Edit match</Link>
       </div>
 
       <div className="card">
         <p className="muted">
-          Tick a player to put them in the squad, then mark starters and fill in
-          their numbers. Use “Dropped out” for anyone who withdrew within 24h of
-          kick-off. {selectedCount} playing · {starterCount} starting
+          Pick a player in each slot — start typing to search. Leave unused slots
+          empty. {active.length} playing · {starterCount} starting
           {dropoutCount > 0 && ` · ${dropoutCount} dropped out`}.
         </p>
         {goalsMismatch && (
@@ -146,95 +136,89 @@ function LineupInner({ match, players, existing }) {
             to the match score ({match.goals_for}). Save is allowed, but check the numbers.
           </div>
         )}
-        <div className="table-wrap">
-          <table className="data">
-            <thead>
-              <tr>
-                <th>Squad</th>
-                <th>Player</th>
-                <th>Pos</th>
-                <th>Started</th>
-                <th className="num">Goals</th>
-                <th className="num">Assists</th>
-                <th className="num">Yellows</th>
-                <th className="num">Reds</th>
-                <th>MOTM</th>
-              </tr>
-            </thead>
-            <tbody>
-              {ordered.map((p) => {
-                const row = rows.get(p.id);
-                const inSquad = Boolean(row);
-                return (
-                  <tr key={p.id} className="lineup-row">
-                    <td>
-                      <input
-                        type="checkbox"
-                        checked={inSquad}
-                        onChange={() => toggle(p.id)}
-                        aria-label={`Select ${p.name}`}
-                      />
-                    </td>
-                    <td>
-                      {p.name}
-                      {p.status === 'inactive' && <span className="muted"> (inactive)</span>}
-                    </td>
-                    <td>{p.position ?? '—'}</td>
-                    {inSquad ? (
-                      <>
-                        <td>
-                          <select
-                            value={row.dropout ? 'dropout' : row.started ? 'started' : 'sub'}
-                            onChange={(e) => {
-                              const v = e.target.value;
-                              if (v === 'dropout') update(p.id, 'dropout', true);
-                              else {
-                                update(p.id, 'dropout', false);
-                                update(p.id, 'started', v === 'started');
-                              }
-                            }}
-                          >
-                            <option value="started">Started</option>
-                            <option value="sub">Sub</option>
-                            <option value="dropout">Dropped out (24h)</option>
-                          </select>
-                        </td>
-                        {['goals', 'assists', 'yellows', 'reds'].map((stat) => (
-                          <td key={stat} className="num">
-                            <input
-                              type="number"
-                              min="0"
-                              value={row.dropout ? 0 : row[stat]}
-                              disabled={row.dropout}
-                              onChange={(e) => update(p.id, stat, e.target.value)}
-                              aria-label={`${p.name} ${stat}`}
-                            />
-                          </td>
-                        ))}
-                        <td>
-                          <input
-                            type="checkbox"
-                            checked={row.dropout ? false : row.motm}
-                            disabled={row.dropout}
-                            onChange={(e) => update(p.id, 'motm', e.target.checked)}
-                            aria-label={`${p.name} man of the match`}
-                          />
-                        </td>
-                      </>
-                    ) : (
-                      <td colSpan={6} className="muted">—</td>
-                    )}
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-        {players.length === 0 && (
+
+        {players.length === 0 ? (
           <div className="empty">
             No players in the squad list yet — <Link to="/admin/players">add players</Link> first.
           </div>
+        ) : (
+          <>
+            <div className="lineup-grid lineup-head">
+              <span>#</span>
+              <span>Player</span>
+              <span>Role</span>
+              <span className="num">Goals</span>
+              <span className="num">Assists</span>
+              <span className="num">YC</span>
+              <span className="num">RC</span>
+              <span>MOTM</span>
+              <span />
+            </div>
+            {slots.map((slot, i) => (
+              <div className="lineup-grid lineup-slot" key={i}>
+                <span className="slot-no">{i + 1}</span>
+                <PlayerPicker
+                  players={players}
+                  value={slot.playerId}
+                  taken={taken}
+                  onChange={(playerId) => update(i, { playerId })}
+                />
+                <select
+                  value={slot.dropout ? 'dropout' : slot.started ? 'started' : 'sub'}
+                  disabled={!slot.playerId}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    update(i, v === 'dropout'
+                      ? { dropout: true }
+                      : { dropout: false, started: v === 'started' });
+                  }}
+                  aria-label={`Slot ${i + 1} role`}
+                >
+                  <option value="started">Started</option>
+                  <option value="sub">Sub</option>
+                  <option value="dropout">Dropped out</option>
+                </select>
+                {['goals', 'assists', 'yellows', 'reds'].map((stat) => (
+                  <input
+                    key={stat}
+                    type="number"
+                    min="0"
+                    className="num"
+                    value={slot.dropout ? 0 : slot[stat]}
+                    disabled={!slot.playerId || slot.dropout}
+                    onChange={(e) => update(i, { [stat]: e.target.value })}
+                    aria-label={`Slot ${i + 1} ${stat}`}
+                  />
+                ))}
+                <input
+                  type="checkbox"
+                  checked={slot.dropout ? false : slot.motm}
+                  disabled={!slot.playerId || slot.dropout}
+                  onChange={(e) => update(i, { motm: e.target.checked })}
+                  aria-label={`Slot ${i + 1} man of the match`}
+                />
+                <button
+                  type="button"
+                  className="secondary small slot-remove"
+                  onClick={() => removeSlot(i)}
+                  aria-label={`Remove slot ${i + 1}`}
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+            <div className="form-actions">
+              <button
+                type="button"
+                className="secondary"
+                onClick={() => setSlots((p) => [...p, blankSlot()])}
+              >
+                Add slot
+              </button>
+            </div>
+          </>
         )}
+
         {error && <div className="notice error" style={{ marginTop: '0.8rem' }}>{error}</div>}
         {saved && <div className="notice ok" style={{ marginTop: '0.8rem' }}>Saved.</div>}
         <div className="form-actions">
