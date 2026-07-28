@@ -1,0 +1,13 @@
+# dependencies
+node_modules/
+
+# environment files — never commit credentials
+.env*
+!.env.example
+
+# build output
+dist/
+
+# misc
+.DS_Store
+*.log
