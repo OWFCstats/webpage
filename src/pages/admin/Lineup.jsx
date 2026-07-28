@@ -5,7 +5,7 @@ import { useData } from '../../context/DataContext';
 import { Spinner } from '../../components/bits';
 import { formatDate } from '../../lib/stats';
 
-const BLANK_STATS = { started: true, goals: 0, assists: 0, yellows: 0, reds: 0, motm: false };
+const BLANK_STATS = { started: true, dropout: false, goals: 0, assists: 0, yellows: 0, reds: 0, motm: false };
 
 export default function Lineup() {
   const { matchId } = useParams();
@@ -34,6 +34,7 @@ function LineupInner({ match, players, existing }) {
     for (const a of existing) {
       map.set(a.player_id, {
         started: a.started,
+        dropout: a.dropout ?? false,
         goals: a.goals,
         assists: a.assists,
         yellows: a.yellows,
@@ -59,9 +60,11 @@ function LineupInner({ match, players, existing }) {
       );
   }, [players]);
 
-  const selectedCount = rows.size;
-  const starterCount = [...rows.values()].filter((r) => r.started).length;
-  const goalsTotal = [...rows.values()].reduce((sum, r) => sum + Number(r.goals || 0), 0);
+  const active = [...rows.values()].filter((r) => !r.dropout);
+  const selectedCount = active.length;
+  const starterCount = active.filter((r) => r.started).length;
+  const dropoutCount = rows.size - active.length;
+  const goalsTotal = active.reduce((sum, r) => sum + Number(r.goals || 0), 0);
   const ownGoals = match.own_goals_for ?? 0;
   const goalsMismatch =
     match.goals_for != null && goalsTotal + ownGoals !== match.goals_for;
@@ -91,12 +94,13 @@ function LineupInner({ match, players, existing }) {
     const upserts = [...rows.entries()].map(([player_id, r]) => ({
       match_id: match.id,
       player_id,
-      started: r.started,
-      goals: Number(r.goals) || 0,
-      assists: Number(r.assists) || 0,
-      yellows: Number(r.yellows) || 0,
-      reds: Number(r.reds) || 0,
-      motm: r.motm,
+      started: r.dropout ? false : r.started,
+      dropout: r.dropout,
+      goals: r.dropout ? 0 : Number(r.goals) || 0,
+      assists: r.dropout ? 0 : Number(r.assists) || 0,
+      yellows: r.dropout ? 0 : Number(r.yellows) || 0,
+      reds: r.dropout ? 0 : Number(r.reds) || 0,
+      motm: r.dropout ? false : r.motm,
     }));
     const removedIds = existing
       .filter((a) => !rows.has(a.player_id))
@@ -132,7 +136,9 @@ function LineupInner({ match, players, existing }) {
       <div className="card">
         <p className="muted">
           Tick a player to put them in the squad, then mark starters and fill in
-          their numbers. {selectedCount} selected · {starterCount} starting.
+          their numbers. Use “Dropped out” for anyone who withdrew within 24h of
+          kick-off. {selectedCount} playing · {starterCount} starting
+          {dropoutCount > 0 && ` · ${dropoutCount} dropped out`}.
         </p>
         {goalsMismatch && (
           <div className="notice error" style={{ margin: '0.6rem 0' }}>
@@ -173,16 +179,24 @@ function LineupInner({ match, players, existing }) {
                       {p.name}
                       {p.status === 'inactive' && <span className="muted"> (inactive)</span>}
                     </td>
-                    <td>{p.position}</td>
+                    <td>{p.position ?? '—'}</td>
                     {inSquad ? (
                       <>
                         <td>
                           <select
-                            value={row.started ? 'started' : 'sub'}
-                            onChange={(e) => update(p.id, 'started', e.target.value === 'started')}
+                            value={row.dropout ? 'dropout' : row.started ? 'started' : 'sub'}
+                            onChange={(e) => {
+                              const v = e.target.value;
+                              if (v === 'dropout') update(p.id, 'dropout', true);
+                              else {
+                                update(p.id, 'dropout', false);
+                                update(p.id, 'started', v === 'started');
+                              }
+                            }}
                           >
                             <option value="started">Started</option>
                             <option value="sub">Sub</option>
+                            <option value="dropout">Dropped out (24h)</option>
                           </select>
                         </td>
                         {['goals', 'assists', 'yellows', 'reds'].map((stat) => (
@@ -190,7 +204,8 @@ function LineupInner({ match, players, existing }) {
                             <input
                               type="number"
                               min="0"
-                              value={row[stat]}
+                              value={row.dropout ? 0 : row[stat]}
+                              disabled={row.dropout}
                               onChange={(e) => update(p.id, stat, e.target.value)}
                               aria-label={`${p.name} ${stat}`}
                             />
@@ -199,7 +214,8 @@ function LineupInner({ match, players, existing }) {
                         <td>
                           <input
                             type="checkbox"
-                            checked={row.motm}
+                            checked={row.dropout ? false : row.motm}
+                            disabled={row.dropout}
                             onChange={(e) => update(p.id, 'motm', e.target.checked)}
                             aria-label={`${p.name} man of the match`}
                           />

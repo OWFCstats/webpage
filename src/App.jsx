@@ -7,6 +7,7 @@ import Results from './pages/Results';
 import Matches from './pages/Matches';
 import MatchDetail from './pages/MatchDetail';
 import Leaderboards from './pages/Leaderboards';
+import InDepth from './pages/InDepth';
 import Players from './pages/Players';
 import PlayerDetail from './pages/PlayerDetail';
 import Trends from './pages/Trends';
@@ -33,6 +34,7 @@ export default function App() {
               <Route path="matches" element={<Matches />} />
               <Route path="matches/:matchId" element={<MatchDetail />} />
               <Route path="leaderboards" element={<Leaderboards />} />
+              <Route path="stats" element={<InDepth />} />
               <Route path="players" element={<Players />} />
               <Route path="players/:playerId" element={<PlayerDetail />} />
               <Route path="trends" element={<Trends />} />

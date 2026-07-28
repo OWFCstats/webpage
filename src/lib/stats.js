@@ -1,6 +1,8 @@
 // All derived statistics. Raw rows come from Supabase; nothing here is stored.
-
-export const CLEAN_SHEET_POSITIONS = ['GK', 'DEF'];
+// Clean sheets are team-wide: every player who appeared in a match with zero
+// conceded gets one (positions are fluid at this level, so no GK/DEF gating).
+// Appearance rows flagged `dropout` (withdrew <24h before kick-off) are
+// excluded from every stat and counted separately.
 
 export function isPlayed(match) {
   return match.goals_for != null && match.goals_against != null;
@@ -53,12 +55,8 @@ export function seasonSummary(matches) {
   return sum;
 }
 
-function playerEarnsCleanSheet(player, match) {
-  return (
-    CLEAN_SHEET_POSITIONS.includes(player.position) &&
-    isPlayed(match) &&
-    match.goals_against === 0
-  );
+function isCleanSheet(match) {
+  return isPlayed(match) && match.goals_against === 0;
 }
 
 /**
@@ -81,13 +79,19 @@ export function playerTotals(players, matches, appearances) {
         reds: 0,
         motm: 0,
         cleanSheets: 0,
+        dropouts: 0,
       },
     ]),
   );
   for (const app of appearances) {
     const match = matchById.get(app.match_id);
     const row = rows.get(app.player_id);
-    if (!match || !row || !isPlayed(match)) continue;
+    if (!match || !row) continue;
+    if (app.dropout) {
+      row.dropouts += 1;
+      continue;
+    }
+    if (!isPlayed(match)) continue;
     row.appearances += 1;
     if (app.started) row.starts += 1;
     row.goals += app.goals;
@@ -95,9 +99,21 @@ export function playerTotals(players, matches, appearances) {
     row.yellows += app.yellows;
     row.reds += app.reds;
     if (app.motm) row.motm += 1;
-    if (playerEarnsCleanSheet(row.player, match)) row.cleanSheets += 1;
+    if (isCleanSheet(match)) row.cleanSheets += 1;
   }
-  return [...rows.values()];
+  const out = [...rows.values()];
+  for (const row of out) {
+    row.goalInvolvements = row.goals + row.assists;
+    row.goalsPerGame = row.appearances ? row.goals / row.appearances : 0;
+    row.assistsPerGame = row.appearances ? row.assists / row.appearances : 0;
+    row.involvementsPerGame = row.appearances ? row.goalInvolvements / row.appearances : 0;
+  }
+  return out;
+}
+
+/** Format a per-game rate to 2 decimal places for display. */
+export function rate(value) {
+  return value.toFixed(2);
 }
 
 /** Per-season breakdown for a single player, newest season first. */
