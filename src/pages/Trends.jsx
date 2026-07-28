@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   Area,
   AreaChart,
@@ -49,8 +49,29 @@ const POSITIVE = '#2a78d6';
 const NEGATIVE = '#c9463d';
 
 const axisStyle = { fontSize: 12, fill: MUTED };
+const axisStyleNarrow = { fontSize: 10, fill: MUTED };
 
-function ChartCard({ title, subtitle, children, empty, table }) {
+/**
+ * True on phone-width screens. Recharts needs real numbers for margins and
+ * axis widths, so the breakpoint has to be known in JS as well as CSS.
+ */
+function useIsNarrow(query = '(max-width: 700px)') {
+  const [narrow, setNarrow] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia(query).matches,
+  );
+  useEffect(() => {
+    const mq = window.matchMedia(query);
+    const onChange = (e) => setNarrow(e.matches);
+    mq.addEventListener('change', onChange);
+    setNarrow(mq.matches);
+    return () => mq.removeEventListener('change', onChange);
+  }, [query]);
+  return narrow;
+}
+
+// `autoHeight` is for cards whose content sizes itself (the stacked
+// goal-difference panes) rather than filling the standard plot box.
+function ChartCard({ title, subtitle, children, empty, table, autoHeight = false }) {
   const [showTable, setShowTable] = useState(false);
   return (
     <section className="card chart-card">
@@ -70,7 +91,7 @@ function ChartCard({ title, subtitle, children, empty, table }) {
       ) : showTable ? (
         <div className="table-wrap">{table}</div>
       ) : (
-        <div className="chart-body">{children}</div>
+        <div className={autoHeight ? 'chart-body auto' : 'chart-body'}>{children}</div>
       )}
     </section>
   );
@@ -148,6 +169,7 @@ export default function Trends() {
   const { players, matches, appearances, loading, error } = useData();
   const seasons = seasonsOf(matches);
   const [season, setSeason] = useState('latest');
+  const narrow = useIsNarrow();
 
   const colourSlots = useMemo(
     () => (loading ? new Map() : stableColourSlots(players, matches, appearances)),
@@ -191,6 +213,18 @@ export default function Trends() {
 
   const colourFor = (playerId, fallbackIndex) =>
     SERIES[(colourSlots.get(playerId) ?? fallbackIndex) % SERIES.length];
+
+  // On a phone every pixel of plot width counts: shrink the axis gutter, drop
+  // the end-of-line name labels (the legend still names every series) and stop
+  // labelling scatter points, which collide once the plot narrows.
+  const tick = narrow ? axisStyleNarrow : axisStyle;
+  const yWidth = narrow ? 26 : 36;
+  const rightGap = narrow ? 12 : 20;
+  const raceRightGap = narrow ? 12 : 78;
+  const legendStyle = { fontSize: narrow ? 11 : 12, paddingBottom: 8 };
+  // Lower pane carries the axis labels, so it needs the taller allowance.
+  const gdTopHeight = narrow ? 170 : 165;
+  const gdBottomHeight = narrow ? 210 : 195;
 
   return (
     <div>
@@ -237,14 +271,14 @@ export default function Trends() {
           }
         >
           <ResponsiveContainer>
-            <LineChart data={comparison.points} margin={{ top: 8, right: 20, bottom: 24, left: 4 }}>
+            <LineChart data={comparison.points} margin={{ top: 8, right: rightGap, bottom: 24, left: 4 }}>
               <CartesianGrid stroke={GRID} vertical={false} />
-              <XAxis dataKey="matchday" tick={axisStyle} stroke={AXIS} tickLine={false}>
-                <Label value="Matchday" position="insideBottom" offset={-12} style={axisStyle} />
+              <XAxis dataKey="matchday" tick={tick} stroke={AXIS} tickLine={false}>
+                <Label value="Matchday" position="insideBottom" offset={-12} style={tick} />
               </XAxis>
-              <YAxis allowDecimals={false} tick={axisStyle} stroke={AXIS} tickLine={false} width={36} />
+              <YAxis allowDecimals={false} tick={tick} stroke={AXIS} tickLine={false} width={yWidth} />
               <Tooltip content={<TooltipBox labelKey="__none" unit=" pts" />} />
-              <Legend verticalAlign="top" align="right" iconType="plainline" wrapperStyle={{ fontSize: 12, paddingBottom: 8 }} />
+              <Legend verticalAlign="top" align="right" iconType="plainline" wrapperStyle={legendStyle} />
               {/* Oldest first so the current season paints on top. */}
               {[...comparison.seasons].reverse().map((s) => {
                 // The season picker drives which line is foregrounded, so this
@@ -295,7 +329,7 @@ export default function Trends() {
           }
         >
           <ResponsiveContainer>
-            <AreaChart data={trend} margin={{ top: 8, right: 20, bottom: 24, left: 4 }}>
+            <AreaChart data={trend} margin={{ top: 8, right: rightGap, bottom: 24, left: 4 }}>
               <defs>
                 <linearGradient id="gf" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor={POSITIVE} stopOpacity={0.18} />
@@ -303,12 +337,12 @@ export default function Trends() {
                 </linearGradient>
               </defs>
               <CartesianGrid stroke={GRID} vertical={false} />
-              <XAxis dataKey="matchday" tick={axisStyle} stroke={AXIS} tickLine={false}>
-                <Label value="Matchday" position="insideBottom" offset={-12} style={axisStyle} />
+              <XAxis dataKey="matchday" tick={tick} stroke={AXIS} tickLine={false}>
+                <Label value="Matchday" position="insideBottom" offset={-12} style={tick} />
               </XAxis>
-              <YAxis allowDecimals={false} tick={axisStyle} stroke={AXIS} tickLine={false} width={36} />
+              <YAxis allowDecimals={false} tick={tick} stroke={AXIS} tickLine={false} width={yWidth} />
               <Tooltip content={<TooltipBox labelKey="label" />} />
-              <Legend verticalAlign="top" align="right" iconType="plainline" wrapperStyle={{ fontSize: 12, paddingBottom: 8 }} />
+              <Legend verticalAlign="top" align="right" iconType="plainline" wrapperStyle={legendStyle} />
               {/* Linear, not smoothed: each point is a discrete match result and
                   a curve would imply scores between games. */}
               <Area
@@ -331,6 +365,7 @@ export default function Trends() {
           title="Goal difference"
           subtitle="Per-match margin in bars, with the running season total as a line above it."
           empty={trend.length < 2}
+          autoHeight
           table={
             <table className="data">
               <thead>
@@ -353,12 +388,12 @@ export default function Trends() {
           }
         >
           <div className="chart-split">
-            <ResponsiveContainer>
-              <LineChart data={trend} margin={{ top: 8, right: 20, bottom: 0, left: 4 }}>
+            <ResponsiveContainer width="100%" height={gdTopHeight}>
+              <LineChart data={trend} margin={{ top: 8, right: rightGap, bottom: 0, left: 4 }}>
                 <CartesianGrid stroke={GRID} vertical={false} />
                 {/* Axis chrome lives on the lower plot; this one only shares its scale. */}
                 <XAxis dataKey="matchday" tick={false} axisLine={false} tickLine={false} height={1} />
-                <YAxis tick={axisStyle} stroke={AXIS} tickLine={false} width={36} />
+                <YAxis tick={tick} stroke={AXIS} tickLine={false} width={yWidth} />
                 <Tooltip content={<TooltipBox labelKey="label" />} />
                 <ReferenceLine y={0} stroke={AXIS} />
                 <Line
@@ -368,13 +403,13 @@ export default function Trends() {
                 />
               </LineChart>
             </ResponsiveContainer>
-            <ResponsiveContainer>
-              <BarChart data={trend} margin={{ top: 4, right: 20, bottom: 24, left: 4 }}>
+            <ResponsiveContainer width="100%" height={gdBottomHeight}>
+              <BarChart data={trend} margin={{ top: 4, right: rightGap, bottom: 24, left: 4 }}>
                 <CartesianGrid stroke={GRID} vertical={false} />
-                <XAxis dataKey="matchday" tick={axisStyle} stroke={AXIS} tickLine={false}>
-                  <Label value="Matchday" position="insideBottom" offset={-12} style={axisStyle} />
+                <XAxis dataKey="matchday" tick={tick} stroke={AXIS} tickLine={false}>
+                  <Label value="Matchday" position="insideBottom" offset={-12} style={tick} />
                 </XAxis>
-                <YAxis tick={axisStyle} stroke={AXIS} tickLine={false} width={36} />
+                <YAxis tick={tick} stroke={AXIS} tickLine={false} width={yWidth} />
                 <Tooltip content={<TooltipBox labelKey="label" />} />
                 <ReferenceLine y={0} stroke={AXIS} />
                 <Bar dataKey="goalDifference" name="Match margin" radius={[3, 3, 0, 0]}>
@@ -416,14 +451,14 @@ export default function Trends() {
         >
           <ResponsiveContainer>
             {/* Right margin leaves room for the end-of-line name labels. */}
-            <LineChart data={race.points} margin={{ top: 8, right: 78, bottom: 24, left: 4 }}>
+            <LineChart data={race.points} margin={{ top: 8, right: raceRightGap, bottom: 24, left: 4 }}>
               <CartesianGrid stroke={GRID} vertical={false} />
-              <XAxis dataKey="matchday" tick={axisStyle} stroke={AXIS} tickLine={false}>
-                <Label value="Matchday" position="insideBottom" offset={-12} style={axisStyle} />
+              <XAxis dataKey="matchday" tick={tick} stroke={AXIS} tickLine={false}>
+                <Label value="Matchday" position="insideBottom" offset={-12} style={tick} />
               </XAxis>
-              <YAxis allowDecimals={false} tick={axisStyle} stroke={AXIS} tickLine={false} width={36} />
+              <YAxis allowDecimals={false} tick={tick} stroke={AXIS} tickLine={false} width={yWidth} />
               <Tooltip content={<TooltipBox labelKey="label" unit=" goals" />} />
-              <Legend verticalAlign="top" align="right" iconType="plainline" wrapperStyle={{ fontSize: 12, paddingBottom: 8 }} />
+              <Legend verticalAlign="top" align="right" iconType="plainline" wrapperStyle={legendStyle} />
               {race.players.map((p, i) => (
                 <Line
                   key={p.id}
@@ -435,17 +470,19 @@ export default function Trends() {
                   dot={false}
                   activeDot={{ r: 4, strokeWidth: 2, stroke: '#fff' }}
                 >
-                  <LabelList
-                    dataKey={p.id}
-                    content={
-                      <EndLabel
-                        lastIndex={race.points.length - 1}
-                        fill={colourFor(p.id, i)}
-                        text={p.name.split(' ')[0]}
-                        dy={raceOffsets.get(p.id) ?? 0}
-                      />
-                    }
-                  />
+                  {!narrow && (
+                    <LabelList
+                      dataKey={p.id}
+                      content={
+                        <EndLabel
+                          lastIndex={race.points.length - 1}
+                          fill={colourFor(p.id, i)}
+                          text={p.name.split(' ')[0]}
+                          dy={raceOffsets.get(p.id) ?? 0}
+                        />
+                      }
+                    />
+                  )}
                 </Line>
               ))}
             </LineChart>
@@ -481,19 +518,19 @@ export default function Trends() {
           }
         >
           <ResponsiveContainer>
-            <ScatterChart margin={{ top: 18, right: 30, bottom: 24, left: 12 }}>
+            <ScatterChart margin={{ top: 18, right: narrow ? 14 : 30, bottom: 24, left: narrow ? 4 : 12 }}>
               <CartesianGrid stroke={GRID} />
               <XAxis
                 type="number" dataKey="appearances" name="Appearances"
-                tick={axisStyle} stroke={AXIS} tickLine={false} allowDecimals={false}
+                tick={tick} stroke={AXIS} tickLine={false} allowDecimals={false}
               >
-                <Label value="Appearances" position="insideBottom" offset={-12} style={axisStyle} />
+                <Label value="Appearances" position="insideBottom" offset={-12} style={tick} />
               </XAxis>
               <YAxis
                 type="number" dataKey="goalInvolvements" name="Goals + assists"
-                tick={axisStyle} stroke={AXIS} tickLine={false} allowDecimals={false} width={36}
+                tick={tick} stroke={AXIS} tickLine={false} allowDecimals={false} width={yWidth}
               >
-                <Label value="G+A" angle={-90} position="insideLeft" style={axisStyle} />
+                <Label value="G+A" angle={-90} position="insideLeft" style={tick} />
               </YAxis>
               <ZAxis range={[90, 90]} />
               <Tooltip
@@ -525,9 +562,11 @@ export default function Trends() {
                 fill={SERIES[0]} fillOpacity={0.85}
                 stroke="#fff" strokeWidth={2}
               >
-                <LabelList
-                  content={<NotableLabel notable={notable} rows={scatter} offsets={scatterOffsets} />}
-                />
+                {!narrow && (
+                  <LabelList
+                    content={<NotableLabel notable={notable} rows={scatter} offsets={scatterOffsets} />}
+                  />
+                )}
               </Scatter>
             </ScatterChart>
           </ResponsiveContainer>
