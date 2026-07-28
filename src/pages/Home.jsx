@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import { ErrorNote, FormBadges, Spinner, StatTile } from '../components/bits';
@@ -5,6 +6,7 @@ import {
   fixtures,
   formatDate,
   formOf,
+  playedMatches,
   playerTotals,
   seasonsOf,
   seasonSummary,
@@ -44,8 +46,11 @@ export default function Home() {
   if (loading) return <Spinner />;
   if (error) return <ErrorNote message={error} />;
 
+  // seasonsOf sorts newest first, so a new season takes over the dashboard as
+  // soon as its first match is saved and the old one drops into the list below.
   const seasons = seasonsOf(matches);
   const currentSeason = seasons[0];
+  const pastSeasons = seasons.slice(1);
   const seasonMatches = currentSeason ? matches.filter((m) => m.season === currentSeason) : [];
   const summary = seasonSummary(seasonMatches);
   const form = formOf(seasonMatches);
@@ -122,6 +127,79 @@ export default function Home() {
           {form.length === 0 && <div className="empty">No results yet this season.</div>}
         </div>
       </div>
+
+      {pastSeasons.length > 0 && (
+        <div className="section">
+          <h2>Previous seasons</h2>
+          {pastSeasons.map((s) => (
+            <PastSeason
+              key={s}
+              season={s}
+              matches={matches.filter((m) => m.season === s)}
+              players={players}
+              appearances={appearances}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/** A finished season, collapsed to a summary bar until the reader opens it. */
+function PastSeason({ season, matches, players, appearances }) {
+  const [open, setOpen] = useState(false);
+  const summary = seasonSummary(matches);
+  const totals = playerTotals(players, matches, appearances);
+  const topScorer = totals
+    .filter((r) => r.goals > 0)
+    .sort((a, b) => b.goals - a.goals)[0];
+
+  return (
+    <div className={`past-season${open ? ' open' : ''}`}>
+      <button
+        type="button"
+        className="past-season-bar"
+        aria-expanded={open}
+        onClick={() => setOpen((v) => !v)}
+      >
+        <span className="past-season-name">{season}</span>
+        <span className="past-season-facts muted">
+          {summary.played} played · {summary.won}W {summary.drawn}D {summary.lost}L
+          {topScorer && ` · top scorer ${topScorer.player.name} (${topScorer.goals})`}
+        </span>
+        <span className="past-season-chevron" aria-hidden="true">{open ? '▲' : '▼'}</span>
+      </button>
+
+      {open && (
+        <div className="past-season-body">
+          <div className="grid cols-4">
+            <StatTile value={summary.played} label="Played" />
+            <StatTile value={`${summary.won}-${summary.drawn}-${summary.lost}`} label="W-D-L" />
+            <StatTile value={summary.goalsFor} label="Goals scored" />
+            <StatTile value={summary.goalsAgainst} label="Goals conceded" />
+          </div>
+          <div className="grid leaders section">
+            <MiniBoard title="Top scorers" rows={totals} statKey="goals" statLabel="goals" linkStat="goals" />
+            <MiniBoard title="Most assists" rows={totals} statKey="assists" statLabel="assists" linkStat="assists" />
+            <MiniBoard title="Man of the Match" rows={totals} statKey="motm" statLabel="awards" linkStat="motm" />
+          </div>
+          <div className="card section">
+            <table className="data">
+              <tbody>
+                {playedMatches(matches).map((m) => (
+                  <tr key={m.id}>
+                    <td>{formatDate(m.date)}</td>
+                    <td><Link to={`/matches/${m.id}`}>vs {m.opponent}</Link></td>
+                    <td><span className="tag">{m.competition}</span></td>
+                    <td className="num"><strong>{m.goals_for}–{m.goals_against}</strong></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
