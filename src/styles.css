@@ -545,6 +545,90 @@ button.small {
   margin: 3rem auto;
 }
 
+/* ---- charts ---- */
+
+.page-intro {
+  max-width: 65ch;
+  margin-bottom: 1.2rem;
+}
+
+.chart-stack {
+  display: grid;
+  gap: 1.1rem;
+}
+
+.chart-card {
+  padding: 1.2rem 1.3rem 1.3rem;
+}
+
+.chart-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.9rem;
+}
+
+.chart-head h2 {
+  margin-bottom: 0.15rem;
+}
+
+.chart-sub {
+  max-width: 70ch;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+/* Height includes room for the x-axis band so labels are never clipped. */
+.chart-body {
+  width: 100%;
+  height: 320px;
+}
+
+/* Two stacked plots sharing one x-axis (running total above, per-match below). */
+.chart-split {
+  width: 100%;
+  height: 340px;
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+}
+
+.chart-tip {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+  padding: 0.6rem 0.75rem;
+  font-size: 0.85rem;
+}
+
+.chart-tip-head {
+  font-weight: 700;
+  color: var(--black);
+  margin-bottom: 0.3rem;
+}
+
+.chart-tip-row {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  line-height: 1.7;
+}
+
+.chart-tip-row strong {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+}
+
+.chart-tip-swatch {
+  width: 9px;
+  height: 9px;
+  border-radius: 3px;
+  flex: none;
+}
+
+.recharts-surface:focus { outline: none; }
+
 .spinner {
   margin: 3rem auto;
   width: 28px;
