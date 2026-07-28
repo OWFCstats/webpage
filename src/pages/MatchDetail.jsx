@@ -1,7 +1,7 @@
 import { Link, useParams } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import { ErrorNote, Spinner } from '../components/bits';
-import { CLEAN_SHEET_POSITIONS, formatDate, isPlayed, resultOf } from '../lib/stats';
+import { formatDate, isPlayed, resultOf } from '../lib/stats';
 
 export default function MatchDetail() {
   const { matchId } = useParams();
@@ -15,12 +15,14 @@ export default function MatchDetail() {
   }
 
   const playerById = new Map(players.map((p) => [p.id, p]));
-  const lineup = appearances
+  const squad = appearances
     .filter((a) => a.match_id === match.id)
     .map((a) => ({ ...a, player: playerById.get(a.player_id) }))
     .filter((a) => a.player)
     .sort((a, b) => (b.started - a.started) || a.player.name.localeCompare(b.player.name));
 
+  const lineup = squad.filter((a) => !a.dropout);
+  const dropouts = squad.filter((a) => a.dropout);
   const starters = lineup.filter((a) => a.started);
   const subs = lineup.filter((a) => !a.started);
   const scorers = lineup.filter((a) => a.goals > 0);
@@ -79,15 +81,13 @@ export default function MatchDetail() {
                 {[...starters, ...subs].map((a) => (
                   <tr key={a.id}>
                     <td><Link to={`/players/${a.player.id}`}>{a.player.name}</Link></td>
-                    <td>{a.player.position}</td>
+                    <td>{a.player.position ?? '—'}</td>
                     <td>{a.started ? 'Started' : 'Sub'}</td>
                     <td className="num">{a.goals || ''}</td>
                     <td className="num">{a.assists || ''}</td>
                     <td>
                       {a.motm && <span className="tag">MOTM</span>}{' '}
-                      {cleanSheet && CLEAN_SHEET_POSITIONS.includes(a.player.position) && (
-                        <span className="tag">Clean sheet</span>
-                      )}{' '}
+                      {cleanSheet && <span className="tag">Clean sheet</span>}{' '}
                       {a.yellows > 0 && <span className="tag orange">YC{a.yellows > 1 ? ` ×${a.yellows}` : ''}</span>}{' '}
                       {a.reds > 0 && <span className="tag orange">RC</span>}
                     </td>
@@ -96,6 +96,12 @@ export default function MatchDetail() {
               </tbody>
             </table>
           </div>
+          {dropouts.length > 0 && (
+            <p className="muted" style={{ marginTop: '0.7rem' }}>
+              Late dropouts (within 24h):{' '}
+              {dropouts.map((a) => a.player.name).join(', ')}
+            </p>
+          )}
         </div>
       )}
     </div>

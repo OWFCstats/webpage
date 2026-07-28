@@ -9,7 +9,8 @@
 create table if not exists public.players (
   id         uuid primary key default gen_random_uuid(),
   name       text not null,
-  position   text not null check (position in ('GK', 'DEF', 'MID', 'FWD')),
+  -- Optional informational label; no stat depends on it.
+  position   text check (position in ('GK', 'DEF', 'MID', 'FWD')),
   status     text not null default 'active' check (status in ('active', 'inactive')),
   created_at timestamptz not null default now()
 );
@@ -40,6 +41,9 @@ create table if not exists public.appearances (
   yellows   integer not null default 0 check (yellows >= 0),
   reds      integer not null default 0 check (reds >= 0),
   motm      boolean not null default false,
+  -- Picked but withdrew in the 24h before kick-off; excluded from all
+  -- appearance-based stats and counted separately.
+  dropout   boolean not null default false,
   unique (match_id, player_id)
 );
 

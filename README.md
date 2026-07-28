@@ -43,9 +43,12 @@ works on GitHub Pages and on a custom domain later — no URL is hardcoded.
 ## How stats work
 
 Everything on the site is computed from the three tables at load time —
-nothing is hardcoded and no stat is stored twice. Clean sheets are derived:
-a GK or DEF gets one for each match they appeared in where the team conceded
-zero. Match results (W/D/L) are derived from the score when saving a match.
+nothing is hardcoded and no stat is stored twice. Clean sheets are derived
+and team-wide: every player who appeared in a match where the team conceded
+zero gets one (positions are optional labels and affect no stat). Match
+results (W/D/L) are derived from the score when saving a match. A lineup row
+can also be marked "Dropped out (24h)" — those rows are excluded from all
+stats and surface as a separate Dropouts count on the In-Depth page.
 
 ## Admin flow
 

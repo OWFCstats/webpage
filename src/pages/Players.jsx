@@ -34,7 +34,7 @@ export default function Players() {
               label: 'Pos',
               sortValue: (r) => r.player.position,
               filterValue: (r) => r.player.position,
-              render: (r) => r.player.position,
+              render: (r) => r.player.position ?? '—',
             },
             {
               key: 'status',

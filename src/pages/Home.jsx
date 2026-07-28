@@ -90,10 +90,12 @@ export default function Home() {
           <h2>Leaders — {currentSeason ?? 'all time'}</h2>
           <Link className="more" to="/leaderboards">All leaderboards →</Link>
         </div>
-        <div className="grid cols-3">
+        <div className="grid leaders">
           <MiniBoard title="Top scorers" rows={totals} statKey="goals" statLabel="goals" linkStat="goals" />
           <MiniBoard title="Most assists" rows={totals} statKey="assists" statLabel="assists" linkStat="assists" />
+          <MiniBoard title="Goal involvements" rows={totals} statKey="goalInvolvements" statLabel="G+A" linkStat="goalInvolvements" />
           <MiniBoard title="Man of the Match" rows={totals} statKey="motm" statLabel="awards" linkStat="motm" />
+          <MiniBoard title="Clean sheets" rows={totals} statKey="cleanSheets" statLabel="clean sheets" linkStat="cleanSheets" />
         </div>
       </div>
 

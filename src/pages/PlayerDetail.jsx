@@ -24,7 +24,7 @@ export default function PlayerDetail() {
   const seasonsRows = playerSeasonBreakdown(player, matches, appearances);
   const matchById = new Map(matches.map((m) => [m.id, m]));
   const log = appearances
-    .filter((a) => a.player_id === player.id)
+    .filter((a) => a.player_id === player.id && !a.dropout)
     .map((a) => ({ app: a, match: matchById.get(a.match_id) }))
     .filter((r) => r.match && isPlayed(r.match))
     .sort((a, b) => (a.match.date < b.match.date ? 1 : -1));
@@ -34,7 +34,7 @@ export default function PlayerDetail() {
       <div className="section-head">
         <h1>{player.name}</h1>
         <div>
-          <span className="tag">{player.position}</span>{' '}
+          {player.position && <span className="tag">{player.position}</span>}{' '}
           {player.status === 'inactive' && <span className="tag orange">inactive</span>}
         </div>
       </div>
@@ -61,6 +61,7 @@ export default function PlayerDetail() {
                 <th className="num">Clean sheets</th>
                 <th className="num">Yellows</th>
                 <th className="num">Reds</th>
+                <th className="num">Dropouts</th>
               </tr>
             </thead>
             <tbody>
@@ -75,6 +76,7 @@ export default function PlayerDetail() {
                   <td className="num">{s.cleanSheets}</td>
                   <td className="num">{s.yellows}</td>
                   <td className="num">{s.reds}</td>
+                  <td className="num">{s.dropouts}</td>
                 </tr>
               ))}
             </tbody>

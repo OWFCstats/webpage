@@ -8,6 +8,7 @@ import { playerTotals, seasonsOf } from '../lib/stats';
 const STATS = [
   { key: 'goals', label: 'Goals' },
   { key: 'assists', label: 'Assists' },
+  { key: 'goalInvolvements', label: 'G+A' },
   { key: 'appearances', label: 'Appearances' },
   { key: 'motm', label: 'MOTM' },
   { key: 'cleanSheets', label: 'Clean sheets' },
@@ -43,8 +44,8 @@ export default function Leaderboards() {
       <SeasonSelect seasons={seasons} value={season} onChange={setSeason} />
       <div className="card">
         <p className="muted">
-          Clean sheets are credited to goalkeepers and defenders who appeared in a
-          match with no goals conceded. Click any column to sort.
+          Clean sheets are credited to everyone who played in a match with no
+          goals conceded. Click any column to sort.
         </p>
         <SortableTable
           key={stat}
@@ -66,12 +67,13 @@ export default function Leaderboards() {
               label: 'Pos',
               sortValue: (r) => r.player.position,
               filterValue: (r) => r.player.position,
-              render: (r) => r.player.position,
+              render: (r) => r.player.position ?? '—',
             },
             { key: 'appearances', label: 'Apps', num: true },
             { key: 'starts', label: 'Starts', num: true },
             { key: 'goals', label: 'Goals', num: true },
             { key: 'assists', label: 'Assists', num: true },
+            { key: 'goalInvolvements', label: 'G+A', num: true },
             { key: 'motm', label: 'MOTM', num: true },
             { key: 'cleanSheets', label: 'Clean sheets', num: true },
             { key: 'yellows', label: 'Yellows', num: true },

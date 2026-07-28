@@ -4,7 +4,7 @@ import { useData } from '../../context/DataContext';
 import SortableTable from '../../components/SortableTable';
 
 const POSITIONS = ['GK', 'DEF', 'MID', 'FWD'];
-const BLANK = { name: '', position: 'MID', status: 'active' };
+const BLANK = { name: '', position: '', status: 'active' };
 
 export default function PlayersAdmin() {
   const { players, refresh } = useData();
@@ -15,7 +15,7 @@ export default function PlayersAdmin() {
 
   function startEdit(p) {
     setEditingId(p.id);
-    setForm({ name: p.name, position: p.position, status: p.status });
+    setForm({ name: p.name, position: p.position ?? '', status: p.status });
     setError(null);
   }
 
@@ -29,7 +29,7 @@ export default function PlayersAdmin() {
     e.preventDefault();
     setBusy(true);
     setError(null);
-    const payload = { name: form.name.trim(), position: form.position, status: form.status };
+    const payload = { name: form.name.trim(), position: form.position || null, status: form.status };
     const { error: err } = editingId
       ? await supabase.from('players').update(payload).eq('id', editingId)
       : await supabase.from('players').insert(payload);
@@ -61,8 +61,9 @@ export default function PlayersAdmin() {
                 onChange={(e) => setForm({ ...form, name: e.target.value })} />
             </label>
             <label className="field">
-              <span>Position</span>
+              <span>Position (optional)</span>
               <select value={form.position} onChange={(e) => setForm({ ...form, position: e.target.value })}>
+                <option value="">— none —</option>
                 {POSITIONS.map((p) => <option key={p}>{p}</option>)}
               </select>
             </label>
@@ -92,7 +93,7 @@ export default function PlayersAdmin() {
           emptyText="No players yet — add the squad above."
           columns={[
             { key: 'name', label: 'Name' },
-            { key: 'position', label: 'Position' },
+            { key: 'position', label: 'Position', render: (p) => p.position ?? '—' },
             { key: 'status', label: 'Status' },
             {
               key: 'actions',
