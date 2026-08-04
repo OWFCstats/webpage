@@ -240,22 +240,92 @@ export function seasonPointsComparison(matches) {
   return { seasons, points };
 }
 
+/** Most recent completed match, or null. */
+export function latestResult(matches) {
+  return playedMatches(matches)[0] ?? null;
+}
+
 /**
- * Per-player scatter data: appearances against goal involvements, for spotting
- * who contributes most per game played. Only players with an appearance.
+ * Everything the Match Centre derives about one match from data that already
+ * exists: scorers, MOTM, debuts, appearance counts, top-scorer standings after
+ * the game, and how the scoreline compares to the season. No new columns.
  */
-export function involvementScatter(players, matches, appearances) {
-  return playerTotals(players, matches, appearances)
-    .filter((r) => r.appearances > 0)
-    .map((r) => ({
-      id: r.player.id,
-      name: r.player.name,
-      appearances: r.appearances,
-      goals: r.goals,
-      assists: r.assists,
-      goalInvolvements: r.goalInvolvements,
-      involvementsPerGame: r.involvementsPerGame,
-    }));
+export function matchContext(match, players, matches, appearances) {
+  const playerById = new Map(players.map((p) => [p.id, p]));
+  const seasonPlayed = playedMatches(
+    matches.filter((m) => m.season === match.season),
+  ).slice().reverse(); // oldest first
+  const upToIndex = seasonPlayed.findIndex((m) => m.id === match.id);
+  const upTo = upToIndex === -1 ? seasonPlayed : seasonPlayed.slice(0, upToIndex + 1);
+  const before = upToIndex === -1 ? seasonPlayed : seasonPlayed.slice(0, upToIndex);
+
+  const appsByMatch = new Map();
+  for (const a of appearances) {
+    if (a.dropout) continue;
+    if (!appsByMatch.has(a.match_id)) appsByMatch.set(a.match_id, []);
+    appsByMatch.get(a.match_id).push(a);
+  }
+
+  // Appearance number within the season for each player in this squad, and
+  // whether this match was their first game of the season on record.
+  const seasonAppCount = new Map();
+  const debutIds = new Set();
+  for (const m of upTo) {
+    for (const a of appsByMatch.get(m.id) ?? []) {
+      const n = (seasonAppCount.get(a.player_id) ?? 0) + 1;
+      seasonAppCount.set(a.player_id, n);
+      if (m.id === match.id && n === 1) debutIds.add(a.player_id);
+    }
+  }
+
+  // Golden-boot standings after this match.
+  const bootTotals = new Map();
+  for (const m of upTo) {
+    for (const a of appsByMatch.get(m.id) ?? []) {
+      bootTotals.set(a.player_id, (bootTotals.get(a.player_id) ?? 0) + a.goals);
+    }
+  }
+  const boot = [...bootTotals.entries()]
+    .filter(([, g]) => g > 0)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3)
+    .map(([id, goals]) => ({ player: playerById.get(id), goals }))
+    .filter((r) => r.player);
+
+  const squad = (appsByMatch.get(match.id) ?? [])
+    .map((a) => ({ ...a, player: playerById.get(a.player_id) }))
+    .filter((a) => a.player)
+    .sort(
+      (a, b) =>
+        b.goals - a.goals ||
+        b.assists - a.assists ||
+        a.player.name.localeCompare(b.player.name),
+    );
+
+  const priorSummary = seasonSummary(before);
+  const margin = isPlayed(match) ? match.goals_for - match.goals_against : null;
+  const bestMargin = Math.max(
+    ...upTo.filter(isPlayed).map((m) => m.goals_for - m.goals_against),
+  );
+  const priorMeetings = before.filter(
+    (m) => m.opponent.toLowerCase() === match.opponent.toLowerCase(),
+  );
+
+  return {
+    squad,
+    scorers: squad.filter((a) => a.goals > 0),
+    motm: squad.filter((a) => a.motm),
+    debutIds,
+    seasonAppCount,
+    boot,
+    margin,
+    bestMargin,
+    matchNumber: upToIndex + 1,
+    seasonGames: seasonPlayed.length,
+    avgFor: before.length ? priorSummary.goalsFor / before.length : null,
+    avgAgainst: before.length ? priorSummary.goalsAgainst / before.length : null,
+    priorMeetings,
+  };
 }
 
 export function formatDate(iso) {
