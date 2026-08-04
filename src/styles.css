@@ -1110,6 +1110,18 @@ button.small {
   color: var(--gold);
 }
 
+.season-new {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: -0.4rem;
+  margin-bottom: 0.9rem;
+}
+
+.season-new input {
+  max-width: 140px;
+}
+
 .seg {
   display: inline-flex;
   background: #edebe3;

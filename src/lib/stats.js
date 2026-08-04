@@ -20,6 +20,10 @@ export function seasonsOf(matches) {
   return [...new Set(matches.map((m) => m.season))].sort().reverse();
 }
 
+export function opponentsOf(matches) {
+  return [...new Set(matches.map((m) => m.opponent))].filter(Boolean).sort();
+}
+
 /** Matches sorted newest-first that have a final score. */
 export function playedMatches(matches) {
   return matches

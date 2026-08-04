@@ -3,7 +3,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useData } from '../../context/DataContext';
 import { Spinner } from '../../components/bits';
-import { formatDate, latestResult, seasonsOf } from '../../lib/stats';
+import { formatDate, latestResult, opponentsOf, seasonsOf } from '../../lib/stats';
+import OpponentPicker from '../../components/OpponentPicker';
+import SeasonPicker from '../../components/SeasonPicker';
 
 /**
  * Post-match entry as four questions, in the order the admin thinks about
@@ -63,7 +65,9 @@ export default function AddResult() {
     );
   }, [matches, appearances]);
   const lastMatch = latestResult(matches);
-  const defaultSeason = seasonsOf(matches)[0] ?? '';
+  const recentSeasons = seasonsOf(matches).slice(0, 3);
+  const defaultSeason = recentSeasons[0] ?? '';
+  const opponents = opponentsOf(matches);
 
   if (loading) return <Spinner />;
 
@@ -167,25 +171,27 @@ export default function AddResult() {
       {step === 0 && (
         <div className="card">
           <div className="form-grid">
-            <label className="field">
+            <div className="field" style={{ gridColumn: '1 / -1' }}>
               <span>Season</span>
-              <input
-                type="text"
+              <SeasonPicker
+                seasons={recentSeasons}
                 value={form.season || defaultSeason}
-                placeholder="2026/27"
-                onChange={(e) => setForm({ ...form, season: e.target.value })}
+                onChange={(season) => setForm({ ...form, season })}
               />
-            </label>
+            </div>
             <label className="field">
               <span>Date</span>
               <input type="date" value={form.date} required
                 onChange={(e) => setForm({ ...form, date: e.target.value })} />
             </label>
-            <label className="field">
+            <div className="field">
               <span>Opponent</span>
-              <input type="text" value={form.opponent} required
-                onChange={(e) => setForm({ ...form, opponent: e.target.value })} />
-            </label>
+              <OpponentPicker
+                opponents={opponents}
+                value={form.opponent}
+                onChange={(opponent) => setForm({ ...form, opponent })}
+              />
+            </div>
             <label className="field">
               <span>Competition</span>
               <input type="text" value={form.competition}
