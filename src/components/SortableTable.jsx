@@ -15,6 +15,16 @@ export default function SortableTable({ columns, rows, rowKey, initialSort, filt
   const [sort, setSort] = useState(initialSort ?? null);
   const [query, setQuery] = useState('');
 
+  // Adopt a new initialSort when the caller changes it (the leaderboard's stat
+  // buttons do). Callers previously forced this with a `key`, which threw away
+  // the whole table — and the reader's filter text with it.
+  const requested = initialSort ? `${initialSort.key}:${initialSort.dir}` : null;
+  const [seenSort, setSeenSort] = useState(requested);
+  if (requested !== seenSort) {
+    setSeenSort(requested);
+    setSort(initialSort ?? null);
+  }
+
   const visible = useMemo(() => {
     let out = rows;
     const q = query.trim().toLowerCase();

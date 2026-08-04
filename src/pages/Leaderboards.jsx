@@ -64,7 +64,6 @@ export default function Leaderboards() {
           goals conceded. Click any column to sort.
         </p>
         <SortableTable
-          key={stat}
           filterable
           rows={rows}
           rowKey={(r) => r.player.id}
