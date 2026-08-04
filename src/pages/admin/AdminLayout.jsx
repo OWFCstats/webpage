@@ -25,6 +25,9 @@ export default function AdminLayout() {
         <NavLink to="/admin" end className={({ isActive }) => `btn small ${isActive ? '' : 'secondary'}`}>
           Overview
         </NavLink>
+        <NavLink to="/admin/new-result" className={({ isActive }) => `btn small ${isActive ? '' : 'secondary'}`}>
+          Add result
+        </NavLink>
         <NavLink to="/admin/players" className={({ isActive }) => `btn small ${isActive ? '' : 'secondary'}`}>
           Players
         </NavLink>
