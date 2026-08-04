@@ -1,3 +1,4 @@
+import { useId } from 'react';
 import { Link } from 'react-router-dom';
 import { formatDate, resultOf } from '../lib/stats';
 
@@ -40,10 +41,13 @@ export function StatTile({ value, label }) {
 }
 
 export function SeasonSelect({ seasons, value, onChange, allowAll = true }) {
+  // Generated, not hardcoded: two pickers on one page would otherwise share an
+  // id and the second label would point at the first select.
+  const id = useId();
   return (
     <div className="controls">
-      <label htmlFor="season-select">Season</label>
-      <select id="season-select" value={value} onChange={(e) => onChange(e.target.value)}>
+      <label htmlFor={id}>Season</label>
+      <select id={id} value={value} onChange={(e) => onChange(e.target.value)}>
         {allowAll && <option value="all">All seasons</option>}
         {seasons.map((s) => (
           <option key={s} value={s}>{s}</option>

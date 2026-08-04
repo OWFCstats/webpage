@@ -148,11 +148,14 @@ export function topScorerRace(players, matches, appearances, limit = 5) {
     .sort((a, b) => b.goals - a.goals)
     .slice(0, limit);
   const trackedIds = totals.map((r) => r.player.id);
+  // Set, not Array.includes: this is checked once per appearance row, so a
+  // linear scan here makes the whole build quadratic in squad size.
+  const tracked = new Set(trackedIds);
   const played = playedMatches(matches).slice().reverse(); // oldest first
   const running = Object.fromEntries(trackedIds.map((id) => [id, 0]));
   const appsByMatch = new Map();
   for (const app of appearances) {
-    if (!trackedIds.includes(app.player_id)) continue;
+    if (!tracked.has(app.player_id)) continue;
     if (!appsByMatch.has(app.match_id)) appsByMatch.set(app.match_id, []);
     appsByMatch.get(app.match_id).push(app);
   }

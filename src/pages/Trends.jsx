@@ -63,7 +63,10 @@ function useIsNarrow(query = '(max-width: 700px)') {
     const mq = window.matchMedia(query);
     const onChange = (e) => setNarrow(e.matches);
     mq.addEventListener('change', onChange);
-    setNarrow(mq.matches);
+    // Re-sync in case the viewport changed between first paint and this effect;
+    // the state setter bails out when the value is unchanged, so the common
+    // case costs no extra render of the chart tree.
+    setNarrow((prev) => (prev === mq.matches ? prev : mq.matches));
     return () => mq.removeEventListener('change', onChange);
   }, [query]);
   return narrow;
@@ -167,7 +170,8 @@ function TooltipBox({ active, payload, label, labelKey, unit }) {
 
 export default function Trends() {
   const { players, matches, appearances, loading, error } = useData();
-  const seasons = seasonsOf(matches);
+  // Memoised for a stable identity — the chart aggregates below depend on it.
+  const seasons = useMemo(() => seasonsOf(matches), [matches]);
   const [season, setSeason] = useState('latest');
   const narrow = useIsNarrow();
 
@@ -176,40 +180,57 @@ export default function Trends() {
     [loading, players, matches, appearances],
   );
 
+  // Five aggregates over the whole dataset. Without this they were rebuilt on
+  // every render — including each time the phone/desktop media query fired.
+  const charts = useMemo(() => {
+    if (loading) return null;
+    const activeSeason = season === 'latest' ? seasons[0] : season;
+    const pool =
+      season === 'all' ? matches : matches.filter((m) => m.season === activeSeason);
+    const scatter = involvementScatter(players, pool, appearances);
+    const race = topScorerRace(players, pool, appearances);
+
+    // Name only the few standout points so the plot stays readable, nudging
+    // apart any that sit on top of each other.
+    const notableRows = scatter
+      .slice()
+      .sort((a, b) => b.goalInvolvements - a.goalInvolvements)
+      .slice(0, 4);
+
+    return {
+      activeSeason,
+      trend: seasonTrend(pool),
+      race,
+      scatter,
+      comparison: seasonPointsComparison(matches),
+      maxApps: Math.max(1, ...scatter.map((d) => d.appearances)),
+      notable: new Set(notableRows.map((d) => d.id)),
+      scatterOffsets: staggerOffsets(
+        notableRows.map((d) => ({ id: d.id, bucket: `${d.appearances}:${d.goalInvolvements}` })),
+        15,
+      ),
+      // Race end-labels: players finishing level would otherwise overlap.
+      raceOffsets: staggerOffsets(
+        race.players.map((p) => ({ id: p.id, bucket: p.goals })),
+        15,
+      ),
+    };
+  }, [loading, season, seasons, players, matches, appearances]);
+
   if (loading) return <Spinner />;
   if (error) return <ErrorNote message={error} />;
 
-  const activeSeason = season === 'latest' ? seasons[0] : season;
-  const pool = season === 'all' ? matches : matches.filter((m) => m.season === activeSeason);
-  const trend = seasonTrend(pool);
-  const race = topScorerRace(players, pool, appearances);
-  const scatter = involvementScatter(players, pool, appearances);
-  const comparison = seasonPointsComparison(matches);
+  const {
+    activeSeason, trend, race, scatter, comparison,
+    maxApps, notable, scatterOffsets, raceOffsets,
+  } = charts;
   const currentSeason = seasons[0];
 
   // Scatter reference isolines: involvements per game at 0.5 and 1.0.
-  const maxApps = Math.max(1, ...scatter.map((d) => d.appearances));
   const isoline = (r) => [
     { appearances: 0, goalInvolvements: 0 },
     { appearances: maxApps, goalInvolvements: maxApps * r },
   ];
-  // Name only the few standout points so the plot stays readable, nudging apart
-  // any that sit on top of each other.
-  const notableRows = scatter
-    .slice()
-    .sort((a, b) => b.goalInvolvements - a.goalInvolvements)
-    .slice(0, 4);
-  const notable = new Set(notableRows.map((d) => d.id));
-  const scatterOffsets = staggerOffsets(
-    notableRows.map((d) => ({ id: d.id, bucket: `${d.appearances}:${d.goalInvolvements}` })),
-    15,
-  );
-
-  // Race end-labels: players finishing on the same tally would otherwise overlap.
-  const raceOffsets = staggerOffsets(
-    race.players.map((p) => ({ id: p.id, bucket: p.goals })),
-    15,
-  );
 
   const colourFor = (playerId, fallbackIndex) =>
     SERIES[(colourSlots.get(playerId) ?? fallbackIndex) % SERIES.length];

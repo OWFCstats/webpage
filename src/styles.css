@@ -19,26 +19,36 @@
   box-sizing: border-box;
 }
 
-html {
-  scroll-behavior: smooth;
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
 body {
   margin: 0;
   font-family: 'Manrope Variable', system-ui, -apple-system, sans-serif;
   background: var(--bg);
-  /* Subtle club-colour pinstripes framing the content on very wide screens. */
-  background-image:
-    linear-gradient(var(--gold), var(--gold)),
-    linear-gradient(var(--gold), var(--gold));
-  background-size: 3px 100%, 3px 100%;
-  background-position: calc(50% - min(50%, 730px)) 0, calc(50% + min(50%, 730px)) 0;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
   color: var(--ink);
   font-size: 16px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+}
+
+/* Club-colour pinstripes framing the content, only once the viewport is wide
+   enough for them to sit outside it. Below that they land on the screen edges
+   as two stray slivers, and a fixed-attachment background repaints on every
+   scroll frame — which is exactly the wrong trade on a phone. */
+@media (min-width: 1470px) {
+  body {
+    background-image:
+      linear-gradient(var(--gold), var(--gold)),
+      linear-gradient(var(--gold), var(--gold));
+    background-size: 3px 100%, 3px 100%;
+    background-position: calc(50% - 730px) 0, calc(50% + 730px) 0;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
 }
 
 h1, h2, h3 {
@@ -180,6 +190,52 @@ main.page {
   padding: 1.2rem;
 }
 
+/* Phones: the eight nav links used to wrap onto three rows, so the header ate
+   most of the first screen before any stat was visible. One swipeable row
+   instead, with a smaller crest and tighter page padding. */
+@media (max-width: 700px) {
+  .site-header .inner {
+    padding: 0.6rem 0 0;
+    gap: 0.5rem;
+  }
+
+  .brand {
+    padding: 0 1rem;
+  }
+
+  .brand img,
+  .brand .crest-fallback {
+    height: 38px;
+    width: 38px;
+  }
+
+  .brand .name { font-size: 1.05rem; }
+  .brand .sub { font-size: 0.6rem; }
+
+  nav.main-nav {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    padding: 0 1rem 0.5rem;
+    width: 100%;
+  }
+
+  nav.main-nav::-webkit-scrollbar { display: none; }
+
+  nav.main-nav a {
+    white-space: nowrap;
+    flex: none;
+    font-size: 0.88rem;
+    padding: 0.4rem 0.7rem;
+  }
+
+  main.page { padding: 1.4rem 1rem 2.5rem; }
+
+  h1 { font-size: 1.7rem; }
+  h2 { font-size: 1.15rem; }
+}
+
 /* ---- building blocks ---- */
 
 .card {
@@ -204,16 +260,19 @@ main.page {
   .grid.cols-3, .grid.cols-4 { grid-template-columns: repeat(2, 1fr); }
 }
 
+/* Phones keep the summary tiles two-up. Stacking them one per row pushed the
+   first real content roughly a full screen down the page. */
 @media (max-width: 520px) {
-  .grid.cols-2, .grid.cols-3, .grid.cols-4 { grid-template-columns: 1fr; }
+  .grid { gap: 0.6rem; }
+  .grid.cols-2, .grid.cols-3, .grid.cols-4 { grid-template-columns: repeat(2, 1fr); }
+
+  .stat-tile { padding: 0.85rem 0.5rem; }
+  .stat-tile .value { font-size: 1.75rem; }
+  .stat-tile .label { font-size: 0.66rem; letter-spacing: 0.07em; }
 }
 
 .stat-tile {
   text-align: center;
-  padding: 0.9rem 0.6rem;
-}
-
-.stat-tile {
   padding: 1.3rem 0.8rem;
 }
 
@@ -309,6 +368,20 @@ main.page {
 
 .table-wrap {
   overflow-x: auto;
+}
+
+/* Wide stat tables scroll sideways on a phone. Pinning the first column keeps
+   the player's name on screen, so a row of numbers is still attributable once
+   you've scrolled past it. */
+@media (max-width: 700px) {
+  .table-wrap table.data th:first-child,
+  .table-wrap table.data td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background: var(--card);
+    box-shadow: 1px 0 0 var(--line);
+  }
 }
 
 table.data {

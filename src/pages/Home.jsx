@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import { ErrorNote, FormBadges, Spinner, StatTile } from '../components/bits';
@@ -43,19 +43,31 @@ function MiniBoard({ title, rows, statKey, statLabel, linkStat }) {
 
 export default function Home() {
   const { players, matches, appearances, loading, error } = useData();
+
+  // One pass over the dataset, above the loading guards so the hook order is
+  // stable. seasonsOf sorts newest first, so a new season takes over the
+  // dashboard as soon as its first match is saved and the old one drops into
+  // the list below.
+  const view = useMemo(() => {
+    const seasons = seasonsOf(matches);
+    const currentSeason = seasons[0];
+    const seasonMatches = currentSeason
+      ? matches.filter((m) => m.season === currentSeason)
+      : [];
+    return {
+      currentSeason,
+      pastSeasons: seasons.slice(1),
+      summary: seasonSummary(seasonMatches),
+      form: formOf(seasonMatches),
+      next: fixtures(matches)[0],
+      totals: playerTotals(players, seasonMatches, appearances),
+    };
+  }, [players, matches, appearances]);
+
   if (loading) return <Spinner />;
   if (error) return <ErrorNote message={error} />;
 
-  // seasonsOf sorts newest first, so a new season takes over the dashboard as
-  // soon as its first match is saved and the old one drops into the list below.
-  const seasons = seasonsOf(matches);
-  const currentSeason = seasons[0];
-  const pastSeasons = seasons.slice(1);
-  const seasonMatches = currentSeason ? matches.filter((m) => m.season === currentSeason) : [];
-  const summary = seasonSummary(seasonMatches);
-  const form = formOf(seasonMatches);
-  const next = fixtures(matches)[0];
-  const totals = playerTotals(players, seasonMatches, appearances);
+  const { currentSeason, pastSeasons, summary, form, next, totals } = view;
 
   if (matches.length === 0 && players.length === 0) {
     return (
@@ -149,11 +161,18 @@ export default function Home() {
 /** A finished season, collapsed to a summary bar until the reader opens it. */
 function PastSeason({ season, matches, players, appearances }) {
   const [open, setOpen] = useState(false);
-  const summary = seasonSummary(matches);
-  const totals = playerTotals(players, matches, appearances);
-  const topScorer = totals
-    .filter((r) => r.goals > 0)
-    .sort((a, b) => b.goals - a.goals)[0];
+  const summary = useMemo(() => seasonSummary(matches), [matches]);
+  // The collapsed bar already needs the top scorer, so the squad aggregate has
+  // to happen either way — memoised so opening and closing a season doesn't
+  // recompute it, and so the boards below reuse the same pass.
+  const totals = useMemo(
+    () => playerTotals(players, matches, appearances),
+    [players, matches, appearances],
+  );
+  const topScorer = useMemo(
+    () => totals.filter((r) => r.goals > 0).sort((a, b) => b.goals - a.goals)[0],
+    [totals],
+  );
 
   return (
     <div className={`past-season${open ? ' open' : ''}`}>
