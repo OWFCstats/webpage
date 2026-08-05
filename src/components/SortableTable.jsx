@@ -11,7 +11,7 @@ import { useMemo, useState } from 'react';
  * initialSort: { key, dir } — dir is 'asc' | 'desc'
  * filterable: show a text search box above the table
  */
-export default function SortableTable({ columns, rows, rowKey, initialSort, filterable = false, emptyText = 'Nothing here yet.' }) {
+export default function SortableTable({ columns, rows, rowKey, initialSort, filterable = false, emptyText = 'Nothing here yet.', onRowClick }) {
   const [sort, setSort] = useState(initialSort ?? null);
   const [query, setQuery] = useState('');
 
@@ -96,7 +96,11 @@ export default function SortableTable({ columns, rows, rowKey, initialSort, filt
           </thead>
           <tbody>
             {visible.map((row) => (
-              <tr key={rowKey(row)}>
+              <tr
+                key={rowKey(row)}
+                onClick={onRowClick ? () => onRowClick(row) : undefined}
+                style={onRowClick ? { cursor: 'pointer' } : undefined}
+              >
                 {columns.map((col) => (
                   <td key={col.key} className={col.num ? 'num' : undefined}>
                     {col.render ? col.render(row) : row[col.key]}

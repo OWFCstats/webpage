@@ -21,6 +21,9 @@ create table if not exists public.matches (
   date              date not null,
   opponent          text not null,
   competition       text not null,
+  -- H = home, A = away, N = neutral. Nullable: not every match has this
+  -- recorded, and older rows won't until someone fills it in.
+  venue             text check (venue in ('H', 'A', 'N')),
   -- Score columns are nullable so upcoming fixtures can exist before kick-off.
   goals_for         integer check (goals_for >= 0),
   goals_against     integer check (goals_against >= 0),

@@ -7,6 +7,7 @@ import {
   fixtures,
   formatDate,
   formOf,
+  matchTitle,
   playedMatches,
   resultOf,
   seasonsOf,
@@ -87,7 +88,7 @@ export default function Season() {
                     {upcoming.map((m) => (
                       <tr key={m.id}>
                         <td>{formatDate(m.date)}</td>
-                        <td><strong>vs {m.opponent}</strong></td>
+                        <td><strong>vs {matchTitle(m)}</strong></td>
                         <td><span className="tag orange">{m.competition}</span></td>
                       </tr>
                     ))}
@@ -108,7 +109,7 @@ export default function Season() {
                 {
                   key: 'opponent',
                   label: 'Opponent',
-                  render: (m) => <Link to={`/matches/${m.id}`}>{m.opponent}</Link>,
+                  render: (m) => <Link to={`/matches/${m.id}`}>{matchTitle(m)}</Link>,
                 },
                 { key: 'competition', label: 'Competition', render: (m) => <span className="tag">{m.competition}</span> },
                 {

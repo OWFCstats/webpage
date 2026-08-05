@@ -988,6 +988,97 @@ button.small {
   .page-intro { font-size: 0.88rem; }
 }
 
+/* ---- ranked boards: leader + chasers ---- */
+
+.eyebrow {
+  font-size: 0.63rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 0.4rem;
+}
+
+.lead-hero {
+  background: var(--black);
+  color: #ece9dd;
+  padding: 1.3rem 1.4rem 1.2rem;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.lead-hero .who {
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  font-size: 2.2rem;
+  line-height: 1;
+  color: #fff;
+}
+
+.lead-hero .rate { color: #9c9a8e; font-size: 0.84rem; margin-top: 0.25rem; }
+
+.lead-hero .tally {
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  font-size: 3.6rem;
+  line-height: 0.8;
+  color: var(--gold);
+  font-variant-numeric: tabular-nums;
+}
+
+.lead-card { padding: 0; overflow: hidden; }
+.lead-chase { padding: 0.4rem 1.4rem 1.1rem; }
+
+.chase-row {
+  display: grid;
+  grid-template-columns: 22px 1fr auto;
+  align-items: center;
+  gap: 0.1rem 0.7rem;
+  padding: 0.45rem 0;
+}
+
+.chase-row + .chase-row { border-top: 1px solid var(--line); }
+
+.chase-rank {
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+.chase-name { font-weight: 600; font-size: 0.94rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chase-name:hover { color: var(--gold-deep); }
+
+.chase-value {
+  font-weight: 800;
+  font-size: 1.3rem;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: var(--black);
+}
+
+.chase-track {
+  grid-column: 2 / -1;
+  height: 5px;
+  border-radius: 3px;
+  background: rgba(22, 23, 27, 0.07);
+  overflow: hidden;
+}
+
+.chase-fill { display: block; height: 100%; border-radius: 3px; transition: width 0.4s ease; }
+
+@media (prefers-reduced-motion: reduce) {
+  .chase-fill { transition: none; }
+}
+
+@media (max-width: 700px) {
+  .lead-hero .who { font-size: 1.7rem; }
+  .lead-hero .tally { font-size: 2.8rem; }
+}
+
 /* ---- matchday: the latest-result hero ---- */
 
 .latest-hero {

@@ -4,11 +4,13 @@ import { useData } from '../context/DataContext';
 import { ErrorNote, FormBadges, Spinner, StatTile } from '../components/bits';
 import BarBoard from '../components/BarBoard';
 import {
+  countdownLabel,
   fixtures,
   formatDate,
   formOf,
   latestResult,
   matchContext,
+  matchTitle,
   playerTotals,
   resultOf,
   seasonsOf,
@@ -66,11 +68,11 @@ export default function Matchday() {
   return (
     <div>
       {latest ? (
-        <Link to={`/matches/${latest.id}`} className="latest-hero" aria-label={`Match centre: vs ${latest.opponent}`}>
+        <Link to={`/matches/${latest.id}`} className="latest-hero" aria-label={`Match centre: vs ${matchTitle(latest)}`}>
           <p className="meta">
             {formatDate(latest.date)} · {latest.competition} · {latest.season}
           </p>
-          <h1>Old Wellingtonians vs {latest.opponent}</h1>
+          <h1>Old Wellingtonians vs {matchTitle(latest)}</h1>
           <p className="scoreline">
             {latest.goals_for}–{latest.goals_against}{' '}
             <span className={`result-pill ${resultOf(latest)}`}>{resultOf(latest)}</span>
@@ -114,8 +116,9 @@ export default function Matchday() {
         {next && (
           <div className="next-up">
             <div className="mini-label">Next up</div>
-            <strong>{next.opponent}</strong>
+            <strong>{matchTitle(next)}</strong>
             <span className="muted">{formatDate(next.date)} · {next.competition}</span>
+            {countdownLabel(next.date) && <span className="muted">{countdownLabel(next.date)}</span>}
           </div>
         )}
       </div>
@@ -166,7 +169,7 @@ export default function Matchday() {
                   <tr key={m.id}>
                     <td><span className={`result-pill ${resultOf(m)}`}>{resultOf(m)}</span></td>
                     <td>{formatDate(m.date)}</td>
-                    <td><Link to={`/matches/${m.id}`}>vs {m.opponent}</Link></td>
+                    <td><Link to={`/matches/${m.id}`}>vs {matchTitle(m)}</Link></td>
                     <td className="num"><strong>{m.goals_for}–{m.goals_against}</strong></td>
                   </tr>
                 ))}

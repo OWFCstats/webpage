@@ -4,6 +4,7 @@ import { ErrorNote, Spinner, StatTile } from '../components/bits';
 import {
   formatDate,
   isPlayed,
+  matchTitle,
   playerSeasonBreakdown,
   playerTotals,
   resultOf,
@@ -104,7 +105,7 @@ export default function PlayerDetail() {
               {log.map(({ app, match }) => (
                 <tr key={app.id}>
                   <td>{formatDate(match.date)}</td>
-                  <td><Link to={`/matches/${match.id}`}>vs {match.opponent}</Link></td>
+                  <td><Link to={`/matches/${match.id}`}>vs {matchTitle(match)}</Link></td>
                   <td>
                     <span className={`result-pill ${resultOf(match)}`}>{resultOf(match)}</span>{' '}
                     {match.goals_for}–{match.goals_against}

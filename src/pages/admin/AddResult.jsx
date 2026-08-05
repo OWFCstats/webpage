@@ -48,6 +48,7 @@ export default function AddResult() {
     date: '',
     opponent: '',
     competition: 'League',
+    venue: '',
     goals_for: '',
     goals_against: '',
     own_goals_for: 0,
@@ -113,6 +114,7 @@ export default function AddResult() {
       date: form.date,
       opponent: form.opponent.trim(),
       competition: form.competition.trim() || 'League',
+      venue: form.venue || null,
       goals_for: gf,
       goals_against: ga,
       own_goals_for: ownGoals,
@@ -194,8 +196,22 @@ export default function AddResult() {
             </div>
             <label className="field">
               <span>Competition</span>
-              <input type="text" value={form.competition}
-                onChange={(e) => setForm({ ...form, competition: e.target.value })} />
+              <select value={form.competition}
+                onChange={(e) => setForm({ ...form, competition: e.target.value })}>
+                <option value="League">League</option>
+                <option value="Cup">Cup</option>
+                <option value="Friendly">Friendly</option>
+              </select>
+            </label>
+            <label className="field">
+              <span>Venue (optional)</span>
+              <select value={form.venue}
+                onChange={(e) => setForm({ ...form, venue: e.target.value })}>
+                <option value="">— not recorded —</option>
+                <option value="H">Home</option>
+                <option value="A">Away</option>
+                <option value="N">Neutral</option>
+              </select>
             </label>
             <label className="field">
               <span>Goals for</span>

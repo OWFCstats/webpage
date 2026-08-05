@@ -5,6 +5,7 @@ import { ErrorNote, Spinner, StatTile } from '../components/bits';
 import BarBoard from '../components/BarBoard';
 import {
   formatDate,
+  matchTitle,
   playedMatches,
   playerTotals,
   seasonsOf,
@@ -118,7 +119,7 @@ function PastSeason({ season, matches, players, appearances }) {
                   {playedMatches(matches).map((m) => (
                     <tr key={m.id}>
                       <td>{formatDate(m.date)}</td>
-                      <td><Link to={`/matches/${m.id}`}>vs {m.opponent}</Link></td>
+                      <td><Link to={`/matches/${m.id}`}>vs {matchTitle(m)}</Link></td>
                       <td><span className="tag">{m.competition}</span></td>
                       <td className="num"><strong>{m.goals_for}–{m.goals_against}</strong></td>
                     </tr>

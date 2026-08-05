@@ -221,12 +221,18 @@ export function seasonTrend(matches) {
  * Cumulative points for every season on a shared matchday axis, for overlaying
  * past seasons behind the current one. Returns
  * { seasons: ['2025/26', …] (newest first), points: [{ matchday, [season]: pts }] }.
+ *
+ * League matches only — points accumulated is a league-table concept, so cup
+ * and friendly games don't move this trend (they still count everywhere else:
+ * leaderboards, goals, appearances, etc). The comparison is case/whitespace
+ * insensitive since `competition` is free text entered by hand.
  */
 export function seasonPointsComparison(matches) {
-  const seasons = seasonsOf(matches);
+  const leagueMatches = matches.filter((m) => m.competition?.trim().toLowerCase() === 'league');
+  const seasons = seasonsOf(leagueMatches);
   const bySeason = seasons.map((s) => ({
     season: s,
-    trend: seasonTrend(matches.filter((m) => m.season === s)),
+    trend: seasonTrend(leagueMatches.filter((m) => m.season === s)),
   }));
   const longest = Math.max(0, ...bySeason.map((s) => s.trend.length));
   const points = [];
@@ -247,6 +253,35 @@ export function seasonPointsComparison(matches) {
 /** Most recent completed match, or null. */
 export function latestResult(matches) {
   return playedMatches(matches)[0] ?? null;
+}
+
+/** "(H)" / "(A)" / "(N)" for display; empty when the venue wasn't recorded. */
+export function venueLabel(match) {
+  return match.venue ? `(${match.venue})` : '';
+}
+
+/** Opponent with venue, e.g. "Old Stoics (A)". */
+export function matchTitle(match) {
+  const v = venueLabel(match);
+  return v ? `${match.opponent} ${v}` : match.opponent;
+}
+
+/** Days until a fixture, or null once it's in the past. */
+export function daysUntil(iso) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const then = new Date(`${iso}T00:00:00`);
+  const days = Math.round((then - today) / 86400000);
+  return days < 0 ? null : days;
+}
+
+export function countdownLabel(iso) {
+  const days = daysUntil(iso);
+  if (days === null) return null;
+  if (days === 0) return 'Kick-off today';
+  if (days === 1) return 'Kick-off tomorrow';
+  if (days < 14) return `Kick-off in ${days} days`;
+  return `Kick-off in ${Math.round(days / 7)} weeks`;
 }
 
 /**

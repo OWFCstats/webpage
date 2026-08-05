@@ -10,6 +10,7 @@ function toInputs(match) {
     date: match?.date ?? '',
     opponent: match?.opponent ?? '',
     competition: match?.competition ?? 'League',
+    venue: match?.venue ?? '',
     goals_for: match?.goals_for ?? '',
     goals_against: match?.goals_against ?? '',
     own_goals_for: match?.own_goals_for ?? 0,
@@ -53,6 +54,7 @@ function MatchFormInner({ match, isNew, matchId }) {
       date: form.date,
       opponent: form.opponent.trim(),
       competition: form.competition.trim(),
+      venue: form.venue || null,
       goals_for: gf,
       goals_against: ga,
       own_goals_for: Number(form.own_goals_for) || 0,
@@ -103,7 +105,20 @@ function MatchFormInner({ match, isNew, matchId }) {
           </label>
           <label className="field">
             <span>Competition</span>
-            <input type="text" value={form.competition} required onChange={set('competition')} />
+            <select value={form.competition} required onChange={set('competition')}>
+              <option value="League">League</option>
+              <option value="Cup">Cup</option>
+              <option value="Friendly">Friendly</option>
+            </select>
+          </label>
+          <label className="field">
+            <span>Venue (optional)</span>
+            <select value={form.venue} onChange={set('venue')}>
+              <option value="">— not recorded —</option>
+              <option value="H">Home</option>
+              <option value="A">Away</option>
+              <option value="N">Neutral</option>
+            </select>
           </label>
         </div>
         <h3 style={{ marginTop: '1.2rem' }}>Score</h3>

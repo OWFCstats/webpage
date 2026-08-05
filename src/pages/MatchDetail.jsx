@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import { useAuth } from '../context/AuthContext';
 import { ErrorNote, Spinner } from '../components/bits';
-import { formatDate, isPlayed, matchContext, resultOf } from '../lib/stats';
+import { formatDate, isPlayed, matchContext, matchTitle, resultOf } from '../lib/stats';
 
 function initials(name) {
   return name.split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase();
@@ -106,7 +106,7 @@ export default function MatchDetail() {
           </div>
           <div className="sb-side them">
             <span className="badge">{opponentInitials(match.opponent)}</span>
-            <span className="team">{match.opponent}</span>
+            <span className="team">{matchTitle(match)}</span>
             <span className="sub">{formatDate(match.date)}</span>
           </div>
         </div>
@@ -165,7 +165,7 @@ export default function MatchDetail() {
                 </div>
                 {priorMeetings.length > 0 && (
                   <div>
-                    <dt>Earlier against {match.opponent}</dt>
+                    <dt>Earlier against {matchTitle(match)}</dt>
                     <dd>
                       {priorMeetings.map((m) => (
                         <Link key={m.id} to={`/matches/${m.id}`} className="prior-meeting">
