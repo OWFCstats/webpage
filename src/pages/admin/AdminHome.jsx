@@ -4,15 +4,14 @@ import { formatDate, isPlayed } from '../../lib/stats';
 
 /**
  * Opens with what's outstanding, not with navigation. A match saved without a
- * lineup, or a played match with no report, is work the admin hasn't finished
- * — the site knows it, so it says so and links straight there.
+ * lineup is broken data — no player gets credit for it — so the site nags
+ * about it. A missing report is just optional colour and never nags.
  */
 export default function AdminHome() {
   const { players, matches, appearances } = useData();
 
   const withLineup = new Set(appearances.map((a) => a.match_id));
   const needLineup = matches.filter((m) => isPlayed(m) && !withLineup.has(m.id));
-  const needReport = matches.filter((m) => isPlayed(m) && withLineup.has(m.id) && !m.report);
 
   return (
     <div className="section">
@@ -26,7 +25,7 @@ export default function AdminHome() {
         <Link className="btn" to="/admin/new-result">Add result</Link>
       </div>
 
-      {(needLineup.length > 0 || needReport.length > 0) && (
+      {needLineup.length > 0 && (
         <div className="card section">
           <h2>Needs attention</h2>
           <ul className="attention">
@@ -38,17 +37,6 @@ export default function AdminHome() {
                 </span>
                 <Link className="btn secondary small" to={`/admin/matches/${m.id}/lineup`}>
                   Enter lineup
-                </Link>
-              </li>
-            ))}
-            {needReport.map((m) => (
-              <li key={m.id}>
-                <span>
-                  <strong>vs {m.opponent}</strong> ({formatDate(m.date)}) has no
-                  match report.
-                </span>
-                <Link className="btn secondary small" to={`/admin/matches/${m.id}/report`}>
-                  Write report
                 </Link>
               </li>
             ))}
