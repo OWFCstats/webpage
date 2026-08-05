@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useData } from '../context/DataContext';
+import { useAuth } from '../context/AuthContext';
 import { ErrorNote, Spinner } from '../components/bits';
 import { formatDate, isPlayed, matchContext, resultOf } from '../lib/stats';
 
@@ -18,6 +19,7 @@ const nf1 = (v) => (Math.round(v * 10) / 10).toFixed(1);
 export default function MatchDetail() {
   const { matchId } = useParams();
   const { players, matches, appearances, loading, error } = useData();
+  const { session } = useAuth();
 
   const match = matches.find((m) => m.id === matchId);
   const ctx = useMemo(
@@ -197,12 +199,16 @@ export default function MatchDetail() {
         </div>
       )}
 
-      {match.report && (
+      {match.report ? (
         <div className="section card">
           <h2>Match report</h2>
           <div className="report-body">{match.report}</div>
         </div>
-      )}
+      ) : played && session ? (
+        <div className="section">
+          <Link className="more" to={`/admin/matches/${match.id}/report`}>Add a match report →</Link>
+        </div>
+      ) : null}
 
       {squad.length > 0 && (
         <div className="section card">
