@@ -31,6 +31,11 @@ create table if not exists public.matches (
   own_goals_against integer not null default 0 check (own_goals_against >= 0),
   result            text check (result in ('W', 'D', 'L')),
   report            text,
+  -- Awarded 3-0 because the opposition didn't field a team: no team sheet,
+  -- no individual scorers. goals_for/goals_against/result are still set
+  -- normally so every existing stat (top scorers excepted -- they read
+  -- appearances, which stay empty) treats it like any other result.
+  walkover          boolean not null default false,
   created_at        timestamptz not null default now()
 );
 

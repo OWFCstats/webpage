@@ -93,7 +93,7 @@ export default function MatchDetail() {
               <>
                 <span className="score">{match.goals_for}–{match.goals_against}</span>
                 <span className="state">
-                  Full time · {match.competition}{' '}
+                  {match.walkover ? 'Awarded (walkover)' : 'Full time'} · {match.competition}{' '}
                   <span className={`result-pill ${resultOf(match)}`}>{resultOf(match)}</span>
                 </span>
               </>
