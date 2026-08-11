@@ -16,3 +16,11 @@ alter table public.matches
 
 comment on column public.matches.walkover is
   'True for a 3-0 result awarded because the opposition did not field a team. No appearances rows exist for these matches by design.';
+
+-- PostgREST (the API layer the site talks to) caches the table schema and
+-- won't see the new column until that cache reloads. Supabase normally does
+-- this automatically a few seconds after a DDL change, but this forces it
+-- immediately so "Could not find the 'walkover' column ... in the schema
+-- cache" clears right away instead of needing a wait or a manual reload
+-- (Dashboard -> Settings -> API -> "Reload schema").
+notify pgrst, 'reload schema';
