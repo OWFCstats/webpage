@@ -10,6 +10,7 @@ import PlayersHub from './pages/PlayersHub';
 import History from './pages/History';
 import MatchDetail from './pages/MatchDetail';
 import PlayerDetail from './pages/PlayerDetail';
+import OpponentDetail from './pages/OpponentDetail';
 
 // The admin section loads on demand — a public visitor never downloads it.
 // (The season charts are split the same way inside the Season page.)
@@ -38,6 +39,7 @@ export default function App() {
                 <Route path="players" element={<PlayersHub />} />
                 <Route path="players/:playerId" element={<PlayerDetail />} />
                 <Route path="matches/:matchId" element={<MatchDetail />} />
+                <Route path="opponents/:name" element={<OpponentDetail />} />
                 <Route path="history" element={<History />} />
 
                 {/* Old addresses keep working — bookmarks and chat links land

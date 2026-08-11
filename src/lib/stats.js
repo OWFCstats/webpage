@@ -24,6 +24,38 @@ export function opponentsOf(matches) {
   return [...new Set(matches.map((m) => m.opponent))].filter(Boolean).sort();
 }
 
+/** URL-safe slug for an opponent name, e.g. "St. George's OB" -> "st-george-s-ob". */
+export function slugify(name) {
+  return name
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+/**
+ * Resolves a route slug back to an opponent and every match against them,
+ * grouping strictly by exact string match on `opponent` (the opponent picker
+ * keeps new rows consistent, but older rows may still disagree on casing —
+ * those would slugify the same but not group together here). If more than
+ * one exact spelling happens to share a slug, the spelling used most
+ * recently is treated as canonical. Returns null if nothing matches.
+ */
+export function opponentMatches(matches, slug) {
+  const candidates = opponentsOf(matches).filter((name) => slugify(name) === slug);
+  if (candidates.length === 0) return null;
+  const mostRecentDate = (name) =>
+    matches
+      .filter((m) => m.opponent === name)
+      .reduce((latest, m) => (m.date > latest ? m.date : latest), '');
+  const canonical = candidates.slice().sort((a, b) => (mostRecentDate(a) < mostRecentDate(b) ? 1 : -1))[0];
+  return {
+    opponent: canonical,
+    otherSpellings: candidates.filter((name) => name !== canonical),
+    matches: matches.filter((m) => m.opponent === canonical),
+  };
+}
+
 /** Matches sorted newest-first that have a final score. */
 export function playedMatches(matches) {
   return matches
@@ -57,6 +89,30 @@ export function seasonSummary(matches) {
     sum.goalsAgainst += m.goals_against;
   }
   return sum;
+}
+
+/** Won/drawn/lost split at home vs away (neutral-venue and unrecorded-venue
+ * matches count toward neither side). */
+export function venueSummary(matches) {
+  return {
+    home: seasonSummary(matches.filter((m) => m.venue === 'H')),
+    away: seasonSummary(matches.filter((m) => m.venue === 'A')),
+  };
+}
+
+/** Longest run of identical results at the front of the (newest-first)
+ * results, e.g. { result: 'W', count: 3 } for "won the last 3". Null if
+ * nothing has been played. */
+export function currentStreak(matches) {
+  const played = playedMatches(matches);
+  if (played.length === 0) return null;
+  const result = resultOf(played[0]);
+  let count = 0;
+  for (const m of played) {
+    if (resultOf(m) !== result) break;
+    count += 1;
+  }
+  return { result, count };
 }
 
 function isCleanSheet(match) {

@@ -31,6 +31,42 @@ export function FormBadges({ matches }) {
   );
 }
 
+/** Small H/A icon for a fixture row. Renders nothing for neutral or
+ * unrecorded venues rather than guessing. */
+export function VenueBadge({ venue }) {
+  if (venue !== 'H' && venue !== 'A') return null;
+  return (
+    <span className={`venue-badge ${venue}`} title={venue === 'H' ? 'Home' : 'Away'}>
+      {venue}
+    </span>
+  );
+}
+
+/** Overall/Home/Away segmented toggle, styled like the existing view tabs. */
+export function VenueFilter({ value, onChange }) {
+  const options = [
+    { key: 'all', label: 'Overall' },
+    { key: 'H', label: 'Home' },
+    { key: 'A', label: 'Away' },
+  ];
+  return (
+    <div className="seg" role="tablist" aria-label="Home or away">
+      {options.map((opt) => (
+        <button
+          key={opt.key}
+          type="button"
+          role="tab"
+          aria-selected={value === opt.key}
+          className={value === opt.key ? 'active' : undefined}
+          onClick={() => onChange(opt.key)}
+        >
+          {opt.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 export function StatTile({ value, label }) {
   return (
     <div className="card stat-tile">
