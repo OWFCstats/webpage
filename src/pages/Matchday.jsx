@@ -26,6 +26,7 @@ const BOARDS = [
   { key: 'goalInvolvements', label: 'G+A', accent: '#e8772e' },
   { key: 'appearances', label: 'Apps', accent: '#3f4149' },
   { key: 'motm', label: 'MOTM', accent: '#b8860b' },
+  { key: 'cleanSheets', label: 'Clean sheets', accent: '#5ba3c9' },
 ];
 
 export default function Matchday() {

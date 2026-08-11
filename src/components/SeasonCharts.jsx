@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   Area,
   AreaChart,
@@ -14,6 +14,7 @@ import {
   YAxis,
 } from 'recharts';
 import { useData } from '../context/DataContext';
+import { useIsNarrow } from '../lib/useIsNarrow';
 import {
   formatDate,
   seasonPointsComparison,
@@ -35,21 +36,6 @@ const NEGATIVE = '#c9463d';
 
 const axisStyle = { fontSize: 12, fill: MUTED };
 const axisStyleNarrow = { fontSize: 10, fill: MUTED };
-
-/** True on phone-width screens; Recharts needs the breakpoint in JS too. */
-function useIsNarrow(query = '(max-width: 700px)') {
-  const [narrow, setNarrow] = useState(
-    () => typeof window !== 'undefined' && window.matchMedia(query).matches,
-  );
-  useEffect(() => {
-    const mq = window.matchMedia(query);
-    const onChange = (e) => setNarrow(e.matches);
-    mq.addEventListener('change', onChange);
-    setNarrow((prev) => (prev === mq.matches ? prev : mq.matches));
-    return () => mq.removeEventListener('change', onChange);
-  }, [query]);
-  return narrow;
-}
 
 /** Card with a finding as its subtitle — a sentence, not a description of the
  *  axes — and the data table one press away. */
