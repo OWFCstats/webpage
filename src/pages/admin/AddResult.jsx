@@ -6,6 +6,7 @@ import { Spinner } from '../../components/bits';
 import { formatDate, latestResult, opponentsOf, seasonsOf } from '../../lib/stats';
 import OpponentPicker from '../../components/OpponentPicker';
 import SeasonPicker from '../../components/SeasonPicker';
+import WalkoverForm from './WalkoverForm';
 
 /**
  * Post-match entry as four questions, in the order the admin thinks about
@@ -42,6 +43,7 @@ export default function AddResult() {
   const [step, setStep] = useState(0);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
+  const [showWalkover, setShowWalkover] = useState(false);
 
   const [form, setForm] = useState(() => ({
     season: '',
@@ -157,11 +159,27 @@ export default function AddResult() {
   const selected = active.filter((p) => picked.has(p.id));
   const nonScorers = selected.filter((p) => picked.get(p.id).goals === 0 && picked.get(p.id).assists === 0);
 
+  if (showWalkover) {
+    return (
+      <div className="section wizard">
+        <div className="section-head">
+          <h2>Add result</h2>
+        </div>
+        <WalkoverForm onDone={() => setShowWalkover(false)} onCancel={() => setShowWalkover(false)} />
+      </div>
+    );
+  }
+
   return (
     <div className="section wizard">
       <div className="section-head">
         <h2>Add result</h2>
-        <span className="muted">Step {step + 1} of {STEPS.length}</span>
+        <span className="controls" style={{ marginBottom: 0 }}>
+          <span className="muted">Step {step + 1} of {STEPS.length}</span>
+          <button type="button" className="secondary small" onClick={() => setShowWalkover(true)}>
+            Walkover
+          </button>
+        </span>
       </div>
       <div className="wizard-steps" aria-hidden="true">
         {STEPS.map((s, i) => (
