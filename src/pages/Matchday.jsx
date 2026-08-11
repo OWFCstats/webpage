@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useData } from '../context/DataContext';
-import { ErrorNote, FormBadges, Spinner, StatTile } from '../components/bits';
+import { ErrorNote, FormBadges, Spinner, StatTile, VenueBadge, VenueFilter } from '../components/bits';
 import BarBoard from '../components/BarBoard';
 import {
   countdownLabel,
@@ -15,6 +15,7 @@ import {
   resultOf,
   seasonsOf,
   seasonSummary,
+  slugify,
 } from '../lib/stats';
 
 // The chips drive one board, not six stacked ones. Club gold leads; the
@@ -30,6 +31,7 @@ const BOARDS = [
 export default function Matchday() {
   const { players, matches, appearances, loading, error } = useData();
   const [board, setBoard] = useState('goals');
+  const [venueFilter, setVenueFilter] = useState('all');
 
   const view = useMemo(() => {
     const seasons = seasonsOf(matches);
@@ -42,8 +44,7 @@ export default function Matchday() {
       currentSeason,
       latest,
       latestCtx: latest ? matchContext(latest, players, matches, appearances) : null,
-      summary: seasonSummary(seasonMatches),
-      form: formOf(seasonMatches),
+      seasonMatches,
       next: fixtures(matches)[0],
       totals: playerTotals(players, seasonMatches, appearances),
     };
@@ -52,7 +53,10 @@ export default function Matchday() {
   if (loading) return <Spinner />;
   if (error) return <ErrorNote message={error} />;
 
-  const { currentSeason, latest, latestCtx, summary, form, next, totals } = view;
+  const { currentSeason, latest, latestCtx, seasonMatches, next, totals } = view;
+  const scoped = venueFilter === 'all' ? seasonMatches : seasonMatches.filter((m) => m.venue === venueFilter);
+  const summary = seasonSummary(scoped);
+  const form = formOf(scoped);
   const points = summary.won * 3 + summary.drawn;
   const star = latestCtx?.motm[0];
 
@@ -116,11 +120,19 @@ export default function Matchday() {
         {next && (
           <div className="next-up">
             <div className="mini-label">Next up</div>
-            <strong>{matchTitle(next)}</strong>
+            <strong>
+              <Link to={`/opponents/${slugify(next.opponent)}`}>{next.opponent}</Link>{' '}
+              <VenueBadge venue={next.venue} />
+            </strong>
             <span className="muted">{formatDate(next.date)} · {next.competition}</span>
             {countdownLabel(next.date) && <span className="muted">{countdownLabel(next.date)}</span>}
           </div>
         )}
+      </div>
+
+      <div className="controls">
+        <span>Scope</span>
+        <VenueFilter value={venueFilter} onChange={setVenueFilter} />
       </div>
 
       <div className="grid cols-4 section">
@@ -169,7 +181,9 @@ export default function Matchday() {
                   <tr key={m.id}>
                     <td><span className={`result-pill ${resultOf(m)}`}>{resultOf(m)}</span></td>
                     <td>{formatDate(m.date)}</td>
-                    <td><Link to={`/matches/${m.id}`}>vs {matchTitle(m)}</Link></td>
+                    <td>
+                      <Link to={`/matches/${m.id}`}>vs {m.opponent}</Link> <VenueBadge venue={m.venue} />
+                    </td>
                     <td className="num"><strong>{m.goals_for}–{m.goals_against}</strong></td>
                   </tr>
                 ))}

@@ -1,17 +1,17 @@
 import { lazy, Suspense, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useData } from '../context/DataContext';
-import { ErrorNote, FormBadges, SeasonSelect, Spinner, StatTile } from '../components/bits';
+import { ErrorNote, FormBadges, SeasonSelect, Spinner, StatTile, VenueBadge, VenueFilter } from '../components/bits';
 import SortableTable from '../components/SortableTable';
 import {
   fixtures,
   formatDate,
   formOf,
-  matchTitle,
   playedMatches,
   resultOf,
   seasonsOf,
   seasonSummary,
+  slugify,
 } from '../lib/stats';
 
 // Charts pull in Recharts (~400kB); they stay in their own chunk and load
@@ -23,28 +23,34 @@ export default function Season() {
   const seasons = seasonsOf(matches);
   const [season, setSeason] = useState('latest');
   const [view, setView] = useState('results');
+  const [venueFilter, setVenueFilter] = useState('all');
 
   if (loading) return <Spinner />;
   if (error) return <ErrorNote message={error} />;
 
   const activeSeason = season === 'latest' ? seasons[0] : season;
   const pool = season === 'all' ? matches : matches.filter((m) => m.season === activeSeason);
-  const summary = seasonSummary(pool);
-  const results = playedMatches(pool);
-  const upcoming = fixtures(pool);
+  const scoped = venueFilter === 'all' ? pool : pool.filter((m) => m.venue === venueFilter);
+  const summary = seasonSummary(scoped);
+  const results = playedMatches(scoped);
+  const upcoming = fixtures(scoped);
   const gd = summary.goalsFor - summary.goalsAgainst;
 
   return (
     <div>
       <div className="section-head">
         <h1>{season === 'all' ? 'All seasons' : `Season ${activeSeason ?? ''}`}</h1>
-        <FormBadges matches={formOf(pool)} />
+        <FormBadges matches={formOf(scoped)} />
       </div>
       <SeasonSelect
         seasons={seasons}
         value={season === 'latest' ? (seasons[0] ?? 'all') : season}
         onChange={setSeason}
       />
+      <div className="controls">
+        <span>Scope</span>
+        <VenueFilter value={venueFilter} onChange={setVenueFilter} />
+      </div>
 
       <div className="grid cols-4">
         <StatTile value={summary.played} label="Played" />
@@ -88,7 +94,12 @@ export default function Season() {
                     {upcoming.map((m) => (
                       <tr key={m.id}>
                         <td>{formatDate(m.date)}</td>
-                        <td><strong>vs {matchTitle(m)}</strong></td>
+                        <td>
+                          <strong>
+                            vs <Link to={`/opponents/${slugify(m.opponent)}`}>{m.opponent}</Link>
+                          </strong>{' '}
+                          <VenueBadge venue={m.venue} />
+                        </td>
                         <td><span className="tag orange">{m.competition}</span></td>
                       </tr>
                     ))}
@@ -109,7 +120,11 @@ export default function Season() {
                 {
                   key: 'opponent',
                   label: 'Opponent',
-                  render: (m) => <Link to={`/matches/${m.id}`}>{matchTitle(m)}</Link>,
+                  render: (m) => (
+                    <>
+                      <Link to={`/matches/${m.id}`}>{m.opponent}</Link> <VenueBadge venue={m.venue} />
+                    </>
+                  ),
                 },
                 { key: 'competition', label: 'Competition', render: (m) => <span className="tag">{m.competition}</span> },
                 {

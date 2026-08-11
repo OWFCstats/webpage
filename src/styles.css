@@ -365,6 +365,22 @@ main.page {
   color: #b25317;
 }
 
+.venue-badge {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  line-height: 18px;
+  text-align: center;
+  border-radius: 5px;
+  font-size: 0.64rem;
+  font-weight: 800;
+  color: #fff;
+  vertical-align: middle;
+}
+
+.venue-badge.H { background: var(--blue); }
+.venue-badge.A { background: var(--orange); }
+
 /* ---- tables ---- */
 
 .table-wrap {
@@ -431,6 +447,8 @@ table.data tbody tr:hover {
 
 table.data td.num, table.data th.num { text-align: right; }
 
+table.data td.score-cell, table.data th.score-cell { text-align: center; }
+
 table.data a { font-weight: 700; }
 table.data a:hover { color: var(--gold-deep); }
 
@@ -444,7 +462,8 @@ table.data a:hover { color: var(--gold-deep); }
   margin-bottom: 0.9rem;
 }
 
-.controls label {
+.controls label,
+.controls > span {
   font-size: 0.78rem;
   font-weight: 700;
   color: var(--ink-soft);
