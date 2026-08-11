@@ -3,6 +3,9 @@ import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useData } from '../../context/DataContext';
 import { Spinner } from '../../components/bits';
+import OpponentPicker from '../../components/OpponentPicker';
+import SeasonPicker from '../../components/SeasonPicker';
+import { opponentsOf, seasonsOf } from '../../lib/stats';
 
 function toInputs(match) {
   return {
@@ -33,10 +36,13 @@ export default function MatchForm() {
 
 function MatchFormInner({ match, isNew, matchId }) {
   const navigate = useNavigate();
-  const { refresh } = useData();
+  const { matches, refresh } = useData();
   const [form, setForm] = useState(() => toInputs(match));
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
+
+  const seasons = seasonsOf(matches);
+  const opponents = opponentsOf(matches);
 
   const set = (key) => (e) => setForm({ ...form, [key]: e.target.value });
 
@@ -44,6 +50,7 @@ function MatchFormInner({ match, isNew, matchId }) {
   const ga = form.goals_against === '' ? null : Number(form.goals_against);
   const played = gf != null && ga != null;
   const result = !played ? null : gf > ga ? 'W' : gf < ga ? 'L' : 'D';
+  const canSubmit = form.season.trim() && form.date && form.opponent.trim();
 
   async function submit(e) {
     e.preventDefault();
@@ -91,18 +98,26 @@ function MatchFormInner({ match, isNew, matchId }) {
       <h2>{isNew ? 'Create match' : `Edit match — vs ${match.opponent}`}</h2>
       <form onSubmit={submit}>
         <div className="form-grid">
-          <label className="field">
+          <div className="field">
             <span>Season</span>
-            <input type="text" value={form.season} placeholder="2025/26" required onChange={set('season')} />
-          </label>
+            <SeasonPicker
+              seasons={seasons}
+              value={form.season}
+              onChange={(season) => setForm({ ...form, season })}
+            />
+          </div>
           <label className="field">
             <span>Date</span>
             <input type="date" value={form.date} required onChange={set('date')} />
           </label>
-          <label className="field">
+          <div className="field">
             <span>Opponent</span>
-            <input type="text" value={form.opponent} required onChange={set('opponent')} />
-          </label>
+            <OpponentPicker
+              opponents={opponents}
+              value={form.opponent}
+              onChange={(opponent) => setForm({ ...form, opponent })}
+            />
+          </div>
           <label className="field">
             <span>Competition</span>
             <select value={form.competition} required onChange={set('competition')}>
@@ -146,7 +161,7 @@ function MatchFormInner({ match, isNew, matchId }) {
         </p>
         {error && <div className="notice error">{error}</div>}
         <div className="form-actions">
-          <button type="submit" disabled={busy}>
+          <button type="submit" disabled={busy || !canSubmit}>
             {isNew ? 'Create & pick lineup' : 'Save & go to lineup'}
           </button>
           <Link className="btn secondary" to="/admin/matches">Back</Link>

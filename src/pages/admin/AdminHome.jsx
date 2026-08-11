@@ -1,17 +1,22 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useData } from '../../context/DataContext';
 import { formatDate, isPlayed } from '../../lib/stats';
+import WalkoverForm from './WalkoverForm';
 
 /**
  * Opens with what's outstanding, not with navigation. A match saved without a
  * lineup is broken data — no player gets credit for it — so the site nags
- * about it. A missing report is just optional colour and never nags.
+ * about it. A missing report is just optional colour and never nags. A
+ * walkover is the one case with no lineup by design, so it's excluded from
+ * that nag rather than satisfying it.
  */
 export default function AdminHome() {
   const { players, matches, appearances } = useData();
+  const [showWalkover, setShowWalkover] = useState(false);
 
   const withLineup = new Set(appearances.map((a) => a.match_id));
-  const needLineup = matches.filter((m) => isPlayed(m) && !withLineup.has(m.id));
+  const needLineup = matches.filter((m) => isPlayed(m) && !m.walkover && !withLineup.has(m.id));
 
   return (
     <div className="section">
@@ -22,8 +27,20 @@ export default function AdminHome() {
             Score, squad, scorers, done — four steps, built for a phone.
           </p>
         </div>
-        <Link className="btn" to="/admin/new-result">Add result</Link>
+        <div className="controls" style={{ marginBottom: 0 }}>
+          <button type="button" className="secondary" onClick={() => setShowWalkover((v) => !v)}>
+            Walkover
+          </button>
+          <Link className="btn" to="/admin/new-result">Add result</Link>
+        </div>
       </div>
+
+      {showWalkover && (
+        <WalkoverForm
+          onDone={() => setShowWalkover(false)}
+          onCancel={() => setShowWalkover(false)}
+        />
+      )}
 
       {needLineup.length > 0 && (
         <div className="card section">

@@ -37,6 +37,7 @@ export default function MatchesAdmin() {
                   <>
                     <span className={`result-pill ${resultOf(m)}`}>{resultOf(m)}</span>{' '}
                     {m.goals_for}–{m.goals_against}
+                    {m.walkover && <> <span className="tag">walkover</span></>}
                   </>
                 ) : (
                   <span className="tag orange">fixture</span>
@@ -47,7 +48,7 @@ export default function MatchesAdmin() {
               label: 'Lineup',
               num: true,
               sortValue: (m) => appCount.get(m.id) ?? 0,
-              render: (m) => `${appCount.get(m.id) ?? 0} players`,
+              render: (m) => (m.walkover ? '— (walkover)' : `${appCount.get(m.id) ?? 0} players`),
             },
             {
               key: 'actions',
