@@ -1,0 +1,1093 @@
+diff --git a/src/App.jsx b/src/App.jsx
+index 27a2665..276863d 100644
+--- a/src/App.jsx
++++ b/src/App.jsx
+@@ -4,6 +4,7 @@ import { AuthProvider } from './context/AuthContext';
+ import { DataProvider } from './context/DataContext';
+ import Layout from './components/Layout';
+ import { Spinner } from './components/bits';
++import Home from './pages/Home';
+ import Matchday from './pages/Matchday';
+ import Season from './pages/Season';
+ import PlayersHub from './pages/PlayersHub';
+@@ -34,7 +35,8 @@ export default function App() {
+           <Suspense fallback={<Spinner />}>
+             <Routes>
+               <Route element={<Layout />}>
+-                <Route index element={<Matchday />} />
++                <Route index element={<Home />} />
++                <Route path="matchday" element={<Matchday />} />
+                 <Route path="season" element={<Season />} />
+                 <Route path="players" element={<PlayersHub />} />
+                 <Route path="players/:playerId" element={<PlayerDetail />} />
+diff --git a/src/components/Layout.jsx b/src/components/Layout.jsx
+index 27d1b30..2fb0749 100644
+--- a/src/components/Layout.jsx
++++ b/src/components/Layout.jsx
+@@ -2,11 +2,13 @@ import { useState } from 'react';
+ import { NavLink, Outlet, useLocation } from 'react-router-dom';
+ import { useAuth } from '../context/AuthContext';
+ 
+-// Four destinations. Anything narrower than an idea of its own lives inside
+-// one of these rather than in the nav — see the leader-board chips on
++// Home is the front door — a dashboard of the season at a glance — and the
++// four sections behind it. Anything narrower than an idea of its own lives
++// inside one of these rather than in the nav — see the leader-board chips on
+ // Matchday, or the Simple/Full toggle on Players.
+ const NAV = [
+-  { to: '/', label: 'Matchday', end: true },
++  { to: '/', label: 'Home', end: true },
++  { to: '/matchday', label: 'Matchday' },
+   { to: '/season', label: 'Season' },
+   { to: '/players', label: 'Players' },
+   { to: '/history', label: 'History' },
+@@ -28,6 +30,13 @@ function Crest() {
+ // Simple line icons so the bottom bar reads at 16px without colour emoji.
+ const ICONS = {
+   '/': (
++    <svg viewBox="0 0 16 16" aria-hidden="true">
++      <path d="M2.4 7.6 8 2.8l5.6 4.8" />
++      <path d="M3.9 6.9v5.6a.7.7 0 0 0 .7.7h6.8a.7.7 0 0 0 .7-.7V6.9" />
++      <path d="M6.6 13.2V9.6h2.8v3.6" />
++    </svg>
++  ),
++  '/matchday': (
+     <svg viewBox="0 0 16 16" aria-hidden="true">
+       <circle cx="8" cy="8" r="6" />
+       <path d="M8 4.6 5.2 6.7l1.1 3.3h3.4l1.1-3.3z" />
+diff --git a/src/components/LeagueTable.jsx b/src/components/LeagueTable.jsx
+new file mode 100644
+index 0000000..db88f69
+--- /dev/null
++++ b/src/components/LeagueTable.jsx
+@@ -0,0 +1,121 @@
++/**
++ * League table widget.
++ *
++ * Deliberately unwired. Every other stat on this site is derived from the
++ * club's own three tables, but a league table needs *other* clubs' results —
++ * a data source that doesn't exist yet (a `league_rows` table, a scrape, or a
++ * hand-maintained standings entry screen; that call hasn't been made).
++ *
++ * So the whole widget is finished apart from where the numbers come from: pass
++ * `rows` and it renders the real table, pass nothing and it renders the
++ * placeholder below. Wiring it up later is a data job, not a build job — no
++ * markup or styling work is waiting on that decision.
++ *
++ * Expected row shape (goal difference is derived here, never stored):
++ *
++ *   {
++ *     position: 3,
++ *     club: 'Old Wellingtonians FC',
++ *     played: 18, won: 11, drawn: 4, lost: 3,
++ *     goalsFor: 34, goalsAgainst: 15,
++ *     points: 37,
++ *     isUs: true,                     // optional — highlights our own row
++ *     form: ['W', 'W', 'D', 'L', 'W'] // optional — oldest first, max 5 shown
++ *   }
++ *
++ * Rows are rendered in the order given; sort before passing them in.
++ */
++export default function LeagueTable({ rows = [], season }) {
++  return (
++    <section className="card home-widget home-table">
++      <div className="home-widget-head">
++        <div>
++          <span className="home-eyebrow">Standings</span>
++          <h2>League table</h2>
++        </div>
++        {season && <span className="muted home-widget-note">{season}</span>}
++      </div>
++
++      {rows.length === 0 ? (
++        <LeagueTablePlaceholder />
++      ) : (
++        <div className="table-wrap">
++          <table className="data league-table">
++            <thead>
++              <tr>
++                <th className="lt-pos">#</th>
++                <th>Club</th>
++                <th className="num">P</th>
++                <th className="num">W</th>
++                <th className="num">D</th>
++                <th className="num">L</th>
++                <th className="num">GF</th>
++                <th className="num">GA</th>
++                <th className="num">GD</th>
++                <th className="num">Pts</th>
++              </tr>
++            </thead>
++            <tbody>
++              {rows.map((r) => {
++                const gd = r.goalsFor - r.goalsAgainst;
++                return (
++                  <tr key={r.club} className={r.isUs ? 'lt-us' : undefined}>
++                    <td className="lt-pos">{r.position}</td>
++                    <td className="lt-club">
++                      {r.club}
++                      {r.form?.length > 0 && (
++                        <span className="lt-form">
++                          {r.form.slice(-5).map((result, i) => (
++                            <i
++                              key={`${result}-${i}`}
++                              className={`lt-dot ${result}`}
++                              title={result}
++                            />
++                          ))}
++                        </span>
++                      )}
++                    </td>
++                    <td className="num">{r.played}</td>
++                    <td className="num">{r.won}</td>
++                    <td className="num">{r.drawn}</td>
++                    <td className="num">{r.lost}</td>
++                    <td className="num">{r.goalsFor}</td>
++                    <td className="num">{r.goalsAgainst}</td>
++                    <td className="num lt-gd">{gd > 0 ? `+${gd}` : gd}</td>
++                    <td className="num lt-pts">{r.points}</td>
++                  </tr>
++                );
++              })}
++            </tbody>
++          </table>
++        </div>
++      )}
++    </section>
++  );
++}
++
++/** Shown until a standings data source exists. Says what's missing and why,
++ *  rather than a bare "coming soon" that reads like a broken page. */
++function LeagueTablePlaceholder() {
++  return (
++    <div className="lt-placeholder">
++      {/* Roughly a division's worth of rows, so the widget reserves the height
++          a real table will need and the page doesn't reflow when it lands. */}
++      <div className="lt-placeholder-art" aria-hidden="true">
++        {[72, 84, 58, 47, 66, 39, 52, 30].map((w, i) => (
++          <span key={w} className={`lt-ghost-row${i === 2 ? ' lt-ghost-us' : ''}`}>
++            <i className="lt-ghost-pos" />
++            <i className="lt-ghost-bar" style={{ width: `${w}%` }} />
++            <i className="lt-ghost-pts" />
++          </span>
++        ))}
++      </div>
++      <p className="lt-placeholder-title">Standings aren’t connected yet</p>
++      <p className="muted lt-placeholder-copy">
++        Every other stat here comes from our own results. A league table also needs
++        the other clubs’ results, so it needs a data source of its own before it can
++        go live.
++      </p>
++    </div>
++  );
++}
+diff --git a/src/pages/Home.jsx b/src/pages/Home.jsx
+new file mode 100644
+index 0000000..33d3f1c
+--- /dev/null
++++ b/src/pages/Home.jsx
+@@ -0,0 +1,329 @@
++import { useMemo } from 'react';
++import { Link } from 'react-router-dom';
++import { useData } from '../context/DataContext';
++import { ErrorNote, FormBadges, Spinner, VenueBadge } from '../components/bits';
++import LeagueTable from '../components/LeagueTable';
++import {
++  countdownLabel,
++  fixtures,
++  formatDate,
++  formOf,
++  isPlayed,
++  playerTotals,
++  resultOf,
++  seasonsOf,
++  seasonSummary,
++  seasonTrend,
++  slugify,
++} from '../lib/stats';
++
++// The four public sections. Admin is reachable from the top bar only — it's
++// not a destination a visitor is browsing toward, so it stays off the
++// dashboard.
++const SECTIONS = [
++  { to: '/matchday', label: 'Matchday', blurb: 'Latest result, form and the next fixture' },
++  { to: '/season', label: 'Season', blurb: 'Results, tables and season charts' },
++  { to: '/players', label: 'Players', blurb: 'Squad profiles and leaderboards' },
++  { to: '/history', label: 'History', blurb: 'Past seasons, records and honours' },
++];
++
++const SECTION_ICONS = {
++  '/matchday': (
++    <svg viewBox="0 0 16 16" aria-hidden="true">
++      <circle cx="8" cy="8" r="6" />
++      <path d="M8 4.6 5.2 6.7l1.1 3.3h3.4l1.1-3.3z" />
++    </svg>
++  ),
++  '/season': (
++    <svg viewBox="0 0 16 16" aria-hidden="true">
++      <rect x="2.5" y="3.5" width="11" height="10" rx="1.5" />
++      <path d="M2.5 6.6h11M5.6 2.1v2.6M10.4 2.1v2.6" />
++    </svg>
++  ),
++  '/players': (
++    <svg viewBox="0 0 16 16" aria-hidden="true">
++      <circle cx="6.2" cy="6" r="2.2" />
++      <path d="M2.4 13.1c0-2.1 1.7-3.5 3.8-3.5s3.8 1.4 3.8 3.5" />
++      <circle cx="11.7" cy="6.7" r="1.7" />
++      <path d="M11.2 9.8c1.7-.1 3.1 1.1 3.1 3.3" />
++    </svg>
++  ),
++  '/history': (
++    <svg viewBox="0 0 16 16" aria-hidden="true">
++      <path d="M5.2 2.6h5.6v3.1a2.8 2.8 0 0 1-5.6 0z" />
++      <path d="M5.2 3.7H3.3c0 1.8.8 2.6 1.9 2.8M10.8 3.7h1.9c0 1.8-.8 2.6-1.9 2.8M8 8.6v2.3M5.9 13.4h4.2l-.5-2.5H6.4z" />
++    </svg>
++  ),
++};
++
++function initials(name) {
++  return name.split(' ').map((w) => w[0]).slice(0, 2).join('');
++}
++
++/** Cumulative-points sparkline. Two points is a line segment, not a trend, so
++ *  it draws nothing below three games rather than implying a shape. */
++function Sparkline({ values, stroke }) {
++  if (values.length < 3) return null;
++  const max = Math.max(...values);
++  const min = Math.min(...values);
++  const span = max - min || 1;
++  const step = 100 / (values.length - 1);
++  const points = values
++    .map((v, i) => `${(i * step).toFixed(2)},${(26 - ((v - min) / span) * 22).toFixed(2)}`)
++    .join(' ');
++  return (
++    <svg className="home-spark" viewBox="0 0 100 28" preserveAspectRatio="none" aria-hidden="true">
++      <polyline
++        points={points}
++        fill="none"
++        stroke={stroke}
++        strokeWidth="1.6"
++        strokeLinecap="round"
++        strokeLinejoin="round"
++        vectorEffect="non-scaling-stroke"
++      />
++    </svg>
++  );
++}
++
++export default function Home() {
++  const { players, matches, appearances, loading, error } = useData();
++
++  const view = useMemo(() => {
++    const currentSeason = seasonsOf(matches)[0];
++    const seasonMatches = currentSeason
++      ? matches.filter((m) => m.season === currentSeason)
++      : [];
++    // Golden boot is the *current season's* race, not a career table — the
++    // all-time list already lives on Players.
++    const seasonTotals = playerTotals(players, seasonMatches, appearances)
++      .filter((r) => r.goals > 0)
++      .sort((a, b) => b.goals - a.goals || a.player.name.localeCompare(b.player.name));
++    const topGoals = seasonTotals[0]?.goals ?? 0;
++    return {
++      currentSeason,
++      seasonMatches,
++      summary: seasonSummary(seasonMatches),
++      form: formOf(seasonMatches),
++      next: fixtures(matches)[0],
++      trend: seasonTrend(seasonMatches),
++      topScorer: seasonTotals[0] ?? null,
++      jointTop: seasonTotals.filter((r) => r.goals === topGoals).length,
++      cleanSheets: seasonMatches.filter((m) => isPlayed(m) && m.goals_against === 0).length,
++    };
++  }, [players, matches, appearances]);
++
++  if (loading) return <Spinner />;
++  if (error) return <ErrorNote message={error} />;
++
++  if (matches.length === 0 && players.length === 0) {
++    return (
++      <div className="empty card">
++        <h1>Old Wellingtonians FC</h1>
++        <p>No data yet. Once the first players and matches are entered, stats will appear here.</p>
++      </div>
++    );
++  }
++
++  const {
++    currentSeason, summary, form, next, trend, topScorer, jointTop, cleanSheets,
++  } = view;
++  const points = summary.won * 3 + summary.drawn;
++  const goalDifference = summary.goalsFor - summary.goalsAgainst;
++  const winRate = summary.played ? Math.round((summary.won / summary.played) * 100) : null;
++  const goalScale = Math.max(summary.goalsFor, summary.goalsAgainst, 1);
++  const countdown = next ? countdownLabel(next.date) : null;
++
++  return (
++    <div className="home">
++      <div className="home-head">
++        <h1>Old Wellingtonians FC</h1>
++        {currentSeason && <span className="home-season">Season {currentSeason}</span>}
++      </div>
++
++      <div className="home-kpis">
++        <div className="home-kpi">
++          <span className="k-label">Points</span>
++          <span className="k-value">{points}</span>
++          <span className="k-sub">{summary.played} played</span>
++        </div>
++        <div className="home-kpi">
++          <span className="k-label">Record</span>
++          <span className="k-value">{summary.won}-{summary.drawn}-{summary.lost}</span>
++          <span className="k-sub">W-D-L</span>
++        </div>
++        <div className="home-kpi blue">
++          <span className="k-label">Goal difference</span>
++          <span className="k-value">{goalDifference > 0 ? `+${goalDifference}` : goalDifference}</span>
++          <span className="k-sub">{summary.goalsFor} for · {summary.goalsAgainst} against</span>
++        </div>
++        <div className="home-kpi">
++          <span className="k-label">Next match</span>
++          <span className="k-value">{next ? formatDate(next.date).replace(/ \d{4}$/, '') : '—'}</span>
++          <span className="k-sub">{next ? next.opponent : 'Nothing scheduled'}</span>
++        </div>
++      </div>
++
++      <div className="home-grid">
++        <div className="home-col">
++          <LeagueTable season={currentSeason} />
++
++          <section className="card home-widget home-scorer">
++            <div className="home-widget-head">
++              <div>
++                <span className="home-eyebrow">Golden boot</span>
++                <h2>Top scorer{currentSeason ? ` — ${currentSeason}` : ''}</h2>
++              </div>
++              <Link className="more" to="/players">All players →</Link>
++            </div>
++            {topScorer ? (
++              <>
++                <div className="scorer-row">
++                  <span className="scorer-avatar">{initials(topScorer.player.name)}</span>
++                  <span className="scorer-who">
++                    <Link to={`/players/${topScorer.player.id}`} className="scorer-name">
++                      {topScorer.player.name}
++                    </Link>
++                    <span className="muted">
++                      {topScorer.appearances} app{topScorer.appearances === 1 ? '' : 's'}
++                      {topScorer.assists > 0 && ` · ${topScorer.assists} assist${topScorer.assists === 1 ? '' : 's'}`}
++                    </span>
++                  </span>
++                  <span className="scorer-tally">
++                    <b>{topScorer.goals}</b>
++                    <em>goals</em>
++                  </span>
++                </div>
++                <p className="muted scorer-foot">
++                  {jointTop > 1
++                    ? `Joint top with ${jointTop - 1} other${jointTop > 2 ? 's' : ''} this season`
++                    : `Leading the club this season`}
++                </p>
++              </>
++            ) : (
++              <div className="empty">No goals scored yet this season.</div>
++            )}
++          </section>
++        </div>
++
++        <div className="home-col">
++          <section className="card home-widget home-next">
++            <div className="home-widget-head">
++              <div>
++                <span className="home-eyebrow">Upcoming</span>
++                <h2>Next fixture</h2>
++              </div>
++            </div>
++            {next ? (
++              <>
++                <div className="fixture-teams">
++                  <span className="fixture-side">
++                    <span className="fixture-badge us">OW</span>
++                    <span className="fixture-team">Old Wellingtonians</span>
++                  </span>
++                  <span className="fixture-vs">v</span>
++                  <span className="fixture-side">
++                    <span className="fixture-badge them">{initials(next.opponent)}</span>
++                    <Link to={`/opponents/${slugify(next.opponent)}`} className="fixture-team">
++                      {next.opponent}
++                    </Link>
++                  </span>
++                </div>
++                <div className="fixture-meta">
++                  <span><strong>{formatDate(next.date)}</strong></span>
++                  <span>{next.competition} <VenueBadge venue={next.venue} /></span>
++                </div>
++                {countdown && <span className="fixture-countdown">{countdown}</span>}
++              </>
++            ) : (
++              <div className="empty">No fixture scheduled.</div>
++            )}
++          </section>
++
++          <section className="card home-widget home-form">
++            <div className="home-widget-head">
++              <div>
++                <span className="home-eyebrow">Momentum</span>
++                <h2>Recent form</h2>
++              </div>
++            </div>
++            <FormBadges matches={[...form].reverse()} />
++            {form.length > 0 && (
++              <ul className="home-form-list">
++                {form.map((m) => (
++                  <li key={m.id}>
++                    <Link to={`/matches/${m.id}`}>
++                      vs {m.opponent} <VenueBadge venue={m.venue} />
++                    </Link>
++                    <strong>
++                      {m.goals_for}–{m.goals_against}{' '}
++                      <span className={`result-pill ${resultOf(m)}`}>{resultOf(m)}</span>
++                    </strong>
++                  </li>
++                ))}
++              </ul>
++            )}
++            <Sparkline values={trend.map((t) => t.points)} stroke="#5ba3c9" />
++            {trend.length >= 3 && (
++              <p className="muted home-spark-note">Points accumulated across the season</p>
++            )}
++          </section>
++        </div>
++      </div>
++
++      <section className="card home-widget home-stats">
++        <div className="home-widget-head">
++          <div>
++            <span className="home-eyebrow">Overview</span>
++            <h2>Season stats</h2>
++          </div>
++          <Link className="more" to="/season">Full season →</Link>
++        </div>
++        <div className="home-stats-body">
++          <div className="home-stat-tiles">
++            <div className="home-stat-tile">
++              <b>{summary.played}</b>
++              <em>Played</em>
++            </div>
++            <div className="home-stat-tile">
++              <b>{cleanSheets}</b>
++              <em>Clean sheets</em>
++            </div>
++            <div className="home-stat-tile">
++              <b>{winRate === null ? '—' : `${winRate}%`}</b>
++              <em>Win rate</em>
++            </div>
++          </div>
++          <div className="home-bars">
++            <div className="home-bar">
++              <span className="home-bar-label">Goals for</span>
++              <span className="home-bar-track">
++                <i className="home-bar-fill gf" style={{ width: `${(summary.goalsFor / goalScale) * 100}%` }} />
++              </span>
++              <span className="home-bar-value">{summary.goalsFor}</span>
++            </div>
++            <div className="home-bar">
++              <span className="home-bar-label">Against</span>
++              <span className="home-bar-track">
++                <i className="home-bar-fill ga" style={{ width: `${(summary.goalsAgainst / goalScale) * 100}%` }} />
++              </span>
++              <span className="home-bar-value">{summary.goalsAgainst}</span>
++            </div>
++          </div>
++        </div>
++      </section>
++
++      <section className="home-sections">
++        {SECTIONS.map((s) => (
++          <Link key={s.to} to={s.to} className="card home-section-card">
++            <span className="home-section-icon">{SECTION_ICONS[s.to]}</span>
++            <span className="home-section-text">
++              <strong>{s.label}</strong>
++              <span className="muted">{s.blurb}</span>
++            </span>
++          </Link>
++        ))}
++      </section>
++    </div>
++  );
++}
+diff --git a/src/styles.css b/src/styles.css
+index 0e1575f..b865fa6 100644
+--- a/src/styles.css
++++ b/src/styles.css
+@@ -1615,18 +1615,21 @@ dl.compare dd { margin: 0.1rem 0 0; font-size: 0.92rem; }
+     bottom: 0;
+     z-index: 40;
+     display: grid;
+-    grid-template-columns: repeat(4, 1fr);
++    /* Five tabs now Home leads the set — tighter type so "Matchday" still
++       fits on one line at 320px. */
++    grid-template-columns: repeat(5, 1fr);
+     background: var(--black);
+     border-top: 2px solid var(--gold);
+     padding-bottom: env(safe-area-inset-bottom, 0);
+   }
+ 
+   .tab-bar a {
+-    padding: 0.45rem 0.2rem 0.55rem;
++    padding: 0.45rem 0.1rem 0.55rem;
+     text-align: center;
+     color: #8e8b83;
+-    font-size: 0.62rem;
++    font-size: 0.58rem;
+     font-weight: 700;
++    letter-spacing: -0.01em;
+   }
+ 
+   .tab-bar a.active { color: var(--gold); }
+@@ -2112,3 +2115,544 @@ button.secondary.active, .btn.secondary.active {
+   .grid.player-split { grid-template-columns: 1fr; }
+   .season-card .sc-row { gap: 0.8rem; }
+ }
++
++/* ---- home dashboard ---------------------------------------------------- */
++
++.home-head {
++  display: flex;
++  align-items: baseline;
++  justify-content: space-between;
++  gap: 1rem;
++  flex-wrap: wrap;
++  margin-bottom: 1.2rem;
++}
++
++.home-head h1 { margin-bottom: 0; }
++
++.home-season {
++  font-size: 0.78rem;
++  font-weight: 800;
++  letter-spacing: 0.1em;
++  text-transform: uppercase;
++  color: var(--ink-soft);
++}
++
++/* KPI strip: the four numbers that answer "how's the season going" without
++   scrolling. Dark, like the match hero, so the cards below read as detail. */
++.home-kpis {
++  display: grid;
++  grid-template-columns: repeat(4, 1fr);
++  gap: 1rem;
++  margin-bottom: 1.1rem;
++}
++
++.home-kpi {
++  background: var(--black);
++  border-radius: var(--radius);
++  padding: 0.95rem 1.1rem 0.85rem;
++  border-bottom: 3px solid var(--gold);
++  min-width: 0;
++}
++
++.home-kpi.blue { border-bottom-color: var(--blue); }
++
++.home-kpi .k-label {
++  display: block;
++  font-size: 0.62rem;
++  font-weight: 800;
++  letter-spacing: 0.11em;
++  text-transform: uppercase;
++  color: #8e8b83;
++}
++
++.home-kpi .k-value {
++  display: block;
++  margin-top: 0.3rem;
++  font-size: 1.7rem;
++  font-weight: 800;
++  line-height: 1.05;
++  letter-spacing: -0.02em;
++  color: #fff;
++  font-variant-numeric: tabular-nums;
++}
++
++.home-kpi .k-sub {
++  display: block;
++  margin-top: 0.2rem;
++  font-size: 0.72rem;
++  font-weight: 600;
++  color: #9a978e;
++  overflow: hidden;
++  text-overflow: ellipsis;
++  white-space: nowrap;
++}
++
++/* Two independent stacks rather than one grid with shared rows: a short
++   widget beside a tall one would otherwise leave a dead gap under it until
++   the next row started. */
++.home-grid {
++  display: grid;
++  grid-template-columns: 1.7fr 1fr;
++  gap: 1rem;
++  align-items: start;
++}
++
++.home-col {
++  display: flex;
++  flex-direction: column;
++  gap: 1rem;
++  min-width: 0;
++}
++
++/* Grid items default to min-width:auto, so a wide table inside one would push
++   the whole track past the viewport and .table-wrap's overflow never engages. */
++.home-grid > * { min-width: 0; }
++
++.home-widget { padding: 1.05rem 1.15rem 1.2rem; }
++
++.home-widget-head {
++  display: flex;
++  align-items: baseline;
++  justify-content: space-between;
++  gap: 0.8rem;
++  margin-bottom: 0.85rem;
++}
++
++.home-widget-head h2 { font-size: 1.02rem; margin: 0; }
++
++.home-eyebrow {
++  display: block;
++  font-size: 0.62rem;
++  font-weight: 800;
++  letter-spacing: 0.14em;
++  text-transform: uppercase;
++  color: #2d6f96;
++  margin-bottom: 0.15rem;
++}
++
++.home-widget-note { font-size: 0.78rem; white-space: nowrap; }
++
++.home-widget .more {
++  font-size: 0.78rem;
++  font-weight: 700;
++  color: var(--gold-deep);
++  white-space: nowrap;
++}
++
++.home-widget .more:hover { text-decoration: underline; }
++
++/* ---- league table widget ---- */
++
++table.data.league-table td.lt-pos,
++table.data.league-table th.lt-pos {
++  text-align: center;
++  font-weight: 800;
++  color: var(--ink-soft);
++  width: 2rem;
++}
++
++table.data.league-table td.lt-club { font-weight: 700; }
++table.data.league-table td.lt-pts { font-weight: 800; color: var(--black); }
++table.data.league-table td.lt-gd { color: var(--ink-soft); }
++
++table.data.league-table tr.lt-us { background: rgba(227, 180, 33, 0.1); }
++table.data.league-table tr.lt-us td.lt-pos { color: var(--gold-deep); }
++table.data.league-table tr.lt-us:hover { background: rgba(227, 180, 33, 0.14); }
++
++.lt-form { display: inline-flex; gap: 3px; margin-left: 0.5rem; vertical-align: middle; }
++
++.lt-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
++.lt-dot.W { background: var(--green); }
++.lt-dot.D { background: #a3a6ad; }
++.lt-dot.L { background: var(--red); }
++
++/* Placeholder until a standings source exists. The ghost rows show the shape
++   the widget will take, so the space doesn't read as a rendering failure. */
++.lt-placeholder { text-align: center; padding: 0.4rem 0 0.2rem; }
++
++.lt-placeholder-art {
++  display: flex;
++  flex-direction: column;
++  gap: 0.45rem;
++  margin-bottom: 1rem;
++}
++
++.lt-ghost-row {
++  display: flex;
++  align-items: center;
++  gap: 0.6rem;
++  padding: 0.3rem 0.5rem;
++  border-radius: 7px;
++}
++
++.lt-ghost-row.lt-ghost-us { background: rgba(227, 180, 33, 0.13); }
++
++.lt-ghost-pos {
++  width: 14px;
++  height: 8px;
++  border-radius: 3px;
++  background: #e0ddd3;
++  flex: none;
++}
++
++.lt-ghost-bar {
++  height: 8px;
++  border-radius: 4px;
++  background: #e9e6dc;
++}
++
++.lt-ghost-row.lt-ghost-us .lt-ghost-bar { background: rgba(184, 134, 11, 0.35); }
++
++.lt-ghost-pts {
++  width: 20px;
++  height: 8px;
++  border-radius: 3px;
++  background: #e0ddd3;
++  margin-left: auto;
++  flex: none;
++}
++
++.lt-placeholder-title {
++  font-weight: 800;
++  color: var(--black);
++  margin: 0 0 0.25rem;
++}
++
++.lt-placeholder-copy { max-width: 46ch; margin: 0 auto; }
++
++/* ---- next fixture widget ---- */
++
++.fixture-teams {
++  display: flex;
++  align-items: flex-start;
++  justify-content: space-between;
++  gap: 0.5rem;
++}
++
++.fixture-side {
++  display: flex;
++  flex-direction: column;
++  align-items: center;
++  gap: 0.45rem;
++  flex: 1;
++  min-width: 0;
++}
++
++.fixture-badge {
++  width: 44px;
++  height: 44px;
++  border-radius: 50%;
++  display: grid;
++  place-items: center;
++  font-weight: 800;
++  font-size: 0.78rem;
++  flex: none;
++}
++
++.fixture-badge.us { background: var(--gold); color: var(--black); }
++.fixture-badge.them { background: #2a2d34; color: #cfccc2; }
++
++.fixture-team {
++  font-size: 0.8rem;
++  font-weight: 700;
++  text-align: center;
++  line-height: 1.3;
++}
++
++a.fixture-team:hover { color: var(--gold-deep); }
++
++.fixture-vs {
++  font-size: 0.72rem;
++  font-weight: 800;
++  color: var(--ink-soft);
++  text-transform: uppercase;
++  letter-spacing: 0.06em;
++  padding-top: 1rem;
++}
++
++.fixture-meta {
++  margin-top: 0.9rem;
++  padding-top: 0.75rem;
++  border-top: 1px solid var(--line);
++  display: flex;
++  flex-wrap: wrap;
++  gap: 0.25rem 1rem;
++  font-size: 0.82rem;
++  color: var(--ink-soft);
++}
++
++.fixture-meta strong { color: var(--ink); }
++
++.fixture-countdown {
++  display: inline-block;
++  margin-top: 0.7rem;
++  padding: 0.25rem 0.65rem;
++  border-radius: 999px;
++  background: rgba(91, 163, 201, 0.16);
++  color: #2d6f96;
++  font-size: 0.74rem;
++  font-weight: 800;
++}
++
++/* ---- recent form widget ---- */
++
++.home-form-list {
++  list-style: none;
++  margin: 0.9rem 0 0;
++  padding: 0;
++  font-size: 0.85rem;
++}
++
++.home-form-list li {
++  display: flex;
++  align-items: center;
++  justify-content: space-between;
++  gap: 0.7rem;
++  padding: 0.35rem 0;
++  border-bottom: 1px solid var(--line);
++}
++
++.home-form-list li:last-child { border-bottom: none; }
++.home-form-list a { font-weight: 600; min-width: 0; }
++.home-form-list a:hover { color: var(--gold-deep); }
++
++.home-form-list strong {
++  white-space: nowrap;
++  font-variant-numeric: tabular-nums;
++}
++
++.home-spark {
++  display: block;
++  width: 100%;
++  height: 40px;
++  margin-top: 0.9rem;
++}
++
++.home-spark-note { font-size: 0.72rem; margin: 0.25rem 0 0; }
++
++/* ---- top scorer widget ---- */
++
++.scorer-row { display: flex; align-items: center; gap: 0.85rem; }
++
++.scorer-avatar {
++  width: 48px;
++  height: 48px;
++  border-radius: 50%;
++  background: var(--black);
++  color: var(--gold);
++  display: grid;
++  place-items: center;
++  font-weight: 800;
++  font-size: 0.95rem;
++  flex: none;
++}
++
++.scorer-who { min-width: 0; }
++
++.scorer-name {
++  display: block;
++  font-size: 1.1rem;
++  font-weight: 800;
++  color: var(--black);
++  line-height: 1.25;
++}
++
++.scorer-name:hover { color: var(--gold-deep); }
++.scorer-who .muted { display: block; font-size: 0.8rem; }
++
++.scorer-tally { margin-left: auto; text-align: right; flex: none; }
++
++.scorer-tally b {
++  display: block;
++  font-size: 1.9rem;
++  font-weight: 800;
++  line-height: 1;
++  color: var(--gold-deep);
++  font-variant-numeric: tabular-nums;
++}
++
++.scorer-tally em {
++  font-style: normal;
++  font-size: 0.6rem;
++  font-weight: 800;
++  letter-spacing: 0.1em;
++  text-transform: uppercase;
++  color: var(--ink-soft);
++}
++
++.scorer-foot { margin: 0.7rem 0 0; font-size: 0.8rem; }
++
++/* ---- season stats widget ---- */
++
++.home-stats { margin-top: 1rem; }
++
++.home-stats-body { display: flex; flex-direction: column; gap: 1rem; }
++
++.home-stat-tiles {
++  display: grid;
++  grid-template-columns: repeat(3, 1fr);
++  gap: 0.6rem;
++}
++
++.home-stat-tile {
++  background: #faf9f5;
++  border: 1px solid var(--line);
++  border-radius: 10px;
++  padding: 0.6rem 0.5rem;
++  text-align: center;
++}
++
++.home-stat-tile b {
++  display: block;
++  font-size: 1.3rem;
++  font-weight: 800;
++  line-height: 1;
++  color: var(--black);
++  font-variant-numeric: tabular-nums;
++}
++
++.home-stat-tile em {
++  font-style: normal;
++  display: block;
++  margin-top: 0.3rem;
++  font-size: 0.6rem;
++  font-weight: 700;
++  letter-spacing: 0.07em;
++  text-transform: uppercase;
++  color: var(--ink-soft);
++}
++
++.home-bars { display: flex; flex-direction: column; gap: 0.55rem; }
++
++.home-bar { display: flex; align-items: center; gap: 0.6rem; font-size: 0.82rem; }
++
++.home-bar-label {
++  width: 68px;
++  flex: none;
++  font-weight: 700;
++  color: var(--ink-soft);
++  white-space: nowrap;
++}
++
++.home-bar-track {
++  flex: 1;
++  height: 10px;
++  border-radius: 5px;
++  background: #eceadf;
++  overflow: hidden;
++}
++
++.home-bar-fill {
++  display: block;
++  height: 100%;
++  border-radius: 5px;
++  transition: width 0.4s ease;
++}
++
++.home-bar-fill.gf { background: var(--gold); }
++.home-bar-fill.ga { background: var(--blue); }
++
++.home-bar-value {
++  width: 26px;
++  flex: none;
++  text-align: right;
++  font-weight: 800;
++  color: var(--black);
++  font-variant-numeric: tabular-nums;
++}
++
++@media (prefers-reduced-motion: reduce) {
++  .home-bar-fill { transition: none; }
++}
++
++@media (min-width: 760px) {
++  .home-stats-body { flex-direction: row; align-items: center; gap: 2.2rem; }
++  .home-stat-tiles { flex: none; width: 42%; }
++  .home-bars { flex: 1; }
++}
++
++/* ---- section cards ---- */
++
++.home-sections {
++  display: grid;
++  grid-template-columns: repeat(4, 1fr);
++  gap: 1rem;
++  margin-top: 1rem;
++}
++
++.home-section-card {
++  display: flex;
++  align-items: center;
++  gap: 0.75rem;
++  padding: 0.95rem 1rem;
++  transition: transform 0.12s ease, border-color 0.12s ease;
++}
++
++.home-section-card:hover {
++  transform: translateY(-2px);
++  border-color: var(--gold);
++}
++
++.home-section-icon {
++  width: 38px;
++  height: 38px;
++  border-radius: 10px;
++  flex: none;
++  display: grid;
++  place-items: center;
++  background: rgba(91, 163, 201, 0.16);
++  color: #2d6f96;
++}
++
++.home-section-icon svg {
++  width: 19px;
++  height: 19px;
++  fill: none;
++  stroke: currentColor;
++  stroke-width: 1.3;
++  stroke-linecap: round;
++  stroke-linejoin: round;
++}
++
++.home-section-text { min-width: 0; }
++
++.home-section-text strong {
++  display: block;
++  font-size: 0.95rem;
++  color: var(--black);
++}
++
++.home-section-text .muted { font-size: 0.76rem; line-height: 1.35; }
++
++/* ---- home: narrow layouts ---- */
++
++@media (max-width: 900px) {
++  .home-grid { grid-template-columns: 1fr; }
++
++  /* The wrappers stop being boxes so their widgets become grid items in one
++     column — which is what lets the fixture jump above the table on a phone
++     while the desktop two-stack layout stays intact. */
++  .home-col { display: contents; }
++
++  .home-next { order: 1; }
++  .home-table { order: 2; }
++  .home-form { order: 3; }
++  .home-scorer { order: 4; }
++
++  .home-sections { grid-template-columns: repeat(2, 1fr); }
++}
++
++@media (max-width: 700px) {
++  .home-kpis { grid-template-columns: repeat(2, 1fr); gap: 0.6rem; }
++  .home-kpi { padding: 0.75rem 0.85rem 0.7rem; }
++  .home-kpi .k-value { font-size: 1.4rem; }
++  .home-grid { gap: 0.8rem; }
++  .home-stats { margin-top: 0.8rem; }
++  .home-sections { gap: 0.7rem; margin-top: 0.8rem; }
++  .home-widget { padding: 0.95rem 1rem 1.05rem; }
++  .home-head { margin-bottom: 0.9rem; }
++}
++
++@media (max-width: 420px) {
++  .home-sections { grid-template-columns: 1fr; }
++}

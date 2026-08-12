@@ -4,6 +4,7 @@ import { AuthProvider } from './context/AuthContext';
 import { DataProvider } from './context/DataContext';
 import Layout from './components/Layout';
 import { Spinner } from './components/bits';
+import Home from './pages/Home';
 import Matchday from './pages/Matchday';
 import Season from './pages/Season';
 import PlayersHub from './pages/PlayersHub';
@@ -34,7 +35,8 @@ export default function App() {
           <Suspense fallback={<Spinner />}>
             <Routes>
               <Route element={<Layout />}>
-                <Route index element={<Matchday />} />
+                <Route index element={<Home />} />
+                <Route path="matchday" element={<Matchday />} />
                 <Route path="season" element={<Season />} />
                 <Route path="players" element={<PlayersHub />} />
                 <Route path="players/:playerId" element={<PlayerDetail />} />

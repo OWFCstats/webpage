@@ -2,11 +2,13 @@ import { useState } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
-// Four destinations. Anything narrower than an idea of its own lives inside
-// one of these rather than in the nav — see the leader-board chips on
+// Home is the front door — a dashboard of the season at a glance — and the
+// four sections behind it. Anything narrower than an idea of its own lives
+// inside one of these rather than in the nav — see the leader-board chips on
 // Matchday, or the Simple/Full toggle on Players.
 const NAV = [
-  { to: '/', label: 'Matchday', end: true },
+  { to: '/', label: 'Home', end: true },
+  { to: '/matchday', label: 'Matchday' },
   { to: '/season', label: 'Season' },
   { to: '/players', label: 'Players' },
   { to: '/history', label: 'History' },
@@ -28,6 +30,13 @@ function Crest() {
 // Simple line icons so the bottom bar reads at 16px without colour emoji.
 const ICONS = {
   '/': (
+    <svg viewBox="0 0 16 16" aria-hidden="true">
+      <path d="M2.4 7.6 8 2.8l5.6 4.8" />
+      <path d="M3.9 6.9v5.6a.7.7 0 0 0 .7.7h6.8a.7.7 0 0 0 .7-.7V6.9" />
+      <path d="M6.6 13.2V9.6h2.8v3.6" />
+    </svg>
+  ),
+  '/matchday': (
     <svg viewBox="0 0 16 16" aria-hidden="true">
       <circle cx="8" cy="8" r="6" />
       <path d="M8 4.6 5.2 6.7l1.1 3.3h3.4l1.1-3.3z" />
