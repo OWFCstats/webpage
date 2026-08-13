@@ -9,12 +9,12 @@ import {
   formatDate,
   formOf,
   isPlayed,
+  opponentSlug,
   playerTotals,
   resultOf,
   seasonsOf,
   seasonSummary,
   seasonTrend,
-  slugify,
 } from '../lib/stats';
 
 // The four public sections. Admin is reachable from the top bar only — it's
@@ -87,7 +87,7 @@ function Sparkline({ values, stroke }) {
 }
 
 export default function Home() {
-  const { players, matches, appearances, loading, error } = useData();
+  const { players, matches, appearances, teams, loading, error } = useData();
 
   const view = useMemo(() => {
     const currentSeason = seasonsOf(matches)[0];
@@ -224,7 +224,7 @@ export default function Home() {
                   <span className="fixture-vs">v</span>
                   <span className="fixture-side">
                     <span className="fixture-badge them">{initials(next.opponent)}</span>
-                    <Link to={`/opponents/${slugify(next.opponent)}`} className="fixture-team">
+                    <Link to={`/opponents/${opponentSlug(teams, next)}`} className="fixture-team">
                       {next.opponent}
                     </Link>
                   </span>

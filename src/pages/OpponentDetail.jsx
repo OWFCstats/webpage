@@ -38,9 +38,9 @@ function RecordRow({ label, summary }) {
 
 export default function OpponentDetail() {
   const { name } = useParams();
-  const { matches, loading, error } = useData();
+  const { matches, teams, loading, error } = useData();
 
-  const resolved = useMemo(() => opponentMatches(matches, name), [matches, name]);
+  const resolved = useMemo(() => opponentMatches(matches, teams, name), [matches, teams, name]);
 
   if (loading) return <Spinner />;
   if (error) return <ErrorNote message={error} />;
@@ -52,25 +52,43 @@ export default function OpponentDetail() {
     );
   }
 
-  const { opponent, matches: oppMatches, otherSpellings } = resolved;
+  const { team, matches: oppMatches } = resolved;
   const overall = seasonSummary(oppMatches);
   const { home, away } = venueSummary(oppMatches);
   const streak = currentStreak(oppMatches);
   const meetings = oppMatches.slice().sort((a, b) => (a.date < b.date ? -1 : 1));
   const sentence = streakSentence(streak);
+  const hasPitchDetails = team.pitch_name || team.pitch_address || team.postcode || team.map_url;
 
   return (
     <div>
       <div className="section-head">
-        <h1>{opponent}</h1>
+        <h1>{team.name}</h1>
       </div>
       <p className="muted page-intro">Head-to-head record against {US}.</p>
       {sentence && <p className="muted">{sentence}.</p>}
-      {otherSpellings.length > 0 && (
-        <p className="muted">
-          Some older matches may be recorded under a different spelling ({otherSpellings.join(', ')}) and aren't
-          included below.
-        </p>
+
+      {hasPitchDetails && (
+        <div className="card section">
+          <h2>Pitch</h2>
+          <dl className="compare">
+            {team.pitch_name && (
+              <div><dt>Pitch</dt><dd>{team.pitch_name}</dd></div>
+            )}
+            {team.pitch_address && (
+              <div><dt>Address</dt><dd>{team.pitch_address}</dd></div>
+            )}
+            {team.postcode && (
+              <div><dt>Postcode</dt><dd>{team.postcode}</dd></div>
+            )}
+            {team.map_url && (
+              <div>
+                <dt>Map</dt>
+                <dd><a href={team.map_url} target="_blank" rel="noreferrer">Open in maps →</a></dd>
+              </div>
+            )}
+          </dl>
+        </div>
       )}
 
       <div className="card section">
@@ -114,8 +132,8 @@ export default function OpponentDetail() {
               <tbody>
                 {meetings.map((m) => {
                   const weAreHome = m.venue !== 'A';
-                  const homeTeam = weAreHome ? US : opponent;
-                  const awayTeam = weAreHome ? opponent : US;
+                  const homeTeam = weAreHome ? US : team.name;
+                  const awayTeam = weAreHome ? team.name : US;
                   const homeGoals = weAreHome ? m.goals_for : m.goals_against;
                   const awayGoals = weAreHome ? m.goals_against : m.goals_for;
                   return (

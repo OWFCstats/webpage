@@ -50,10 +50,13 @@ results (W/D/L) are derived from the score when saving a match. A lineup row
 can also be marked "Dropped out (24h)" — those rows are excluded from all
 stats and surface as a separate Dropouts count on the In-Depth page.
 
-`matches.opponent` is still free text, and every public page reads it —
-`teams` (see below) exists alongside it as a proper record per club, linked
-via the nullable `matches.opponent_team_id`, ready for pages to switch over
-to in a later change.
+Every opponent is a proper record in `teams` (see below), linked from
+`matches.opponent_team_id`. `matches.opponent` still holds the same name as
+free text — every write keeps the two in sync — so anything reading the text
+column directly still works, but grouping and the opponent page resolve
+through the team, not the text. A match saved before the teams migration (or
+with a failed backfill) has no `opponent_team_id`; those fall back to the
+free-text name so they still resolve rather than breaking the page.
 
 ## Admin flow
 

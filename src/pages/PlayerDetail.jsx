@@ -6,12 +6,12 @@ import PlayerCareerChart from '../components/PlayerCareerChart';
 import {
   formatDate,
   matchTitle,
+  opponentSlug,
   playerProfile,
   plural,
   rate,
   resultOf,
   seasonsOf,
-  slugify,
 } from '../lib/stats';
 
 function initials(name) {
@@ -168,7 +168,7 @@ function FirstsTable({ firsts }) {
   );
 }
 
-function FormCard({ form, scoringRun, sinceGoal, favouriteOpponent }) {
+function FormCard({ form, scoringRun, sinceGoal, favouriteOpponent, teams }) {
   const scoredIn = form.filter((f) => f.app.goals > 0).length;
   return (
     <div className="card">
@@ -196,7 +196,7 @@ function FormCard({ form, scoringRun, sinceGoal, favouriteOpponent }) {
       {favouriteOpponent && (
         <p className="muted card-foot">
           {favouriteOpponent.goals} goal{favouriteOpponent.goals > 1 ? 's' : ''} in {favouriteOpponent.games} v{' '}
-          <Link to={`/opponents/${slugify(favouriteOpponent.opponent)}`}>{favouriteOpponent.opponent}</Link> — more than
+          <Link to={`/opponents/${opponentSlug(teams, favouriteOpponent)}`}>{favouriteOpponent.opponent}</Link> — more than
           against anyone else.
         </p>
       )}
@@ -423,7 +423,7 @@ function MatchLog({ log, seasons }) {
 
 export default function PlayerDetail() {
   const { playerId } = useParams();
-  const { players, matches, appearances, loading, error } = useData();
+  const { players, matches, appearances, teams, loading, error } = useData();
   const [params, setParams] = useSearchParams();
   const view = params.get('view') === 'stats' ? 'stats' : 'overview';
 
@@ -501,6 +501,7 @@ export default function PlayerDetail() {
               scoringRun={scoringRun}
               sinceGoal={sinceGoal}
               favouriteOpponent={favouriteOpponent}
+              teams={teams}
             />
             <RankCard ranks={ranks} />
             <MatesCard teammates={teammates} />

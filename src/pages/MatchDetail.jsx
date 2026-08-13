@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import { useAuth } from '../context/AuthContext';
 import { ErrorNote, Spinner, VenueBadge } from '../components/bits';
-import { formatDate, isPlayed, matchContext, resultOf, slugify } from '../lib/stats';
+import { formatDate, isPlayed, matchContext, opponentSlug, resultOf } from '../lib/stats';
 
 function initials(name) {
   return name.split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase();
@@ -18,7 +18,7 @@ const nf1 = (v) => (Math.round(v * 10) / 10).toFixed(1);
 
 export default function MatchDetail() {
   const { matchId } = useParams();
-  const { players, matches, appearances, loading, error } = useData();
+  const { players, matches, appearances, teams, loading, error } = useData();
   const { session } = useAuth();
 
   const match = matches.find((m) => m.id === matchId);
@@ -106,7 +106,7 @@ export default function MatchDetail() {
           </div>
           <div className="sb-side them">
             <span className="badge">{opponentInitials(match.opponent)}</span>
-            <Link to={`/opponents/${slugify(match.opponent)}`} className="team">{match.opponent}</Link>
+            <Link to={`/opponents/${opponentSlug(teams, match)}`} className="team">{match.opponent}</Link>
             <span className="sub">{formatDate(match.date)} <VenueBadge venue={match.venue} /></span>
           </div>
         </div>
@@ -167,7 +167,7 @@ export default function MatchDetail() {
                   <div>
                     <dt>
                       Earlier against{' '}
-                      <Link to={`/opponents/${slugify(match.opponent)}`}>{match.opponent}</Link>
+                      <Link to={`/opponents/${opponentSlug(teams, match)}`}>{match.opponent}</Link>
                     </dt>
                     <dd>
                       {priorMeetings.map((m) => (

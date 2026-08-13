@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useData } from '../../context/DataContext';
-import OpponentPicker from '../../components/OpponentPicker';
+import TeamPicker from '../../components/TeamPicker';
 import SeasonPicker from '../../components/SeasonPicker';
-import { opponentsOf, seasonsOf } from '../../lib/stats';
+import { seasonsOf } from '../../lib/stats';
 
 /**
  * A walkover is awarded, not played: no team sheet, no individual scorers.
@@ -13,22 +13,22 @@ import { opponentsOf, seasonsOf } from '../../lib/stats';
  * since the score is a fixed consequence of who won, not a fact to enter.
  */
 export default function WalkoverForm({ onDone, onCancel }) {
-  const { matches, refresh } = useData();
+  const { matches, teams, refresh } = useData();
   const navigate = useNavigate();
   const seasons = seasonsOf(matches);
-  const opponents = opponentsOf(matches);
   const defaultSeason = seasons[0] ?? '';
 
   const [season, setSeason] = useState(defaultSeason);
   const [date, setDate] = useState('');
   const [opponent, setOpponent] = useState('');
+  const [opponentTeamId, setOpponentTeamId] = useState('');
   const [competition, setCompetition] = useState('League');
   const [venue, setVenue] = useState('');
   const [winner, setWinner] = useState(null); // 'us' | 'them'
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
 
-  const ready = (season || defaultSeason).trim() && date && opponent.trim() && winner;
+  const ready = (season || defaultSeason).trim() && date && opponentTeamId && winner;
 
   async function save() {
     setBusy(true);
@@ -39,6 +39,7 @@ export default function WalkoverForm({ onDone, onCancel }) {
       season: (season || defaultSeason).trim(),
       date,
       opponent: opponent.trim(),
+      opponent_team_id: opponentTeamId || null,
       competition: competition.trim() || 'League',
       venue: venue || null,
       goals_for: usGoals,
@@ -77,7 +78,11 @@ export default function WalkoverForm({ onDone, onCancel }) {
         </label>
         <div className="field">
           <span>Opponent</span>
-          <OpponentPicker opponents={opponents} value={opponent} onChange={setOpponent} />
+          <TeamPicker
+            teams={teams}
+            value={opponentTeamId}
+            onChange={(id, name) => { setOpponentTeamId(id); setOpponent(name); }}
+          />
         </div>
         <label className="field">
           <span>Competition</span>
