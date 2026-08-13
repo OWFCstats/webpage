@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+
 /**
  * League table widget.
  *
@@ -23,9 +25,13 @@
  *     form: ['W', 'W', 'D', 'L', 'W'] // optional — oldest first, max 5 shown
  *   }
  *
- * Rows are rendered in the order given; sort before passing them in.
+ * Rows are rendered in the order given; sort before passing them in. When one
+ * row carries isUs, only that row and the two clubs either side of it are
+ * shown — on a phone "where are we" matters more than the top of a 16-team
+ * division.
  */
 export default function LeagueTable({ rows = [], season }) {
+  const shown = aroundUs(rows);
   return (
     <section className="card home-widget home-table">
       <div className="home-widget-head">
@@ -33,10 +39,13 @@ export default function LeagueTable({ rows = [], season }) {
           <span className="home-eyebrow">Standings</span>
           <h2>League table</h2>
         </div>
-        {season && <span className="muted home-widget-note">{season}</span>}
+        <div className="home-widget-head-right">
+          {season && <span className="home-widget-note">{season}</span>}
+          <Link className="more" to="/season">Full standings →</Link>
+        </div>
       </div>
 
-      {rows.length === 0 ? (
+      {shown.length === 0 ? (
         <LeagueTablePlaceholder />
       ) : (
         <div className="table-wrap">
@@ -45,18 +54,16 @@ export default function LeagueTable({ rows = [], season }) {
               <tr>
                 <th className="lt-pos">#</th>
                 <th>Club</th>
-                <th className="num">P</th>
+                <th className="num lt-hide-narrow">P</th>
                 <th className="num">W</th>
-                <th className="num">D</th>
+                <th className="num lt-hide-narrow">D</th>
                 <th className="num">L</th>
-                <th className="num">GF</th>
-                <th className="num">GA</th>
                 <th className="num">GD</th>
                 <th className="num">Pts</th>
               </tr>
             </thead>
             <tbody>
-              {rows.map((r) => {
+              {shown.map((r) => {
                 const gd = r.goalsFor - r.goalsAgainst;
                 return (
                   <tr key={r.club} className={r.isUs ? 'lt-us' : undefined}>
@@ -75,12 +82,10 @@ export default function LeagueTable({ rows = [], season }) {
                         </span>
                       )}
                     </td>
-                    <td className="num">{r.played}</td>
+                    <td className="num lt-hide-narrow">{r.played}</td>
                     <td className="num">{r.won}</td>
-                    <td className="num">{r.drawn}</td>
+                    <td className="num lt-hide-narrow">{r.drawn}</td>
                     <td className="num">{r.lost}</td>
-                    <td className="num">{r.goalsFor}</td>
-                    <td className="num">{r.goalsAgainst}</td>
                     <td className="num lt-gd">{gd > 0 ? `+${gd}` : gd}</td>
                     <td className="num lt-pts">{r.points}</td>
                   </tr>
@@ -94,28 +99,20 @@ export default function LeagueTable({ rows = [], season }) {
   );
 }
 
+/** The isUs row plus up to two neighbours either side. Falls back to the rows
+ *  as given when none is marked isUs. */
+function aroundUs(rows) {
+  const idx = rows.findIndex((r) => r.isUs);
+  if (idx === -1) return rows;
+  return rows.slice(Math.max(0, idx - 2), idx + 3);
+}
+
 /** Shown until a standings data source exists. Says what's missing and why,
- *  rather than a bare "coming soon" that reads like a broken page. */
+ *  in one line rather than a mocked-up table for data that isn't there. */
 function LeagueTablePlaceholder() {
   return (
-    <div className="lt-placeholder">
-      {/* Roughly a division's worth of rows, so the widget reserves the height
-          a real table will need and the page doesn't reflow when it lands. */}
-      <div className="lt-placeholder-art" aria-hidden="true">
-        {[72, 84, 58, 47, 66, 39, 52, 30].map((w, i) => (
-          <span key={w} className={`lt-ghost-row${i === 2 ? ' lt-ghost-us' : ''}`}>
-            <i className="lt-ghost-pos" />
-            <i className="lt-ghost-bar" style={{ width: `${w}%` }} />
-            <i className="lt-ghost-pts" />
-          </span>
-        ))}
-      </div>
-      <p className="lt-placeholder-title">Standings aren’t connected yet</p>
-      <p className="muted lt-placeholder-copy">
-        Every other stat here comes from our own results. A league table also needs
-        the other clubs’ results, so it needs a data source of its own before it can
-        go live.
-      </p>
-    </div>
+    <p className="muted lt-placeholder">
+      Standings aren’t connected yet — a league table needs the other clubs’ results, not just ours.
+    </p>
   );
 }
