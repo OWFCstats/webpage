@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import { ErrorNote, FormBadges, Spinner, StatTile, VenueBadge, VenueFilter } from '../components/bits';
 import BarBoard from '../components/BarBoard';
+import ResultList from '../components/ResultList';
 import {
   countdownLabel,
   fixtures,
@@ -175,23 +176,7 @@ export default function Matchday() {
           <Link className="more" to="/season">Full season →</Link>
         </div>
         <div className="card">
-          <div className="table-wrap">
-            <table className="data">
-              <tbody>
-                {form.map((m) => (
-                  <tr key={m.id}>
-                    <td><span className={`result-pill ${resultOf(m)}`}>{resultOf(m)}</span></td>
-                    <td>{formatDate(m.date)}</td>
-                    <td>
-                      <Link to={`/matches/${m.id}`}>vs {m.opponent}</Link> <VenueBadge venue={m.venue} />
-                    </td>
-                    <td className="num"><strong>{m.goals_for}–{m.goals_against}</strong></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          {form.length === 0 && <div className="empty">No results yet this season.</div>}
+          <ResultList matches={form} emptyText="No results yet this season." />
         </div>
       </div>
     </div>

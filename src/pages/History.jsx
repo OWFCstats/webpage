@@ -1,10 +1,9 @@
 import { useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { useData } from '../context/DataContext';
-import { ErrorNote, Spinner, StatTile, VenueBadge } from '../components/bits';
+import { ErrorNote, Spinner, StatTile } from '../components/bits';
 import BarBoard from '../components/BarBoard';
+import ResultList from '../components/ResultList';
 import {
-  formatDate,
   playedMatches,
   playerTotals,
   seasonsOf,
@@ -112,22 +111,7 @@ function PastSeason({ season, matches, players, appearances }) {
             <BarBoard title="Man of the Match" rows={totals} statKey="motm" accent="#e8772e" limit={5} />
           </div>
           <div className="card section">
-            <div className="table-wrap">
-              <table className="data">
-                <tbody>
-                  {playedMatches(matches).map((m) => (
-                    <tr key={m.id}>
-                      <td>{formatDate(m.date)}</td>
-                      <td>
-                        <Link to={`/matches/${m.id}`}>vs {m.opponent}</Link> <VenueBadge venue={m.venue} />
-                      </td>
-                      <td><span className="tag">{m.competition}</span></td>
-                      <td className="num"><strong>{m.goals_for}–{m.goals_against}</strong></td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <ResultList matches={playedMatches(matches)} emptyText="No results recorded for this season." />
           </div>
         </div>
       )}
