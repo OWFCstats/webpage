@@ -58,6 +58,14 @@ through the team, not the text. A match saved before the teams migration (or
 with a failed backfill) has no `opponent_team_id`; those fall back to the
 free-text name so they still resolve rather than breaking the page.
 
+A fixture's kick-off time (`matches.kickoff_time`) is optional and shown
+wherever it's set. Its venue is derived, not stored: a home match points at
+Old Wellingtonians' own pitch (the `teams` row with `is_club` true), an away
+match at the opponent's, and a neutral or unrecorded venue shows no pitch at
+all. Pitch name, address, postcode and map link all come from `teams` — set
+them once per club on the Teams admin page and every fixture against that
+club picks them up.
+
 ## Admin flow
 
 Log in via the header → **Admin**:
@@ -66,8 +74,9 @@ Log in via the header → **Admin**:
 2. *Teams* — manage every club (Old Wellingtonians included), their pitch
    name/address/postcode and a map link. A team referenced by any match
    can't be deleted until that match no longer points at it.
-3. *Matches → Create match* — season, date, opponent, competition, score
-   (leave the score blank for an upcoming fixture).
+3. *Matches → Create match* — season, date, kick-off time (optional),
+   opponent, competition, score (leave the score blank for an upcoming
+   fixture).
 4. After saving you land on *Lineup & stats* — tick the squad, mark
    starters vs subs, enter goals / assists / cards / MOTM per player.
 5. *Report* — write the match report shown on the public match page.

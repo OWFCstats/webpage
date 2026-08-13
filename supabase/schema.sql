@@ -37,6 +37,9 @@ create table if not exists public.matches (
   id                uuid primary key default gen_random_uuid(),
   season            text not null,
   date              date not null,
+  -- Local (UK) kick-off time. Nullable: most historical rows will never have
+  -- one, and an upcoming fixture can be created before the time is confirmed.
+  kickoff_time      time,
   -- Denormalised name, kept in sync with opponent_team_id on every write so
   -- anything still reading the text column (older rows, exports) keeps
   -- working. opponent_team_id is the source of truth for grouping a club's

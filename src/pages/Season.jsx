@@ -8,12 +8,14 @@ import { useIsNarrow } from '../lib/useIsNarrow';
 import {
   fixtures,
   formatDate,
+  formatKickoff,
   formOf,
   opponentSlug,
   playedMatches,
   resultOf,
   seasonsOf,
   seasonSummary,
+  venueTeam,
 } from '../lib/stats';
 
 // Charts pull in Recharts (~400kB); they stay in their own chunk and load
@@ -94,18 +96,39 @@ export default function Season() {
               <div className="table-wrap">
                 <table className="data">
                   <tbody>
-                    {upcoming.map((m) => (
-                      <tr key={m.id}>
-                        <td>{formatDate(m.date)}</td>
-                        <td>
-                          <strong>
-                            vs <Link to={`/opponents/${opponentSlug(teams, m)}`}>{m.opponent}</Link>
-                          </strong>{' '}
-                          <VenueBadge venue={m.venue} />
-                        </td>
-                        <td><span className="tag orange">{m.competition}</span></td>
-                      </tr>
-                    ))}
+                    {upcoming.map((m) => {
+                      const kickoff = formatKickoff(m.kickoff_time);
+                      const venue = venueTeam(m, teams);
+                      const venueParts = venue
+                        ? [venue.pitch_name, venue.pitch_address, venue.postcode].filter(Boolean)
+                        : [];
+                      return (
+                        <tr key={m.id}>
+                          <td>
+                            {formatDate(m.date)}
+                            {kickoff && <div className="muted">{kickoff}</div>}
+                          </td>
+                          <td>
+                            <strong>
+                              vs <Link to={`/opponents/${opponentSlug(teams, m)}`}>{m.opponent}</Link>
+                            </strong>{' '}
+                            <VenueBadge venue={m.venue} />
+                            {(venueParts.length > 0 || venue?.map_url) && (
+                              <div className="muted fixture-location">
+                                {venueParts.join(', ')}
+                                {venue.map_url && (
+                                  <>
+                                    {venueParts.length > 0 && ' · '}
+                                    <a href={venue.map_url} target="_blank" rel="noreferrer">Map</a>
+                                  </>
+                                )}
+                              </div>
+                            )}
+                          </td>
+                          <td><span className="tag orange">{m.competition}</span></td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>

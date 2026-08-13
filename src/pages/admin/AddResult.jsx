@@ -48,6 +48,7 @@ export default function AddResult() {
   const [form, setForm] = useState(() => ({
     season: '',
     date: '',
+    kickoff_time: '',
     opponent: '',
     opponent_team_id: '',
     competition: 'League',
@@ -114,6 +115,7 @@ export default function AddResult() {
     const payload = {
       season: (form.season || defaultSeason).trim(),
       date: form.date,
+      kickoff_time: form.kickoff_time || null,
       opponent: form.opponent.trim(),
       opponent_team_id: form.opponent_team_id || null,
       competition: form.competition.trim() || 'League',
@@ -204,6 +206,11 @@ export default function AddResult() {
               <span>Date</span>
               <input type="date" value={form.date} required
                 onChange={(e) => setForm({ ...form, date: e.target.value })} />
+            </label>
+            <label className="field">
+              <span>Kick-off (optional)</span>
+              <input type="time" value={form.kickoff_time}
+                onChange={(e) => setForm({ ...form, kickoff_time: e.target.value })} />
             </label>
             <div className="field">
               <span>Opponent</span>

@@ -329,6 +329,34 @@ export function matchTitle(match) {
   return v ? `${match.opponent} ${v}` : match.opponent;
 }
 
+/**
+ * The team whose pitch a fixture is played at: our own record for a home
+ * game, the opponent's for an away game. A neutral or unrecorded venue, or a
+ * team that isn't in `teams` (a pre-migration row with no matching team),
+ * returns null rather than guessing. Returns the whole team record so
+ * callers can pick what they render (pitch_name, pitch_address, postcode,
+ * map_url).
+ */
+export function venueTeam(match, teams) {
+  if (match.venue === 'H') return teams.find((t) => t.is_club) ?? null;
+  if (match.venue === 'A') {
+    return match.opponent_team_id
+      ? teams.find((t) => t.id === match.opponent_team_id) ?? null
+      : teams.find((t) => t.name.toLowerCase() === match.opponent?.toLowerCase()) ?? null;
+  }
+  return null;
+}
+
+/** UK-friendly kick-off time, e.g. "14:00:00" -> "2:00pm". Empty string when
+ * not recorded. */
+export function formatKickoff(time) {
+  if (!time) return '';
+  const [h, m] = time.split(':').map(Number);
+  const period = h < 12 ? 'am' : 'pm';
+  const hour12 = h % 12 === 0 ? 12 : h % 12;
+  return `${hour12}:${String(m).padStart(2, '0')}${period}`;
+}
+
 /** Days until a fixture, or null once it's in the past. */
 export function daysUntil(iso) {
   const today = new Date();

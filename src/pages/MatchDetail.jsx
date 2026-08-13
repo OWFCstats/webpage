@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import { useAuth } from '../context/AuthContext';
 import { ErrorNote, Spinner, VenueBadge } from '../components/bits';
-import { formatDate, isPlayed, matchContext, opponentSlug, resultOf } from '../lib/stats';
+import { formatDate, formatKickoff, isPlayed, matchContext, opponentSlug, resultOf, venueTeam } from '../lib/stats';
 
 function initials(name) {
   return name.split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase();
@@ -40,6 +40,11 @@ export default function MatchDetail() {
     margin, bestMargin, avgFor, avgAgainst, priorMeetings,
   } = ctx;
   const star = motm[0];
+  const kickoff = formatKickoff(match.kickoff_time);
+  const venue = venueTeam(match, teams);
+  const venueParts = venue
+    ? [venue.pitch_name, venue.pitch_address, venue.postcode].filter(Boolean)
+    : [];
   const dropouts = appearances.filter((a) => a.match_id === match.id && a.dropout);
   const dropoutNames = dropouts
     .map((a) => players.find((p) => p.id === a.player_id)?.name)
@@ -107,7 +112,20 @@ export default function MatchDetail() {
           <div className="sb-side them">
             <span className="badge">{opponentInitials(match.opponent)}</span>
             <Link to={`/opponents/${opponentSlug(teams, match)}`} className="team">{match.opponent}</Link>
-            <span className="sub">{formatDate(match.date)} <VenueBadge venue={match.venue} /></span>
+            <span className="sub">
+              {formatDate(match.date)}{kickoff && ` · ${kickoff}`} <VenueBadge venue={match.venue} />
+            </span>
+            {(venueParts.length > 0 || venue?.map_url) && (
+              <span className="sub">
+                {venueParts.join(', ')}
+                {venue.map_url && (
+                  <>
+                    {venueParts.length > 0 && ' · '}
+                    <a href={venue.map_url} target="_blank" rel="noreferrer">Map</a>
+                  </>
+                )}
+              </span>
+            )}
           </div>
         </div>
         {played && (scorers.length > 0 || match.own_goals_for > 0) && (

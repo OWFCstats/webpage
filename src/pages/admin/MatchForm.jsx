@@ -17,6 +17,7 @@ function toInputs(match, teams) {
   return {
     season: match?.season ?? '',
     date: match?.date ?? '',
+    kickoff_time: match?.kickoff_time ?? '',
     opponent: match?.opponent ?? '',
     opponent_team_id: match?.opponent_team_id ?? fallbackTeam?.id ?? '',
     competition: match?.competition ?? 'League',
@@ -65,6 +66,7 @@ function MatchFormInner({ match, isNew, matchId }) {
     const payload = {
       season: form.season.trim(),
       date: form.date,
+      kickoff_time: form.kickoff_time || null,
       opponent: form.opponent.trim(),
       opponent_team_id: form.opponent_team_id || null,
       competition: form.competition.trim(),
@@ -116,6 +118,10 @@ function MatchFormInner({ match, isNew, matchId }) {
           <label className="field">
             <span>Date</span>
             <input type="date" value={form.date} required onChange={set('date')} />
+          </label>
+          <label className="field">
+            <span>Kick-off (optional)</span>
+            <input type="time" value={form.kickoff_time} onChange={set('kickoff_time')} />
           </label>
           <div className="field">
             <span>Opponent</span>
