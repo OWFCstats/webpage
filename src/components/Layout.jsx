@@ -11,7 +11,7 @@ const NAV = [
   { to: '/matchday', label: 'Matchday' },
   { to: '/season', label: 'Season' },
   { to: '/players', label: 'Players' },
-  { to: '/history', label: 'History' },
+  { to: '/records', label: 'Records' },
 ];
 
 function Crest() {
@@ -56,7 +56,7 @@ const ICONS = {
       <path d="M11.2 9.8c1.7-.1 3.1 1.1 3.1 3.3" />
     </svg>
   ),
-  '/history': (
+  '/records': (
     <svg viewBox="0 0 16 16" aria-hidden="true">
       <path d="M5.2 2.6h5.6v3.1a2.8 2.8 0 0 1-5.6 0z" />
       <path d="M5.2 3.7H3.3c0 1.8.8 2.6 1.9 2.8M10.8 3.7h1.9c0 1.8-.8 2.6-1.9 2.8M8 8.6v2.3M5.9 13.4h4.2l-.5-2.5H6.4z" />

@@ -780,68 +780,31 @@ button.small {
   margin: 3rem auto;
 }
 
-/* ---- collapsible past seasons ---- */
+/* ---- club records ---- */
 
-.past-season + .past-season { margin-top: 0.6rem; }
-
-.past-season-bar {
-  width: 100%;
-  display: flex;
-  align-items: baseline;
-  gap: 0.9rem;
-  text-align: left;
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  padding: 0.8rem 1.1rem;
-  font-weight: 600;
-  color: var(--ink);
-  transition: border-color 0.15s ease, background 0.15s ease;
+/* Cards size to their own content — a record holding one game stays short
+   next to a run holding five. */
+.grid.records {
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  align-items: start;
 }
 
-.past-season-bar:hover {
-  filter: none;
-  border-color: var(--gold);
-  background: rgba(227, 180, 33, 0.05);
-}
+.grid.records > * { min-width: 0; }
 
-.past-season.open .past-season-bar {
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-  border-color: var(--gold);
-}
-
-.past-season-name {
+.record .record-headline {
+  font-size: 1.45rem;
   font-weight: 800;
-  font-size: 1.05rem;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
   color: var(--black);
 }
 
-.past-season-facts {
-  margin-right: auto;
-  font-size: 0.85rem;
-  font-weight: 600;
-}
+.record .record-span { margin-bottom: 0.2rem; }
 
-.past-season-chevron {
-  font-size: 0.7rem;
-  color: var(--gold-deep);
-}
-
-.past-season-body {
-  border: 1px solid var(--gold);
-  border-top: none;
-  border-radius: 0 0 var(--radius) var(--radius);
-  padding: 1.1rem;
-  background: rgba(255, 255, 255, 0.5);
-  animation: page-in 0.2s ease both;
-}
-
-@media (max-width: 620px) {
-  .past-season-bar { flex-wrap: wrap; gap: 0.25rem 0.7rem; }
-  .past-season-facts { flex-basis: 100%; }
-}
+/* A record nobody holds keeps its card at full size. Naming the record is the
+   point; a collapsed or blank card would read as a fault rather than as a
+   club with its first season still running. */
+.record .record-empty { margin: 0.35rem 0 0; }
 
 /* ---- ranked bar boards ---- */
 

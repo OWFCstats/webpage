@@ -45,6 +45,24 @@ export function VenueBadge({ venue }) {
   );
 }
 
+/**
+ * Badge grid: earned ones gold and captioned with whoever holds them, the rest
+ * quiet. Shared by a player's own honours and the club Hall of Fame, which is
+ * the same idea one level up.
+ */
+export function HonourGrid({ honours }) {
+  return (
+    <div className="honours">
+      {honours.map((h) => (
+        <div key={h.key} className={`honour${h.earned ? ' earned' : ''}`}>
+          <span className="hn">{h.name}</span>
+          <span className="hd">{h.detail}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 /** `plain` drops the card surface — for tiles nested inside another card. */
 export function StatTile({ value, label, plain = false }) {
   return (

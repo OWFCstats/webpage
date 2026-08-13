@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { useData } from '../context/DataContext';
-import { ErrorNote, Spinner, VenueBadge } from '../components/bits';
+import { ErrorNote, HonourGrid, Spinner, VenueBadge } from '../components/bits';
 import PlayerCareerChart from '../components/PlayerCareerChart';
 import {
   formatDate,
@@ -88,14 +88,7 @@ function Honours({ honours }) {
   return (
     <div className="card">
       <h3 className="card-label">Honours</h3>
-      <div className="honours">
-        {honours.map((h) => (
-          <div key={h.key} className={`honour${h.earned ? ' earned' : ''}`}>
-            <span className="hn">{h.name}</span>
-            <span className="hd">{h.detail}</span>
-          </div>
-        ))}
-      </div>
+      <HonourGrid honours={honours} />
     </div>
   );
 }
