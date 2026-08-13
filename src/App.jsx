@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { HashRouter, Navigate, Route, Routes, useParams } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { DataProvider } from './context/DataContext';
 import Layout from './components/Layout';
@@ -9,7 +9,6 @@ import Matchday from './pages/Matchday';
 import Season from './pages/Season';
 import PlayersHub from './pages/PlayersHub';
 import History from './pages/History';
-import MatchDetail from './pages/MatchDetail';
 import PlayerDetail from './pages/PlayerDetail';
 import OpponentDetail from './pages/OpponentDetail';
 
@@ -26,6 +25,13 @@ const Lineup = lazy(() => import('./pages/admin/Lineup'));
 const ReportEditor = lazy(() => import('./pages/admin/ReportEditor'));
 const AddResult = lazy(() => import('./pages/admin/AddResult'));
 
+// Old match links carried the id under /matches/ — Matchday absorbed the
+// per-match page, so the id just needs to move across.
+function MatchRedirect() {
+  const { matchId } = useParams();
+  return <Navigate to={`/matchday/${matchId}`} replace />;
+}
+
 // HashRouter: GitHub Pages can't rewrite arbitrary paths to index.html, and
 // hash routing also works unchanged on a custom domain later.
 export default function App() {
@@ -38,10 +44,10 @@ export default function App() {
               <Route element={<Layout />}>
                 <Route index element={<Home />} />
                 <Route path="matchday" element={<Matchday />} />
+                <Route path="matchday/:matchId" element={<Matchday />} />
                 <Route path="season" element={<Season />} />
                 <Route path="players" element={<PlayersHub />} />
                 <Route path="players/:playerId" element={<PlayerDetail />} />
-                <Route path="matches/:matchId" element={<MatchDetail />} />
                 <Route path="opponents/:name" element={<OpponentDetail />} />
                 <Route path="history" element={<History />} />
 
@@ -49,6 +55,7 @@ export default function App() {
                     on the page that absorbed them. */}
                 <Route path="results" element={<Navigate to="/season" replace />} />
                 <Route path="matches" element={<Navigate to="/season" replace />} />
+                <Route path="matches/:matchId" element={<MatchRedirect />} />
                 <Route path="trends" element={<Navigate to="/season" replace />} />
                 <Route path="leaderboards" element={<Navigate to="/players" replace />} />
                 <Route path="stats" element={<Navigate to="/players" replace />} />

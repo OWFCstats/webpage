@@ -13,7 +13,7 @@ export default function ResultList({ matches, emptyText = 'Nothing here yet.' })
     <ul className="result-list">
       {matches.map((m) => (
         <li key={m.id}>
-          <Link className="result-row" to={`/matches/${m.id}`}>
+          <Link className="result-row" to={`/matchday/${m.id}`}>
             <span className={`result-pill ${resultOf(m)}`}>{resultOf(m)}</span>
             <span className="who">
               <strong>{m.opponent} <VenueBadge venue={m.venue} /></strong>

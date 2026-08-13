@@ -154,7 +154,7 @@ export default function AddResult() {
       }
     }
     await refresh();
-    navigate(`/matches/${created.id}`);
+    navigate(`/matchday/${created.id}`);
   }
 
   const q = query.trim().toLowerCase();

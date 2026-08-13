@@ -138,7 +138,7 @@ export default function OpponentDetail() {
                   const awayGoals = weAreHome ? m.goals_against : m.goals_for;
                   return (
                     <tr key={m.id}>
-                      <td><Link to={`/matches/${m.id}`}>{formatDate(m.date)}</Link></td>
+                      <td><Link to={`/matchday/${m.id}`}>{formatDate(m.date)}</Link></td>
                       <td>{homeTeam}</td>
                       <td className="score-cell">
                         {isPlayed(m) ? (

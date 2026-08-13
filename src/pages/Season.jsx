@@ -151,7 +151,7 @@ export default function Season() {
                     label: 'Opponent',
                     render: (m) => (
                       <>
-                        <Link to={`/matches/${m.id}`}>{m.opponent}</Link> <VenueBadge venue={m.venue} />
+                        <Link to={`/matchday/${m.id}`}>{m.opponent}</Link> <VenueBadge venue={m.venue} />
                       </>
                     ),
                   },
@@ -172,7 +172,7 @@ export default function Season() {
                   {
                     key: 'report',
                     label: '',
-                    render: (m) => (m.report ? <Link className="more" to={`/matches/${m.id}`}>Report →</Link> : ''),
+                    render: (m) => (m.report ? <Link className="more" to={`/matchday/${m.id}`}>Report →</Link> : ''),
                   },
                 ]}
               />

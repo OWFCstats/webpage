@@ -1,73 +1,107 @@
-import { useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useMemo } from 'react';
+import { Link, useParams } from 'react-router-dom';
 import { useData } from '../context/DataContext';
-import { ErrorNote, FormBadges, Spinner, StatTile, VenueBadge, VenueFilter } from '../components/bits';
-import BarBoard from '../components/BarBoard';
-import ResultList from '../components/ResultList';
+import { useAuth } from '../context/AuthContext';
+import { ErrorNote, FormBadges, Spinner, VenueBadge } from '../components/bits';
 import {
-  countdownLabel,
   fixtures,
   formatDate,
   formatKickoff,
   formOf,
+  isPlayed,
   latestResult,
   matchContext,
   matchTitle,
   opponentSlug,
-  playerTotals,
   resultOf,
   seasonsOf,
-  seasonSummary,
   venueTeam,
 } from '../lib/stats';
 
-// The chips drive one board, not six stacked ones. Club gold leads; the
-// accents repeat the palette already used across the site.
-const BOARDS = [
-  { key: 'goals', label: 'Goals', accent: '#b8860b' },
-  { key: 'assists', label: 'Assists', accent: '#5ba3c9' },
-  { key: 'goalInvolvements', label: 'G+A', accent: '#e8772e' },
-  { key: 'appearances', label: 'Apps', accent: '#3f4149' },
-  { key: 'motm', label: 'MOTM', accent: '#b8860b' },
-  { key: 'cleanSheets', label: 'Clean sheets', accent: '#5ba3c9' },
-];
+function initials(name) {
+  return name.split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase();
+}
+
+function opponentInitials(name) {
+  const words = name.split(' ').filter((w) => /[a-z0-9]/i.test(w));
+  return words.map((w) => w[0]).slice(0, 2).join('').toUpperCase() || '?';
+}
+
+const nf1 = (v) => (Math.round(v * 10) / 10).toFixed(1);
+
+/** Next-up fixture card: shared between the normal view and the
+ *  season-hasn't-started state, so there's one place that knows its shape. */
+function NextUp({ next, teams }) {
+  if (!next) return null;
+  const kickoff = formatKickoff(next.kickoff_time);
+  const venue = venueTeam(next, teams);
+  const venueParts = venue
+    ? [venue.pitch_name, venue.pitch_address, venue.postcode].filter(Boolean)
+    : [];
+  return (
+    <div className="next-up">
+      <div className="mini-label">Next up</div>
+      <strong>
+        <Link to={`/opponents/${opponentSlug(teams, next)}`}>{next.opponent}</Link>{' '}
+        <VenueBadge venue={next.venue} />
+      </strong>
+      <span className="muted">
+        {formatDate(next.date)}{kickoff && ` · ${kickoff}`} · {next.competition}
+      </span>
+      {(venueParts.length > 0 || venue?.map_url) && (
+        <span className="muted fixture-location">
+          {venueParts.join(', ')}
+          {venue.map_url && (
+            <>
+              {venueParts.length > 0 && ' · '}
+              <a href={venue.map_url} target="_blank" rel="noreferrer">Map</a>
+            </>
+          )}
+        </span>
+      )}
+    </div>
+  );
+}
 
 export default function Matchday() {
+  const { matchId } = useParams();
   const { players, matches, appearances, teams, loading, error } = useData();
-  const [board, setBoard] = useState('goals');
-  const [venueFilter, setVenueFilter] = useState('all');
+  const { session } = useAuth();
 
   const view = useMemo(() => {
     const seasons = seasonsOf(matches);
-    const currentSeason = seasons[0];
-    const seasonMatches = currentSeason
-      ? matches.filter((m) => m.season === currentSeason)
-      : [];
-    const latest = latestResult(seasonMatches);
+    const currentSeason = seasons[0] ?? null;
+
+    // With no id in the URL, land on the most recent PLAYED match in the
+    // current season. A season that hasn't kicked off yet has none — that's
+    // handled by the caller, not by falling back to an older season.
+    const match = matchId
+      ? matches.find((m) => m.id === matchId) ?? null
+      : latestResult(currentSeason ? matches.filter((m) => m.season === currentSeason) : []);
+
+    const season = match ? match.season : currentSeason;
+    const seasonMatches = season ? matches.filter((m) => m.season === season) : [];
+    const seasonOrdered = seasonMatches.slice().sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
+    const seasonPlayed = seasonOrdered.filter(isPlayed);
+    const idx = match ? seasonPlayed.findIndex((m) => m.id === match.id) : -1;
+
+    const currentSeasonMatches = currentSeason ? matches.filter((m) => m.season === currentSeason) : [];
+
     return {
       currentSeason,
-      latest,
-      latestCtx: latest ? matchContext(latest, players, matches, appearances) : null,
-      seasonMatches,
-      next: fixtures(matches)[0],
-      totals: playerTotals(players, seasonMatches, appearances),
+      season,
+      match,
+      seasonOrdered,
+      prevMatch: idx > 0 ? seasonPlayed[idx - 1] : null,
+      nextMatch: idx !== -1 && idx < seasonPlayed.length - 1 ? seasonPlayed[idx + 1] : null,
+      ctx: match ? matchContext(match, players, matches, appearances) : null,
+      form: formOf(currentSeasonMatches),
+      nextFixture: fixtures(matches)[0],
     };
-  }, [players, matches, appearances]);
+  }, [matchId, players, matches, appearances]);
 
   if (loading) return <Spinner />;
   if (error) return <ErrorNote message={error} />;
-
-  const { currentSeason, latest, latestCtx, seasonMatches, next, totals } = view;
-  const scoped = venueFilter === 'all' ? seasonMatches : seasonMatches.filter((m) => m.venue === venueFilter);
-  const summary = seasonSummary(scoped);
-  const form = formOf(scoped);
-  const points = summary.won * 3 + summary.drawn;
-  const star = latestCtx?.motm[0];
-  const nextKickoff = next ? formatKickoff(next.kickoff_time) : '';
-  const nextVenue = next ? venueTeam(next, teams) : null;
-  const nextVenueParts = nextVenue
-    ? [nextVenue.pitch_name, nextVenue.pitch_address, nextVenue.postcode].filter(Boolean)
-    : [];
 
   if (matches.length === 0 && players.length === 0) {
     return (
@@ -78,127 +112,319 @@ export default function Matchday() {
     );
   }
 
-  return (
-    <div>
-      {latest ? (
-        <Link to={`/matches/${latest.id}`} className="latest-hero" aria-label={`Match centre: vs ${matchTitle(latest)}`}>
-          <p className="meta">
-            {formatDate(latest.date)} · {latest.competition} · {latest.season}
-          </p>
-          <h1>Old Wellingtonians vs {matchTitle(latest)}</h1>
-          <p className="scoreline">
-            {latest.goals_for}–{latest.goals_against}{' '}
-            <span className={`result-pill ${resultOf(latest)}`}>{resultOf(latest)}</span>
-          </p>
-          {latestCtx.scorers.length > 0 && (
-            <p className="scorers">
-              {latestCtx.scorers
-                .map((a) => `${a.player.name}${a.goals > 1 ? ` ×${a.goals}` : ''}`)
-                .join(', ')}
-            </p>
-          )}
-          {star && (
-            <div className="star-man">
-              <span className="avatar">
-                {star.player.name.split(' ').map((w) => w[0]).slice(0, 2).join('')}
-              </span>
-              <span className="who">
-                <strong>{star.player.name}</strong>
-                Man of the Match
-                {star.goals + star.assists > 0 &&
-                  ` · ${[
-                    star.goals > 0 && `${star.goals} goal${star.goals > 1 ? 's' : ''}`,
-                    star.assists > 0 && `${star.assists} assist${star.assists > 1 ? 's' : ''}`,
-                  ].filter(Boolean).join(', ')}`}
-              </span>
-            </div>
-          )}
-          <span className="more-hint">Match centre →</span>
-        </Link>
-      ) : (
+  const { currentSeason, season, match, seasonOrdered, prevMatch, nextMatch, ctx, form, nextFixture } = view;
+
+  if (matchId && !match) {
+    return <div className="empty card">Match not found. <Link className="more" to="/season">Full season →</Link></div>;
+  }
+
+  if (!match) {
+    return (
+      <div>
         <div className="section-head">
           <h1>{currentSeason ? `Season ${currentSeason}` : 'Old Wellingtonians FC'}</h1>
         </div>
-      )}
+        <p className="muted">{currentSeason ?? 'The new season'} hasn’t started yet.</p>
+        <div className="card section form-next">
+          <div>
+            <div className="mini-label">Form</div>
+            <FormBadges matches={form} />
+          </div>
+          <NextUp next={nextFixture} teams={teams} />
+        </div>
+      </div>
+    );
+  }
+
+  const played = isPlayed(match);
+  const cleanSheet = played && match.goals_against === 0;
+  const {
+    squad, scorers, motm, debutIds, seasonAppCount, boot,
+    margin, bestMargin, avgFor, avgAgainst, priorMeetings, matchNumber, seasonGames,
+  } = ctx;
+  const star = motm[0];
+  const kickoff = formatKickoff(match.kickoff_time);
+  const venue = venueTeam(match, teams);
+  const venueParts = venue
+    ? [venue.pitch_name, venue.pitch_address, venue.postcode].filter(Boolean)
+    : [];
+  const dropouts = appearances.filter((a) => a.match_id === match.id && a.dropout);
+  const dropoutNames = dropouts
+    .map((a) => players.find((p) => p.id === a.player_id)?.name)
+    .filter(Boolean);
+
+  // Facts worth a line, computed from rows that already exist. Rendered only
+  // when they're true, so a quiet 0–0 gets a quiet page.
+  const milestones = [];
+  const debutants = squad.filter((a) => debutIds.has(a.player_id));
+  if (played && debutants.length > 0) {
+    milestones.push({
+      n: debutants.length,
+      head: debutants.length === 1
+        ? `${debutants[0].player.name} — first game of the season`
+        : `${debutants.length} first appearances of the season`,
+      sub: debutants.length === 1 ? null : debutants.map((a) => a.player.name).join(', '),
+    });
+  }
+  const debutScorers = debutants.filter((a) => a.goals > 0);
+  for (const a of debutScorers) {
+    milestones.push({ n: a.goals, head: `${a.player.name} scores on their first appearance`, sub: null });
+  }
+  const mostApps = squad
+    .slice()
+    .sort((a, b) => (seasonAppCount.get(b.player_id) ?? 0) - (seasonAppCount.get(a.player_id) ?? 0))[0];
+  if (played && mostApps && (seasonAppCount.get(mostApps.player_id) ?? 0) >= 5) {
+    milestones.push({
+      n: seasonAppCount.get(mostApps.player_id),
+      head: `${mostApps.player.name} — appearance ${seasonAppCount.get(mostApps.player_id)} of the season`,
+      sub: 'Most in the squad',
+    });
+  }
+  if (played && margin != null && margin === bestMargin && margin > 0) {
+    milestones.push({ n: `+${margin}`, head: 'Best winning margin of the season so far', sub: null });
+  }
+  if (cleanSheet) {
+    milestones.push({ n: 0, head: 'Clean sheet — credited to the whole squad', sub: null });
+  }
+
+  return (
+    <div>
+      <div className="scoreboard">
+        <div className="sb-top">
+          <div className="sb-side us">
+            <span className="badge">OW</span>
+            <span className="team">Old Wellingtonians</span>
+            <span className="sub">{squad.length > 0 ? `${squad.length} in the squad` : match.season}</span>
+          </div>
+          <div className="sb-mid">
+            {played ? (
+              <>
+                <span className="score">{match.goals_for}–{match.goals_against}</span>
+                <span className="state">
+                  {match.walkover ? 'Awarded (walkover)' : 'Full time'} · {match.competition}{' '}
+                  <span className={`result-pill ${resultOf(match)}`}>{resultOf(match)}</span>
+                </span>
+              </>
+            ) : (
+              <>
+                <span className="score upcoming">v</span>
+                <span className="state">{formatDate(match.date)} · {match.competition}</span>
+              </>
+            )}
+          </div>
+          <div className="sb-side them">
+            <span className="badge">{opponentInitials(match.opponent)}</span>
+            <Link to={`/opponents/${opponentSlug(teams, match)}`} className="team">{match.opponent}</Link>
+            <span className="sub">
+              {formatDate(match.date)}{kickoff && ` · ${kickoff}`} <VenueBadge venue={match.venue} />
+            </span>
+            {(venueParts.length > 0 || venue?.map_url) && (
+              <span className="sub">
+                {venueParts.join(', ')}
+                {venue.map_url && (
+                  <>
+                    {venueParts.length > 0 && ' · '}
+                    <a href={venue.map_url} target="_blank" rel="noreferrer">Map</a>
+                  </>
+                )}
+              </span>
+            )}
+          </div>
+        </div>
+        {played && (scorers.length > 0 || match.own_goals_for > 0) && (
+          <div className="sb-strip">
+            {scorers.length > 0 && (
+              <span>
+                Scorers{' '}
+                <strong>
+                  {scorers.map((a) => `${a.player.name}${a.goals > 1 ? ` ×${a.goals}` : ''}`).join(', ')}
+                </strong>
+              </span>
+            )}
+            {match.own_goals_for > 0 && <span>Own goals <strong>{match.own_goals_for}</strong></span>}
+          </div>
+        )}
+      </div>
+
+      <div className="section">
+        {played && (
+          <div className="matchday-stepper">
+            {prevMatch ? (
+              <Link className="nav" to={`/matchday/${prevMatch.id}`} aria-label={`Previous matchday: vs ${matchTitle(prevMatch)}`}>
+                ← Previous
+              </Link>
+            ) : (
+              <span className="nav disabled">← Previous</span>
+            )}
+            <span className="count">Matchday {matchNumber} of {seasonGames} · {season}</span>
+            {nextMatch ? (
+              <Link className="nav" to={`/matchday/${nextMatch.id}`} aria-label={`Next matchday: vs ${matchTitle(nextMatch)}`}>
+                Next →
+              </Link>
+            ) : (
+              <span className="nav disabled">Next →</span>
+            )}
+          </div>
+        )}
+
+        {seasonOrdered.length > 0 && (
+          <>
+            <div className="mini-label">Jump to a matchday</div>
+            <div className="jump-strip">
+              {seasonOrdered.map((m) => {
+                const current = m.id === match.id;
+                return isPlayed(m) ? (
+                  <Link
+                    key={m.id}
+                    to={`/matchday/${m.id}`}
+                    className={`form-badge ${resultOf(m)}${current ? ' current' : ''}`}
+                    title={`${formatDate(m.date)} vs ${m.opponent} (${m.goals_for}–${m.goals_against})`}
+                    aria-current={current ? 'page' : undefined}
+                  >
+                    {resultOf(m)}
+                  </Link>
+                ) : (
+                  <Link
+                    key={m.id}
+                    to={`/matchday/${m.id}`}
+                    className={`form-badge fixture${current ? ' current' : ''}`}
+                    title={`${formatDate(m.date)} vs ${m.opponent} (upcoming)`}
+                    aria-current={current ? 'page' : undefined}
+                  />
+                );
+              })}
+            </div>
+          </>
+        )}
+      </div>
 
       <div className="card section form-next">
         <div>
           <div className="mini-label">Form</div>
           <FormBadges matches={form} />
         </div>
-        {next && (
-          <div className="next-up">
-            <div className="mini-label">Next up</div>
-            <strong>
-              <Link to={`/opponents/${opponentSlug(teams, next)}`}>{next.opponent}</Link>{' '}
-              <VenueBadge venue={next.venue} />
-            </strong>
-            <span className="muted">
-              {formatDate(next.date)}{nextKickoff && ` · ${nextKickoff}`} · {next.competition}
-            </span>
-            {countdownLabel(next.date) && <span className="muted">{' · '}{countdownLabel(next.date)}</span>}
-            {(nextVenueParts.length > 0 || nextVenue?.map_url) && (
-              <span className="muted fixture-location">
-                {nextVenueParts.join(', ')}
-                {nextVenue.map_url && (
-                  <>
-                    {nextVenueParts.length > 0 && ' · '}
-                    <a href={nextVenue.map_url} target="_blank" rel="noreferrer">Map</a>
-                  </>
+        <NextUp next={nextFixture} teams={teams} />
+      </div>
+
+      {played && (star || avgFor != null) && (
+        <div className="grid match-cards section">
+          {star && (
+            <div className="card">
+              <h3 className="card-label">Man of the Match</h3>
+              <div className="motm-feature">
+                <span className="avatar">{initials(star.player.name)}</span>
+                <span>
+                  <Link to={`/players/${star.player.id}`} className="motm-name">{star.player.name}</Link>
+                  <span className="muted motm-line">
+                    {[
+                      star.goals > 0 && `${star.goals} goal${star.goals > 1 ? 's' : ''}`,
+                      star.assists > 0 && `${star.assists} assist${star.assists > 1 ? 's' : ''}`,
+                      `appearance ${seasonAppCount.get(star.player_id) ?? '—'} of the season`,
+                    ].filter(Boolean).join(' · ')}
+                  </span>
+                </span>
+              </div>
+              {boot.length > 0 && (
+                <p className="muted boot-line">
+                  Golden Boot after this game:{' '}
+                  {boot.map((r) => `${r.player.name} ${r.goals}`).join(' · ')}
+                </p>
+              )}
+            </div>
+          )}
+          {avgFor != null && (
+            <div className="card">
+              <h3 className="card-label">How it compares</h3>
+              <dl className="compare">
+                <div>
+                  <dt>This game</dt>
+                  <dd><strong>{match.goals_for}</strong> scored · <strong>{match.goals_against}</strong> conceded</dd>
+                </div>
+                <div>
+                  <dt>Season average before it</dt>
+                  <dd><strong>{nf1(avgFor)}</strong> scored · <strong>{nf1(avgAgainst)}</strong> conceded</dd>
+                </div>
+                {priorMeetings.length > 0 && (
+                  <div>
+                    <dt>
+                      Earlier against{' '}
+                      <Link to={`/opponents/${opponentSlug(teams, match)}`}>{match.opponent}</Link>
+                    </dt>
+                    <dd>
+                      {priorMeetings.map((m) => (
+                        <Link key={m.id} to={`/matchday/${m.id}`} className="prior-meeting">
+                          <span className={`result-pill ${resultOf(m)}`}>{resultOf(m)}</span>{' '}
+                          {m.goals_for}–{m.goals_against} <VenueBadge venue={m.venue} />
+                        </Link>
+                      ))}
+                    </dd>
+                  </div>
                 )}
-              </span>
-            )}
+              </dl>
+            </div>
+          )}
+        </div>
+      )}
+
+      {milestones.length > 0 && (
+        <div className="card section">
+          <h3 className="card-label">Worth noting</h3>
+          <ul className="milestones">
+            {milestones.map((m, i) => (
+              <li key={i}>
+                <span className="badge-num">{m.n}</span>
+                <span>
+                  <strong>{m.head}</strong>
+                  {m.sub && <span className="muted"> — {m.sub}</span>}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {match.report ? (
+        <div className="section card">
+          <h2>Match report</h2>
+          <div className="report-body">{match.report}</div>
+        </div>
+      ) : played && session ? (
+        <div className="section">
+          <Link className="more" to={`/admin/matches/${match.id}/report`}>Add a match report →</Link>
+        </div>
+      ) : null}
+
+      {squad.length > 0 && (
+        <div className="section card">
+          <h2>The squad</h2>
+          <div className="squad-pills">
+            {squad.map((a) => (
+              <Link
+                key={a.id}
+                to={`/players/${a.player.id}`}
+                className={`squad-pill${a.motm ? ' motm' : a.goals > 0 ? ' scored' : ''}`}
+              >
+                {a.player.name}
+                {(a.goals > 0 || a.assists > 0) && (
+                  <em>
+                    {a.goals > 0 && `${a.goals}G`}
+                    {a.goals > 0 && a.assists > 0 && ' '}
+                    {a.assists > 0 && `${a.assists}A`}
+                  </em>
+                )}
+                {debutIds.has(a.player_id) && <em>1st</em>}
+                {a.yellows > 0 && <em className="card-mark">YC</em>}
+                {a.reds > 0 && <em className="card-mark">RC</em>}
+              </Link>
+            ))}
           </div>
-        )}
-      </div>
-
-      <div className="controls">
-        <span>Scope</span>
-        <VenueFilter value={venueFilter} onChange={setVenueFilter} />
-      </div>
-
-      <div className="grid cols-4 section">
-        <StatTile value={points} label="Points" />
-        <StatTile value={`${summary.won}-${summary.drawn}-${summary.lost}`} label="W-D-L" />
-        <StatTile value={summary.goalsFor} label="Goals scored" />
-        <StatTile value={summary.goalsAgainst} label="Goals conceded" />
-      </div>
-
-      <div className="section">
-        <div className="section-head">
-          <h2>Leading the club — {currentSeason}</h2>
-          <Link className="more" to="/players">All players →</Link>
+          {dropoutNames.length > 0 && (
+            <p className="muted" style={{ marginTop: '0.7rem' }}>
+              Late dropouts (within 24h): {dropoutNames.join(', ')}
+            </p>
+          )}
         </div>
-        <div className="chip-row">
-          {BOARDS.map((b) => (
-            <button
-              key={b.key}
-              type="button"
-              className={`chip-btn${board === b.key ? ' active' : ''}`}
-              onClick={() => setBoard(b.key)}
-            >
-              {b.label}
-            </button>
-          ))}
-        </div>
-        <BarBoard
-          title={BOARDS.find((b) => b.key === board).label}
-          rows={totals}
-          statKey={board}
-          accent={BOARDS.find((b) => b.key === board).accent}
-          limit={5}
-        />
-      </div>
-
-      <div className="section">
-        <div className="section-head">
-          <h2>Recent results</h2>
-          <Link className="more" to="/season">Full season →</Link>
-        </div>
-        <div className="card">
-          <ResultList matches={form} emptyText="No results yet this season." />
-        </div>
-      </div>
+      )}
     </div>
   );
 }
