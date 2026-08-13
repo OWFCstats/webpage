@@ -329,6 +329,22 @@ export function matchTitle(match) {
   return v ? `${match.opponent} ${v}` : match.opponent;
 }
 
+/** The club's own display name, for rendering a match as home vs away rather
+ *  than "us vs them". */
+export const CLUB_NAME = 'Old Wellingtonians';
+
+/** Home and away side of a match, with the score to match — OWFC can be
+ *  either side. A neutral or unrecorded venue defaults to us at home. */
+export function matchHomeAway(match) {
+  const weAreHome = match.venue !== 'A';
+  return {
+    homeTeam: weAreHome ? CLUB_NAME : match.opponent,
+    awayTeam: weAreHome ? match.opponent : CLUB_NAME,
+    homeGoals: weAreHome ? match.goals_for : match.goals_against,
+    awayGoals: weAreHome ? match.goals_against : match.goals_for,
+  };
+}
+
 /**
  * The team whose pitch a fixture is played at: our own record for a home
  * game, the opponent's for an away game. A neutral or unrecorded venue, or a

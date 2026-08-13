@@ -1178,6 +1178,28 @@ button.small {
   margin-bottom: 0.25rem;
 }
 
+/* ---- flat blocks: a label and a hairline, no card surface of their own —
+   for sections that don't need to read as a distinct bubble, whether they
+   sit on the page background or inside another card. ---- */
+.flat-block {
+  margin-top: 1.8rem;
+}
+
+.flat-block:first-child {
+  margin-top: 0;
+}
+
+.flat-block-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 0.4rem;
+  margin-bottom: 0.9rem;
+}
+
 /* ---- chips + segmented control ---- */
 
 .chip-row {
@@ -1321,14 +1343,6 @@ button.small {
 .result-row .who { min-width: 0; }
 .result-row .who strong { display: block; font-size: 0.95rem; }
 .result-row .who .muted { font-size: 0.78rem; }
-
-.result-row .score {
-  margin-left: auto;
-  flex: none;
-  font-weight: 800;
-  font-size: 1rem;
-  font-variant-numeric: tabular-nums;
-}
 
 /* ---- match centre ---- */
 
@@ -2250,6 +2264,25 @@ table.data.league-table tr.lt-us:hover { background: rgba(227, 180, 33, 0.14); }
 /* Placeholder until a standings source exists — one honest line, not a
    mocked-up table for data that isn't there. */
 .lt-placeholder { margin: 0; }
+
+/* ---- season page: table and results lead the main column, one card
+   carries the at-a-glance summary, most-involved bars and the charts
+   toggle ---- */
+.season-layout {
+  display: grid;
+  gap: 1.8rem;
+  align-items: start;
+}
+
+.season-layout > * { min-width: 0; }
+
+@media (min-width: 900px) {
+  .season-layout { grid-template-columns: minmax(0, 2fr) minmax(300px, 1fr); }
+
+  /* The aside is narrower than the 4-tile grid was designed for, so it
+     always runs two-up here regardless of the page's own breakpoint. */
+  .season-aside .grid.cols-4 { grid-template-columns: repeat(2, 1fr); }
+}
 
 /* ---- next fixture widget ---- */
 
