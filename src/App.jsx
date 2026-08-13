@@ -8,7 +8,7 @@ import Home from './pages/Home';
 import Matchday from './pages/Matchday';
 import Season from './pages/Season';
 import PlayersHub from './pages/PlayersHub';
-import History from './pages/History';
+import Records from './pages/Records';
 import PlayerDetail from './pages/PlayerDetail';
 import OpponentDetail from './pages/OpponentDetail';
 
@@ -49,10 +49,11 @@ export default function App() {
                 <Route path="players" element={<PlayersHub />} />
                 <Route path="players/:playerId" element={<PlayerDetail />} />
                 <Route path="opponents/:name" element={<OpponentDetail />} />
-                <Route path="history" element={<History />} />
+                <Route path="records" element={<Records />} />
 
                 {/* Old addresses keep working — bookmarks and chat links land
                     on the page that absorbed them. */}
+                <Route path="history" element={<Navigate to="/records" replace />} />
                 <Route path="results" element={<Navigate to="/season" replace />} />
                 <Route path="matches" element={<Navigate to="/season" replace />} />
                 <Route path="matches/:matchId" element={<MatchRedirect />} />

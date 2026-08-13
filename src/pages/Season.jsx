@@ -1,5 +1,5 @@
 import { lazy, Suspense, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import { ErrorNote, SeasonSelect, Spinner, StatTile, VenueBadge } from '../components/bits';
 import BarBoard from '../components/BarBoard';
@@ -36,7 +36,12 @@ function pointsOf(summary) {
 export default function Season() {
   const { players, matches, appearances, teams, loading, error } = useData();
   const seasons = seasonsOf(matches);
-  const [season, setSeason] = useState('latest');
+  // Records links a season across as ?season=; the picker takes over from
+  // there. Anything unrecognised — an old link, a hand-typed year — falls back
+  // to the latest rather than rendering an empty season.
+  const [params] = useSearchParams();
+  const [picked, setSeason] = useState(() => params.get('season') ?? 'latest');
+  const season = picked === 'all' || seasons.includes(picked) ? picked : 'latest';
   const [view, setView] = useState('results');
   const narrow = useIsNarrow();
 
