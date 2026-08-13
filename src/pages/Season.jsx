@@ -2,7 +2,9 @@ import { lazy, Suspense, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import { ErrorNote, FormBadges, SeasonSelect, Spinner, StatTile, VenueBadge, VenueFilter } from '../components/bits';
+import ResultList from '../components/ResultList';
 import SortableTable from '../components/SortableTable';
+import { useIsNarrow } from '../lib/useIsNarrow';
 import {
   fixtures,
   formatDate,
@@ -24,6 +26,7 @@ export default function Season() {
   const [season, setSeason] = useState('latest');
   const [view, setView] = useState('results');
   const [venueFilter, setVenueFilter] = useState('all');
+  const narrow = useIsNarrow();
 
   if (loading) return <Spinner />;
   if (error) return <ErrorNote message={error} />;
@@ -109,44 +112,48 @@ export default function Season() {
             </div>
           )}
           <div className="card section">
-            <SortableTable
-              filterable
-              rows={results}
-              rowKey={(m) => m.id}
-              initialSort={{ key: 'date', dir: 'desc' }}
-              emptyText="No results in this season yet."
-              columns={[
-                { key: 'date', label: 'Date', render: (m) => formatDate(m.date) },
-                {
-                  key: 'opponent',
-                  label: 'Opponent',
-                  render: (m) => (
-                    <>
-                      <Link to={`/matches/${m.id}`}>{m.opponent}</Link> <VenueBadge venue={m.venue} />
-                    </>
-                  ),
-                },
-                { key: 'competition', label: 'Competition', render: (m) => <span className="tag">{m.competition}</span> },
-                {
-                  key: 'result',
-                  label: 'Result',
-                  sortValue: (m) => ({ W: 2, D: 1, L: 0 })[resultOf(m)],
-                  render: (m) => <span className={`result-pill ${resultOf(m)}`}>{resultOf(m)}</span>,
-                },
-                {
-                  key: 'score',
-                  label: 'Score',
-                  num: true,
-                  sortValue: (m) => m.goals_for - m.goals_against,
-                  render: (m) => <strong>{m.goals_for}–{m.goals_against}</strong>,
-                },
-                {
-                  key: 'report',
-                  label: '',
-                  render: (m) => (m.report ? <Link className="more" to={`/matches/${m.id}`}>Report →</Link> : ''),
-                },
-              ]}
-            />
+            {narrow ? (
+              <ResultList matches={results} emptyText="No results in this season yet." />
+            ) : (
+              <SortableTable
+                filterable
+                rows={results}
+                rowKey={(m) => m.id}
+                initialSort={{ key: 'date', dir: 'desc' }}
+                emptyText="No results in this season yet."
+                columns={[
+                  { key: 'date', label: 'Date', render: (m) => formatDate(m.date) },
+                  {
+                    key: 'opponent',
+                    label: 'Opponent',
+                    render: (m) => (
+                      <>
+                        <Link to={`/matches/${m.id}`}>{m.opponent}</Link> <VenueBadge venue={m.venue} />
+                      </>
+                    ),
+                  },
+                  { key: 'competition', label: 'Competition', render: (m) => <span className="tag">{m.competition}</span> },
+                  {
+                    key: 'result',
+                    label: 'Result',
+                    sortValue: (m) => ({ W: 2, D: 1, L: 0 })[resultOf(m)],
+                    render: (m) => <span className={`result-pill ${resultOf(m)}`}>{resultOf(m)}</span>,
+                  },
+                  {
+                    key: 'score',
+                    label: 'Score',
+                    num: true,
+                    sortValue: (m) => m.goals_for - m.goals_against,
+                    render: (m) => <strong>{m.goals_for}–{m.goals_against}</strong>,
+                  },
+                  {
+                    key: 'report',
+                    label: '',
+                    render: (m) => (m.report ? <Link className="more" to={`/matches/${m.id}`}>Report →</Link> : ''),
+                  },
+                ]}
+              />
+            )}
           </div>
         </>
       ) : (
