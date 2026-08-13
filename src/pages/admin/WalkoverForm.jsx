@@ -57,7 +57,7 @@ export default function WalkoverForm({ onDone, onCancel }) {
     }
     await refresh();
     onDone?.();
-    navigate(`/matches/${data.id}`);
+    navigate(`/matchday/${data.id}`);
   }
 
   return (

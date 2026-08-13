@@ -270,7 +270,7 @@ export default function Home() {
               <ul className="home-form-list">
                 {form.map((m) => (
                   <li key={m.id}>
-                    <Link to={`/matches/${m.id}`}>
+                    <Link to={`/matchday/${m.id}`}>
                       vs {m.opponent} <VenueBadge venue={m.venue} />
                     </Link>
                     <strong>

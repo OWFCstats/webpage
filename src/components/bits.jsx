@@ -22,7 +22,7 @@ export function FormBadges({ matches }) {
         return (
           <Link
             key={m.id}
-            to={`/matches/${m.id}`}
+            to={`/matchday/${m.id}`}
             className={`form-badge ${r}`}
             title={`${formatDate(m.date)} vs ${m.opponent} (${m.goals_for}–${m.goals_against})`}
           >

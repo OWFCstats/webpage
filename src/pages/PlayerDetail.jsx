@@ -113,7 +113,7 @@ function FirstsTable({ firsts }) {
               <td><strong>Debut</strong></td>
               <td>{formatDate(debut.match.date)}</td>
               <td>
-                <Link to={`/matches/${debut.match.id}`}>vs {matchTitle(debut.match)}</Link>{' '}
+                <Link to={`/matchday/${debut.match.id}`}>vs {matchTitle(debut.match)}</Link>{' '}
                 <span className="muted">— {scoreline(debut.match)}</span>
               </td>
             </tr>
@@ -123,7 +123,7 @@ function FirstsTable({ firsts }) {
               <td>
                 {firstGoal ? (
                   <>
-                    <Link to={`/matches/${firstGoal.match.id}`}>vs {matchTitle(firstGoal.match)}</Link>{' '}
+                    <Link to={`/matchday/${firstGoal.match.id}`}>vs {matchTitle(firstGoal.match)}</Link>{' '}
                     <span className="muted">— appearance {firstGoal.appearanceNo}, {scoreline(firstGoal.match)}</span>
                   </>
                 ) : (
@@ -137,7 +137,7 @@ function FirstsTable({ firsts }) {
               <td>
                 {bestGame ? (
                   <>
-                    <Link to={`/matches/${bestGame.match.id}`}>vs {matchTitle(bestGame.match)}</Link>{' '}
+                    <Link to={`/matchday/${bestGame.match.id}`}>vs {matchTitle(bestGame.match)}</Link>{' '}
                     <span className="muted">— {contribution(bestGame.app)}, {scoreline(bestGame.match)}</span>
                     {bestGame.app.motm && <> <span className="tag">MOTM</span></>}
                   </>
@@ -175,7 +175,7 @@ function FormCard({ form, scoringRun, sinceGoal, favouriteOpponent, teams }) {
       <h3 className="card-label">Last {form.length} played</h3>
       <div className="form-games">
         {form.map(({ app, match }) => (
-          <Link key={app.id} to={`/matches/${match.id}`} className="fg" title={`${formatDate(match.date)} vs ${match.opponent}`}>
+          <Link key={app.id} to={`/matchday/${match.id}`} className="fg" title={`${formatDate(match.date)} vs ${match.opponent}`}>
             <span className={`result-pill ${resultOf(match)}`}>{resultOf(match)}</span>
             <span className="fg-op">{match.opponent}</span>
             <span className={`fg-mine${app.goals + app.assists === 0 ? ' blank' : ''}`}>
@@ -395,7 +395,7 @@ function MatchLog({ log, seasons }) {
               <tr key={app.id} className={app.goals + app.assists > 0 ? 'scored-row' : undefined}>
                 <td>{formatDate(match.date)}</td>
                 <td>
-                  <Link to={`/matches/${match.id}`}>vs {match.opponent}</Link>{' '}
+                  <Link to={`/matchday/${match.id}`}>vs {match.opponent}</Link>{' '}
                   <VenueBadge venue={match.venue} />
                 </td>
                 <td>
