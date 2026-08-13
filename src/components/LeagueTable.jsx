@@ -1,37 +1,30 @@
 import { Link } from 'react-router-dom';
+import { useData } from '../context/DataContext';
+import { formatDateTime, leagueStandings } from '../lib/stats';
 
 /**
- * League table widget.
+ * League table widget, reading the standings an admin enters each week
+ * (`league_rows` — see the League tab in admin). Points and goal difference
+ * are derived, never stored; ordering and the join to `teams` live in
+ * leagueStandings().
  *
- * Deliberately unwired. Every other stat on this site is derived from the
- * club's own three tables, but a league table needs *other* clubs' results —
- * a data source that doesn't exist yet (a `league_rows` table, a scrape, or a
- * hand-maintained standings entry screen; that call hasn't been made).
+ * One component, two shapes:
+ *   `full` — the whole division, as the Season page shows it.
+ *   default — our row plus two clubs either side, which is what Home has room
+ *   for and what "how are we doing" actually asks.
  *
- * So the whole widget is finished apart from where the numbers come from: pass
- * `rows` and it renders the real table, pass nothing and it renders the
- * placeholder below. Wiring it up later is a data job, not a build job — no
- * markup or styling work is waiting on that decision.
- *
- * Expected row shape (goal difference is derived here, never stored):
- *
- *   {
- *     position: 3,
- *     club: 'Old Wellingtonians FC',
- *     played: 18, won: 11, drawn: 4, lost: 3,
- *     goalsFor: 34, goalsAgainst: 15,
- *     points: 37,
- *     isUs: true,                     // optional — highlights our own row
- *     form: ['W', 'W', 'D', 'L', 'W'] // optional — oldest first, max 5 shown
- *   }
- *
- * Rows are rendered in the order given; sort before passing them in. When one
- * row carries isUs, only that row and the two clubs either side of it are
- * shown — on a phone "where are we" matters more than the top of a 16-team
- * division.
+ * A season with nothing entered yet keeps the placeholder line rather than a
+ * mocked-up table for data that isn't there.
  */
-export default function LeagueTable({ rows = [], season, showSeasonLink = true }) {
-  const shown = aroundUs(rows);
+export default function LeagueTable({ season, full = false, showSeasonLink = true }) {
+  const { leagueRows, teams } = useData();
+  const { rows, division, updatedAt } = leagueStandings(leagueRows, teams, season);
+  // Ranked before the window is taken, so the numbers down the side of Home's
+  // five rows are still the club's real positions in the division.
+  const ranked = rows.map((r, i) => ({ ...r, rank: r.position ?? i + 1 }));
+  const shown = full ? ranked : aroundUs(ranked);
+  const note = [season, division].filter(Boolean).join(' · ');
+
   return (
     <section className="card home-widget home-table">
       <div className="home-widget-head">
@@ -40,7 +33,7 @@ export default function LeagueTable({ rows = [], season, showSeasonLink = true }
           <h2>League table</h2>
         </div>
         <div className="home-widget-head-right">
-          {season && <span className="home-widget-note">{season}</span>}
+          {note && <span className="home-widget-note">{note}</span>}
           {showSeasonLink && <Link className="more" to="/season">Full standings →</Link>}
         </div>
       </div>
@@ -48,52 +41,53 @@ export default function LeagueTable({ rows = [], season, showSeasonLink = true }
       {shown.length === 0 ? (
         <LeagueTablePlaceholder />
       ) : (
-        <div className="table-wrap">
-          <table className="data league-table">
-            <thead>
-              <tr>
-                <th className="lt-pos">#</th>
-                <th>Club</th>
-                <th className="num lt-hide-narrow">P</th>
-                <th className="num">W</th>
-                <th className="num lt-hide-narrow">D</th>
-                <th className="num">L</th>
-                <th className="num">GD</th>
-                <th className="num">Pts</th>
-              </tr>
-            </thead>
-            <tbody>
-              {shown.map((r) => {
-                const gd = r.goalsFor - r.goalsAgainst;
-                return (
-                  <tr key={r.club} className={r.isUs ? 'lt-us' : undefined}>
-                    <td className="lt-pos">{r.position}</td>
+        <>
+          <div className="table-wrap">
+            <table className="data league-table">
+              <thead>
+                <tr>
+                  <th className="lt-pos">#</th>
+                  <th>Club</th>
+                  <th className="num lt-hide-narrow">P</th>
+                  <th className="num">W</th>
+                  <th className="num lt-hide-narrow">D</th>
+                  <th className="num">L</th>
+                  <th className="num lt-hide-narrow">GF</th>
+                  <th className="num lt-hide-narrow">GA</th>
+                  <th className="num">GD</th>
+                  <th className="num">Pts</th>
+                </tr>
+              </thead>
+              <tbody>
+                {shown.map((r) => (
+                  <tr key={r.id} className={r.isUs ? 'lt-us' : undefined}>
+                    <td className="lt-pos">{r.rank}</td>
                     <td className="lt-club">
-                      {r.club}
-                      {r.form?.length > 0 && (
-                        <span className="lt-form">
-                          {r.form.slice(-5).map((result, i) => (
-                            <i
-                              key={`${result}-${i}`}
-                              className={`lt-dot ${result}`}
-                              title={result}
-                            />
-                          ))}
-                        </span>
-                      )}
+                      {/* Our own name isn't a link — the club page for us is
+                          the site you're already on. */}
+                      {r.isUs || !r.team
+                        ? r.name
+                        : <Link to={`/opponents/${r.team.slug}`}>{r.name}</Link>}
                     </td>
                     <td className="num lt-hide-narrow">{r.played}</td>
                     <td className="num">{r.won}</td>
                     <td className="num lt-hide-narrow">{r.drawn}</td>
                     <td className="num">{r.lost}</td>
-                    <td className="num lt-gd">{gd > 0 ? `+${gd}` : gd}</td>
+                    <td className="num lt-hide-narrow">{r.goals_for}</td>
+                    <td className="num lt-hide-narrow">{r.goals_against}</td>
+                    <td className="num lt-gd">
+                      {r.goalDifference > 0 ? `+${r.goalDifference}` : r.goalDifference}
+                    </td>
                     <td className="num lt-pts">{r.points}</td>
                   </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {updatedAt && (
+            <p className="muted lt-updated">Entered by hand · updated {formatDateTime(updatedAt)}</p>
+          )}
+        </>
       )}
     </section>
   );
@@ -107,12 +101,12 @@ function aroundUs(rows) {
   return rows.slice(Math.max(0, idx - 2), idx + 3);
 }
 
-/** Shown until a standings data source exists. Says what's missing and why,
- *  in one line rather than a mocked-up table for data that isn't there. */
+/** Shown for a season nobody has entered standings for yet — one honest line,
+ *  since the numbers come in by hand and may simply not have arrived. */
 function LeagueTablePlaceholder() {
   return (
     <p className="muted lt-placeholder">
-      Standings aren’t connected yet — a league table needs the other clubs’ results, not just ours.
+      No standings entered for this season yet.
     </p>
   );
 }

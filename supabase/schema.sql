@@ -81,6 +81,31 @@ create table if not exists public.appearances (
   unique (match_id, player_id)
 );
 
+-- Hand-entered league standings: one row per club per season. A league table
+-- is the one thing the club's own results can't derive -- it needs the other
+-- clubs' games -- so an admin types the published table in each week. Points
+-- and goal difference are not stored: both are derived client-side (see
+-- leagueStandings in src/lib/stats.js) like every other stat here.
+create table if not exists public.league_rows (
+  id            uuid primary key default gen_random_uuid(),
+  season        text not null,
+  -- Free-text label for the table, e.g. 'Arthurian League Division 5'.
+  division      text,
+  team_id       uuid not null references public.teams (id),
+  -- The published position, where the league's own order matters more than
+  -- the arithmetic (tie-breaks vary; points deductions don't show up in a
+  -- W/D/L line at all). Null means "rank this row on points, then GD".
+  position      integer,
+  played        integer not null default 0,
+  won           integer not null default 0,
+  drawn         integer not null default 0,
+  lost          integer not null default 0,
+  goals_for     integer not null default 0,
+  goals_against integer not null default 0,
+  -- Set explicitly on every save by the admin page; no trigger.
+  updated_at    timestamptz not null default now()
+);
+
 create index if not exists appearances_match_id_idx  on public.appearances (match_id);
 create index if not exists appearances_player_id_idx on public.appearances (player_id);
 create index if not exists matches_season_idx        on public.matches (season);
@@ -92,6 +117,11 @@ create index if not exists matches_opponent_team_id_idx on public.matches (oppon
 create unique index if not exists teams_name_lower_idx on public.teams (lower(name));
 create unique index if not exists teams_slug_idx        on public.teams (slug);
 
+-- One row per club per season: re-entering the table upserts onto this pair
+-- rather than forking a second row for a club already in it.
+create unique index if not exists league_rows_season_team_idx on public.league_rows (season, team_id);
+create index if not exists league_rows_season_idx on public.league_rows (season);
+
 -- ---------------------------------------------------------------------------
 -- Row Level Security
 -- Public (anon) visitors: read-only. Logged-in (authenticated) admins: full write.
@@ -101,12 +131,13 @@ alter table public.players     enable row level security;
 alter table public.matches     enable row level security;
 alter table public.appearances enable row level security;
 alter table public.teams       enable row level security;
+alter table public.league_rows enable row level security;
 
 do $$
 declare
   t text;
 begin
-  foreach t in array array['players', 'matches', 'appearances', 'teams'] loop
+  foreach t in array array['players', 'matches', 'appearances', 'teams', 'league_rows'] loop
     execute format('drop policy if exists "Public read"  on public.%I', t);
     execute format('drop policy if exists "Admin insert" on public.%I', t);
     execute format('drop policy if exists "Admin update" on public.%I', t);

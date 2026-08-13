@@ -59,8 +59,8 @@ export default function Season() {
   const isLatestSeason = season !== 'all' && activeSeason === seasons[0];
 
   // Games played plus whichever of "started"/"ended" is knowable from the
-  // matches on record — there's no standings feed yet to say where the
-  // season finished (see LeagueTable), so a position isn't part of this line.
+  // matches on record. Where the club finished is a standings question, and
+  // the table below answers it — this line stays about our own results.
   let periodLabel = null;
   if (results.length > 0) {
     const oldest = results[results.length - 1];
@@ -86,9 +86,10 @@ export default function Season() {
 
       <div className="season-layout">
         <div className="season-main">
-          {/* No season note here — the page heading above already says which
-              season this is. */}
-          <LeagueTable showSeasonLink={false} />
+          {/* The whole division, not the window Home shows. "All seasons" has
+              no standings of its own, so it falls back to the latest — which
+              is why the widget still names the season it's showing. */}
+          <LeagueTable season={season === 'all' ? seasons[0] : activeSeason} full showSeasonLink={false} />
 
           <div className="card section">
             <h2>Results</h2>

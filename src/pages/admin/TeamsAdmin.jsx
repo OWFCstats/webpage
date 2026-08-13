@@ -16,7 +16,7 @@ const BLANK = {
 };
 
 export default function TeamsAdmin() {
-  const { teams, matches, refresh } = useData();
+  const { teams, matches, leagueRows, refresh } = useData();
   const [form, setForm] = useState(BLANK);
   const [editingId, setEditingId] = useState(null);
   const [busy, setBusy] = useState(false);
@@ -80,6 +80,14 @@ export default function TeamsAdmin() {
     const count = matchCount.get(t.id) ?? 0;
     if (count > 0) {
       setError(`Can't delete ${t.name} — ${count} match${count === 1 ? '' : 'es'} reference it.`);
+      return;
+    }
+    // League rows point at teams too, and the foreign key would refuse the
+    // delete anyway — better to say which table is holding on to it than to
+    // surface the constraint name.
+    const inTables = leagueRows.filter((r) => r.team_id === t.id).length;
+    if (inTables > 0) {
+      setError(`Can't delete ${t.name} — it's in ${inTables} league table${inTables === 1 ? '' : 's'}.`);
       return;
     }
     if (!window.confirm(`Delete ${t.name}?`)) return;
