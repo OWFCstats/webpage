@@ -9,7 +9,7 @@ and is enforced by Row Level Security, not just the UI.
 
 1. **Database** — in the Supabase Dashboard, open *SQL Editor*, paste the whole
    of [`supabase/schema.sql`](supabase/schema.sql) and run it. It creates the
-   `players`, `matches` and `appearances` tables and the RLS policies
+   `players`, `matches`, `appearances` and `teams` tables and the RLS policies
    (public `select`, writes only for authenticated users).
 2. **Auth** — in *Authentication → Sign In / Up*, turn **off** "Allow new users
    to sign up" (any authenticated user can write, so accounts must be created
@@ -50,13 +50,21 @@ results (W/D/L) are derived from the score when saving a match. A lineup row
 can also be marked "Dropped out (24h)" — those rows are excluded from all
 stats and surface as a separate Dropouts count on the In-Depth page.
 
+`matches.opponent` is still free text, and every public page reads it —
+`teams` (see below) exists alongside it as a proper record per club, linked
+via the nullable `matches.opponent_team_id`, ready for pages to switch over
+to in a later change.
+
 ## Admin flow
 
 Log in via the header → **Admin**:
 
 1. *Players* — add or edit the squad.
-2. *Matches → Create match* — season, date, opponent, competition, score
+2. *Teams* — manage every club (Old Wellingtonians included), their pitch
+   name/address/postcode and a map link. A team referenced by any match
+   can't be deleted until that match no longer points at it.
+3. *Matches → Create match* — season, date, opponent, competition, score
    (leave the score blank for an upcoming fixture).
-3. After saving you land on *Lineup & stats* — tick the squad, mark
+4. After saving you land on *Lineup & stats* — tick the squad, mark
    starters vs subs, enter goals / assists / cards / MOTM per player.
-4. *Report* — write the match report shown on the public match page.
+5. *Report* — write the match report shown on the public match page.

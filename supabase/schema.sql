@@ -15,11 +15,33 @@ create table if not exists public.players (
   created_at timestamptz not null default now()
 );
 
+create table if not exists public.teams (
+  id            uuid primary key default gen_random_uuid(),
+  name          text not null,
+  -- Optional short label for tight layouts (e.g. table columns); falls back
+  -- to `name` wherever it's blank.
+  short_name    text,
+  slug          text not null,
+  -- True only for Old Wellingtonians -- the one row that is us, not an
+  -- opponent. Lets a later issue tell "our pitch" apart from "their pitch".
+  is_club       boolean not null default false,
+  pitch_name    text,
+  pitch_address text,
+  postcode      text,
+  map_url       text,
+  notes         text,
+  created_at    timestamptz not null default now()
+);
+
 create table if not exists public.matches (
   id                uuid primary key default gen_random_uuid(),
   season            text not null,
   date              date not null,
+  -- Free text: this is why lib/stats.js needs slugify() plus fuzzy matching
+  -- to group a club's matches under one page. opponent_team_id below is a
+  -- proper link to public.teams for a later issue's switchover.
   opponent          text not null,
+  opponent_team_id  uuid references public.teams (id),
   competition       text not null,
   -- H = home, A = away, N = neutral. Nullable: not every match has this
   -- recorded, and older rows won't until someone fills it in.
@@ -59,6 +81,12 @@ create index if not exists appearances_match_id_idx  on public.appearances (matc
 create index if not exists appearances_player_id_idx on public.appearances (player_id);
 create index if not exists matches_season_idx        on public.matches (season);
 create index if not exists matches_date_idx          on public.matches (date);
+create index if not exists matches_opponent_team_id_idx on public.matches (opponent_team_id);
+
+-- Case-insensitive: "Old Wimbledonians" and "old wimbledonians" are the same
+-- club and must collide on insert rather than fork a second row.
+create unique index if not exists teams_name_lower_idx on public.teams (lower(name));
+create unique index if not exists teams_slug_idx        on public.teams (slug);
 
 -- ---------------------------------------------------------------------------
 -- Row Level Security
@@ -68,12 +96,13 @@ create index if not exists matches_date_idx          on public.matches (date);
 alter table public.players     enable row level security;
 alter table public.matches     enable row level security;
 alter table public.appearances enable row level security;
+alter table public.teams       enable row level security;
 
 do $$
 declare
   t text;
 begin
-  foreach t in array array['players', 'matches', 'appearances'] loop
+  foreach t in array array['players', 'matches', 'appearances', 'teams'] loop
     execute format('drop policy if exists "Public read"  on public.%I', t);
     execute format('drop policy if exists "Admin insert" on public.%I', t);
     execute format('drop policy if exists "Admin update" on public.%I', t);

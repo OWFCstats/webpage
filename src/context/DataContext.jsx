@@ -12,6 +12,7 @@ export function DataProvider({ children }) {
     players: [],
     matches: [],
     appearances: [],
+    teams: [],
     loading: true,
     error: null,
   });
@@ -27,12 +28,13 @@ export function DataProvider({ children }) {
       return;
     }
     setState((s) => ({ ...s, loading: !hasLoaded.current, error: null }));
-    const [players, matches, appearances] = await Promise.all([
+    const [players, matches, appearances, teams] = await Promise.all([
       supabase.from('players').select('*').order('name'),
       supabase.from('matches').select('*').order('date', { ascending: false }),
       supabase.from('appearances').select('*'),
+      supabase.from('teams').select('*').order('name'),
     ]);
-    const failed = [players, matches, appearances].find((r) => r.error);
+    const failed = [players, matches, appearances, teams].find((r) => r.error);
     if (failed) {
       setState((s) => ({ ...s, loading: false, error: failed.error.message }));
       return;
@@ -42,6 +44,7 @@ export function DataProvider({ children }) {
       players: players.data,
       matches: matches.data,
       appearances: appearances.data,
+      teams: teams.data,
       loading: false,
       error: null,
     });

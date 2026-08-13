@@ -552,6 +552,20 @@ button.small {
   letter-spacing: 0.06em;
 }
 
+.field.checkbox {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.field.checkbox > span {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--ink);
+  text-transform: none;
+  letter-spacing: normal;
+}
+
 .form-actions {
   margin-top: 1rem;
   display: flex;
