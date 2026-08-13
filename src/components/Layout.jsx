@@ -66,7 +66,7 @@ const ICONS = {
 
 export default function Layout() {
   const { session } = useAuth();
-  // The bottom bar carries the four public tabs; on admin screens it would
+  // The bottom bar carries the five public tabs; on admin screens it would
   // only get in the way of the save buttons.
   const isAdmin = useLocation().pathname.startsWith('/admin');
   return (
@@ -81,12 +81,16 @@ export default function Layout() {
             </span>
           </NavLink>
           <nav className="main-nav">
+            {/* Desktop only: below 700px these are hidden by CSS and the
+                bottom tab bar carries the same five sections. */}
             {NAV.map((item) => (
               <NavLink
                 key={item.to}
                 to={item.to}
                 end={item.end}
-                className={({ isActive }) => (isActive ? 'active' : undefined)}
+                className={({ isActive }) =>
+                  isActive ? 'section-link active' : 'section-link'
+                }
               >
                 {item.label}
               </NavLink>
@@ -106,8 +110,8 @@ export default function Layout() {
       <footer className="site-footer">
         Old Wellingtonians FC · est. on the pitch, settled in the bar
       </footer>
-      {/* Phones get the four tabs at thumb height; the top nav still carries
-          Admin. Hidden on desktop via CSS. */}
+      {/* Phones get the five sections at thumb height; the header keeps only
+          the brand and Admin / Log in. Hidden on desktop via CSS. */}
       {!isAdmin && (
         <nav className="tab-bar" aria-label="Primary">
           {NAV.map((item) => (
