@@ -2166,75 +2166,19 @@ button.secondary.active, .btn.secondary.active {
   color: var(--ink-soft);
 }
 
-/* KPI strip: the four numbers that answer "how's the season going" without
-   scrolling. Dark, like the match hero, so the cards below read as detail. */
-.home-kpis {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1rem;
-  margin-bottom: 1.1rem;
-}
-
-.home-kpi {
-  background: var(--black);
-  border-radius: var(--radius);
-  padding: 0.95rem 1.1rem 0.85rem;
-  border-bottom: 3px solid var(--gold);
-  min-width: 0;
-}
-
-.home-kpi.blue { border-bottom-color: var(--blue); }
-
-.home-kpi .k-label {
-  display: block;
-  font-size: 0.62rem;
-  font-weight: 800;
-  letter-spacing: 0.11em;
-  text-transform: uppercase;
-  color: #8e8b83;
-}
-
-.home-kpi .k-value {
-  display: block;
-  margin-top: 0.3rem;
-  font-size: 1.7rem;
-  font-weight: 800;
-  line-height: 1.05;
-  letter-spacing: -0.02em;
-  color: #fff;
-  font-variant-numeric: tabular-nums;
-}
-
-.home-kpi .k-sub {
-  display: block;
-  margin-top: 0.2rem;
-  font-size: 0.72rem;
-  font-weight: 600;
-  color: #9a978e;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* Two independent stacks rather than one grid with shared rows: a short
-   widget beside a tall one would otherwise leave a dead gap under it until
-   the next row started. */
+/* Next fixture and last result lead the page side by side on wider screens;
+   on a phone they stack in DOM order so both still land in the first
+   screen's worth of scrolling. */
 .home-grid {
   display: grid;
-  grid-template-columns: 1.7fr 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 1rem;
   align-items: start;
+  margin-bottom: 1rem;
 }
 
-.home-col {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  min-width: 0;
-}
-
-/* Grid items default to min-width:auto, so a wide table inside one would push
-   the whole track past the viewport and .table-wrap's overflow never engages. */
+/* Grid items default to min-width:auto, so wide content inside one would push
+   the whole track past the viewport. */
 .home-grid > * { min-width: 0; }
 
 .home-widget { padding: 1.05rem 1.15rem 1.2rem; }
@@ -2260,6 +2204,14 @@ button.secondary.active, .btn.secondary.active {
 }
 
 .home-widget-note { font-size: 0.78rem; white-space: nowrap; }
+
+.home-widget-head-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.2rem;
+  flex: none;
+}
 
 .home-widget .more {
   font-size: 0.78rem;
@@ -2295,59 +2247,9 @@ table.data.league-table tr.lt-us:hover { background: rgba(227, 180, 33, 0.14); }
 .lt-dot.D { background: #a3a6ad; }
 .lt-dot.L { background: var(--red); }
 
-/* Placeholder until a standings source exists. The ghost rows show the shape
-   the widget will take, so the space doesn't read as a rendering failure. */
-.lt-placeholder { text-align: center; padding: 0.4rem 0 0.2rem; }
-
-.lt-placeholder-art {
-  display: flex;
-  flex-direction: column;
-  gap: 0.45rem;
-  margin-bottom: 1rem;
-}
-
-.lt-ghost-row {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0.3rem 0.5rem;
-  border-radius: 7px;
-}
-
-.lt-ghost-row.lt-ghost-us { background: rgba(227, 180, 33, 0.13); }
-
-.lt-ghost-pos {
-  width: 14px;
-  height: 8px;
-  border-radius: 3px;
-  background: #e0ddd3;
-  flex: none;
-}
-
-.lt-ghost-bar {
-  height: 8px;
-  border-radius: 4px;
-  background: #e9e6dc;
-}
-
-.lt-ghost-row.lt-ghost-us .lt-ghost-bar { background: rgba(184, 134, 11, 0.35); }
-
-.lt-ghost-pts {
-  width: 20px;
-  height: 8px;
-  border-radius: 3px;
-  background: #e0ddd3;
-  margin-left: auto;
-  flex: none;
-}
-
-.lt-placeholder-title {
-  font-weight: 800;
-  color: var(--black);
-  margin: 0 0 0.25rem;
-}
-
-.lt-placeholder-copy { max-width: 46ch; margin: 0 auto; }
+/* Placeholder until a standings source exists — one honest line, not a
+   mocked-up table for data that isn't there. */
+.lt-placeholder { margin: 0; }
 
 /* ---- next fixture widget ---- */
 
@@ -2428,6 +2330,16 @@ td .fixture-location { margin: 0.25rem 0 0; font-size: 0.78rem; }
 
 /* ---- recent form widget ---- */
 
+/* Stacked on a phone; side by side once the card is wide enough for the
+   sparkline to read as a companion to the list rather than a squeeze. */
+.home-form-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.home-form-main { flex: 1; min-width: 0; }
+
 .home-form-list {
   list-style: none;
   margin: 0.9rem 0 0;
@@ -2453,6 +2365,8 @@ td .fixture-location { margin: 0.25rem 0 0; font-size: 0.78rem; }
   font-variant-numeric: tabular-nums;
 }
 
+.home-form-trend { flex: none; }
+
 .home-spark {
   display: block;
   width: 100%;
@@ -2462,57 +2376,49 @@ td .fixture-location { margin: 0.25rem 0 0; font-size: 0.78rem; }
 
 .home-spark-note { font-size: 0.72rem; margin: 0.25rem 0 0; }
 
-/* ---- top scorer widget ---- */
+@media (min-width: 760px) {
+  .home-form-body { flex-direction: row; align-items: flex-start; gap: 1.6rem; }
+  .home-form-trend { width: 220px; padding-top: 1.6rem; }
+  .home-form-trend .home-spark { margin-top: 0; }
+}
 
-.scorer-row { display: flex; align-items: center; gap: 0.85rem; }
+/* ---- last result widget ---- */
 
-.scorer-avatar {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
+/* Compact and dark, like the KPI strip this replaced — a teaser for the full
+   scoreboard treatment on Matchday, not a second copy of it. */
+.home-result {
   background: var(--black);
-  color: var(--gold);
-  display: grid;
-  place-items: center;
-  font-weight: 800;
-  font-size: 0.95rem;
-  flex: none;
+  color: #f3f0e6;
 }
 
-.scorer-who { min-width: 0; }
+.home-result h2 { color: #fff; }
+.home-result .home-eyebrow { color: var(--blue); }
+.home-result .home-widget-note { color: #9a978e; }
+.home-result .empty { color: #9a978e; }
 
-.scorer-name {
-  display: block;
-  font-size: 1.1rem;
-  font-weight: 800;
-  color: var(--black);
-  line-height: 1.25;
+.hr-score {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0.85rem 0 0.65rem;
 }
 
-.scorer-name:hover { color: var(--gold-deep); }
-.scorer-who .muted { display: block; font-size: 0.8rem; }
-
-.scorer-tally { margin-left: auto; text-align: right; flex: none; }
-
-.scorer-tally b {
-  display: block;
-  font-size: 1.9rem;
+.hr-score-value {
+  font-size: 2rem;
   font-weight: 800;
-  line-height: 1;
-  color: var(--gold-deep);
+  color: #fff;
   font-variant-numeric: tabular-nums;
 }
 
-.scorer-tally em {
-  font-style: normal;
-  font-size: 0.6rem;
-  font-weight: 800;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
+.hr-line {
+  margin: 0.3rem 0;
+  font-size: 0.85rem;
+  color: #cfccc2;
 }
 
-.scorer-foot { margin: 0.7rem 0 0; font-size: 0.8rem; }
+.hr-line strong { color: #fff; }
+
+.home-result .more { color: var(--gold); display: inline-block; margin-top: 0.6rem; }
 
 /* ---- season stats widget ---- */
 
@@ -2603,88 +2509,27 @@ td .fixture-location { margin: 0.25rem 0 0; font-size: 0.78rem; }
   .home-bars { flex: 1; }
 }
 
-/* ---- section cards ---- */
-
-.home-sections {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1rem;
-  margin-top: 1rem;
-}
-
-.home-section-card {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.95rem 1rem;
-  transition: transform 0.12s ease, border-color 0.12s ease;
-}
-
-.home-section-card:hover {
-  transform: translateY(-2px);
-  border-color: var(--gold);
-}
-
-.home-section-icon {
-  width: 38px;
-  height: 38px;
-  border-radius: 10px;
-  flex: none;
-  display: grid;
-  place-items: center;
-  background: rgba(91, 163, 201, 0.16);
-  color: #2d6f96;
-}
-
-.home-section-icon svg {
-  width: 19px;
-  height: 19px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.3;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.home-section-text { min-width: 0; }
-
-.home-section-text strong {
-  display: block;
-  font-size: 0.95rem;
-  color: var(--black);
-}
-
-.home-section-text .muted { font-size: 0.76rem; line-height: 1.35; }
-
 /* ---- home: narrow layouts ---- */
 
 @media (max-width: 900px) {
+  /* Fixture and result stack in DOM order, which already puts the two
+     things a visitor lands on Home for right at the top. */
   .home-grid { grid-template-columns: 1fr; }
-
-  /* The wrappers stop being boxes so their widgets become grid items in one
-     column — which is what lets the fixture jump above the table on a phone
-     while the desktop two-stack layout stays intact. */
-  .home-col { display: contents; }
-
-  .home-next { order: 1; }
-  .home-table { order: 2; }
-  .home-form { order: 3; }
-  .home-scorer { order: 4; }
-
-  .home-sections { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (max-width: 700px) {
-  .home-kpis { grid-template-columns: repeat(2, 1fr); gap: 0.6rem; }
-  .home-kpi { padding: 0.75rem 0.85rem 0.7rem; }
-  .home-kpi .k-value { font-size: 1.4rem; }
   .home-grid { gap: 0.8rem; }
   .home-stats { margin-top: 0.8rem; }
-  .home-sections { gap: 0.7rem; margin-top: 0.8rem; }
   .home-widget { padding: 0.95rem 1rem 1.05rem; }
   .home-head { margin-bottom: 0.9rem; }
 }
 
-@media (max-width: 420px) {
-  .home-sections { grid-template-columns: 1fr; }
+/* Drop the least critical columns rather than let the table scroll
+   sideways on a phone. */
+@media (max-width: 480px) {
+  .league-table .lt-hide-narrow { display: none; }
+
+  /* The club name is what forces the table wider than the columns need —
+     letting it wrap keeps every column on screen without a side-scroll. */
+  .league-table td.lt-club { white-space: normal; max-width: 30vw; }
 }
