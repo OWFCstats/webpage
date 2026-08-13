@@ -19,6 +19,7 @@ const Login = lazy(() => import('./pages/admin/Login'));
 const AdminLayout = lazy(() => import('./pages/admin/AdminLayout'));
 const AdminHome = lazy(() => import('./pages/admin/AdminHome'));
 const PlayersAdmin = lazy(() => import('./pages/admin/PlayersAdmin'));
+const TeamsAdmin = lazy(() => import('./pages/admin/TeamsAdmin'));
 const MatchesAdmin = lazy(() => import('./pages/admin/MatchesAdmin'));
 const MatchForm = lazy(() => import('./pages/admin/MatchForm'));
 const Lineup = lazy(() => import('./pages/admin/Lineup'));
@@ -57,6 +58,7 @@ export default function App() {
                   <Route index element={<AdminHome />} />
                   <Route path="new-result" element={<AddResult />} />
                   <Route path="players" element={<PlayersAdmin />} />
+                  <Route path="teams" element={<TeamsAdmin />} />
                   <Route path="matches" element={<MatchesAdmin />} />
                   <Route path="matches/new" element={<MatchForm />} />
                   <Route path="matches/:matchId" element={<MatchForm />} />
