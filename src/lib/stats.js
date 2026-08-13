@@ -681,7 +681,10 @@ export function playerProfile(player, players, matches, appearances) {
   const pool = playerTotals(players, matches, appearances).filter((r) => r.appearances > 0);
   const rankIn = (rows, key) => {
     const value = rows.find((r) => r.player.id === player.id)?.[key] ?? 0;
-    return { value, rank: rows.filter((r) => r[key] > value).length + 1, of: rows.length };
+    // A zero is not a placing: with nothing recorded the count above you is 0,
+    // which would read as "1st". Null lets the UI leave the position blank.
+    const rank = value > 0 ? rows.filter((r) => r[key] > value).length + 1 : null;
+    return { value, rank, of: rows.length };
   };
   const currentSeason = seasonsOf(matches)[0];
   const seasonPool = currentSeason

@@ -116,7 +116,7 @@ export default function Matchday() {
       <div className="card section form-next">
         <div>
           <div className="mini-label">Form</div>
-          <FormBadges matches={[...form].reverse()} />
+          <FormBadges matches={form} />
         </div>
         {next && (
           <div className="next-up">
@@ -126,7 +126,7 @@ export default function Matchday() {
               <VenueBadge venue={next.venue} />
             </strong>
             <span className="muted">{formatDate(next.date)} · {next.competition}</span>
-            {countdownLabel(next.date) && <span className="muted">{countdownLabel(next.date)}</span>}
+            {countdownLabel(next.date) && <span className="muted">{' · '}{countdownLabel(next.date)}</span>}
           </div>
         )}
       </div>

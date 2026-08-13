@@ -12,9 +12,12 @@ export function ErrorNote({ message }) {
 
 export function FormBadges({ matches }) {
   if (matches.length === 0) return <span className="muted">No results yet</span>;
+  // Callers pass newest-first (formOf); reversing here rather than at each call
+  // site is what keeps every page reading oldest → newest.
+  const oldestFirst = [...matches].reverse();
   return (
     <div className="form-row">
-      {matches.map((m) => {
+      {oldestFirst.map((m) => {
         const r = resultOf(m);
         return (
           <Link
@@ -36,7 +39,7 @@ export function FormBadges({ matches }) {
 export function VenueBadge({ venue }) {
   if (venue !== 'H' && venue !== 'A') return null;
   return (
-    <span className={`venue-badge ${venue}`} title={venue === 'H' ? 'Home' : 'Away'}>
+    <span className="venue-badge" title={venue === 'H' ? 'Home' : 'Away'}>
       {venue}
     </span>
   );
@@ -50,13 +53,12 @@ export function VenueFilter({ value, onChange }) {
     { key: 'A', label: 'Away' },
   ];
   return (
-    <div className="seg" role="tablist" aria-label="Home or away">
+    <div className="seg" role="group" aria-label="Home or away">
       {options.map((opt) => (
         <button
           key={opt.key}
           type="button"
-          role="tab"
-          aria-selected={value === opt.key}
+          aria-pressed={value === opt.key}
           className={value === opt.key ? 'active' : undefined}
           onClick={() => onChange(opt.key)}
         >
