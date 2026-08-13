@@ -694,6 +694,131 @@ button.small {
   }
 }
 
+/* ---- admin league table ---- */
+
+/* The published table, typed in as one grid: position, club, the six columns
+   that get read off the league's own table, then the two derived from them. */
+.league-grid {
+  display: grid;
+  grid-template-columns: 56px minmax(170px, 320px) repeat(6, 58px) 54px 54px 108px;
+  justify-content: start;
+  gap: 0.45rem;
+  align-items: center;
+}
+
+.league-head {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  padding-bottom: 0.4rem;
+  border-bottom: 2px solid var(--line);
+  margin-bottom: 0.5rem;
+}
+
+.league-row {
+  padding: 0.22rem 0;
+}
+
+.league-grid input,
+.league-grid select {
+  width: 100%;
+}
+
+.league-grid .num,
+.league-grid input.num {
+  text-align: center;
+}
+
+.lg-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+/* Every column is captioned by the header row on a wide screen, so the
+   per-input labels only earn their space once that header is gone. */
+.lg-stat > span,
+.lg-derived em { display: none; }
+
+.lg-derived {
+  font-weight: 800;
+  color: var(--ink-soft);
+}
+
+.lg-derived.lg-pts { color: var(--black); }
+
+.lg-actions {
+  display: flex;
+  gap: 0.3rem;
+  justify-content: flex-end;
+}
+
+.lg-actions button {
+  padding: 0.3rem 0.5rem;
+  line-height: 1;
+}
+
+.league-actions { margin-top: 1.2rem; }
+
+.league-save {
+  font-size: 1rem;
+  padding: 0.7rem 1.3rem;
+}
+
+/* Entered on a phone on a Saturday night: one club per block, the six numbers
+   in two rows of three big boxes, and each input captioned now that the
+   header row is gone. */
+@media (max-width: 900px) {
+  .league-head { display: none; }
+
+  .league-grid {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 0.45rem 0.5rem;
+    padding: 0.8rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .league-grid .lg-pos,
+  .league-grid .lg-stat,
+  .league-grid .lg-derived,
+  .league-grid .lg-actions { grid-column: span 2; }
+  .league-grid .lg-club { grid-column: span 4; }
+
+  .lg-stat > span,
+  .lg-derived em {
+    display: block;
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+
+  .lg-derived em { font-style: normal; }
+
+  /* 16px keeps iOS from zooming the page in on focus, and a taller box is a
+     kinder target for a thumb. */
+  .league-grid input,
+  .league-grid select {
+    font-size: 16px;
+    padding: 0.6rem 0.5rem;
+  }
+
+  .lg-actions button { padding: 0.5rem 0.6rem; }
+
+  /* On a phone the bottom of a 16-row table is a long way from the top, so
+     the save follows you down it rather than waiting at the end. */
+  .league-actions {
+    position: sticky;
+    bottom: 0;
+    background: var(--card);
+    border-top: 1px solid var(--line);
+    padding: 0.8rem 0;
+  }
+}
+
 /* ---- searchable player picker ---- */
 
 .picker {
@@ -2217,15 +2342,12 @@ table.data.league-table tr.lt-us { background: rgba(227, 180, 33, 0.1); }
 table.data.league-table tr.lt-us td.lt-pos { color: var(--gold-deep); }
 table.data.league-table tr.lt-us:hover { background: rgba(227, 180, 33, 0.14); }
 
-.lt-form { display: inline-flex; gap: 3px; margin-left: 0.5rem; vertical-align: middle; }
+/* The standings are typed in by hand, so when they were last touched is part
+   of reading them. */
+.lt-updated { margin: 0.7rem 0 0; font-size: 0.78rem; }
 
-.lt-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
-.lt-dot.W { background: var(--green); }
-.lt-dot.D { background: #a3a6ad; }
-.lt-dot.L { background: var(--red); }
-
-/* Placeholder until a standings source exists — one honest line, not a
-   mocked-up table for data that isn't there. */
+/* Shown for a season with nothing entered — one honest line, not a mocked-up
+   table for data that isn't there. */
 .lt-placeholder { margin: 0; }
 
 /* ---- season page: table and results lead the main column, one card

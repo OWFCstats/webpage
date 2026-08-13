@@ -13,6 +13,7 @@ export function DataProvider({ children }) {
     matches: [],
     appearances: [],
     teams: [],
+    leagueRows: [],
     loading: true,
     error: null,
   });
@@ -28,13 +29,14 @@ export function DataProvider({ children }) {
       return;
     }
     setState((s) => ({ ...s, loading: !hasLoaded.current, error: null }));
-    const [players, matches, appearances, teams] = await Promise.all([
+    const [players, matches, appearances, teams, leagueRows] = await Promise.all([
       supabase.from('players').select('*').order('name'),
       supabase.from('matches').select('*').order('date', { ascending: false }),
       supabase.from('appearances').select('*'),
       supabase.from('teams').select('*').order('name'),
+      supabase.from('league_rows').select('*'),
     ]);
-    const failed = [players, matches, appearances, teams].find((r) => r.error);
+    const failed = [players, matches, appearances, teams, leagueRows].find((r) => r.error);
     if (failed) {
       setState((s) => ({ ...s, loading: false, error: failed.error.message }));
       return;
@@ -45,6 +47,7 @@ export function DataProvider({ children }) {
       matches: matches.data,
       appearances: appearances.data,
       teams: teams.data,
+      leagueRows: leagueRows.data,
       loading: false,
       error: null,
     });

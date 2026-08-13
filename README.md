@@ -9,8 +9,8 @@ and is enforced by Row Level Security, not just the UI.
 
 1. **Database** — in the Supabase Dashboard, open *SQL Editor*, paste the whole
    of [`supabase/schema.sql`](supabase/schema.sql) and run it. It creates the
-   `players`, `matches`, `appearances` and `teams` tables and the RLS policies
-   (public `select`, writes only for authenticated users).
+   `players`, `matches`, `appearances`, `teams` and `league_rows` tables and the
+   RLS policies (public `select`, writes only for authenticated users).
 2. **Auth** — in *Authentication → Sign In / Up*, turn **off** "Allow new users
    to sign up" (any authenticated user can write, so accounts must be created
    by you). Then add each admin under *Authentication → Users → Add user*.
@@ -43,7 +43,8 @@ works on GitHub Pages and on a custom domain later — no URL is hardcoded.
 ## How stats work
 
 Everything on the site is computed from the three tables at load time —
-nothing is hardcoded and no stat is stored twice. Clean sheets are derived
+nothing is hardcoded and no stat is stored twice. (The one exception is the
+league table, which needs other clubs' results; see *League standings* below.) Clean sheets are derived
 and team-wide: every player who appeared in a match where the team conceded
 zero gets one (positions are optional labels and affect no stat). Match
 results (W/D/L) are derived from the score when saving a match. A lineup row
@@ -66,6 +67,28 @@ all. Pitch name, address, postcode and map link all come from `teams` — set
 them once per club on the Teams admin page and every fixture against that
 club picks them up.
 
+## League standings
+
+The one table on the site that isn't derived from our own results: a league
+table needs the other clubs' games, and nothing here is scraped. Standings are
+typed in by hand into `league_rows` — one row per club per season, keyed on the
+`teams` row so a club is spelled once and its table row links to the same page
+its fixtures do. An optional `division` labels the table (e.g. "Arthurian
+League Division 5"), and `updated_at` is stamped on every save so the public
+table can say how current it is.
+
+Points and goal difference are **not** columns. Both are derived in the client
+(`leagueStandings` in `src/lib/stats.js`) like every other stat here, so a
+stored total can never drift from the W/D/L it summarises — and there are two
+fewer boxes to fill in on a Saturday night.
+
+Rows sort on points, then goal difference, then goals scored. Where a row
+carries an explicit `position` that wins instead, since leagues apply their own
+tie-breaks and points deductions that a W/D/L line can't show. Home shows our
+row with two clubs either side; the season page shows the whole division. Below
+480px the P, D, GF and GA columns drop out rather than let the table scroll
+sideways.
+
 ## Admin flow
 
 Log in via the header → **Admin**:
@@ -80,3 +103,13 @@ Log in via the header → **Admin**:
 4. After saving you land on *Lineup & stats* — tick the squad, mark
    starters vs subs, enter goals / assists / cards / MOTM per player.
 5. *Report* — write the match report shown on the public match page.
+6. *League* — enter the published standings after the results come in. Pick the
+   season and type the division label, then fill the grid: one row per club,
+   each with a club picker, the position (optional), and P/W/D/L/GF/GA. Add or
+   remove a row, and move a club with the arrows — which carry its typed
+   position with it — or use *Number 1–n* to number the rows as they stand.
+   Points and goal difference update as you type but are never saved. One
+   *Save table* writes the lot: clubs still in the grid are upserted, clubs
+   taken out of it are deleted, and the page shows when it was last updated.
+   The grid stacks to one club per block on a phone, with the save pinned to
+   the bottom of the screen.
