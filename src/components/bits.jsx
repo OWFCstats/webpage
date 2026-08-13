@@ -45,33 +45,10 @@ export function VenueBadge({ venue }) {
   );
 }
 
-/** Overall/Home/Away segmented toggle, styled like the existing view tabs. */
-export function VenueFilter({ value, onChange }) {
-  const options = [
-    { key: 'all', label: 'Overall' },
-    { key: 'H', label: 'Home' },
-    { key: 'A', label: 'Away' },
-  ];
+/** `plain` drops the card surface — for tiles nested inside another card. */
+export function StatTile({ value, label, plain = false }) {
   return (
-    <div className="seg" role="group" aria-label="Home or away">
-      {options.map((opt) => (
-        <button
-          key={opt.key}
-          type="button"
-          aria-pressed={value === opt.key}
-          className={value === opt.key ? 'active' : undefined}
-          onClick={() => onChange(opt.key)}
-        >
-          {opt.label}
-        </button>
-      ))}
-    </div>
-  );
-}
-
-export function StatTile({ value, label }) {
-  return (
-    <div className="card stat-tile">
+    <div className={plain ? 'stat-tile' : 'card stat-tile'}>
       <div className="value">{value}</div>
       <div className="label">{label}</div>
     </div>

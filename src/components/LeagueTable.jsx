@@ -30,7 +30,7 @@ import { Link } from 'react-router-dom';
  * shown — on a phone "where are we" matters more than the top of a 16-team
  * division.
  */
-export default function LeagueTable({ rows = [], season }) {
+export default function LeagueTable({ rows = [], season, showSeasonLink = true }) {
   const shown = aroundUs(rows);
   return (
     <section className="card home-widget home-table">
@@ -41,7 +41,7 @@ export default function LeagueTable({ rows = [], season }) {
         </div>
         <div className="home-widget-head-right">
           {season && <span className="home-widget-note">{season}</span>}
-          <Link className="more" to="/season">Full standings →</Link>
+          {showSeasonLink && <Link className="more" to="/season">Full standings →</Link>}
         </div>
       </div>
 
