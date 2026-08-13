@@ -7,6 +7,7 @@ import {
   countdownLabel,
   fixtures,
   formatDate,
+  formatKickoff,
   formOf,
   isPlayed,
   opponentSlug,
@@ -15,6 +16,7 @@ import {
   seasonsOf,
   seasonSummary,
   seasonTrend,
+  venueTeam,
 } from '../lib/stats';
 
 // The four public sections. Admin is reachable from the top bar only — it's
@@ -133,6 +135,11 @@ export default function Home() {
   const winRate = summary.played ? Math.round((summary.won / summary.played) * 100) : null;
   const goalScale = Math.max(summary.goalsFor, summary.goalsAgainst, 1);
   const countdown = next ? countdownLabel(next.date) : null;
+  const nextKickoff = next ? formatKickoff(next.kickoff_time) : '';
+  const nextVenue = next ? venueTeam(next, teams) : null;
+  const nextVenueParts = nextVenue
+    ? [nextVenue.pitch_name, nextVenue.pitch_address, nextVenue.postcode].filter(Boolean)
+    : [];
 
   return (
     <div className="home">
@@ -230,9 +237,20 @@ export default function Home() {
                   </span>
                 </div>
                 <div className="fixture-meta">
-                  <span><strong>{formatDate(next.date)}</strong></span>
+                  <span><strong>{formatDate(next.date)}</strong>{nextKickoff && ` · ${nextKickoff}`}</span>
                   <span>{next.competition} <VenueBadge venue={next.venue} /></span>
                 </div>
+                {(nextVenueParts.length > 0 || nextVenue?.map_url) && (
+                  <p className="muted fixture-location">
+                    {nextVenueParts.join(', ')}
+                    {nextVenue.map_url && (
+                      <>
+                        {nextVenueParts.length > 0 && ' · '}
+                        <a href={nextVenue.map_url} target="_blank" rel="noreferrer">Map</a>
+                      </>
+                    )}
+                  </p>
+                )}
                 {countdown && <span className="fixture-countdown">{countdown}</span>}
               </>
             ) : (

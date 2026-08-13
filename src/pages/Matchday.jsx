@@ -8,6 +8,7 @@ import {
   countdownLabel,
   fixtures,
   formatDate,
+  formatKickoff,
   formOf,
   latestResult,
   matchContext,
@@ -17,6 +18,7 @@ import {
   resultOf,
   seasonsOf,
   seasonSummary,
+  venueTeam,
 } from '../lib/stats';
 
 // The chips drive one board, not six stacked ones. Club gold leads; the
@@ -61,6 +63,11 @@ export default function Matchday() {
   const form = formOf(scoped);
   const points = summary.won * 3 + summary.drawn;
   const star = latestCtx?.motm[0];
+  const nextKickoff = next ? formatKickoff(next.kickoff_time) : '';
+  const nextVenue = next ? venueTeam(next, teams) : null;
+  const nextVenueParts = nextVenue
+    ? [nextVenue.pitch_name, nextVenue.pitch_address, nextVenue.postcode].filter(Boolean)
+    : [];
 
   if (matches.length === 0 && players.length === 0) {
     return (
@@ -126,8 +133,21 @@ export default function Matchday() {
               <Link to={`/opponents/${opponentSlug(teams, next)}`}>{next.opponent}</Link>{' '}
               <VenueBadge venue={next.venue} />
             </strong>
-            <span className="muted">{formatDate(next.date)} · {next.competition}</span>
+            <span className="muted">
+              {formatDate(next.date)}{nextKickoff && ` · ${nextKickoff}`} · {next.competition}
+            </span>
             {countdownLabel(next.date) && <span className="muted">{' · '}{countdownLabel(next.date)}</span>}
+            {(nextVenueParts.length > 0 || nextVenue?.map_url) && (
+              <span className="muted fixture-location">
+                {nextVenueParts.join(', ')}
+                {nextVenue.map_url && (
+                  <>
+                    {nextVenueParts.length > 0 && ' · '}
+                    <a href={nextVenue.map_url} target="_blank" rel="noreferrer">Map</a>
+                  </>
+                )}
+              </span>
+            )}
           </div>
         )}
       </div>

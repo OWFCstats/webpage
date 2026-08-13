@@ -1191,6 +1191,7 @@ button.small {
 .form-next .next-up { text-align: right; }
 .form-next .next-up strong { display: block; }
 .form-next .next-up .muted { font-size: 0.82rem; }
+.form-next .next-up .fixture-location { display: block; margin-top: 0.15rem; }
 
 .mini-label {
   font-size: 0.68rem;
@@ -2445,6 +2446,9 @@ a.fixture-team:hover { color: var(--gold-deep); }
   font-size: 0.74rem;
   font-weight: 800;
 }
+
+.fixture-location { margin-top: 0.4rem; }
+td .fixture-location { margin: 0.25rem 0 0; font-size: 0.78rem; }
 
 /* ---- recent form widget ---- */
 
