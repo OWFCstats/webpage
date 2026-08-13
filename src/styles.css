@@ -365,21 +365,19 @@ main.page {
   color: #b25317;
 }
 
+/* Plain type rather than a chip: these sit next to the coloured W/D/L pills,
+   and a second filled badge pulled attention away from the result. */
 .venue-badge {
-  display: inline-block;
-  width: 18px;
-  height: 18px;
-  line-height: 18px;
-  text-align: center;
-  border-radius: 5px;
-  font-size: 0.64rem;
-  font-weight: 800;
-  color: #fff;
-  vertical-align: middle;
+  margin-left: 0.4rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #9b978d;
 }
 
-.venue-badge.H { background: var(--blue); }
-.venue-badge.A { background: var(--orange); }
+.latest-hero .venue-badge,
+.scoreboard .venue-badge,
+.player-hero .venue-badge { color: #7d7a72; }
 
 /* ---- tables ---- */
 
@@ -1382,7 +1380,9 @@ button.small {
 
 .sb-strip strong { color: #fff; }
 
-.grid.match-cards { grid-template-columns: 1.35fr 1fr; }
+/* One or two cards depending on whether a "how it compares" average exists,
+   so a lone card has to fill the row instead of leaving a hole. */
+.grid.match-cards { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
 
 .card-label {
   font-size: 0.75rem;

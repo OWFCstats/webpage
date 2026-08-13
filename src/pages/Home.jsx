@@ -247,7 +247,7 @@ export default function Home() {
                 <h2>Recent form</h2>
               </div>
             </div>
-            <FormBadges matches={[...form].reverse()} />
+            <FormBadges matches={form} />
             {form.length > 0 && (
               <ul className="home-form-list">
                 {form.map((m) => (

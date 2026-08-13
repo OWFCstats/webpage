@@ -211,7 +211,9 @@ function RankCard({ ranks }) {
       <ul className="rank-list">
         {ranks.map((r) => (
           <li key={r.key}>
-            <span className={`rank-pos${r.rank <= 3 ? ' top' : ''}`}>{ordinal(r.rank)}</span>
+            <span className={`rank-pos${r.rank != null && r.rank <= 3 ? ' top' : ''}`}>
+              {r.rank == null ? '—' : ordinal(r.rank)}
+            </span>
             <span className="rank-den">of {r.of}</span>
             <span className="rank-what">{r.label}</span>
             <span className="rank-val">{r.value}</span>
@@ -316,7 +318,7 @@ function StatGrid({ career, seasons, ranks, squadAverage, squadMax }) {
           <div key={c.key} className="stat-cell">
             <div className="sc-top">
               <span className="sc-v">{c.decimal ? rate(value) : value}</span>
-              {rank && <span className="sc-rank">{ordinal(rank.rank)}</span>}
+              {rank?.rank != null && <span className="sc-rank">{ordinal(rank.rank)}</span>}
             </div>
             <div className="sc-k">{c.label}</div>
             <Sparkline values={oldestFirst.map((s) => s[c.key])} colour={c.colour} />
