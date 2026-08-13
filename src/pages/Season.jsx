@@ -9,11 +9,11 @@ import {
   fixtures,
   formatDate,
   formOf,
+  opponentSlug,
   playedMatches,
   resultOf,
   seasonsOf,
   seasonSummary,
-  slugify,
 } from '../lib/stats';
 
 // Charts pull in Recharts (~400kB); they stay in their own chunk and load
@@ -21,7 +21,7 @@ import {
 const SeasonCharts = lazy(() => import('../components/SeasonCharts'));
 
 export default function Season() {
-  const { matches, loading, error } = useData();
+  const { matches, teams, loading, error } = useData();
   const seasons = seasonsOf(matches);
   const [season, setSeason] = useState('latest');
   const [view, setView] = useState('results');
@@ -99,7 +99,7 @@ export default function Season() {
                         <td>{formatDate(m.date)}</td>
                         <td>
                           <strong>
-                            vs <Link to={`/opponents/${slugify(m.opponent)}`}>{m.opponent}</Link>
+                            vs <Link to={`/opponents/${opponentSlug(teams, m)}`}>{m.opponent}</Link>
                           </strong>{' '}
                           <VenueBadge venue={m.venue} />
                         </td>

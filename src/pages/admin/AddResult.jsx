@@ -3,8 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useData } from '../../context/DataContext';
 import { Spinner } from '../../components/bits';
-import { formatDate, latestResult, opponentsOf, seasonsOf } from '../../lib/stats';
-import OpponentPicker from '../../components/OpponentPicker';
+import { formatDate, latestResult, seasonsOf } from '../../lib/stats';
+import TeamPicker from '../../components/TeamPicker';
 import SeasonPicker from '../../components/SeasonPicker';
 import WalkoverForm from './WalkoverForm';
 
@@ -38,7 +38,7 @@ function Stepper({ value, onChange, label, max = 99 }) {
 }
 
 export default function AddResult() {
-  const { players, matches, appearances, loading, refresh } = useData();
+  const { players, matches, appearances, teams, loading, refresh } = useData();
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [busy, setBusy] = useState(false);
@@ -49,6 +49,7 @@ export default function AddResult() {
     season: '',
     date: '',
     opponent: '',
+    opponent_team_id: '',
     competition: 'League',
     venue: '',
     goals_for: '',
@@ -70,7 +71,6 @@ export default function AddResult() {
   const lastMatch = latestResult(matches);
   const recentSeasons = seasonsOf(matches).slice(0, 3);
   const defaultSeason = recentSeasons[0] ?? '';
-  const opponents = opponentsOf(matches);
 
   if (loading) return <Spinner />;
 
@@ -84,7 +84,7 @@ export default function AddResult() {
 
   const gf = form.goals_for === '' ? null : Number(form.goals_for);
   const ga = form.goals_against === '' ? null : Number(form.goals_against);
-  const detailsOk = form.date && form.opponent.trim() && (form.season || defaultSeason);
+  const detailsOk = form.date && form.opponent_team_id && (form.season || defaultSeason);
   const scored = [...picked.values()].reduce((s, v) => s + v.goals, 0);
   const ownGoals = Number(form.own_goals_for) || 0;
   const remaining = gf == null ? null : gf - ownGoals - scored;
@@ -115,6 +115,7 @@ export default function AddResult() {
       season: (form.season || defaultSeason).trim(),
       date: form.date,
       opponent: form.opponent.trim(),
+      opponent_team_id: form.opponent_team_id || null,
       competition: form.competition.trim() || 'League',
       venue: form.venue || null,
       goals_for: gf,
@@ -206,10 +207,10 @@ export default function AddResult() {
             </label>
             <div className="field">
               <span>Opponent</span>
-              <OpponentPicker
-                opponents={opponents}
-                value={form.opponent}
-                onChange={(opponent) => setForm({ ...form, opponent })}
+              <TeamPicker
+                teams={teams}
+                value={form.opponent_team_id}
+                onChange={(opponent_team_id, opponent) => setForm({ ...form, opponent_team_id, opponent })}
               />
             </div>
             <label className="field">

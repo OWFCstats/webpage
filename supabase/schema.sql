@@ -37,9 +37,10 @@ create table if not exists public.matches (
   id                uuid primary key default gen_random_uuid(),
   season            text not null,
   date              date not null,
-  -- Free text: this is why lib/stats.js needs slugify() plus fuzzy matching
-  -- to group a club's matches under one page. opponent_team_id below is a
-  -- proper link to public.teams for a later issue's switchover.
+  -- Denormalised name, kept in sync with opponent_team_id on every write so
+  -- anything still reading the text column (older rows, exports) keeps
+  -- working. opponent_team_id is the source of truth for grouping a club's
+  -- matches under one page.
   opponent          text not null,
   opponent_team_id  uuid references public.teams (id),
   competition       text not null,

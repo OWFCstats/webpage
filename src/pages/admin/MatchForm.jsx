@@ -3,15 +3,22 @@ import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useData } from '../../context/DataContext';
 import { Spinner } from '../../components/bits';
-import OpponentPicker from '../../components/OpponentPicker';
+import TeamPicker from '../../components/TeamPicker';
 import SeasonPicker from '../../components/SeasonPicker';
-import { opponentsOf, seasonsOf } from '../../lib/stats';
+import { seasonsOf } from '../../lib/stats';
 
-function toInputs(match) {
+// A row saved before the teams migration (or with a failed backfill) has no
+// opponent_team_id — fall back to a name match so editing it doesn't force
+// re-picking a club that's already in the list.
+function toInputs(match, teams) {
+  const fallbackTeam = match && !match.opponent_team_id
+    ? teams.find((t) => t.name.toLowerCase() === match.opponent?.toLowerCase())
+    : null;
   return {
     season: match?.season ?? '',
     date: match?.date ?? '',
     opponent: match?.opponent ?? '',
+    opponent_team_id: match?.opponent_team_id ?? fallbackTeam?.id ?? '',
     competition: match?.competition ?? 'League',
     venue: match?.venue ?? '',
     goals_for: match?.goals_for ?? '',
@@ -36,13 +43,12 @@ export default function MatchForm() {
 
 function MatchFormInner({ match, isNew, matchId }) {
   const navigate = useNavigate();
-  const { matches, refresh } = useData();
-  const [form, setForm] = useState(() => toInputs(match));
+  const { matches, teams, refresh } = useData();
+  const [form, setForm] = useState(() => toInputs(match, teams));
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
 
   const seasons = seasonsOf(matches);
-  const opponents = opponentsOf(matches);
 
   const set = (key) => (e) => setForm({ ...form, [key]: e.target.value });
 
@@ -50,7 +56,7 @@ function MatchFormInner({ match, isNew, matchId }) {
   const ga = form.goals_against === '' ? null : Number(form.goals_against);
   const played = gf != null && ga != null;
   const result = !played ? null : gf > ga ? 'W' : gf < ga ? 'L' : 'D';
-  const canSubmit = form.season.trim() && form.date && form.opponent.trim();
+  const canSubmit = form.season.trim() && form.date && form.opponent_team_id;
 
   async function submit(e) {
     e.preventDefault();
@@ -60,6 +66,7 @@ function MatchFormInner({ match, isNew, matchId }) {
       season: form.season.trim(),
       date: form.date,
       opponent: form.opponent.trim(),
+      opponent_team_id: form.opponent_team_id || null,
       competition: form.competition.trim(),
       venue: form.venue || null,
       goals_for: gf,
@@ -112,10 +119,10 @@ function MatchFormInner({ match, isNew, matchId }) {
           </label>
           <div className="field">
             <span>Opponent</span>
-            <OpponentPicker
-              opponents={opponents}
-              value={form.opponent}
-              onChange={(opponent) => setForm({ ...form, opponent })}
+            <TeamPicker
+              teams={teams}
+              value={form.opponent_team_id}
+              onChange={(opponent_team_id, opponent) => setForm({ ...form, opponent_team_id, opponent })}
             />
           </div>
           <label className="field">

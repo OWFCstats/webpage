@@ -12,11 +12,11 @@ import {
   latestResult,
   matchContext,
   matchTitle,
+  opponentSlug,
   playerTotals,
   resultOf,
   seasonsOf,
   seasonSummary,
-  slugify,
 } from '../lib/stats';
 
 // The chips drive one board, not six stacked ones. Club gold leads; the
@@ -31,7 +31,7 @@ const BOARDS = [
 ];
 
 export default function Matchday() {
-  const { players, matches, appearances, loading, error } = useData();
+  const { players, matches, appearances, teams, loading, error } = useData();
   const [board, setBoard] = useState('goals');
   const [venueFilter, setVenueFilter] = useState('all');
 
@@ -123,7 +123,7 @@ export default function Matchday() {
           <div className="next-up">
             <div className="mini-label">Next up</div>
             <strong>
-              <Link to={`/opponents/${slugify(next.opponent)}`}>{next.opponent}</Link>{' '}
+              <Link to={`/opponents/${opponentSlug(teams, next)}`}>{next.opponent}</Link>{' '}
               <VenueBadge venue={next.venue} />
             </strong>
             <span className="muted">{formatDate(next.date)} · {next.competition}</span>

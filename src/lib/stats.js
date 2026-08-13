@@ -20,10 +20,6 @@ export function seasonsOf(matches) {
   return [...new Set(matches.map((m) => m.season))].sort().reverse();
 }
 
-export function opponentsOf(matches) {
-  return [...new Set(matches.map((m) => m.opponent))].filter(Boolean).sort();
-}
-
 /** URL-safe slug for an opponent name, e.g. "St. George's OB" -> "st-george-s-ob". */
 export function slugify(name) {
   return name
@@ -34,26 +30,37 @@ export function slugify(name) {
 }
 
 /**
- * Resolves a route slug back to an opponent and every match against them,
- * grouping strictly by exact string match on `opponent` (the opponent picker
- * keeps new rows consistent, but older rows may still disagree on casing —
- * those would slugify the same but not group together here). If more than
- * one exact spelling happens to share a slug, the spelling used most
- * recently is treated as canonical. Returns null if nothing matches.
+ * Resolves a route slug back to a team and every match against them, via
+ * `teams.slug`. A match created before the teams migration (or a failed
+ * backfill) carries no `opponent_team_id`, so those rows fall back to a
+ * case-insensitive match on the free-text `opponent` column. Returns null if
+ * the slug matches no team.
  */
-export function opponentMatches(matches, slug) {
-  const candidates = opponentsOf(matches).filter((name) => slugify(name) === slug);
-  if (candidates.length === 0) return null;
-  const mostRecentDate = (name) =>
-    matches
-      .filter((m) => m.opponent === name)
-      .reduce((latest, m) => (m.date > latest ? m.date : latest), '');
-  const canonical = candidates.slice().sort((a, b) => (mostRecentDate(a) < mostRecentDate(b) ? 1 : -1))[0];
+export function opponentMatches(matches, teams, slug) {
+  const team = teams.find((t) => t.slug === slug);
+  if (!team) return null;
   return {
-    opponent: canonical,
-    otherSpellings: candidates.filter((name) => name !== canonical),
-    matches: matches.filter((m) => m.opponent === canonical),
+    team,
+    matches: matches.filter((m) =>
+      m.opponent_team_id
+        ? m.opponent_team_id === team.id
+        : m.opponent?.toLowerCase() === team.name.toLowerCase(),
+    ),
   };
+}
+
+/**
+ * Route slug for a match's opponent: the team's own slug when
+ * `opponent_team_id` resolves, otherwise (a pre-migration row, or a failed
+ * backfill) a slug of the free-text `opponent` so the link still resolves.
+ * Also accepts opponent-shaped objects without an id (e.g. favouriteOpponent)
+ * and falls back to a name match against `teams`.
+ */
+export function opponentSlug(teams, match) {
+  const team = match.opponent_team_id
+    ? teams.find((t) => t.id === match.opponent_team_id)
+    : teams.find((t) => t.name.toLowerCase() === match.opponent?.toLowerCase());
+  return team ? team.slug : slugify(match.opponent ?? '');
 }
 
 /** Matches sorted newest-first that have a final score. */
