@@ -80,6 +80,15 @@ export function seasonTrend(matches) {
     });
 }
 
+/** The last row in `points` where `key` is present — a season's line can end
+ *  before the shared axis does, so "last point" isn't just `points.length - 1`. */
+export function lastDefinedIndex(points, key) {
+  for (let i = points.length - 1; i >= 0; i--) {
+    if (points[i][key] != null) return i;
+  }
+  return -1;
+}
+
 /**
  * Cumulative points for every season on a shared matchday axis, for overlaying
  * past seasons behind the current one. Returns

@@ -515,22 +515,51 @@ files.
 
 ## Charts
 
-The current charts read as generated because of `type="monotone"` smoothing and
+The charts used to read as generated, from `type="monotone"` smoothing and
 gradient area fills. Rules:
 
 - **`type="linear"`.** A season is a sequence of discrete matches, not a smooth
   curve. Straight segments between real points tell the truth.
 - **No gradient fills.** A flat fill at low alpha, or no fill.
 - **Horizontal grid only**, hairline `--rule`, no vertical lines, no axis lines.
+  `axisLine={false}` alongside the `tickLine={false}` that was already there —
+  the tick text is the only thing an axis draws now.
 - **Label the series directly** at the end of its line where there's room, and
   drop the legend. Every series colour clears 4.5:1 on paper, so a label can
   take the line's own colour.
-- **Tabular figures** on every axis and tooltip, in `--font-data`.
+- **Tabular figures** on every axis and tooltip, in `--font-data`. The tooltip
+  already had this, in CSS. The axis needed the same route rather than the
+  tick style object every chart passes to Recharts: `font-variant-numeric`
+  isn't in the attribute allowlist Recharts filters that object through, so it
+  gets silently dropped where `fontSize` and `fill` survive. A class selector
+  in `charts.css` (`.recharts-cartesian-axis-tick text`) isn't filtered by
+  Recharts at all — it's a stylesheet rule same as any other, so `var()` works
+  there.
 - **Series colours from the token order.** Never a literal, never a per-call
   prop.
 - **Every chart keeps its "Show data" table.** This already exists and is the
   best thing about the current charts — a chart is a view of the numbers, not a
   replacement for them.
+
+`components/ChartEndLabel.jsx` is the one label renderer shared by every line
+and area — season and career alike — since "render text at a series' last real
+point" doesn't change between them.
+
+Two judgement calls on what gets labelled and what doesn't:
+
+- **Points accumulated labels the focused season only.** The other seasons on
+  that chart are grey context, drawn to show shape, not identity — the finding
+  sentence above the chart already names the one that matters, and "Show data"
+  still headers every column with its season. Labelling all of them would be
+  the legend again, just moved onto the plot.
+- **A label needs its own lane.** The career arc's three end labels stack
+  vertically (`dy` of `-8`/`0`/`8`) because goals, assists and their sum
+  converge at a career's end far more often than a season's results do — three
+  labels landing on the same point read as one run-on word without it.
+
+No end label renders below 700px (`useIsNarrow`) on any chart — a phone-width
+plot has no lane for one without crowding the line data itself. The tooltip and
+the data table carry series identity there instead.
 
 ## Motion
 

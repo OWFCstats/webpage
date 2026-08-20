@@ -366,14 +366,28 @@ Two things rode along:
 
 ---
 
-## Phase 7 — Charts
+## Phase 7 — Charts ✅
 
-Apply the chart rules from `DESIGN.md`: `type="linear"`, no gradient fills,
-horizontal grid only, direct series labels instead of legends, tabular figures,
-token colours. Keep every "Show data" table.
+Applied the chart rules from `DESIGN.md` to both Recharts consumers —
+`SeasonCharts.jsx`'s three season plots and `PlayerCareerChart.jsx`'s career
+arc: `type="linear"`, no gradient fills, horizontal grid only with no axis
+lines, direct series labels instead of legends, tabular figures, token
+colours. Every "Show data" table is untouched — it was already the best thing
+about the old charts, and nothing here needed it to change.
 
 **Done means:** no `type="monotone"` and no `linearGradient` anywhere in the
-codebase.
+codebase. Verified with a grep across `src/`, not by eye — both terms turn up
+only in this file and in `DESIGN.md`'s account of the old behaviour.
+
+`components/ChartEndLabel.jsx` is new: one label renderer, shared by every line
+and area on the site, rather than the copy that `SeasonCharts.jsx` alone used
+to carry. The judgement calls on what it labels — the focused season only on
+the multi-season chart, a `dy` stagger where three series converge on one
+point — are recorded in `DESIGN.md`'s *Charts* section, next to the rules they
+apply.
+
+The two dead rules Phase 1 flagged and left for this phase, `.chart-split` and
+`.chart-body.auto`, are gone — neither was reachable from any component.
 
 ---
 

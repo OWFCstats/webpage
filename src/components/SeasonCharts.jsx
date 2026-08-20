@@ -5,7 +5,6 @@ import {
   CartesianGrid,
   Label,
   LabelList,
-  Legend,
   Line,
   LineChart,
   ResponsiveContainer,
@@ -17,19 +16,20 @@ import { useData } from '../context/DataContext';
 import { useIsNarrow } from '../lib/useIsNarrow';
 import { formatDate } from '../lib/format';
 import {
+  lastDefinedIndex,
   seasonPointsComparison,
   seasonTrend,
   stableColourSlots,
   topScorerRace,
 } from '../lib/charts';
 import { fontPx, series, token } from '../lib/tokens';
+import ChartEndLabel from './ChartEndLabel';
 
 // Recharts writes these into SVG attributes, where var() is invalid, so they
 // are read out of tokens.css rather than written down again here. Read at
 // render rather than at module load: the stylesheet has to be applied first.
 const chartColours = () => ({
   grid: token('--rule'),
-  axis: token('--rule-firm'),
   muted: token('--ink-soft'),
   past: token('--ink-faint'),
   positive: token('--series-2'),
@@ -76,15 +76,6 @@ function staggerOffsets(entries, gap = 14) {
     ids.forEach((id, i) => offsets.set(id, (i - (ids.length - 1) / 2) * gap));
   }
   return offsets;
-}
-
-function EndLabel({ x, y, value, index, lastIndex, fill, text, dy = 0 }) {
-  if (index !== lastIndex) return null;
-  return (
-    <text x={x + 8} y={y + dy} dy={4} fill={fill} fontSize={fontPx('--t-micro')} fontWeight={600}>
-      {text ?? value}
-    </text>
-  );
 }
 
 function TooltipBox({ active, payload, label, labelKey, unit }) {
@@ -160,13 +151,16 @@ export default function SeasonCharts({ season, activeSeason }) {
   const currentSeason = comparison.seasons[0];
 
   // 0.75rem is the floor everywhere, charts included — a 10px axis tick was
-  // the smallest type on the site.
+  // the smallest type on the site. Tabular figures land in charts.css: an SVG
+  // presentation attribute can't carry font-variant-numeric (Recharts drops
+  // any tick style key outside its own allowlist), but a class selector can.
   const tick = { fontSize: fontPx('--t-micro'), fill: c.muted };
   // 26 was sized for a 10px tick; two digits at the 0.75rem floor need 30.
   const yWidth = narrow ? 30 : 36;
-  const rightGap = narrow ? 12 : 20;
+  // Right margin leaves room for the end-of-line series labels that replace
+  // the legend — narrow screens drop the labels rather than shrink the plot.
   const raceRightGap = narrow ? 12 : 78;
-  const legendStyle = { fontSize: fontPx('--t-micro'), paddingTop: 6 };
+  const labelRightGap = narrow ? 12 : 64;
 
   const colourFor = (playerId, fallbackIndex) =>
     series(colourSlots.get(playerId) ?? fallbackIndex);
@@ -197,19 +191,17 @@ export default function SeasonCharts({ season, activeSeason }) {
         }
       >
         <ResponsiveContainer>
-          {/* Right margin leaves room for the end-of-line name labels. */}
           <LineChart data={race.points} margin={{ top: 8, right: raceRightGap, bottom: 24, left: 4 }}>
             <CartesianGrid stroke={c.grid} vertical={false} />
-            <XAxis dataKey="matchday" tick={tick} stroke={c.axis} tickLine={false}>
+            <XAxis dataKey="matchday" tick={tick} axisLine={false} tickLine={false}>
               <Label value="Matchday" position="insideBottom" offset={-12} style={tick} />
             </XAxis>
-            <YAxis allowDecimals={false} tick={tick} stroke={c.axis} tickLine={false} width={yWidth} />
+            <YAxis allowDecimals={false} tick={tick} axisLine={false} tickLine={false} width={yWidth} />
             <Tooltip content={<TooltipBox labelKey="label" unit=" goals" />} />
-            <Legend verticalAlign="bottom" iconType="plainline" wrapperStyle={legendStyle} />
             {race.players.map((p, i) => (
               <Line
                 key={p.id}
-                type="monotone"
+                type="linear"
                 dataKey={p.id}
                 name={p.name}
                 stroke={colourFor(p.id, i)}
@@ -221,7 +213,7 @@ export default function SeasonCharts({ season, activeSeason }) {
                   <LabelList
                     dataKey={p.id}
                     content={
-                      <EndLabel
+                      <ChartEndLabel
                         lastIndex={race.points.length - 1}
                         fill={colourFor(p.id, i)}
                         text={p.name.split(' ')[0]}
@@ -266,15 +258,16 @@ export default function SeasonCharts({ season, activeSeason }) {
         }
       >
         <ResponsiveContainer>
-          <LineChart data={comparison.points} margin={{ top: 8, right: rightGap, bottom: 24, left: 4 }}>
+          <LineChart data={comparison.points} margin={{ top: 8, right: labelRightGap, bottom: 24, left: 4 }}>
             <CartesianGrid stroke={c.grid} vertical={false} />
-            <XAxis dataKey="matchday" tick={tick} stroke={c.axis} tickLine={false}>
+            <XAxis dataKey="matchday" tick={tick} axisLine={false} tickLine={false}>
               <Label value="Matchday" position="insideBottom" offset={-12} style={tick} />
             </XAxis>
-            <YAxis allowDecimals={false} tick={tick} stroke={c.axis} tickLine={false} width={yWidth} />
+            <YAxis allowDecimals={false} tick={tick} axisLine={false} tickLine={false} width={yWidth} />
             <Tooltip content={<TooltipBox labelKey="__none" unit=" pts" />} />
-            <Legend verticalAlign="bottom" iconType="plainline" wrapperStyle={legendStyle} />
-            {/* Oldest first so the focused season paints on top. */}
+            {/* Oldest first so the focused season paints on top. Past seasons are
+                unlabelled context — the finding sentence already names the one
+                that matters, and every season keeps its column in "Show data". */}
             {[...comparison.seasons].reverse().map((s) => {
               const isFocused = s === (season === 'all' ? currentSeason : activeSeason);
               return (
@@ -289,7 +282,20 @@ export default function SeasonCharts({ season, activeSeason }) {
                   dot={false}
                   activeDot={{ r: 4, strokeWidth: 2, stroke: c.dot }}
                   connectNulls={false}
-                />
+                >
+                  {isFocused && !narrow && (
+                    <LabelList
+                      dataKey={s}
+                      content={
+                        <ChartEndLabel
+                          lastIndex={lastDefinedIndex(comparison.points, s)}
+                          fill={series(0)}
+                          text={s}
+                        />
+                      }
+                    />
+                  )}
+                </Line>
               );
             })}
           </LineChart>
@@ -322,33 +328,41 @@ export default function SeasonCharts({ season, activeSeason }) {
         }
       >
         <ResponsiveContainer>
-          <AreaChart data={trend} margin={{ top: 8, right: rightGap, bottom: 24, left: 4 }}>
-            <defs>
-              <linearGradient id="gf" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor={c.positive} stopOpacity={0.18} />
-                <stop offset="100%" stopColor={c.positive} stopOpacity={0.02} />
-              </linearGradient>
-            </defs>
+          <AreaChart data={trend} margin={{ top: 8, right: labelRightGap, bottom: 24, left: 4 }}>
             <CartesianGrid stroke={c.grid} vertical={false} />
-            <XAxis dataKey="matchday" tick={tick} stroke={c.axis} tickLine={false}>
+            <XAxis dataKey="matchday" tick={tick} axisLine={false} tickLine={false}>
               <Label value="Matchday" position="insideBottom" offset={-12} style={tick} />
             </XAxis>
-            <YAxis allowDecimals={false} tick={tick} stroke={c.axis} tickLine={false} width={yWidth} />
+            <YAxis allowDecimals={false} tick={tick} axisLine={false} tickLine={false} width={yWidth} />
             <Tooltip content={<TooltipBox labelKey="label" />} />
-            <Legend verticalAlign="bottom" iconType="plainline" wrapperStyle={legendStyle} />
-            {/* Linear, not smoothed: each point is a discrete match result. */}
+            {/* Linear, not smoothed: each point is a discrete match result. A flat
+                low-alpha fill, not a gradient, per the chart rules. */}
             <Area
               type="linear" dataKey="goalsFor" name="Scored"
-              stroke={c.positive} strokeWidth={2} fill="url(#gf)"
+              stroke={c.positive} strokeWidth={2} fill={c.positive} fillOpacity={0.12}
               dot={{ r: 2.5, fill: c.positive, strokeWidth: 0 }}
               activeDot={{ r: 5, strokeWidth: 2, stroke: c.dot }}
-            />
+            >
+              {!narrow && (
+                <LabelList
+                  dataKey="goalsFor"
+                  content={<ChartEndLabel lastIndex={trend.length - 1} fill={c.positive} text="Scored" />}
+                />
+              )}
+            </Area>
             <Area
               type="linear" dataKey="goalsAgainst" name="Conceded"
               stroke={c.negative} strokeWidth={2} fill="none" strokeOpacity={0.9}
               dot={{ r: 2.5, fill: c.negative, strokeWidth: 0 }}
               activeDot={{ r: 5, strokeWidth: 2, stroke: c.dot }}
-            />
+            >
+              {!narrow && (
+                <LabelList
+                  dataKey="goalsAgainst"
+                  content={<ChartEndLabel lastIndex={trend.length - 1} fill={c.negative} text="Conceded" dy={-10} />}
+                />
+              )}
+            </Area>
           </AreaChart>
         </ResponsiveContainer>
       </ChartCard>
