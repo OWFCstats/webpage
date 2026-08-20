@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import SortableTable from './SortableTable';
-import { initials, rate } from '../lib/format';
+import SortableTable from '../SortableTable';
+import { initials, rate } from '../../lib/format';
 
 // The roster leads with the regulars; the long tail of one-game players
 // collapses behind one honest link instead of padding the page with zeroes.

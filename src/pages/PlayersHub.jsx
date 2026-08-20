@@ -3,7 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import { ErrorNote, SeasonSelect, Spinner } from '../components/bits';
 import LeaderBoards from '../components/LeaderBoards';
-import SquadList from '../components/SquadList';
+import SquadList from '../components/players-hub/SquadList';
 import { plural } from '../lib/format';
 import { isPlayed, seasonsOf } from '../lib/matches';
 import { playerTotals } from '../lib/players';

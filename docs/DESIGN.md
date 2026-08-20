@@ -624,6 +624,13 @@ One file under `components/` is a surface rather than a component style, and
 that is deliberate: `plate.css` holds the third surface because keeping it with
 its component is what stops it spreading. See *Plate* above.
 
+These layers are ordered by how broadly a rule applies, not by who owns the
+component — which is the opposite of how `src/components/` is arranged, and
+deliberately so. `squad-list.css` styles a component only the Players page
+renders, and it still belongs under `components/`: it dresses a component, and
+the cascade cares about that rather than about which page mounts it.
+`pages/` is for a page's own layout — the grid it arranges its sections in.
+
 `tokens.css` carries one media query, and it is the only selector allowed to
 join `:root` there: `--t-display` and `--t-headline` drop a step on a phone,
 and putting that in the token layer is what stops every page from having to

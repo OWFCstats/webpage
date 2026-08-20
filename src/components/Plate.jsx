@@ -28,8 +28,10 @@ export function Plate({ tier, mark, label, note, earned }) {
 export default function PlateShelf({ plates }) {
   return (
     <div className="plates">
-      {plates.map((p) => (
-        <Plate key={p.key} {...p} />
+      {/* `key` is pulled out rather than spread: it's part of the plate's data,
+          and React warns about a key arriving through a spread. */}
+      {plates.map(({ key, ...plate }) => (
+        <Plate key={key} {...plate} />
       ))}
     </div>
   );

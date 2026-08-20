@@ -1,16 +1,5 @@
 /* Matchday: the scoreboard, the archive stepper, and the per-match cards. */
 
-/* Nothing renders .scoreline — the scoreboard sets its own figure sizes.
-   Left for Phase 8, which rewrites this page's components and can say whether
-   a shared score style is wanted. */
-.scoreline {
-  font-family: var(--font-display);
-  font-size: var(--t-headline);
-  font-weight: 600;
-  letter-spacing: -0.015em;
-  font-variant-numeric: tabular-nums;
-}
-
 .report-body {
   max-width: 720px;
   font-size: var(--t-body);

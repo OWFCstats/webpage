@@ -67,3 +67,11 @@ export function plural(n, one, many) {
 export function initials(name) {
   return name.split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase();
 }
+
+/** "3rd" — for a rank shown beside a figure. Two pages want it (a player's
+ *  rank list and their stat grid), so it lives here rather than in either. */
+export function ordinal(n) {
+  const s = ['th', 'st', 'nd', 'rd'];
+  const v = n % 100;
+  return n + (s[(v - 20) % 10] || s[v] || s[0]);
+}

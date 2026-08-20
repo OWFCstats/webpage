@@ -232,6 +232,13 @@ export function matchContext(match, players, matches, appearances) {
         a.player.name.localeCompare(b.player.name),
     );
 
+  // Named separately from the squad: a dropout isn't an appearance, so it's
+  // filtered out of appsByMatch above, but the page still says who pulled out.
+  const dropoutNames = appearances
+    .filter((a) => a.match_id === match.id && a.dropout)
+    .map((a) => playerById.get(a.player_id)?.name)
+    .filter(Boolean);
+
   const priorSummary = seasonSummary(before);
   const margin = isPlayed(match) ? match.goals_for - match.goals_against : null;
   const bestMargin = Math.max(
@@ -245,6 +252,7 @@ export function matchContext(match, players, matches, appearances) {
     squad,
     scorers: squad.filter((a) => a.goals > 0),
     motm: squad.filter((a) => a.motm),
+    dropoutNames,
     debutIds,
     seasonAppCount,
     boot,
