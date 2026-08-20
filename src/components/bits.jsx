@@ -56,7 +56,7 @@ export function StatTile({ value, label, plain = false }) {
   );
 }
 
-export function SeasonSelect({ seasons, value, onChange, allowAll = true }) {
+export function SeasonSelect({ seasons, value, onChange, allowAll = true, allLabel = 'All seasons' }) {
   // Generated, not hardcoded: two pickers on one page would otherwise share an
   // id and the second label would point at the first select.
   const id = useId();
@@ -64,7 +64,9 @@ export function SeasonSelect({ seasons, value, onChange, allowAll = true }) {
     <div className="controls">
       <label htmlFor={id}>Season</label>
       <select id={id} value={value} onChange={(e) => onChange(e.target.value)}>
-        {allowAll && <option value="all">All seasons</option>}
+        {/* "All time" where the option is a leaderboard rather than a filter —
+            a career total isn't a season you can pick. */}
+        {allowAll && <option value="all">{allLabel}</option>}
         {seasons.map((s) => (
           <option key={s} value={s}>{s}</option>
         ))}

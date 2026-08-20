@@ -1,9 +1,21 @@
 import { Link } from 'react-router-dom';
+import { plural, rate } from '../lib/format';
+import { statLeaders } from '../lib/players';
 import { statToken } from '../lib/tokens';
 
 // The bars read their colour from --bar-accent, so the token name goes in as a
 // CSS custom property and the fill rules stay in bar-board.css.
 const accentStyle = (statKey) => ({ '--bar-accent': `var(${statToken(statKey)})` });
+
+/**
+ * What the row limit left out at the same mark as the last name shown. A cut
+ * that lands inside a tie makes the last name on the board read as the last
+ * name there is, which is the one thing a leaderboard mustn't say.
+ */
+function LevelNote({ count, value }) {
+  if (count === 0) return null;
+  return <p className="muted card-foot">…and {count} more level on {value}.</p>;
+}
 
 /**
  * Ranked bar board: name, proportional bar, total. The leader's bar is full and
@@ -15,29 +27,28 @@ const accentStyle = (statKey) => ({ '--bar-accent': `var(${statToken(statKey)})`
  * goals are the same brass wherever they're ranked — see lib/tokens.js.
  */
 export default function BarBoard({ title, rows, statKey, limit = 8, bare = false }) {
-  const ranked = rows
-    .filter((r) => r[statKey] > 0)
-    .sort((a, b) => b[statKey] - a[statKey] || a.player.name.localeCompare(b.player.name))
-    .slice(0, limit);
-  const max = ranked[0]?.[statKey] ?? 0;
+  const { ranked, value, alsoLevel } = statLeaders(rows, statKey, limit);
 
   const body = ranked.length === 0 ? (
     <p className="muted">Nothing recorded yet.</p>
   ) : (
-    <ol className="bar-list" style={accentStyle(statKey)}>
-      {ranked.map((r) => (
-        <li key={r.player.id} className="bar-row">
-          <Link className="bar-name" to={`/players/${r.player.id}`}>{r.player.name}</Link>
-          <span className="bar-value">{r[statKey]}</span>
-          <span className="bar-track">
-            <span
-              className="bar-fill"
-              style={{ width: `${max ? (r[statKey] / max) * 100 : 0}%` }}
-            />
-          </span>
-        </li>
-      ))}
-    </ol>
+    <>
+      <ol className="bar-list" style={accentStyle(statKey)}>
+        {ranked.map((r) => (
+          <li key={r.player.id} className="bar-row">
+            <Link className="bar-name" to={`/players/${r.player.id}`}>{r.player.name}</Link>
+            <span className="bar-value">{r[statKey]}</span>
+            <span className="bar-track">
+              <span
+                className="bar-fill"
+                style={{ width: `${value ? (r[statKey] / value) * 100 : 0}%` }}
+              />
+            </span>
+          </li>
+        ))}
+      </ol>
+      <LevelNote count={alsoLevel} value={ranked[ranked.length - 1][statKey]} />
+    </>
   );
 
   if (bare) return body;
@@ -71,47 +82,71 @@ export function ChaseRow({ rank, row, statKey, max }) {
   );
 }
 
+/** Past this many level at the top, the band stops naming them: three names in
+ *  the display face is a headline, six is a list in the wrong place. */
+const SHARED_NAMED = 3;
+
 /**
  * Headline board: the leader gets the dark band and a large tally, the chasers
- * sit beneath. Used for the one stat the page is really about.
+ * sit beneath. Used for the one stat the page is really about, and it is the
+ * only `.board` on the page that carries it.
+ *
+ * A shared lead is named in full — two players level both lead it, and the rows
+ * can't say which of them mattered more, the same rule the honours board
+ * follows. Past three, the band names nobody and every level name drops into
+ * the list beneath, still ranked first: a crowd at the top is a fact about the
+ * season, not a name to pick out of it.
  */
 export function LeadBoard({ title, rows, statKey, unit, limit = 6 }) {
-  const ranked = rows
-    .filter((r) => r[statKey] > 0)
-    .sort((a, b) => b[statKey] - a[statKey] || a.player.name.localeCompare(b.player.name))
-    .slice(0, limit);
+  const { value, leaders, chasers, ranked, sharedLead, alsoLevel } = statLeaders(rows, statKey, limit);
 
   if (ranked.length === 0) {
     return (
       <section className="sheet">
         <div className="section-head" style={{ marginBottom: '0.4rem' }}><h3>{title}</h3></div>
-        <p className="muted">Nothing recorded yet this season.</p>
+        <p className="muted">Nothing recorded yet.</p>
       </section>
     );
   }
 
-  const [leader, ...chasers] = ranked;
-  const max = leader[statKey];
-  const perGame = leader.appearances ? (leader[statKey] / leader.appearances).toFixed(2) : null;
+  const named = sharedLead <= SHARED_NAMED ? leaders : [];
+  const listed = named.length > 0 ? chasers : ranked;
+  const leader = named.length === 1 ? named[0] : null;
+  const perGame = leader && unit && leader.appearances
+    ? `${rate(leader[statKey] / leader.appearances)} ${unit} per game · `
+    : '';
 
   return (
-    <section className="sheet lead-card" style={accentStyle(statKey)}>
+    <section className={`sheet lead-card${named.length === 1 ? '' : ' shared'}`} style={accentStyle(statKey)}>
       <div className="board lead-hero">
         <div>
           <div className="label">{title}</div>
-          <Link className="who" to={`/players/${leader.player.id}`}>{leader.player.name}</Link>
+          <div className="who">
+            {named.length === 0 ? (
+              <span className="unclaimed">Nobody clear yet</span>
+            ) : (
+              named.map((r, i) => (
+                <span key={r.player.id}>
+                  {i > 0 && ' & '}
+                  <Link to={`/players/${r.player.id}`}>{r.player.name}</Link>
+                </span>
+              ))
+            )}
+          </div>
           <div className="rate">
-            {perGame && `${perGame} ${unit} per game · `}
-            {leader.appearances} appearance{leader.appearances === 1 ? '' : 's'}
+            {leader
+              ? `${perGame}${plural(leader.appearances, 'appearance', 'appearances')}`
+              : `${sharedLead} players level at the top`}
           </div>
         </div>
-        <div className="tally">{max}</div>
+        <div className="tally">{value}</div>
       </div>
-      {chasers.length > 0 && (
+      {listed.length > 0 && (
         <div className="lead-chase">
-          {chasers.map((r, i) => (
-            <ChaseRow key={r.player.id} rank={i + 2} row={r} statKey={statKey} max={max} />
+          {listed.map((r) => (
+            <ChaseRow key={r.player.id} rank={r.rank} row={r} statKey={statKey} max={value} />
           ))}
+          <LevelNote count={alsoLevel} value={ranked[ranked.length - 1][statKey]} />
         </div>
       )}
     </section>

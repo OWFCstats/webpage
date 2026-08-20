@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useData } from '../../context/DataContext';
 import { Spinner } from '../../components/bits';
-import { formatDate } from '../../lib/format';
+import { formatDate, initials } from '../../lib/format';
 import { latestResult, seasonsOf } from '../../lib/matches';
 import TeamPicker from '../../components/TeamPicker';
 import SeasonPicker from '../../components/SeasonPicker';
@@ -18,10 +18,6 @@ import WalkoverForm from './WalkoverForm';
  */
 
 const STEPS = ['The match', 'Who played?', 'Goals & assists', 'Cards & MOTM'];
-
-function initials(name) {
-  return name.split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase();
-}
 
 function Stepper({ value, onChange, label, max = 99 }) {
   return (

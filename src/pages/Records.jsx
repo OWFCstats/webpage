@@ -2,8 +2,8 @@ import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import { ErrorNote, Spinner } from '../components/bits';
-import BarBoard from '../components/BarBoard';
 import HonoursBoard, { Award } from '../components/HonoursBoard';
+import LeaderBoards from '../components/LeaderBoards';
 import PlateShelf from '../components/Plate';
 import ResultList from '../components/ResultList';
 import { formatDate, plural } from '../lib/format';
@@ -65,14 +65,14 @@ export default function Records() {
 
       <div className="section">
         <h2>All-time leaders</h2>
-        <div className="grid boards">
-          <BarBoard title="Goals" rows={allTime} statKey="goals" limit={5} />
-          <BarBoard title="Appearances" rows={allTime} statKey="appearances" limit={5} />
-          <BarBoard title="Man of the Match" rows={allTime} statKey="motm" limit={5} />
-        </div>
+        {/* Three of the six, because Records is about the marks above any one
+            season and this page is already long. The same component draws the
+            full set on Players, so the two can't drift apart. */}
+        <LeaderBoards rows={allTime} stats={['goals', 'appearances', 'motm']} limit={5} />
         <p className="muted card-foot">
-          Every season together. <Link className="more" to="/players">Players</Link> has the
-          same boards a season at a time.
+          Every season together.{' '}
+          <Link className="more" to="/players?season=all">Players → All time</Link> has every
+          board, and a season at a time.
         </p>
       </div>
 

@@ -1,7 +1,8 @@
-/* Records: one sheet per club record, and the layout for the all-time leader
-   boards. A record nobody holds keeps its sheet and says so — naming it is the
-   point. The honours board and the badge board are components of their own:
-   components/honours-board.css and components/plate.css. */
+/* Records: one sheet per club record. A record nobody holds keeps its sheet and
+   says so — naming it is the point. Everything else on the page is a component
+   of its own: components/honours-board.css, components/plate.css and
+   components/bar-board.css, which owns the all-time leader boards and the grid
+   they sit in. */
 
 /* ---- club records ---- */
 
@@ -29,11 +30,3 @@
    point; a collapsed or blank one would read as a fault rather than as a club
    with its first season still running. */
 .record .record-empty { margin: var(--s1) 0 0; }
-
-/* Layout for the all-time leader boards. Named for the boards it holds, not
-   for the .board surface — these are sheets. */
-.grid.boards {
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  /* Each sizes to its own content — a board with fewer names stays short. */
-  align-items: start;
-}

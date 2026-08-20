@@ -5,14 +5,10 @@ import { ErrorNote, Spinner, VenueBadge } from '../components/bits';
 import PlateShelf from '../components/Plate';
 import PlayerCareerChart from '../components/PlayerCareerChart';
 import { playerPlates } from '../lib/awards';
-import { formatDate, plural, rate } from '../lib/format';
+import { formatDate, initials, plural, rate } from '../lib/format';
 import { matchTitle, opponentSlug, resultOf, seasonsOf } from '../lib/matches';
 import { playerProfile } from '../lib/players';
 import { statColour, statToken } from '../lib/tokens';
-
-function initials(name) {
-  return name.split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase();
-}
 
 /** "2 goals, 1 assist" — the player's own contribution to one game. */
 function contribution(app) {

@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import { useAuth } from '../context/AuthContext';
 import { ErrorNote, FormBadges, Spinner, VenueBadge } from '../components/bits';
-import { formatDate, formatKickoff } from '../lib/format';
+import { formatDate, formatKickoff, initials } from '../lib/format';
 import {
   fixtures,
   formOf,
@@ -16,10 +16,6 @@ import {
   seasonsOf,
   venueTeam,
 } from '../lib/matches';
-
-function initials(name) {
-  return name.split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase();
-}
 
 function opponentInitials(name) {
   const words = name.split(' ').filter((w) => /[a-z0-9]/i.test(w));

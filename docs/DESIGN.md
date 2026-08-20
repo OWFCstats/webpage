@@ -223,9 +223,9 @@ this case is special.
 
 For occasions and honours, and there are five of them: the matchday scoreboard,
 a player's hero, the honours board, the leaderboard leader, the last result on
-Home. Four render today; the leaderboard leader is `LeadBoard` in
-`components/BarBoard.jsx`, built and waiting for Phase 6 to put a leaderboard
-on the Players page.
+Home. All five render — the leaderboard leader is `LeadBoard` in
+`components/BarBoard.jsx`, and it heads the Players page. See *Leaderboards and
+the squad* below for which stat earns it.
 
 `--board` ground, `--on-board` text, display face, gold accents, 1px `--gold`
 bottom border. No radius above 4px. Sparingly — if half the page is board, none
@@ -446,6 +446,73 @@ player's page pushed the things worth looking at below the fold, and "8 to go"
 lives on the unearned plate, which is a better place for it: a bar says how far
 along you are, a plate says what you get.
 
+## Leaderboards and the squad
+
+Two views, one nav entry, and the leaderboard is the one that lands: it is the
+incentive board, and the roster is a tap behind it. The view and the season sit
+in the address as `?view=squad` and `?season=…`, with the defaults left out of
+it, so `/players` stays the canonical address and anything longer is a link
+somebody meant to send.
+
+### The boards
+
+Six stats — goals, assists, goals + assists, appearances, MOTM, clean sheets —
+in that order, declared once in `components/LeaderBoards.jsx` and drawn by the
+same component on Players and on Records, so the two can't drift.
+
+**Every board is on the page at once.** The old page put one behind a row of six
+chips, and that is most of what made it read as a database rather than a board:
+a leaderboard you have to click for can't show you where your name isn't.
+
+One stat is promoted to the dark band (`LeadBoard`), and on Players that's
+goals. Only one, because a page carries a single `.board` — which is also why
+the all-time set on Records has no lead: the honours board is that page's
+occasion.
+
+The row limit is a hard cap of six, ties included. A board that grew to fifty
+names every September, when half the squad is level on one goal, would be
+useless in the month it matters most.
+
+### Ties
+
+Level is level, and the rows can't say which of them mattered more — the same
+rule the honours board follows.
+
+- **Up to three level at the top**, the band names them all — "Owen Gibbons &
+  Tom Simeon" — a type step down, with "2 players level at the top" where the
+  leader's rate line would be.
+- **Past three, the band names nobody**: "Nobody clear yet", and every level
+  name drops into the list beneath, all still ranked first. A crowd at the top
+  is a fact about the season, not a name to pick out of it.
+- **The chase list ranks by competition** — 1, 1, 3 — never by row number.
+- **A cut that lands inside a tie says so**: "…and 4 more level on 1." Without
+  that line the last name shown reads as the last name there is.
+
+### The squad
+
+A team sheet: monogram, name, then Apps, Goals and Assists in fixed columns
+under one set of heads. The head and every row share one
+`grid-template-columns`, and that sharing is the point — the old list labelled
+all three figures on every row, so "MOTM" made each row a different shape and no
+column lined up down the page. Labels belong at the top of a column, once.
+
+Three figures, not four: a fourth column leaves a 375px phone no room for a
+name, and MOTM has a board of its own a tap away. Apps leads them, because
+turning up is the thing this club is trying to reward.
+
+A zero takes `--ink-soft` — it's true, and it isn't the point. A name wraps
+rather than clips: half a name is worse than a two-line one on the page where
+people come to find their own.
+
+Behind the list, unchanged, is the full sortable table — thirteen columns in a
+`.table-wrap`, for the argument about whose season it was.
+
+The list is `components/SquadList.jsx` with `styles/components/squad-list.css`,
+and the Players route now has no page stylesheet at all. `.grid.boards`, the
+grid a set of boards sits in, moved to `styles/components/bar-board.css` for the
+same reason: two pages can't share a class that lives in one of their page
+files.
+
 ## Charts
 
 The current charts read as generated because of `type="monotone"` smoothing and
@@ -500,7 +567,9 @@ The design target, not a fallback. Every change gets checked at 375px first.
   326 and needs 303. Below 360 the four secondary columns still come out: the
   narrowest phones leave 286px, and the shortfall is the club names, which
   can't shrink past their longest word. One breakpoint, `max-width: 359px`, and
-  it is the only place in the site that hides a column.
+  it is the only place in the site that hides a column. The squad list uses the
+  same breakpoint to drop its monogram, which is not a column — a stand-in for a
+  photo is the one thing in that row that isn't data.
 - Admin data entry is a phone-first flow — it's used on a Saturday night at a
   pub table. Sticky save, big inputs, one record per block.
 

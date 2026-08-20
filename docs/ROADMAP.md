@@ -277,19 +277,92 @@ per-table fallback would hide real errors.
 
 ---
 
-## Phase 6 — Players: Squad and Leaderboards
+## Phase 6 — Players: Squad and Leaderboards ✅
 
-Two views behind one nav entry, chosen by a selector at the top of the page.
-Nav stays at five.
+Two views behind one selector at the top of the page — Leaderboards and Squad —
+and the nav is still five.
 
-- **Leaderboards** — the incentive board. Current season by default, all major
-  stats, names link through to player pages.
-- **Squad** — the roster as cards, opening to full player pages.
-- Fix the goals/assists display that reads as clunky today, and bring the
-  all-time leaders board out of hiding.
+**Leaderboards** is the landing view, and every board is on it: goals in the
+dark band, then assists, goals + assists, appearances, MOTM and clean sheets.
+The row of six chips is gone. That row is what made the old page read as a
+database — one board at a time, and you had to guess which one had your name on
+it.
 
-**Done means:** the Players landing view is the leaderboard, not a chip row you
-have to click, and the squad roster is one clear switch away.
+The season selector defaults to the current season and carries **All time** as
+its first option, which is where the all-time boards came out of hiding: they
+were three small boards at the foot of Records, and Records now links across to
+`/players?season=all` for the full set. The view and the season are in the
+address (`?view=squad`, `?season=…`) with the defaults left out, so `/players`
+is still the canonical link and anything longer is one somebody meant to send.
+
+**Squad** is the roster as a team sheet: monogram, name, then Apps, Goals and
+Assists in fixed columns under one set of heads. That is the clunky display the
+phase was called on — the old rows labelled all three figures on every row, so
+"MOTM" made each row a different shape and no column lined up down the page. The
+full thirteen-column table is still a tap behind it.
+
+Phase 3 built `LeadBoard` and left it off the site waiting for this phase; it's
+the fifth `.board`, and all five now render. One board per page still holds:
+Players has the lead band, and the all-time set on Records has no lead because
+the honours board is that page's occasion.
+
+**Done means** the landing view is the leaderboard, not a chip row, and the
+squad is one clear switch away. Both hold, and the rest was measured rather than
+eyeballed:
+
+- **Six fixtures built from the real season import**, because one season of real
+  data doesn't contain the cases that break a leaderboard: the season as it
+  stands, two seasons, a two-way tie at the top, an eighteen-way tie, one game
+  played, and nothing played. Every route at 320 / 360 / 375 / 414 / 700 / 900 /
+  1400 — **238 renders**: nothing overflows the viewport, no table side-scrolls
+  outside a `.table-wrap`, no text computes below 12px, nothing on a board
+  resolves to paper ink or a paper ground, every roster row clears 44px, and
+  every figure column shares one right edge.
+- **No name is cut.** Measured with a `Range` over the text rather than by
+  `scrollWidth`, which an ellipsis hides: at 320–414px, on the boards and on the
+  roster with all 47 names shown, nothing clips.
+- **The controls driven, not deep-linked**, at 375 and 1400: the view selector,
+  the season select (including the param dropping back off when the latest
+  season is picked again), the full-table toggle, the search miss, "Show all 47
+  players" and a row tap landing on the right player's page.
+
+Ties are the part worth recording, because a fourteen-game season is nearly all
+ties and the old boards said nothing about them. `statLeaders` in
+`lib/players.js` ranks by competition — 1, 1, 3 — and the rules are in
+`DESIGN.md`: up to three level at the top are all named in the band, past three
+the band names nobody and they all drop into the list, and a cut that lands
+inside a tie says what it left out ("…and 4 more level on 1"). On the season in
+the database every board with names on it ends inside a tie — five of the six,
+the sixth being clean sheets, which the club has none of yet — so without that
+line five boards would have been quietly lying.
+
+Four judgement calls, since these are the kind that get re-argued:
+
+- **The squad is a list, not cards**, which is a change from what this file
+  said. A grid of cards at 375px is two columns of ~170px, and the roster's job
+  is scanning for a name and comparing a figure — that's a team sheet, which is
+  also the object the design direction is built on. `DESIGN.md` now says so.
+- **Three figures in a row, not four.** MOTM came out: a fourth column leaves a
+  375px phone no room for a name, and MOTM has a board of its own one tap away.
+  Apps leads, because turning up is what the site exists to reward.
+- **`?stat=` is gone**, and nothing linked to it — the boards it selected are
+  all on the page now. An old link lands on the leaderboards, which is what it
+  was trying to show.
+- **`.grid.boards` moved into `components/bar-board.css`** and
+  `pages/players.css` is deleted. Two pages can't share a class that lives in
+  one of their page files, and the Players route now has no page stylesheet at
+  all — which is what the CSS structure rules ask for.
+
+Two things rode along:
+
+- The lead band took 24px of padding on a phone where every other surface takes
+  16px, which `DESIGN.md` already ruled on. It went unnoticed because nothing
+  rendered the component until now. It matches now, and the leader's name got
+  the 16px.
+- `initials()` was defined five times — `Home`, `Matchday`, `PlayerDetail`,
+  `PlayersHub` and `AddResult`, one of them without the `toUpperCase()`. It's
+  one export in `lib/format.js` now. Same reason `isCleanSheet` became an export
+  in Phase 4: a helper copied is a helper that drifts.
 
 ---
 

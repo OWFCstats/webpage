@@ -22,11 +22,11 @@
 @import './components/honours-board.css';
 @import './components/plate.css';
 @import './components/league-table.css';
+@import './components/squad-list.css';
 
 @import './pages/home.css';
 @import './pages/matchday.css';
 @import './pages/season.css';
-@import './pages/players.css';
 @import './pages/records.css';
 @import './pages/player-detail.css';
 
