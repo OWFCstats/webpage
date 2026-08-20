@@ -5,9 +5,10 @@
    check is how the old single stylesheet reached 2,654 lines. */
 
 /* ---- surfaces ----
-   Two of the three the design system names. The plate is badges only and
-   arrives with Phase 5; nothing in the site is one yet, which is why there is
-   no .plate here — an unused surface would be a fourth one in waiting. */
+   Two of the three the design system names. The third, the plate, is badges
+   only and lives with its component in components/plate.css — keeping it out
+   of the shared vocabulary is what stops it being reached for as a fourth
+   general-purpose surface. */
 
 /* The default, and where most data lives. Paper, a hairline, no shadow.
    Separation inside a sheet is another hairline, never a nested box. */

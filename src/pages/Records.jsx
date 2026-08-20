@@ -1,12 +1,14 @@
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useData } from '../context/DataContext';
-import { ErrorNote, HonourGrid, Spinner } from '../components/bits';
+import { ErrorNote, Spinner } from '../components/bits';
 import BarBoard from '../components/BarBoard';
+import HonoursBoard, { Award } from '../components/HonoursBoard';
+import PlateShelf from '../components/Plate';
 import ResultList from '../components/ResultList';
 import { formatDate, plural } from '../lib/format';
 import { playerTotals } from '../lib/players';
-import { clubHallOfFame, clubRecords, seasonRecords } from '../lib/awards';
+import { clubPlates, clubRecords, seasonRecords } from '../lib/awards';
 
 /**
  * The marks the club is measured against — the things that appear nowhere
@@ -14,22 +16,22 @@ import { clubHallOfFame, clubRecords, seasonRecords } from '../lib/awards';
  * this is what sits above both.
  */
 export default function Records() {
-  const { players, matches, appearances, loading, error } = useData();
+  const { players, matches, appearances, seasonAwards, loading, error } = useData();
 
   const view = useMemo(() => {
     if (loading) return null;
     return {
       records: clubRecords(matches),
-      seasons: seasonRecords(players, matches, appearances),
-      hallOfFame: clubHallOfFame(players, matches, appearances),
+      seasons: seasonRecords(players, matches, appearances, seasonAwards),
+      plates: clubPlates(players, matches, appearances),
       allTime: playerTotals(players, matches, appearances),
     };
-  }, [loading, players, matches, appearances]);
+  }, [loading, players, matches, appearances, seasonAwards]);
 
   if (loading) return <Spinner />;
   if (error) return <ErrorNote message={error} />;
 
-  const { records, seasons, hallOfFame, allTime } = view;
+  const { records, seasons, plates, allTime } = view;
 
   return (
     <div>
@@ -52,14 +54,13 @@ export default function Records() {
       </div>
 
       <div className="section">
-        <h2>Hall of fame</h2>
-        <div className="sheet">
-          <HonourGrid honours={hallOfFame} />
-          <p className="muted card-foot">
-            A badge belongs to the club as soon as anyone reaches it. The quiet ones
-            are still there to be taken.
-          </p>
-        </div>
+        <h2>Badge board</h2>
+        <PlateShelf plates={plates} />
+        <p className="muted card-foot">
+          Every badge in the club, bronze to gold, and who holds it. A plate
+          belongs to the club as soon as anyone reaches it, and names whoever is
+          furthest past it — the quiet ones are still there to be taken.
+        </p>
       </div>
 
       <div className="section">
@@ -168,61 +169,6 @@ function ClubRecords({ records }) {
 function runFoot(run) {
   if (!run || run.count <= RUN_SHOWN) return null;
   return `…and ${plural(run.count - RUN_SHOWN, 'game', 'games')} more.`;
-}
-
-/** Whoever won an award, with the mark. Two names where two players finished
- *  level: the data can't say which of them mattered more. */
-function Award({ award }) {
-  if (award.leaders.length === 0) return <span className="muted">Not awarded</span>;
-  return (
-    <>
-      {award.leaders.map((p, i) => (
-        <span key={p.id}>
-          {i > 0 && ' & '}
-          <Link to={`/players/${p.id}`}>{p.name}</Link>
-        </span>
-      ))}{' '}
-      <span className="muted">{award.value}</span>
-      {award.leaders.length > 1 && <> <span className="tag">shared</span></>}
-    </>
-  );
-}
-
-/** One row per season, one column per award. Headers come from the awards
- *  themselves so the two stay in step. */
-function HonoursBoard({ seasons }) {
-  if (seasons.length === 0) {
-    return <div className="empty sheet">No season on record yet. The first one fills this in.</div>;
-  }
-  return (
-    <div className="board">
-      <div className="table-wrap">
-        <table className="data">
-          <thead>
-            <tr>
-              <th>Season</th>
-              {seasons[0].awards.map((a) => (
-                <th key={a.key}>{a.label}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {seasons.map((s) => (
-              <tr key={s.season}>
-                <td><strong>{s.season}</strong></td>
-                {s.awards.map((a) => (
-                  <td key={a.key}><Award award={a} /></td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      <p className="muted card-foot">
-        A shared award names everyone level at the top rather than picking one of them.
-      </p>
-    </div>
-  );
 }
 
 /** An index, not a season view: one line each, and a link across to Season

@@ -323,3 +323,16 @@
 @media (max-width: 700px) {
   .stat-row .steppers { width: 100%; justify-content: flex-start; padding-left: 2.4rem; }
 }
+
+/* ---- awards ----
+   One block per season in a single sheet, separated by a hairline rather than
+   its own box: the whole page is one form with one save. */
+.award-row + .award-row {
+  margin-top: var(--s5);
+  padding-top: var(--s5);
+  border-top: 1px solid var(--rule);
+}
+
+.award-row .section-head { margin-bottom: var(--s2); }
+
+.award-row .field + .field { margin-top: var(--s3); }

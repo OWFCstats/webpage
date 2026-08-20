@@ -1,6 +1,7 @@
-/* Records: one sheet per club record, the honours board, and the all-time
-   leader boards. A record nobody holds keeps its sheet and says so — naming it
-   is the point. */
+/* Records: one sheet per club record, and the layout for the all-time leader
+   boards. A record nobody holds keeps its sheet and says so — naming it is the
+   point. The honours board and the badge board are components of their own:
+   components/honours-board.css and components/plate.css. */
 
 /* ---- club records ---- */
 

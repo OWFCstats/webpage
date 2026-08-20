@@ -40,6 +40,9 @@ export default function AdminLayout() {
         <NavLink to="/admin/league" className={({ isActive }) => `btn small ${isActive ? '' : 'secondary'}`}>
           League
         </NavLink>
+        <NavLink to="/admin/awards" className={({ isActive }) => `btn small ${isActive ? '' : 'secondary'}`}>
+          Awards
+        </NavLink>
       </nav>
       <Outlet />
     </div>

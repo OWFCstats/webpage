@@ -1,8 +1,6 @@
-/* A player's own page: the hero, milestone strip, firsts, form, ranks,
-   teammates and per-season breakdown.
-
-   The milestone strip (.ms-*) comes out in Phase 5 — "3 to go" belongs on
-   the badge plate instead. */
+/* A player's own page: the hero, the badge shelf, firsts, form, ranks,
+   teammates and per-season breakdown. The shelf itself is the plate component
+   — see styles/components/plate.css. */
 
 /* ---- player pages ------------------------------------------------------ */
 
@@ -72,60 +70,7 @@
 
 .player-views { margin-top: var(--s4); }
 
-/* ---- milestone watch ---- */
-
-/* minmax is small enough that a phone still gets two bars per row — five
-   full-width bars pushed the rest of the page off the first two screens. */
-.ms-strip {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(158px, 1fr));
-  gap: var(--s3);
-}
-
-.ms {
-  background: var(--paper);
-  border: 1px solid var(--rule);
-  border-radius: var(--r);
-  padding: 0.75rem 0.85rem;
-}
-
-/* The closest milestone leads the row and is the only one that gets colour. */
-.ms.lead { border-color: var(--gold); background: color-mix(in srgb, var(--gold) 8%, transparent); }
-
-.ms-line { font-size: var(--t-small); font-weight: 600; }
-
-.ms-line strong { color: var(--gold-deep); font-weight: 700; }
-
-.ms-track {
-  height: 5px;
-  background: var(--sheet);
-  border-radius: var(--r-sm);
-  margin-top: 0.55rem;
-  overflow: hidden;
-}
-
-.ms-fill {
-  display: block;
-  height: 100%;
-  background: var(--gold);
-  border-radius: var(--r-sm);
-  transition: width 0.4s ease;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .ms-fill { transition: none; }
-}
-
-.ms-foot {
-  font-family: var(--font-data);
-  font-size: var(--t-small);
-  color: var(--ink-soft);
-  margin-top: 0.35rem;
-  font-variant-numeric: tabular-nums;
-}
-
 /* ---- firsts & bests ---- */
-.grid.player-split { grid-template-columns: 1.3fr 1fr; align-items: start; }
 
 /* Not .cols-3: those collapse to two-up on phones, which is right for stat
    tiles and far too narrow for cards carrying lists and result badges. */
@@ -133,7 +78,6 @@
 
 /* Grid items default to min-width:auto, so a wide table inside one pushes the
    whole track past the viewport and .table-wrap's overflow never engages. */
-.grid.player-split > *,
 .grid.player-cards > * { min-width: 0; }
 
 @media (max-width: 900px) {
@@ -366,8 +310,6 @@ table.data.firsts tbody tr:hover { background: transparent; }
   .player-hero .crest { width: 46px; height: 46px; font-size: var(--t-body); }
 
   .player-hero .career-line { gap: var(--s4); width: 100%; justify-content: space-between; }
-
-  .grid.player-split { grid-template-columns: 1fr; }
 
   .season-card .sc-row { gap: var(--s3); }
 }
