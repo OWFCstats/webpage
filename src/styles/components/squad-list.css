@@ -1,0 +1,104 @@
+/* The squad as a team sheet — components/SquadList.jsx. A monogram, a name,
+   and the figures in fixed columns under one set of heads.
+
+   The head and every row share one column template, which is the whole point:
+   the old list labelled its three tallies row by row, so "MOTM" made every row
+   a different shape and nothing lined up down the page. Labels belong at the
+   top of a column, once. */
+
+.squad-head,
+.player-row {
+  display: grid;
+  /* Apps takes the widest figure column — its head is a word where the other
+     two are a letter, and a phone has no room to give all three the same. */
+  grid-template-columns: 32px minmax(0, 1fr) 2.2rem 1.6rem 1.6rem;
+  align-items: center;
+  gap: var(--s2);
+}
+
+.squad-head {
+  padding-bottom: var(--s2);
+  border-bottom: 1px solid var(--rule-firm);
+}
+
+/* The heads sit over the figures only: the monogram and the name say what they
+   are without being told. */
+.squad-head .label {
+  text-align: right;
+}
+
+.squad-head .label:first-child {
+  grid-column: 3;
+}
+
+.player-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.player-row {
+  /* 44px of touch target, bought with the row's own padding. */
+  min-height: 44px;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.player-list li:last-child .player-row { border-bottom: none; }
+
+.player-row .avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--sheet);
+  color: var(--ink-soft);
+  display: grid;
+  place-items: center;
+  font-family: var(--font-data);
+  font-weight: 700;
+  font-size: var(--t-micro);
+  flex: none;
+}
+
+/* A name wraps rather than clips. Below about 360px the widest names run out
+   of column — and half a name is worse than a two-line one on the page where
+   people come to find their own. At 375px nothing wraps. */
+.player-row .who {
+  font-size: var(--t-body);
+  font-weight: 600;
+  line-height: 1.25;
+  overflow-wrap: break-word;
+}
+
+.player-row:hover .who { color: var(--gold-deep); }
+
+.player-row .fig {
+  font-family: var(--font-data);
+  font-weight: 700;
+  font-size: var(--t-body);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+/* A zero is true and it isn't the point. Secondary ink, not the faint one —
+   this is a figure someone earned a row for, not a placeholder. */
+.player-row .fig.nil { color: var(--ink-soft); }
+
+/* Search on the left, the view toggle at the far end, and the toggle stays put
+   when the search box goes with the simple list. */
+.squad-controls button { margin-left: auto; }
+
+/* The narrowest phones: the monogram stands in for a photo we don't have, so it
+   is the one thing in the row that isn't data — and the 40px it costs is the
+   difference between a name on one line and a name over three. One breakpoint,
+   the same one the league table uses, for the same reason. */
+@media (max-width: 359px) {
+  .squad-head,
+  .player-row {
+    grid-template-columns: minmax(0, 1fr) 2.2rem 1.6rem 1.6rem;
+  }
+
+  .squad-head .label:first-child { grid-column: 2; }
+
+  .player-row .avatar { display: none; }
+}

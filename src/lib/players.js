@@ -58,6 +58,40 @@ export function playerTotals(players, matches, appearances) {
   return out;
 }
 
+/**
+ * One stat's leaderboard: the names in order, with competition ranks so two
+ * players level share a place and the next one skips it. Zeroes are left out —
+ * nobody is on a leaderboard for not scoring, and a column of them would bury
+ * the names that are.
+ *
+ * `limit` is a hard cap, ties included, so a board can't grow to fifty names in
+ * September when half the squad is level on one goal. `alsoLevel` counts who
+ * the cap left out at that same mark, because a cut that lands inside a tie
+ * makes the last name shown read as the last name there is. `sharedLead` is the
+ * true number at the top, capped or not — the lead board needs it to know
+ * whether there is a leader to name at all.
+ */
+export function statLeaders(rows, statKey, limit = 6) {
+  const ordered = rows
+    .filter((r) => r[statKey] > 0)
+    .sort((a, b) => b[statKey] - a[statKey] || a.player.name.localeCompare(b.player.name));
+  let place = 0;
+  const placed = ordered.map((row, i) => {
+    if (i === 0 || row[statKey] !== ordered[i - 1][statKey]) place = i + 1;
+    return { ...row, rank: place };
+  });
+  const ranked = placed.slice(0, limit);
+  const last = ranked[ranked.length - 1];
+  return {
+    value: placed[0]?.[statKey] ?? 0,
+    ranked,
+    leaders: ranked.filter((r) => r.rank === 1),
+    chasers: ranked.filter((r) => r.rank > 1),
+    sharedLead: placed.filter((r) => r.rank === 1).length,
+    alsoLevel: last ? placed.slice(limit).filter((r) => r[statKey] === last[statKey]).length : 0,
+  };
+}
+
 /** Per-season breakdown for a single player, newest season first. */
 export function playerSeasonBreakdown(player, matches, appearances) {
   const mine = appearances.filter((a) => a.player_id === player.id);

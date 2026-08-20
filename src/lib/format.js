@@ -61,3 +61,9 @@ export function monthYear(iso) {
 export function plural(n, one, many) {
   return `${n} ${n === 1 ? one : many}`;
 }
+
+/** "OG" — a player's monogram, for the circles that stand in for photos we
+ *  don't have. Two initials: a third stops fitting the circle. */
+export function initials(name) {
+  return name.split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase();
+}

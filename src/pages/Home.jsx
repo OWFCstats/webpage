@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import { ErrorNote, FormBadges, Spinner, VenueBadge } from '../components/bits';
 import LeagueTable from '../components/LeagueTable';
-import { countdownLabel, formatDate, formatKickoff } from '../lib/format';
+import { countdownLabel, formatDate, formatKickoff, initials } from '../lib/format';
 import {
   fixtures,
   formOf,
@@ -18,10 +18,6 @@ import {
 } from '../lib/matches';
 import { seasonTrend } from '../lib/charts';
 import { token } from '../lib/tokens';
-
-function initials(name) {
-  return name.split(' ').map((w) => w[0]).slice(0, 2).join('');
-}
 
 /** Cumulative-points sparkline. Two points is a line segment, not a trend, so
  *  it draws nothing below three games rather than implying a shape. */

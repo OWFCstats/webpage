@@ -4,8 +4,8 @@ import { useAuth } from '../context/AuthContext';
 
 // Home is the front door — a dashboard of the season at a glance — and the
 // four sections behind it. Anything narrower than an idea of its own lives
-// inside one of these rather than in the nav — see the leader-board chips on
-// Matchday, or the Simple/Full toggle on Players.
+// inside one of these rather than in the nav — see the Leaderboards/Squad
+// selector on Players, or the season chips on a player's own page.
 const NAV = [
   { to: '/', label: 'Home', end: true },
   { to: '/matchday', label: 'Matchday' },
