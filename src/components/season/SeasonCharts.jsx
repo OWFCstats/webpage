@@ -12,18 +12,18 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
-import { useData } from '../context/DataContext';
-import { useIsNarrow } from '../lib/useIsNarrow';
-import { formatDate } from '../lib/format';
+import { useData } from '../../context/DataContext';
+import { useIsNarrow } from '../../lib/useIsNarrow';
+import { formatDate } from '../../lib/format';
 import {
   lastDefinedIndex,
   seasonPointsComparison,
   seasonTrend,
   stableColourSlots,
   topScorerRace,
-} from '../lib/charts';
-import { fontPx, series, token } from '../lib/tokens';
-import ChartEndLabel from './ChartEndLabel';
+} from '../../lib/charts';
+import { fontPx, series, token } from '../../lib/tokens';
+import ChartEndLabel from '../ChartEndLabel';
 
 // Recharts writes these into SVG attributes, where var() is invalid, so they
 // are read out of tokens.css rather than written down again here. Read at

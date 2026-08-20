@@ -11,10 +11,10 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
-import { formatDate } from '../lib/format';
-import { useIsNarrow } from '../lib/useIsNarrow';
-import { fontPx, statColour, token } from '../lib/tokens';
-import ChartEndLabel from './ChartEndLabel';
+import { formatDate } from '../../lib/format';
+import { useIsNarrow } from '../../lib/useIsNarrow';
+import { fontPx, statColour, token } from '../../lib/tokens';
+import ChartEndLabel from '../ChartEndLabel';
 
 // The same colours these three stats wear everywhere else, and the frame
 // colours, read out of tokens.css — Recharts puts them in SVG attributes,

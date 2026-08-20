@@ -391,18 +391,98 @@ The two dead rules Phase 1 flagged and left for this phase, `.chart-split` and
 
 ---
 
-## Phase 8 — Page components
+## Phase 8 — Page components ✅
 
-Extract the presentational sub-components currently defined inside page files —
-`PlayerDetail.jsx` (578 lines) has `Hero`, `Honours`, `FormCard`, `RankCard`,
-`MatesCard`, `SeasonCards` and `StatGrid` inline; `Matchday.jsx` is 430 lines;
-`AddResult.jsx` is 426.
+Thirty-eight sections came out of eight page files. Every page is now a layout
+— its sections, and the data it feeds them — and the longest is 247 lines
+against 548 before.
 
-Also decides `.scoreline`, a dead type rule Phase 3 marked in place: this is
-the phase that rewrites the components that would use it.
+| Page | Before | After |
+| --- | --- | --- |
+| `PlayerDetail.jsx` | 548 | 151 |
+| `Matchday.jsx` | 425 | 135 |
+| `admin/AddResult.jsx` | 423 | 247 |
+| `admin/LeagueAdmin.jsx` | 298 | 231 |
+| `Season.jsx` | 287 | 96 |
+| `Home.jsx` | 257 | 76 |
+| `Records.jsx` | 233 | 86 |
+| `OpponentDetail.jsx` | 166 | 60 |
 
-**Done means:** every page file reads as a layout — sections plus data wiring —
-and none is over ~250 lines.
+**Where they went** is the decision this phase had to make, because
+`components/` was described as "shared, reusable" and thirty-eight page sections
+are none of those things. It is now shared vocabulary at the top level and one
+directory per page below it, named after the page file — `matchday/`,
+`player-detail/`, `add-result/`. The line is what renders a component: two or
+more pages keeps it at the top, one page puts it in that page's directory.
+`CLAUDE.md` carries the rule.
+
+Applying that rule moved five components that were already there:
+`PlayerCareerChart`, `SeasonCharts`, `SquadList` and `HonoursBoard` each have
+exactly one page, so they went down into it. It moved one the other way:
+`WalkoverForm` lived in `pages/admin/` without being a route at all, and two
+admin pages open it, so it went up to the top level. Leaving those five where
+they were would have made the rule untrue on the day it was written, which is
+how the last three rebuilds started.
+
+**`.scoreline` is deleted**, which is the ruling Phase 3 left to this phase.
+Two surfaces draw a score figure and they are deliberately different sizes —
+the scoreboard's is `--t-display` because on Matchday the score *is* the page,
+Home's is `--t-headline` because it's a teaser for it. A shared class would
+have been a primitive plus an override at both call sites, which earns nothing.
+The duplication that is real is one step below: the display face, 600 weight,
+`-0.015em` and tabular figures appear together in twelve rules. That's a type
+question, not a component one, and it belongs to whoever next opens
+`DESIGN.md`'s *Type* section.
+
+**Two derivations moved out of pages**, because neither was wiring. `matchday`
+milestones — the "worth noting" lines — are now built inside the component that
+renders them, since the phrasing is copy about one match and nothing else can
+reuse it. `dropoutNames` went the other way, into `matchContext` in
+`lib/matches.js`, next to the squad it's the complement of. `ordinal()` is an
+export of `lib/format.js` now: two of the extracted components want it, and a
+helper copied is a helper that drifts — same reason as `isCleanSheet` in Phase 4
+and `initials` in Phase 6.
+
+**Done means** every page reads as a layout and none is over ~250 lines. Both
+hold, and the behaviour claim was measured rather than eyeballed:
+
+- **158 DOM snapshots, byte-identical.** A fixture built from the real season
+  import plus a second season carrying what one real season doesn't contain — a
+  clean sheet, a walkover, cards, a late dropout, a report, two upcoming
+  fixtures, a debutant who scores, an inactive player and a player who has
+  never played. 79 route-states at 375 and 1400px, including the ones only a
+  click reaches: all four wizard steps and back again, the league grid's
+  add/renumber/move/remove, the match log's filters, the squad's search miss
+  and full table, and the season charts with their data tables open. Every
+  rendered tree came out identical to the same route rendered from a worktree
+  at the previous commit. `useId` values are normalised, because extracting a
+  section legitimately renumbers them — every `label[for]` is asserted to
+  resolve instead.
+- **`npm run build` clean.** The main chunk moved 883.40 → 885.01 kB: the cost
+  of thirty-eight component functions and their props. Admin stayed in the admin
+  chunks and `SeasonCharts` is byte-identical, so nothing leaked into what a
+  public visitor downloads — the lazy boundary now sits inside
+  `season/ChartsPanel.jsx`, which owns the `lazy()` call along with the toggle
+  that needs it.
+
+Two judgement calls worth recording:
+
+- **A keyed inner component behind a load guard stays in the page.**
+  `LineupInner`, `MatchFormInner`, `ReportInner` and `AwardsEditor` are not
+  sections; they exist so a `useState` initialiser sees loaded data and resets
+  on navigation. That's wiring, and `CLAUDE.md` now says so — otherwise the
+  next session extracts four components that only exist to hold a `key`.
+- **The two sparklines stayed two sparklines.** Both were called `Sparkline`
+  and they are different objects: the player's is a cell-sized shape scaled
+  from zero with a dot on the last point, Home's is a min–max normalised trend
+  line that draws nothing under three games. Unifying them meant one component
+  with four knobs, so each is now a private helper in the file that renders it
+  and neither is a shared name any more.
+
+One thing rode along, because the snapshot run reported it: `PlateShelf` spread
+a props object containing `key`, which React warns about on every render of the
+badge board. The `key` is pulled out of the spread now. No DOM change — the
+warning was the whole bug.
 
 ---
 
@@ -420,6 +500,12 @@ Named so they don't get lost, and not built yet.
 - **New badge types** — attendance streaks, consecutive-scoring runs. Add once
   Phase 5's plate system is proven and there's a season of data to earn them
   against.
+- **A figure recipe in the type layer** — the display face at 600 weight with
+  `-0.015em` and tabular figures is written out in twelve rules, from the
+  scoreboard's score to a plate's mark. Phase 8 found it while ruling on
+  `.scoreline` and left it alone: it's one decision in `DESIGN.md`'s *Type*
+  section, not a component question, and the twelve sizes it appears at are all
+  deliberately different.
 
 ---
 

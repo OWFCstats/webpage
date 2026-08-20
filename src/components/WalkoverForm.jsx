@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../../lib/supabase';
-import { useData } from '../../context/DataContext';
-import TeamPicker from '../../components/TeamPicker';
-import SeasonPicker from '../../components/SeasonPicker';
-import { seasonsOf } from '../../lib/matches';
+import { supabase } from '../lib/supabase';
+import { useData } from '../context/DataContext';
+import TeamPicker from './TeamPicker';
+import SeasonPicker from './SeasonPicker';
+import { seasonsOf } from '../lib/matches';
 
 /**
  * A walkover is awarded, not played: no team sheet, no individual scorers.

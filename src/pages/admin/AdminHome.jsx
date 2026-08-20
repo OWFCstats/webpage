@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useData } from '../../context/DataContext';
 import { formatDate } from '../../lib/format';
 import { isPlayed } from '../../lib/matches';
-import WalkoverForm from './WalkoverForm';
+import WalkoverForm from '../../components/WalkoverForm';
 
 /**
  * Opens with what's outstanding, not with navigation. A match saved without a

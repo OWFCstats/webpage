@@ -66,7 +66,7 @@ src/
   main.jsx, App.jsx        routing, providers
   context/                 AuthContext (session), DataContext (one load, shared)
   lib/                     derivation and helpers — no JSX
-  components/              shared, reusable, presentational
+  components/              presentational; shared at the top, one dir per page
   pages/                   one file per route; layout and data wiring only
   pages/admin/             the write side, lazy-loaded
   styles/                  see docs/DESIGN.md
@@ -87,6 +87,20 @@ Don't add a third exception without a reason that good.
 When a page defines its own presentational sub-components inline it has stopped
 being a page — move them to `components/`. Anything over ~250 lines is telling
 you something.
+
+The one thing that isn't a section and does belong in a page: a keyed inner
+component behind a load guard (`<LineupInner key={matchId} …>`). Its job is to
+seed `useState` from loaded data and reset on navigation, which is wiring, not
+presentation. Four admin pages use it and it's the reason they can't be split
+any further.
+
+**`components/` is shared vocabulary at the top level, one directory per page
+below it.** `components/matchday/Scoreboard.jsx` is Matchday's; `bits.jsx`,
+`Plate.jsx` and `LeagueTable.jsx` are everyone's. The line is what renders it:
+two or more pages puts a component at the top level, one page puts it in that
+page's directory, named after the page file (`player-detail/`, `add-result/`).
+A component that gains a second page moves up — that's what happened to
+`WalkoverForm`, which two admin pages open.
 
 **`lib/` is split by domain, not by size.** Formatting, matches, players,
 awards, league, charts, tokens. A helper goes where its subject lives.
