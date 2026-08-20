@@ -3,7 +3,7 @@ import { Link, Navigate, useParams } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useData } from '../../context/DataContext';
 import { Spinner } from '../../components/bits';
-import { formatDate } from '../../lib/stats';
+import { formatDate } from '../../lib/format';
 
 export default function ReportEditor() {
   const { matchId } = useParams();

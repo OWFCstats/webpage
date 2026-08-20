@@ -160,14 +160,36 @@ because the check is the criterion:
 
 ---
 
-## Phase 4 — Split `lib/stats.js`
+## Phase 4 — Split `lib/stats.js` ✅
 
-1,099 lines → modules by domain: `format.js`, `matches.js`, `players.js`,
-`awards.js`, `league.js`, `charts.js`. Pure move, no logic changes.
+1,099 lines → six modules by domain:
+
+- `format.js` — dates, times, rates, pluralisation. No football logic.
+- `matches.js` — match derivations: played/result/venue, fixtures and form,
+  season summaries, streaks, the Match Centre's `matchContext`.
+- `players.js` — career totals, season breakdowns, milestones, the full
+  player-page profile.
+- `awards.js` — club records, season honours, the club hall of fame.
+- `league.js` — `leagueStandings`, the one table that isn't derived from our
+  own results.
+- `charts.js` — the point series behind the season and career charts.
+
+Every export kept its exact body; only the imports at the top of each
+consuming file changed. `isCleanSheet` is the one visibility change, not a
+logic one — `players.js` and `awards.js` both need it, so it went from a
+private helper in `stats.js` to an export of `matches.js` rather than being
+copied twice.
+
+The module boundaries follow the dependency direction, so there's no cycle:
+`format.js` and `matches.js` stand alone, `players.js` depends on both,
+`awards.js` and `charts.js` depend on `matches.js` and `players.js`,
+`league.js` stands alone.
 
 **Done means:** every export lands in the module its subject belongs to,
 imports updated, no behaviour change. The "derive everything, store nothing"
-principle is untouched.
+principle is untouched. Verified with `npm run build` rather than by eye —
+a behaviour change would show up as a broken import or a type error, and
+this project doesn't have a stats test suite to run instead.
 
 ---
 

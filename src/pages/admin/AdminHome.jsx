@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useData } from '../../context/DataContext';
-import { formatDate, isPlayed } from '../../lib/stats';
+import { formatDate } from '../../lib/format';
+import { isPlayed } from '../../lib/matches';
 import WalkoverForm from './WalkoverForm';
 
 /**

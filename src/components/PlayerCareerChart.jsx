@@ -11,7 +11,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
-import { formatDate } from '../lib/stats';
+import { formatDate } from '../lib/format';
 import { useIsNarrow } from '../lib/useIsNarrow';
 import { fontPx, statColour, token } from '../lib/tokens';
 

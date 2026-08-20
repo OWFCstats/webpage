@@ -15,13 +15,13 @@ import {
 } from 'recharts';
 import { useData } from '../context/DataContext';
 import { useIsNarrow } from '../lib/useIsNarrow';
+import { formatDate } from '../lib/format';
 import {
-  formatDate,
   seasonPointsComparison,
   seasonTrend,
   stableColourSlots,
   topScorerRace,
-} from '../lib/stats';
+} from '../lib/charts';
 import { fontPx, series, token } from '../lib/tokens';
 
 // Recharts writes these into SVG attributes, where var() is invalid, so they

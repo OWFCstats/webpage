@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom';
 import { useData } from '../../context/DataContext';
 import SortableTable from '../../components/SortableTable';
-import { formatDate, isPlayed, resultOf } from '../../lib/stats';
+import { formatDate } from '../../lib/format';
+import { isPlayed, resultOf } from '../../lib/matches';
 
 export default function MatchesAdmin() {
   const { matches, appearances } = useData();

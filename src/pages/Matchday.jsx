@@ -3,10 +3,9 @@ import { Link, useParams } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import { useAuth } from '../context/AuthContext';
 import { ErrorNote, FormBadges, Spinner, VenueBadge } from '../components/bits';
+import { formatDate, formatKickoff } from '../lib/format';
 import {
   fixtures,
-  formatDate,
-  formatKickoff,
   formOf,
   isPlayed,
   latestResult,
@@ -16,7 +15,7 @@ import {
   resultOf,
   seasonsOf,
   venueTeam,
-} from '../lib/stats';
+} from '../lib/matches';
 
 function initials(name) {
   return name.split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase();

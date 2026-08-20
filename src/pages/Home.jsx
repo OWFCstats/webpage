@@ -3,11 +3,9 @@ import { Link } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import { ErrorNote, FormBadges, Spinner, VenueBadge } from '../components/bits';
 import LeagueTable from '../components/LeagueTable';
+import { countdownLabel, formatDate, formatKickoff } from '../lib/format';
 import {
-  countdownLabel,
   fixtures,
-  formatDate,
-  formatKickoff,
   formOf,
   isPlayed,
   latestResult,
@@ -16,9 +14,9 @@ import {
   resultOf,
   seasonsOf,
   seasonSummary,
-  seasonTrend,
   venueTeam,
-} from '../lib/stats';
+} from '../lib/matches';
+import { seasonTrend } from '../lib/charts';
 import { token } from '../lib/tokens';
 
 function initials(name) {

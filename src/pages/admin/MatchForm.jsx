@@ -5,7 +5,7 @@ import { useData } from '../../context/DataContext';
 import { Spinner } from '../../components/bits';
 import TeamPicker from '../../components/TeamPicker';
 import SeasonPicker from '../../components/SeasonPicker';
-import { seasonsOf } from '../../lib/stats';
+import { seasonsOf } from '../../lib/matches';
 
 // A row saved before the teams migration (or with a failed backfill) has no
 // opponent_team_id — fall back to a name match so editing it doesn't force

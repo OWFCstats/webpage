@@ -3,7 +3,9 @@ import { supabase } from '../../lib/supabase';
 import { useData } from '../../context/DataContext';
 import { Spinner } from '../../components/bits';
 import SeasonPicker from '../../components/SeasonPicker';
-import { formatDateTime, leagueStandings, seasonsOf } from '../../lib/stats';
+import { formatDateTime } from '../../lib/format';
+import { leagueStandings } from '../../lib/league';
+import { seasonsOf } from '../../lib/matches';
 
 /**
  * The one screen on this site that takes numbers nobody here played for: the

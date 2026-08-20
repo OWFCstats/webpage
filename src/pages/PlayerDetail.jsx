@@ -3,16 +3,9 @@ import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import { ErrorNote, HonourGrid, Spinner, VenueBadge } from '../components/bits';
 import PlayerCareerChart from '../components/PlayerCareerChart';
-import {
-  formatDate,
-  matchTitle,
-  opponentSlug,
-  playerProfile,
-  plural,
-  rate,
-  resultOf,
-  seasonsOf,
-} from '../lib/stats';
+import { formatDate, plural, rate } from '../lib/format';
+import { matchTitle, opponentSlug, resultOf, seasonsOf } from '../lib/matches';
+import { playerProfile } from '../lib/players';
 import { statColour, statToken } from '../lib/tokens';
 
 function initials(name) {

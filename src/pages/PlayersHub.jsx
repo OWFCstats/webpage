@@ -4,7 +4,9 @@ import { useData } from '../context/DataContext';
 import { ErrorNote, SeasonSelect, Spinner } from '../components/bits';
 import SortableTable from '../components/SortableTable';
 import BarBoard from '../components/BarBoard';
-import { playerTotals, rate, seasonsOf } from '../lib/stats';
+import { rate } from '../lib/format';
+import { seasonsOf } from '../lib/matches';
+import { playerTotals } from '../lib/players';
 
 // Each board's colour comes from its stat, in lib/tokens.js.
 const BOARDS = [
