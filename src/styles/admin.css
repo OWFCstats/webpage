@@ -174,7 +174,7 @@
 
 .login-box {
   max-width: 380px;
-  margin: 3rem auto;
+  margin: var(--s7) auto;
 }
 
 /* ---- admin: attention list + wizard ---- */
@@ -182,7 +182,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  gap: var(--s4);
   flex-wrap: wrap;
 }
 

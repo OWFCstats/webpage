@@ -39,7 +39,7 @@ function ReportInner({ match }) {
   }
 
   return (
-    <div className="section card">
+    <div className="section sheet">
       <h2>Match report — vs {match.opponent}, {formatDate(match.date)}</h2>
       <p className="muted">Plain text; paragraphs are preserved. Leave empty to remove the report.</p>
       <textarea

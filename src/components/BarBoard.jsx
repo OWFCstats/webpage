@@ -43,7 +43,7 @@ export default function BarBoard({ title, rows, statKey, limit = 8, bare = false
   if (bare) return body;
 
   return (
-    <section className="card bar-board">
+    <section className="sheet bar-board">
       <h3>{title}</h3>
       {body}
     </section>
@@ -83,7 +83,7 @@ export function LeadBoard({ title, rows, statKey, unit, limit = 6 }) {
 
   if (ranked.length === 0) {
     return (
-      <section className="card">
+      <section className="sheet">
         <div className="section-head" style={{ marginBottom: '0.4rem' }}><h3>{title}</h3></div>
         <p className="muted">Nothing recorded yet this season.</p>
       </section>
@@ -95,8 +95,8 @@ export function LeadBoard({ title, rows, statKey, unit, limit = 6 }) {
   const perGame = leader.appearances ? (leader[statKey] / leader.appearances).toFixed(2) : null;
 
   return (
-    <section className="card lead-card" style={accentStyle(statKey)}>
-      <div className="lead-hero">
+    <section className="sheet lead-card" style={accentStyle(statKey)}>
+      <div className="board lead-hero">
         <div>
           <div className="label">{title}</div>
           <Link className="who" to={`/players/${leader.player.id}`}>{leader.player.name}</Link>

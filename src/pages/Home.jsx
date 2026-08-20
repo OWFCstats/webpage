@@ -78,7 +78,7 @@ export default function Home() {
 
   if (matches.length === 0 && players.length === 0) {
     return (
-      <div className="empty card">
+      <div className="empty sheet">
         <h1>Old Wellingtonians FC</h1>
         <p>No data yet. Once the first players and matches are entered, stats will appear here.</p>
       </div>
@@ -106,7 +106,7 @@ export default function Home() {
       </div>
 
       <div className="home-grid">
-        <section className="card home-widget home-next">
+        <section className="sheet home-widget home-next">
           <div className="home-widget-head">
             <div>
               <span className="label">Upcoming</span>
@@ -150,7 +150,7 @@ export default function Home() {
           )}
         </section>
 
-        <section className="card home-widget home-result">
+        <section className="board home-widget home-result">
           <div className="home-widget-head">
             <div>
               <span className="label">Last time out</span>
@@ -182,7 +182,7 @@ export default function Home() {
 
       <LeagueTable season={currentSeason} />
 
-      <section className="card home-widget home-form">
+      <section className="sheet home-widget home-form">
         <div className="home-widget-head">
           <div>
             <span className="label">Momentum</span>
@@ -217,7 +217,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="card home-widget home-stats">
+      <section className="sheet home-widget home-stats">
         <div className="home-widget-head">
           <div>
             <span className="label">Overview</span>

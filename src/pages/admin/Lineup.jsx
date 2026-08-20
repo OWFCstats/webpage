@@ -124,7 +124,7 @@ function LineupInner({ match, players, existing }) {
         <Link className="btn secondary small" to={`/admin/matches/${match.id}`}>Edit match</Link>
       </div>
 
-      <div className="card">
+      <div className="sheet">
         <p className="muted">
           Pick a player in each slot — start typing to search. Leave unused slots
           empty. {active.length} playing · {starterCount} starting

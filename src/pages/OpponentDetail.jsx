@@ -46,7 +46,7 @@ export default function OpponentDetail() {
   if (error) return <ErrorNote message={error} />;
   if (!resolved) {
     return (
-      <div className="empty card">
+      <div className="empty sheet">
         Opponent not found. <Link className="more" to="/season">Full season →</Link>
       </div>
     );
@@ -69,7 +69,7 @@ export default function OpponentDetail() {
       {sentence && <p className="muted">{sentence}.</p>}
 
       {hasPitchDetails && (
-        <div className="card section">
+        <div className="sheet section">
           <h2>Pitch</h2>
           <dl className="compare">
             {team.pitch_name && (
@@ -91,7 +91,7 @@ export default function OpponentDetail() {
         </div>
       )}
 
-      <div className="card section">
+      <div className="sheet section">
         <div className="table-wrap">
           <table className="data">
             <thead>
@@ -117,7 +117,7 @@ export default function OpponentDetail() {
 
       <div className="section">
         <h2>Every meeting</h2>
-        <div className="card">
+        <div className="sheet">
           <div className="table-wrap">
             <table className="data">
               <thead>

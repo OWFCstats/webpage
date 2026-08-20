@@ -1,9 +1,10 @@
-/* Records: club record cards. A record nobody holds keeps its card and says
-   so — naming it is the point. */
+/* Records: one sheet per club record, the honours board, and the all-time
+   leader boards. A record nobody holds keeps its sheet and says so — naming it
+   is the point. */
 
 /* ---- club records ---- */
 
-/* Cards size to their own content — a record holding one game stays short
+/* Sheets size to their own content — a record holding one game stays short
    next to a run holding five. */
 .grid.records {
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -21,16 +22,17 @@
   color: var(--ink);
 }
 
-.record .record-span { margin-bottom: 0.2rem; }
+.record .record-span { margin-bottom: var(--s1); }
 
-/* A record nobody holds keeps its card at full size. Naming the record is the
-   point; a collapsed or blank card would read as a fault rather than as a
-   club with its first season still running. */
-.record .record-empty { margin: 0.35rem 0 0; }
+/* A record nobody holds keeps its sheet at full size. Naming the record is the
+   point; a collapsed or blank one would read as a fault rather than as a club
+   with its first season still running. */
+.record .record-empty { margin: var(--s1) 0 0; }
 
-/* Layout for the all-time leader boards. */
+/* Layout for the all-time leader boards. Named for the boards it holds, not
+   for the .board surface — these are sheets. */
 .grid.boards {
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  /* Cards size to their own content — boards with fewer names stay short. */
+  /* Each sizes to its own content — a board with fewer names stays short. */
   align-items: start;
 }

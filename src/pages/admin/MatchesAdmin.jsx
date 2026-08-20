@@ -16,7 +16,7 @@ export default function MatchesAdmin() {
         <h2>Matches</h2>
         <Link className="btn small" to="/admin/matches/new">Create match</Link>
       </div>
-      <div className="card">
+      <div className="sheet">
         <SortableTable
           filterable
           rows={matches}

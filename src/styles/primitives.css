@@ -4,22 +4,82 @@
    Check this file before writing a new class anywhere else. Skipping that
    check is how the old single stylesheet reached 2,654 lines. */
 
-/* ---- building blocks ---- */
+/* ---- surfaces ----
+   Two of the three the design system names. The plate is badges only and
+   arrives with Phase 5; nothing in the site is one yet, which is why there is
+   no .plate here — an unused surface would be a fourth one in waiting. */
 
-/* Still one class doing every surface — Phase 3 splits it into sheet, board
-   and plate. What it can already do is stop looking like a SaaS panel: the
-   token set has no 12px radius and no shadow for content, so a card is a
-   hairline on paper and nothing more. */
-.card {
+/* The default, and where most data lives. Paper, a hairline, no shadow.
+   Separation inside a sheet is another hairline, never a nested box. */
+.sheet {
   background: var(--paper);
-  border: 1px solid var(--rule-firm);
+  border: 1px solid var(--rule);
   border-radius: var(--r);
-  padding: 1.1rem 1.2rem;
+  padding: var(--s5);
+}
+
+/* An occasion: dark ground, gilded edge, the club's own honours-board look.
+   Five things in the site are one — the matchday scoreboard, a player's hero,
+   the honours board, a leaderboard's leader and the last result on Home — and
+   that scarcity is the whole point. Half a page of board is a page of nothing.
+
+   Every dark section used to restate this ground, its ink and its border for
+   itself, which is why the label and table rules below could only be scoped by
+   naming all five. Now a new board arrives with its ink already right. */
+.board {
+  background: var(--board);
+  color: var(--on-board);
+  border-radius: var(--r);
+  border-bottom: 1px solid var(--gold);
+  padding: var(--s5);
+}
+
+.board h1, .board h2, .board h3 { color: var(--on-board); }
+
+.board .muted,
+.board .empty { color: var(--on-board-soft); }
+
+/* A link on a board is gold leaf — the gilded name is the reference the whole
+   direction is named after. */
+.board a { color: var(--gold-leaf); }
+
+.board a:hover { color: var(--gold); }
+
+/* ---- a table on a board: the honours board ----
+   Ruled and gilded rather than boxed. Only the hairlines and the ink change;
+   the figures keep the same condensed face and tabular spacing as every other
+   table, because it's still a table. */
+.board table.data th {
+  color: var(--on-board-soft);
+  border-bottom-color: color-mix(in srgb, var(--on-board) 34%, transparent);
+}
+
+.board table.data td { border-bottom-color: color-mix(in srgb, var(--on-board) 14%, transparent); }
+
+.board table.data tbody tr:hover { background: color-mix(in srgb, var(--gold) 16%, transparent); }
+
+.board table.data a:hover { color: var(--gold); }
+
+/* The first column sticks on a phone, so its backing has to be the board's
+   own ground rather than paper. */
+.board .table-wrap table.data th:first-child,
+.board .table-wrap table.data td:first-child {
+  background: var(--board);
+  box-shadow: 1px 0 0 color-mix(in srgb, var(--on-board) 14%, transparent);
+}
+
+.board .tag {
+  background: color-mix(in srgb, var(--sky) 22%, transparent);
+  color: var(--sky);
+}
+
+@media (max-width: 700px) {
+  .sheet, .board { padding: var(--s4); }
 }
 
 .grid {
   display: grid;
-  gap: 1rem;
+  gap: var(--s4);
 }
 
 .grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
@@ -28,20 +88,16 @@
 
 .grid.cols-4 { grid-template-columns: repeat(4, 1fr); }
 
-/* Nothing renders this any more — the leader boards moved to .grid.boards.
-   Left in place because Phase 1 only moves rules; Phase 3 removes it. */
-.grid.leaders { grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
-
 @media (max-width: 800px) {
   .grid.cols-3, .grid.cols-4 { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (max-width: 520px) {
-  .grid { gap: 0.6rem; }
+  .grid { gap: var(--s2); }
 
   .grid.cols-2, .grid.cols-3, .grid.cols-4 { grid-template-columns: repeat(2, 1fr); }
 
-  .stat-tile { padding: 0.85rem 0.5rem; }
+  .stat-tile { padding: var(--s3) var(--s2); }
 }
 
 /* ---- the one label style ----
@@ -75,15 +131,13 @@ dl.compare dt {
 
 /* On a dark ground the label takes the board's own secondary ink. Scoped to
    the primitive rather than spread across the pages that use a board. */
-.player-hero .label,
-.scoreboard .label,
-.match-hero .label,
-.lead-hero .label,
-.home-result .label { color: var(--on-board-soft); }
+.board .label { color: var(--on-board-soft); }
 
+/* A tile is a sheet sized to one figure, so it keeps the surface and swaps
+   the padding for something square. */
 .stat-tile {
   text-align: center;
-  padding: 1.3rem 0.8rem;
+  padding: var(--s5) var(--s3);
 }
 
 .stat-tile .value {
@@ -96,16 +150,21 @@ dl.compare dt {
   font-variant-numeric: tabular-nums;
 }
 
+/* Sections are --s6 apart, --s5 on a phone. */
 .section {
-  margin-top: 1.8rem;
+  margin-top: var(--s6);
+}
+
+@media (max-width: 700px) {
+  .section { margin-top: var(--s5); }
 }
 
 .section-head {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 0.7rem;
+  gap: var(--s4);
+  margin-bottom: var(--s3);
   flex-wrap: wrap;
 }
 
@@ -120,7 +179,7 @@ dl.compare dt {
 /* form badges */
 .form-row {
   display: flex;
-  gap: 0.35rem;
+  gap: var(--s1);
 }
 
 .form-badge {
@@ -185,8 +244,7 @@ dl.compare dt {
   color: var(--ink-soft);
 }
 
-.scoreboard .venue-badge,
-.player-hero .venue-badge { color: var(--on-board-soft); }
+.board .venue-badge { color: var(--on-board-soft); }
 
 /* ---- tables ---- */
 .table-wrap {
@@ -258,10 +316,10 @@ table.data a:hover { color: var(--gold-deep); }
 /* ---- controls ---- */
 .controls {
   display: flex;
-  gap: 0.6rem;
+  gap: var(--s2);
   align-items: center;
   flex-wrap: wrap;
-  margin-bottom: 0.9rem;
+  margin-bottom: var(--s3);
 }
 
 .controls label,
@@ -342,7 +400,7 @@ button.small {
 .form-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 0.8rem;
+  gap: var(--s3);
 }
 
 .field {
@@ -367,14 +425,14 @@ button.small {
 }
 
 .form-actions {
-  margin-top: 1rem;
+  margin-top: var(--s4);
   display: flex;
-  gap: 0.6rem;
+  gap: var(--s2);
   align-items: center;
 }
 
 .notice {
-  padding: 0.7rem 0.9rem;
+  padding: var(--s3);
   border-radius: var(--r);
   font-size: var(--t-small);
   font-weight: 600;
@@ -398,12 +456,12 @@ button.small {
 .empty {
   text-align: center;
   color: var(--ink-soft);
-  padding: 2rem 1rem;
+  padding: var(--s6) var(--s4);
 }
 
 .page-intro {
   max-width: 65ch;
-  margin-bottom: 1.2rem;
+  margin-bottom: var(--s5);
 }
 
 .form-badge.fixture {
@@ -421,11 +479,11 @@ button.small {
 /* ---- chips + segmented control ---- */
 .chip-row {
   display: flex;
-  gap: 0.35rem;
+  gap: var(--s1);
   overflow-x: auto;
   scrollbar-width: none;
   padding-bottom: 0.2rem;
-  margin-bottom: 0.9rem;
+  margin-bottom: var(--s3);
 }
 
 .chip-row::-webkit-scrollbar { display: none; }
@@ -450,9 +508,9 @@ button.small {
 .season-new {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
-  margin-top: -0.4rem;
-  margin-bottom: 0.9rem;
+  gap: var(--s1);
+  margin-top: calc(var(--s1) * -1);
+  margin-bottom: var(--s3);
 }
 
 .season-new input {
@@ -482,7 +540,7 @@ button.small {
   box-shadow: 0 1px 2px color-mix(in srgb, var(--board) 14%, transparent);
 }
 
-.show-all { text-align: center; margin: 0.8rem 0 0.2rem; }
+.show-all { text-align: center; margin: var(--s3) 0 var(--s1); }
 
 dl.compare { margin: 0; }
 
@@ -521,7 +579,7 @@ dl.compare dd { margin: 0.1rem 0 0; font-size: var(--t-body); }
 }
 
 .spinner {
-  margin: 3rem auto;
+  margin: var(--s7) auto;
   width: 28px;
   height: 28px;
   border-radius: 50%;
@@ -550,4 +608,10 @@ button.secondary.active, .btn.secondary.active {
 
 .fixture-location { margin-top: 0.4rem; }
 
-td .fixture-location { margin: 0.25rem 0 0; font-size: var(--t-small); }
+/* Figures in a table cell must not wrap, but a pitch address in one has to —
+   nowrap sent the Upcoming table into a side-scroll on a phone. */
+td .fixture-location {
+  margin: 0.25rem 0 0;
+  font-size: var(--t-small);
+  white-space: normal;
+}

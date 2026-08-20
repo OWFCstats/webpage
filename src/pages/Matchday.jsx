@@ -105,7 +105,7 @@ export default function Matchday() {
 
   if (matches.length === 0 && players.length === 0) {
     return (
-      <div className="empty card">
+      <div className="empty sheet">
         <h1>Old Wellingtonians FC</h1>
         <p>No data yet. Once the first players and matches are entered, stats will appear here.</p>
       </div>
@@ -115,7 +115,7 @@ export default function Matchday() {
   const { currentSeason, season, match, seasonOrdered, prevMatch, nextMatch, ctx, form, nextFixture } = view;
 
   if (matchId && !match) {
-    return <div className="empty card">Match not found. <Link className="more" to="/season">Full season →</Link></div>;
+    return <div className="empty sheet">Match not found. <Link className="more" to="/season">Full season →</Link></div>;
   }
 
   if (!match) {
@@ -125,7 +125,7 @@ export default function Matchday() {
           <h1>{currentSeason ? `Season ${currentSeason}` : 'Old Wellingtonians FC'}</h1>
         </div>
         <p className="muted">{currentSeason ?? 'The new season'} hasn’t started yet.</p>
-        <div className="card section form-next">
+        <div className="sheet section form-next">
           <div>
             <div className="label">Form</div>
             <FormBadges matches={form} />
@@ -189,7 +189,7 @@ export default function Matchday() {
 
   return (
     <div>
-      <div className="scoreboard">
+      <div className="board scoreboard">
         <div className="sb-top">
           <div className="sb-side us">
             <span className="badge">OW</span>
@@ -298,7 +298,7 @@ export default function Matchday() {
         )}
       </div>
 
-      <div className="card section form-next">
+      <div className="sheet section form-next">
         <div>
           <div className="label">Form</div>
           <FormBadges matches={form} />
@@ -309,7 +309,7 @@ export default function Matchday() {
       {played && (star || avgFor != null) && (
         <div className="grid match-cards section">
           {star && (
-            <div className="card">
+            <div className="sheet">
               <h3 className="label ruled">Man of the Match</h3>
               <div className="motm-feature">
                 <span className="avatar">{initials(star.player.name)}</span>
@@ -333,7 +333,7 @@ export default function Matchday() {
             </div>
           )}
           {avgFor != null && (
-            <div className="card">
+            <div className="sheet">
               <h3 className="label ruled">How it compares</h3>
               <dl className="compare">
                 <div>
@@ -367,7 +367,7 @@ export default function Matchday() {
       )}
 
       {milestones.length > 0 && (
-        <div className="card section">
+        <div className="sheet section">
           <h3 className="label ruled">Worth noting</h3>
           <ul className="milestones">
             {milestones.map((m, i) => (
@@ -384,7 +384,7 @@ export default function Matchday() {
       )}
 
       {match.report ? (
-        <div className="section card">
+        <div className="section sheet">
           <h2>Match report</h2>
           <div className="report-body">{match.report}</div>
         </div>
@@ -395,7 +395,7 @@ export default function Matchday() {
       ) : null}
 
       {squad.length > 0 && (
-        <div className="section card">
+        <div className="section sheet">
           <h2>The squad</h2>
           <div className="squad-pills">
             {squad.map((a) => (

@@ -24,19 +24,32 @@ softening the palette or from photography we don't have yet.
 ### What this replaces
 
 The site read as templated for four specific reasons, and the system below
-exists to fix each one. Three are done; the fourth is what Phase 3 is for.
+exists to fix each one. All four are done.
 
 | Problem | Fix | |
 | --- | --- | --- |
 | One typeface (Manrope) at weight 800 doing every job | A display face, a text face, and a condensed face for data | done |
 | Twelve near-identical tiny-uppercase label styles (0.62–0.75rem) | One label style. 0.75rem is the floor | done |
 | Three overlapping palettes (CSS tokens, a chart `SERIES` array, per-component hex props) | One token set. No hex literals in components, ever | done |
-| One `.card` class on all ~40 surfaces equally, whatever the section is | Three surfaces with a rule about when each is used | Phase 3 |
+| One `.card` class on all ~40 surfaces equally, whatever the section is | Two surfaces with a rule about when each is used, and a third for badges | done |
 
-The radius and the shadow came across with the token swap rather than waiting
-for Phase 3 — the token set has no 12px radius and no shadow for content, so
-there was nothing for `.card` to keep. What's left for Phase 3 is the part that
-needs judgement: which sections are boards and which are sheets.
+`.card` is gone. Fifty call sites are `.sheet` and five are `.board`, and the
+judgement that split them is the rule under *Surfaces* below. The plate is real
+but unbuilt: it is badges only, and Phase 5 builds the badges.
+
+One invariant is worth keeping, because it is what stops a fourth surface
+arriving by accident: **no class whose name contains `card` draws a surface.**
+Several survive as names for objects and layouts — `.card-foot` is the footnote
+at the foot of a surface, `.card-mark` is a yellow or a red card, `.lead-card`,
+`.chart-card` and `.season-card` name components, and `.season-cards`,
+`.player-cards` and `.match-cards` are grids. Every one of them either sets
+padding on an element that already carries `.sheet`, or lays out a row. The only
+one that touches colour is `.season-card.best`, and it re-tints a sheet rather
+than defining one.
+
+So if a rule named `…card…` ever grows a `background`, a `border` and a
+`border-radius` together, that's the system drifting back, not a special
+case.
 
 ## Colour
 
@@ -154,10 +167,10 @@ rather than a corporate one. Mixed case, always. Weight 500–700, tracking
 enough width to read at 16px on a phone.
 
 **Archivo Narrow** (data) — every table, every league standing, every stat cell,
-every figure, with `font-variant-numeric: tabular-nums`. This is functional,
-not stylistic: condensed figures took the ten-column league table from a
-side-scroll at every phone width to fitting at 375px with four columns hidden,
-and fitting outright at 414. See *Mobile* for what the last 23px costs.
+every figure, with `font-variant-numeric: tabular-nums`. This is functional, not
+stylistic: condensed figures are half of why the ten-column league table fits a
+375px phone at all. The other half is the surface getting out of its way — see
+*Mobile*.
 
 **No all-caps headings.** The one uppercase style is `.label` below, and
 nothing else in the site is set in caps.
@@ -182,8 +195,8 @@ beside it.
 `.label` — the single label style, and the only uppercase in the site.
 `--t-micro`, weight 600, tracking `0.08em`, uppercase, `--ink-soft`. Column
 headers and section eyebrows. `.label.ruled` adds the hairline that closes off
-a card heading. On a dark ground it takes `--on-board-soft`, scoped next to the
-primitive rather than restated by every page that uses a board.
+a heading. On a dark ground it takes `--on-board-soft` — one `.board .label`
+rule, where it used to take a list of all five dark sections by name.
 
 `table.data th`, `.field > span` and `dl.compare dt` are in the same rule
 rather than carrying the class, since they are labels by virtue of being what
@@ -206,12 +219,35 @@ this case is special.
 
 ### Board — dark, gilded
 
-For occasions and honours: the matchday scoreboard, a player's hero, the
-honours board, the leaderboard leader, the last result on Home.
+For occasions and honours, and there are five of them: the matchday scoreboard,
+a player's hero, the honours board, the leaderboard leader, the last result on
+Home. Four render today; the leaderboard leader is `LeadBoard` in
+`components/BarBoard.jsx`, built and waiting for Phase 6 to put a leaderboard
+on the Players page.
 
-`--board` ground, `--on-board` text, display face, gold accents, 1px
-`--gold` bottom border. No radius above 4px. Sparingly — if half the page is
-board, none of it feels like an occasion.
+`--board` ground, `--on-board` text, display face, gold accents, 1px `--gold`
+bottom border. No radius above 4px. Sparingly — if half the page is board, none
+of it feels like an occasion. Measured, since "sparingly" invites argument: no
+page is more than one board, and at 375px a board is between 5% and 29% of its
+page's height — the 29% being Matchday, where the scoreboard *is* the page.
+
+The `.board` class carries all of that, including the ink for labels, links,
+`.muted`, tags and tables sitting on it. That matters more than saving five
+declarations: before, each dark section restated the ground and its ink for
+itself, so the rule that made a label legible on one had to name all five by
+hand. A new board now arrives correct, and getting it wrong takes effort.
+
+Two things a board does *not* do:
+
+- **No paper box inside one.** A nested sheet on a dark ground is the
+  box-in-a-box this system rules out, and it breaks contrast as well as taste.
+- **A board used as a band inside a sheet squares its corners.** The leaderboard
+  leader is one: `.lead-hero` sets `border-radius: 0`, and the board's own gold
+  bottom border becomes the line between the leader and the chasers.
+
+The gold edge is 1px, not the 3px the scoreboard used to carry. With five boards
+in the site rather than one dark section, a 3px rule on each read as five
+underlines; the masthead keeps its 3px because it is the frame, not an occasion.
 
 ### Sheet — paper, ruled
 
@@ -222,8 +258,18 @@ fixtures.
 shadow**. Separation inside a sheet is a hairline rule, not a nested box.
 
 Dropping the shadow and taking the radius from 12px to 4px is most of what
-stops this reading as a SaaS dashboard, and `.card` already does both — what
-Phase 3 changes is which sections stop being cards at all.
+stops this reading as a SaaS dashboard. The border is `--rule`, not the firmer
+`--rule-firm` `.card` used: a sheet is the default surface, so its edge should
+be the quietest line in the system, and `--rule-firm` is reserved for a divider
+that has to be seen.
+
+A sheet is also how any paper surface is drawn, not just the ones that used to
+be cards. `.season-card` and `.stat-cell` each hand-rolled the same ground,
+border and radius; both now carry `.sheet` and set only their own padding. Two
+things deliberately still draw their own box — `.honour` and `.ms` — because
+Phase 5 deletes them, and adopting a surface on the way to being demolished is
+wasted motion. `.home-stat-tile` isn't one either, and that one is permanent:
+it uses `--sheet`, the recessed ground, because it sits *inside* a surface.
 
 ### Plate — metal
 
@@ -243,8 +289,23 @@ picker list. Nothing else gets one. `--shadow-pop: 0 6px 20px rgba(26,28,25,.14)
 ### Spacing
 
 A 4px scale: `--s1` 4, `--s2` 8, `--s3` 12, `--s4` 16, `--s5` 24, `--s6` 32,
-`--s7` 48. Sections are `--s6` apart, `--s5` on a phone. Card padding is
-`--s4`/`--s5`.
+`--s7` 48. Sections are `--s6` apart, `--s5` on a phone. Surface padding is
+`--s5`, dropping to `--s4` on a phone — a sheet and a board take the same,
+because an occasion earns its emphasis from the ground and the type, not from
+extra room.
+
+Where the scale stops, and why it isn't everywhere yet:
+
+- **Anything that positions a block is a token.** Surface padding, section
+  rhythm, grid gaps, the space above and below a control group.
+- **Anything inside a control or a row is not.** A pill's `0.1rem 0.4rem`, a
+  chip's `0.32rem 0.85rem`, a table cell's `0.5rem 0.6rem`, a list row's
+  `0.45rem 0`. These are optical, tuned against a specific glyph height, and
+  rounding them to 4px would cost more than it buys.
+- **The frame keeps its own measurements.** `layout.css` — masthead, main
+  column, footer, tab bar — is untouched, because moving the page gutter moves
+  every width measurement in *Mobile* below with it. It belongs to whichever
+  phase next has a reason to open that file.
 
 ## Badges and awards
 
@@ -287,6 +348,10 @@ Where they appear:
 
 Repeat-count badges (5 hat-tricks, 5 MOTMs) use the same plate with a `×5`
 mark. They're derivable from existing appearance rows — no schema change.
+
+Until then `components/honours.css` draws the badge grid as its own bordered
+box rather than as a sheet. That is deliberate: Phase 5 replaces it, and a
+surface adopted on the way to being deleted is churn.
 
 ### 2. Season awards — the honours board
 
@@ -353,11 +418,21 @@ The design target, not a fallback. Every change gets checked at 375px first.
 - **A table that side-scrolls is a bug.** Condensed data figures buy the room;
   where they aren't enough, restructure into rows (`ResultList` is the pattern),
   don't hide columns.
-- **The league table is the one exception, and it's measured.** All ten columns
-  in `--font-data` at `--t-small` with 4px cell padding come to 332px. A 375px
-  phone leaves the table 309px inside the card, so P, D, GF and GA still come
-  out below 480px. The missing 23px is the card's own 1rem of padding either
-  side, not the figures — which makes it Phase 3's to find, not the type's.
+- **The league table shows all ten columns from 360px up, and it's measured.**
+  Phase 2 got the columns down to the width of a phone in `--font-data` and
+  still had to hide four of them, because the surface holding the table spent
+  16px either side on its own padding. Below 480px the sheet gives that back:
+  `.home-widget.home-table` drops its horizontal padding, the head and the
+  footnote take it themselves, and the standings run to the hairline with the
+  cell padding as the only inset. The row rules run edge to edge — an engraved
+  line across the sheet — so the breathing room at the two ends sits on the
+  first and last cells instead.
+
+  At 375px that leaves the table 341px and it needs 309px. At 360px it leaves
+  326 and needs 303. Below 360 the four secondary columns still come out: the
+  narrowest phones leave 286px, and the shortfall is the club names, which
+  can't shrink past their longest word. One breakpoint, `max-width: 359px`, and
+  it is the only place in the site that hides a column.
 - Admin data entry is a phone-first flow — it's used on a Saturday night at a
   pub table. Sticky save, big inputs, one record per block.
 

@@ -1,4 +1,4 @@
-/* Chart card frame and tooltip for the Recharts plots. The plots themselves
+/* Chart sheet frame and tooltip for the Recharts plots. The plots themselves
    are styled in JS — see the chart rules in docs/DESIGN.md, and lib/tokens.js
    for how they read their colours out of tokens.css.
 
@@ -7,11 +7,13 @@
 
 .chart-stack {
   display: grid;
-  gap: 1.1rem;
+  gap: var(--s4);
 }
 
+/* A chart wants more room round it than a table does, and the plot's own
+   axis labels sit inside this padding. */
 .chart-card {
-  padding: 1.2rem 1.3rem 1.3rem;
+  padding: var(--s5);
 }
 
 .chart-head {
@@ -88,7 +90,7 @@
 .recharts-surface:focus { outline: none; }
 
 @media (max-width: 700px) {
-  .chart-card { padding: 1rem 0.7rem 1.1rem; }
+  .chart-card { padding: var(--s4) var(--s3); }
 
   .chart-head {
     flex-direction: column;

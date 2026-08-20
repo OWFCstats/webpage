@@ -88,28 +88,75 @@ Phase 3's, and `DESIGN.md` now says so instead of claiming the type fixed it.
 
 ---
 
-## Phase 3 — Surfaces
+## Phase 3 — Surfaces ✅
 
-Replace the ~40 uses of `.card` with `.sheet` / `.board` / `.plate` per the
-rule in `DESIGN.md`, and hairline rules for internal separation. The radius and
-the shadows came across with the tokens in Phase 2, so what's left is the
-judgement: which sections are an occasion and which are just paper.
+`.card` is gone. Fifty call sites are `.sheet`, five are `.board`, and the
+`.plate` waits for Phase 5, which is what builds the badges it exists for.
 
-Two loose ends inherited from Phase 2 belong here, since both are about the
-surface rather than the type:
+All four done-criteria hold, checked in a browser rather than by eye:
 
-- The league table's four hidden columns. The table needs 23px more than a
-  375px card gives it, and the card's 1rem of padding either side is where
-  that comes from.
-- The spacing scale. Forty surfaces move onto `--s1`–`--s7` while they're
-  being rebuilt, rather than in a separate sweep.
+- **Every dark section is a deliberate occasion.** Five of them: the
+  scoreboard, a player's hero, the Records honours board, the leaderboard leader
+  and Home's last result. Four render today — `LeadBoard` is the fifth, built
+  and verified but not on a page until Phase 6 puts a leaderboard on Players.
+  No page carries more than one, and at 375px a board is 5–29% of its page's
+  height — the 29% being Matchday, where the scoreboard *is* the page.
+- **Everything else is a sheet**, including the two surfaces that were drawing
+  their own paper-and-hairline by hand (`.season-card`, `.stat-cell`). The
+  invariant that keeps it that way is in `DESIGN.md` and is greppable: no class
+  whose name contains `card` draws a surface any more.
+- **The league table shows all ten columns at 375px**, and from 360px up. The
+  missing 23px was exactly where Phase 2 said it was — the surface's own
+  padding — so below 480px the sheet gives it back and the standings run to the
+  hairline. Measured: 341px available against 309px needed at 375, 326 against
+  303 at 360. Below 360 the four secondary columns still come out, because the
+  shortfall there is the club names and a name can't shrink past its longest
+  word.
+- **Checked at 375px**, and at 320 / 360 / 414 / 700 / 900 / 1400. Every public
+  route and seven admin routes rendered against a fixture dataset: nothing
+  overflows the viewport, no table side-scrolls outside a `.table-wrap`, no text
+  computes below 12px, and nothing on a board resolves to paper ink or a paper
+  ground.
 
-Also removes the dead `.grid.leaders` rule Phase 1 left in place.
+The real win isn't the two class names. Each dark section used to restate the
+ground, the ink and the border for itself, so the rule that made a label legible
+on one had to name all five sections by hand — and the next board would have
+needed a sixth name. `.board` carries the ink for labels, links, `.muted`, tags
+and tables, so a new one is correct on arrival.
 
-**Done means:** every dark section is a deliberate "occasion" (scoreboard,
-player hero, honours board, leaderboard leader, last result), and everything
-else is a sheet. The league table shows all ten columns at 375px. Checked at
-375px.
+Three judgement calls worth recording, since they're the kind that get
+re-argued:
+
+- **The gold edge is 1px, not the scoreboard's old 3px.** Five boards each
+  underlined 3px read as five underlines. The masthead keeps its 3px: it's the
+  frame, not an occasion.
+- **A board used as a band inside a sheet squares its corners** —
+  `.lead-hero`'s bottom edge is the line between the leader and the chasers, and
+  a 4px curve there read as a second box.
+- **`.honour` and `.ms` still draw their own boxes.** Phase 5 deletes both.
+  Adopting a surface on the way to being demolished is wasted motion.
+
+The spacing scale moved with the surfaces, and stopped where `DESIGN.md` now
+says it stops: tokens for anything that positions a block, literals inside a
+control or a row, and `layout.css` untouched because moving the page gutter
+moves every width measurement in *Mobile* with it.
+
+Dead rules removed: `.grid.leaders`, as Phase 1 scheduled, and `.match-hero`,
+which was a dark section nothing rendered. `.scoreline` is also dead and is
+marked in place for Phase 8, which rewrites Matchday's components and can say
+whether a shared score style is wanted.
+
+Three things the 375px check turned up that weren't on the list, fixed here
+because the check is the criterion:
+
+- A division name in the league widget's head pushed the row past a 320px
+  viewport, because the note was `nowrap` and sized for a date. It wraps now,
+  and below 480px the head stacks so the heading stops wrapping mid-phrase.
+- The scoreboard's two sides laid their badge, name, kickoff and pitch address
+  out in one flex row on a phone, which squeezed the address into a column of
+  single words. Badge beside a stacked block instead.
+- A pitch address in the Season page's Upcoming table inherited `white-space:
+  nowrap` from `table.data td` and sent the table into a side-scroll.
 
 ---
 
@@ -150,7 +197,9 @@ The core incentive mechanic. Depends on Phases 2–4.
 - Records: the club plate board, and the season honours board as a ruled gilded
   table.
 - **Remove** the five milestone progress bars (`MilestoneStrip`,
-  `playerMilestones`, `.ms-*` CSS).
+  `playerMilestones`, `.ms-*` CSS) and the `.honour` grid they sit above. Both
+  kept their own bordered boxes through Phase 3 rather than adopting `.sheet`,
+  because this phase deletes them.
 - Admin: a Player of the Season field per season, alongside the League tab.
 
 **Done means:** a player opening their own page sees what they've won and what's
@@ -192,6 +241,9 @@ Extract the presentational sub-components currently defined inside page files �
 `PlayerDetail.jsx` (578 lines) has `Hero`, `Honours`, `FormCard`, `RankCard`,
 `MatesCard`, `SeasonCards` and `StatGrid` inline; `Matchday.jsx` is 430 lines;
 `AddResult.jsx` is 426.
+
+Also decides `.scoreline`, a dead type rule Phase 3 marked in place: this is
+the phase that rewrites the components that would use it.
 
 **Done means:** every page file reads as a layout — sections plus data wiring —
 and none is over ~250 lines.

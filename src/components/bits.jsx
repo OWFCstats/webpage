@@ -66,7 +66,7 @@ export function HonourGrid({ honours }) {
 /** `plain` drops the card surface — for tiles nested inside another card. */
 export function StatTile({ value, label, plain = false }) {
   return (
-    <div className={plain ? 'stat-tile' : 'card stat-tile'}>
+    <div className={plain ? 'stat-tile' : 'sheet stat-tile'}>
       <div className="value">{value}</div>
       <div className="label">{label}</div>
     </div>

@@ -42,7 +42,7 @@ const chartColours = () => ({
 function ChartCard({ title, finding, children, empty, table }) {
   const [showTable, setShowTable] = useState(false);
   return (
-    <section className="card chart-card">
+    <section className="sheet chart-card">
       <div className="chart-head">
         <div>
           <h2>{title}</h2>

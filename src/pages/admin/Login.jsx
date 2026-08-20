@@ -22,7 +22,7 @@ export default function Login() {
   }
 
   return (
-    <div className="card login-box">
+    <div className="sheet login-box">
       <h1>Admin login</h1>
       <p className="muted">Sign in with your club admin account.</p>
       <form onSubmit={submit}>

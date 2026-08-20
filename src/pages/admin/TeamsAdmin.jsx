@@ -104,7 +104,7 @@ export default function TeamsAdmin() {
 
   return (
     <div className="section">
-      <div className="card">
+      <div className="sheet">
         <h2>{editingId ? 'Edit team' : 'Add team'}</h2>
         <form onSubmit={submit}>
           <div className="form-grid">
@@ -157,7 +157,7 @@ export default function TeamsAdmin() {
         </form>
       </div>
 
-      <div className="card section">
+      <div className="sheet section">
         <h2>Teams</h2>
         <SortableTable
           filterable

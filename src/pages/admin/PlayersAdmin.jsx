@@ -51,7 +51,7 @@ export default function PlayersAdmin() {
 
   return (
     <div className="section">
-      <div className="card">
+      <div className="sheet">
         <h2>{editingId ? 'Edit player' : 'Add player'}</h2>
         <form onSubmit={submit}>
           <div className="form-grid">
@@ -83,7 +83,7 @@ export default function PlayersAdmin() {
         </form>
       </div>
 
-      <div className="card section">
+      <div className="sheet section">
         <h2>Squad</h2>
         <SortableTable
           filterable
