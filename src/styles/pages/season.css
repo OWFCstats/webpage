@@ -3,24 +3,14 @@
 
 /* ---- flat blocks: a label and a hairline, no card surface of their own —
    for sections that don't need to read as a distinct bubble, whether they
-   sit on the page background or inside another card. ---- */
+   sit on the page background or inside another card. The label itself is the
+   shared .label.ruled primitive. ---- */
 .flat-block {
   margin-top: 1.8rem;
 }
 
 .flat-block:first-child {
   margin-top: 0;
-}
-
-.flat-block-label {
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-  border-bottom: 1px solid var(--line);
-  padding-bottom: 0.4rem;
-  margin-bottom: 0.9rem;
 }
 
 /* ---- season page: table and results lead the main column, one card

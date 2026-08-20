@@ -14,13 +14,11 @@
   gap: 0.7rem;
   min-height: 44px;
   padding: 0.55rem 0;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid var(--rule);
 }
 
 .result-list li:last-child .result-row { border-bottom: none; }
 
 .result-row .who { min-width: 0; }
 
-.result-row .who strong { display: block; font-size: 0.95rem; }
-
-.result-row .who .muted { font-size: 0.78rem; }
+.result-row .who strong { display: block; font-size: var(--t-body); }

@@ -9,8 +9,8 @@
 /* Career totals in the same dark band the Match Centre scoreboard uses, so a
    player page opens like an occasion rather than a report. */
 .player-hero {
-  background: var(--black);
-  border-radius: var(--radius);
+  background: var(--board);
+  border-radius: var(--r);
   padding: 1.3rem 1.4rem;
   display: flex;
   align-items: center;
@@ -22,29 +22,30 @@
   width: 62px;
   height: 62px;
   flex: none;
-  border-radius: 12px;
+  border-radius: var(--r);
   background: var(--gold);
-  color: var(--black);
+  color: var(--board);
   display: grid;
   place-items: center;
-  font-weight: 800;
-  font-size: 1.35rem;
-  letter-spacing: -0.02em;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--t-subtitle);
+  letter-spacing: -0.015em;
 }
 
 .player-hero .who { flex: 1 1 240px; min-width: 0; }
 
 .player-hero .who h1 {
-  color: #fff;
-  font-size: 1.72rem;
+  color: var(--on-board);
+  font-size: var(--t-headline);
   margin: 0;
 }
 
 .player-hero .who h1::after { display: none; }
 
 .player-hero .who .sub {
-  color: #96938a;
-  font-size: 0.83rem;
+  color: var(--on-board-soft);
+  font-size: var(--t-small);
   margin-top: 0.25rem;
   display: flex;
   gap: 0.45rem;
@@ -62,21 +63,13 @@
 
 .player-hero .career-line .v {
   display: block;
-  color: #fff;
-  font-size: 1.5rem;
-  font-weight: 800;
+  color: var(--on-board);
+  font-family: var(--font-data);
+  font-size: var(--t-title);
+  font-weight: 700;
   line-height: 1;
   font-variant-numeric: tabular-nums;
-}
-
-.player-hero .career-line .k {
-  display: block;
-  color: #8e8b83;
-  font-size: 0.62rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  font-weight: 700;
-  margin-top: 0.32rem;
+  margin-bottom: 0.32rem;
 }
 
 .player-views { margin-top: 1.1rem; }
@@ -92,23 +85,23 @@
 }
 
 .ms {
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 10px;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: var(--r);
   padding: 0.75rem 0.85rem;
 }
 
 /* The closest milestone leads the row and is the only one that gets colour. */
-.ms.lead { border-color: var(--gold); background: #fffdf5; }
+.ms.lead { border-color: var(--gold); background: color-mix(in srgb, var(--gold) 8%, transparent); }
 
-.ms-line { font-size: 0.92rem; font-weight: 600; }
+.ms-line { font-size: var(--t-small); font-weight: 600; }
 
-.ms-line strong { color: var(--gold-deep); font-weight: 800; }
+.ms-line strong { color: var(--gold-deep); font-weight: 700; }
 
 .ms-track {
   height: 5px;
-  background: #eceadf;
-  border-radius: 3px;
+  background: var(--sheet);
+  border-radius: var(--r-sm);
   margin-top: 0.55rem;
   overflow: hidden;
 }
@@ -117,7 +110,7 @@
   display: block;
   height: 100%;
   background: var(--gold);
-  border-radius: 3px;
+  border-radius: var(--r-sm);
   transition: width 0.4s ease;
 }
 
@@ -126,7 +119,8 @@
 }
 
 .ms-foot {
-  font-size: 0.73rem;
+  font-family: var(--font-data);
+  font-size: var(--t-small);
   color: var(--ink-soft);
   margin-top: 0.35rem;
   font-variant-numeric: tabular-nums;
@@ -160,17 +154,17 @@ table.data.firsts td:nth-child(2) { white-space: nowrap; color: var(--ink-soft);
 
 table.data.firsts tbody tr:hover { background: transparent; }
 
-.card-foot { font-size: 0.82rem; margin: 0.7rem 0 0; }
+.card-foot { font-size: var(--t-small); margin: 0.7rem 0 0; }
 
 /* ---- personal form ---- */
 .form-games { display: flex; gap: 0.45rem; flex-wrap: wrap; }
 
 .fg {
-  border: 1px solid var(--line);
-  border-radius: 8px;
+  border: 1px solid var(--rule);
+  border-radius: var(--r);
   padding: 0.42rem 0.5rem;
   text-align: center;
-  background: var(--card);
+  background: var(--paper);
   min-width: 64px;
   max-width: 92px;
 }
@@ -179,7 +173,8 @@ table.data.firsts tbody tr:hover { background: transparent; }
 
 .fg-op {
   display: block;
-  font-size: 0.67rem;
+  font-family: var(--font-data);
+  font-size: var(--t-small);
   color: var(--ink-soft);
   margin-top: 0.3rem;
   white-space: nowrap;
@@ -189,13 +184,14 @@ table.data.firsts tbody tr:hover { background: transparent; }
 
 .fg-mine {
   display: block;
-  font-size: 0.73rem;
-  font-weight: 800;
+  font-family: var(--font-data);
+  font-size: var(--t-small);
+  font-weight: 700;
   margin-top: 0.2rem;
   color: var(--gold-deep);
 }
 
-.fg-mine.blank { color: #c3c0b5; }
+.fg-mine.blank { color: var(--ink-faint); }
 
 /* ---- ranks ---- */
 .rank-list { list-style: none; margin: 0; padding: 0; }
@@ -205,17 +201,18 @@ table.data.firsts tbody tr:hover { background: transparent; }
   align-items: center;
   gap: 0.6rem;
   padding: 0.45rem 0;
-  border-bottom: 1px solid var(--line);
-  font-size: 0.87rem;
+  border-bottom: 1px solid var(--rule);
+  font-size: var(--t-small);
 }
 
 .rank-list li:last-child { border-bottom: none; }
 
 .rank-pos {
-  font-weight: 800;
-  font-size: 1rem;
+  font-family: var(--font-data);
+  font-weight: 700;
+  font-size: var(--t-body);
   min-width: 38px;
-  color: var(--black);
+  color: var(--ink);
   font-variant-numeric: tabular-nums;
 }
 
@@ -224,7 +221,8 @@ table.data.firsts tbody tr:hover { background: transparent; }
 /* "1st of 10" reads as a placing; the stat's own value sits on the right, so
    the two numbers can't be mistaken for each other. */
 .rank-den {
-  font-size: 0.7rem;
+  font-family: var(--font-data);
+  font-size: var(--t-micro);
   color: var(--ink-soft);
   white-space: nowrap;
   margin-left: -0.25rem;
@@ -234,9 +232,10 @@ table.data.firsts tbody tr:hover { background: transparent; }
 
 .rank-val {
   margin-left: auto;
-  font-size: 0.9rem;
-  font-weight: 800;
-  color: var(--black);
+  font-family: var(--font-data);
+  font-size: var(--t-small);
+  font-weight: 700;
+  color: var(--ink);
   font-variant-numeric: tabular-nums;
 }
 
@@ -248,7 +247,7 @@ table.data.firsts tbody tr:hover { background: transparent; }
   align-items: center;
   gap: 0.6rem;
   padding: 0.42rem 0;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid var(--rule);
 }
 
 .mate-list li:last-child { border-bottom: none; }
@@ -258,27 +257,29 @@ table.data.firsts tbody tr:hover { background: transparent; }
   height: 30px;
   border-radius: 50%;
   flex: none;
-  background: #efece2;
+  background: var(--sheet);
   color: var(--ink-soft);
   display: grid;
   place-items: center;
-  font-size: 0.68rem;
-  font-weight: 800;
+  font-family: var(--font-data);
+  font-size: var(--t-micro);
+  font-weight: 700;
 }
 
-.mate-name { font-size: 0.86rem; font-weight: 700; }
+.mate-name { font-size: var(--t-small); font-weight: 600; }
 
 .mate-name:hover { color: var(--gold-deep); }
 
 .mate-count {
   margin-left: auto;
-  font-size: 0.8rem;
-  font-weight: 800;
-  color: var(--black);
+  font-family: var(--font-data);
+  font-size: var(--t-small);
+  font-weight: 700;
+  color: var(--ink);
   font-variant-numeric: tabular-nums;
 }
 
-.mate-count em { font-style: normal; font-weight: 600; color: var(--ink-soft); font-size: 0.7rem; }
+.mate-count em { font-style: normal; font-weight: 400; color: var(--ink-soft); font-size: var(--t-micro); }
 
 /* ---- season cards ---- */
 .season-cards {
@@ -288,42 +289,33 @@ table.data.firsts tbody tr:hover { background: transparent; }
 }
 
 .season-card {
-  border: 1px solid var(--line);
-  border-radius: 10px;
+  border: 1px solid var(--rule);
+  border-radius: var(--r);
   padding: 0.75rem 0.85rem;
-  background: var(--card);
+  background: var(--paper);
 }
 
-.season-card.best { border-color: var(--gold); background: #fffdf5; }
+.season-card.best { border-color: var(--gold); background: color-mix(in srgb, var(--gold) 8%, transparent); }
 
 .season-card .sc-year {
-  font-weight: 800;
-  font-size: 0.95rem;
+  font-family: var(--font-data);
+  font-weight: 700;
+  font-size: var(--t-body);
   display: flex;
   align-items: center;
   gap: 0.4rem;
 }
 
-.season-card .sc-year .tag { font-size: 0.62rem; }
-
 .season-card .sc-row { display: flex; gap: 1rem; margin-top: 0.55rem; }
 
 .season-card .sc-row .v {
   display: block;
-  font-size: 1.05rem;
-  font-weight: 800;
+  font-family: var(--font-data);
+  font-size: var(--t-body);
+  font-weight: 700;
   line-height: 1;
   font-variant-numeric: tabular-nums;
-}
-
-.season-card .sc-row .k {
-  display: block;
-  font-size: 0.6rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--ink-soft);
-  font-weight: 700;
-  margin-top: 0.24rem;
+  margin-bottom: 0.24rem;
 }
 
 /* ---- full stats view ---- */
@@ -334,9 +326,9 @@ table.data.firsts tbody tr:hover { background: transparent; }
 }
 
 .stat-cell {
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 10px;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: var(--r);
   padding: 0.7rem 0.75rem;
   display: flex;
   flex-direction: column;
@@ -346,20 +338,18 @@ table.data.firsts tbody tr:hover { background: transparent; }
 .stat-cell .sc-top { display: flex; align-items: baseline; justify-content: space-between; gap: 0.4rem; }
 
 .stat-cell .sc-v {
-  font-size: 1.35rem;
-  font-weight: 800;
+  font-family: var(--font-data);
+  font-size: var(--t-subtitle);
+  font-weight: 700;
   line-height: 1;
   font-variant-numeric: tabular-nums;
 }
 
-.stat-cell .sc-rank { font-size: 0.68rem; font-weight: 800; color: var(--gold-deep); }
-
-.stat-cell .sc-k {
-  font-size: 0.62rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--ink-soft);
+.stat-cell .sc-rank {
+  font-family: var(--font-data);
+  font-size: var(--t-micro);
   font-weight: 700;
+  color: var(--gold-deep);
 }
 
 .stat-cell .spark { display: block; width: 100%; height: 26px; }
@@ -368,12 +358,13 @@ table.data.firsts tbody tr:hover { background: transparent; }
   display: flex;
   align-items: center;
   gap: 0.45rem;
-  font-size: 0.66rem;
+  font-family: var(--font-data);
+  font-size: var(--t-micro);
   color: var(--ink-soft);
   white-space: nowrap;
 }
 
-.stat-cell .sc-bar { flex: 1; height: 4px; background: #eceadf; border-radius: 2px; overflow: hidden; }
+.stat-cell .sc-bar { flex: 1; height: 4px; background: var(--sheet); border-radius: var(--r-sm); overflow: hidden; }
 
 .stat-cell .sc-bar i { display: block; height: 100%; }
 
@@ -382,13 +373,9 @@ table.data.firsts tbody tr:hover { background: transparent; }
 @media (max-width: 700px) {
   .player-hero { gap: 0.9rem; padding: 1.1rem; }
 
-  .player-hero .crest { width: 46px; height: 46px; font-size: 1.05rem; border-radius: 10px; }
-
-  .player-hero .who h1 { font-size: 1.4rem; }
+  .player-hero .crest { width: 46px; height: 46px; font-size: var(--t-body); }
 
   .player-hero .career-line { gap: 1.1rem; width: 100%; justify-content: space-between; }
-
-  .player-hero .career-line .v { font-size: 1.25rem; }
 
   .grid.player-split { grid-template-columns: 1fr; }
 

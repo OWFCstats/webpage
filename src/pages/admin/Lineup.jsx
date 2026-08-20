@@ -144,14 +144,14 @@ function LineupInner({ match, players, existing }) {
         ) : (
           <>
             <div className="lineup-grid lineup-head">
-              <span>#</span>
-              <span>Player</span>
-              <span>Role</span>
-              <span className="num">Goals</span>
-              <span className="num">Assists</span>
-              <span className="num">YC</span>
-              <span className="num">RC</span>
-              <span>MOTM</span>
+              <span className="label">#</span>
+              <span className="label">Player</span>
+              <span className="label">Role</span>
+              <span className="label num">Goals</span>
+              <span className="label num">Assists</span>
+              <span className="label num">YC</span>
+              <span className="label num">RC</span>
+              <span className="label">MOTM</span>
               <span />
             </div>
             {slots.map((slot, i) => (

@@ -43,31 +43,73 @@ impossible to tell apart.
 
 ---
 
-## Phase 2 — Tokens and type
+## Phase 2 — Tokens and type ✅
 
-Swap in the palette, the two font families and the seven-step scale. Delete
-Manrope. Collapse the twelve micro-label styles into `.label`. Remove the hex
-literals passed as props (`BarBoard` accent, `SeasonCharts` `SERIES`,
-`PlayerCareerChart` constants) in favour of tokens.
+The palette, the three faces and the seven-step scale, swapped in across all
+eighteen stylesheets at once. Manrope is gone; Fraunces, Archivo and Archivo
+Narrow are self-hosted through `@fontsource`.
 
-**Done means:** no hex literal outside `tokens.css`; no font size below
-0.75rem; one uppercase style in the whole site; `npm run build` clean.
+All four done-criteria hold, checked rather than eyeballed:
 
-This changes how every page looks, all at once and consistently. That's the
-point — a palette rolled out page by page is how the site got inconsistent in
-the first place.
+- **No hex literal outside `tokens.css`**, and none in JS either. Tints are
+  `color-mix()` off a token. The chart colours are read out of `:root` by
+  `lib/tokens.js`, because Recharts writes them into SVG attributes where
+  `var()` is invalid — that also killed the four duplicated stat-colour lists
+  in `PlayersHub`, `PlayerDetail`, `Records` and `Season`.
+- **No font size below 0.75rem**, and nothing outside the seven steps. Forty
+  declarations at twelve distinct sizes between 0.58rem and 0.74rem are gone,
+  and the forty-nine distinct font sizes the site used are now seven tokens.
+- **One uppercase style.** Twelve label styles became `.label`, plus
+  `.label.ruled` where a hairline closed off a heading. Rendered at six widths,
+  every uppercase element in the page resolves to that one rule.
+- **`npm run build` clean.**
+
+Also verified in a browser rather than by eye: a fixture carrying every
+component's real markup, rendered at 320 / 375 / 414 / 700 / 900 / 1400px. No
+element overflows the viewport at any width, no text computes below 12px, and
+the league table now fits its container at every width including 320 — it
+side-scrolled at 320 before.
+
+Two things rode along, because the token set left no alternative: `.card`'s
+12px radius and its double shadow. There is no 12px radius and no content
+shadow in the token set, so keeping them would have meant inventing values
+outside the system for the sake of a phase boundary. Phase 3 keeps the part
+that actually needs judgement.
+
+The spacing tokens (`--s1`–`--s7`) are declared and used by the new rules, but
+existing padding and margins were left alone — moving forty surfaces onto the
+4px scale belongs with Phase 3, where those surfaces get rebuilt anyway.
+
+One thing did not survive contact: the league table still hides P, D, GF and GA
+below 480px. Condensed figures brought the full ten columns from a side-scroll
+at every phone width down to 332px, but a 375px phone only leaves the table
+309px inside the card. The missing 23px is the card's own padding, so it's
+Phase 3's, and `DESIGN.md` now says so instead of claiming the type fixed it.
 
 ---
 
 ## Phase 3 — Surfaces
 
 Replace the ~40 uses of `.card` with `.sheet` / `.board` / `.plate` per the
-rule in `DESIGN.md`. Radius 12px → 4px, shadows off content, hairline rules
-for internal separation.
+rule in `DESIGN.md`, and hairline rules for internal separation. The radius and
+the shadows came across with the tokens in Phase 2, so what's left is the
+judgement: which sections are an occasion and which are just paper.
+
+Two loose ends inherited from Phase 2 belong here, since both are about the
+surface rather than the type:
+
+- The league table's four hidden columns. The table needs 23px more than a
+  375px card gives it, and the card's 1rem of padding either side is where
+  that comes from.
+- The spacing scale. Forty surfaces move onto `--s1`–`--s7` while they're
+  being rebuilt, rather than in a separate sweep.
+
+Also removes the dead `.grid.leaders` rule Phase 1 left in place.
 
 **Done means:** every dark section is a deliberate "occasion" (scoreboard,
 player hero, honours board, leaderboard leader, last result), and everything
-else is a sheet. Checked at 375px.
+else is a sheet. The league table shows all ten columns at 375px. Checked at
+375px.
 
 ---
 

@@ -13,11 +13,12 @@
 .grid.records > * { min-width: 0; }
 
 .record .record-headline {
-  font-size: 1.45rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
+  font-family: var(--font-display);
+  font-size: var(--t-title);
+  font-weight: 600;
+  letter-spacing: -0.015em;
   line-height: 1.2;
-  color: var(--black);
+  color: var(--ink);
 }
 
 .record .record-span { margin-bottom: 0.2rem; }

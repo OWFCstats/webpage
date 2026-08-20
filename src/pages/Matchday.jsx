@@ -40,7 +40,7 @@ function NextUp({ next, teams }) {
     : [];
   return (
     <div className="next-up">
-      <div className="mini-label">Next up</div>
+      <div className="label">Next up</div>
       <strong>
         <Link to={`/opponents/${opponentSlug(teams, next)}`}>{next.opponent}</Link>{' '}
         <VenueBadge venue={next.venue} />
@@ -127,7 +127,7 @@ export default function Matchday() {
         <p className="muted">{currentSeason ?? 'The new season'} hasn’t started yet.</p>
         <div className="card section form-next">
           <div>
-            <div className="mini-label">Form</div>
+            <div className="label">Form</div>
             <FormBadges matches={form} />
           </div>
           <NextUp next={nextFixture} teams={teams} />
@@ -200,7 +200,7 @@ export default function Matchday() {
             {played ? (
               <>
                 <span className="score">{match.goals_for}–{match.goals_against}</span>
-                <span className="state">
+                <span className="state label">
                   {match.walkover ? 'Awarded (walkover)' : 'Full time'} · {match.competition}{' '}
                   <span className={`result-pill ${resultOf(match)}`}>{resultOf(match)}</span>
                 </span>
@@ -208,7 +208,7 @@ export default function Matchday() {
             ) : (
               <>
                 <span className="score upcoming">v</span>
-                <span className="state">{formatDate(match.date)} · {match.competition}</span>
+                <span className="state label">{formatDate(match.date)} · {match.competition}</span>
               </>
             )}
           </div>
@@ -269,7 +269,7 @@ export default function Matchday() {
 
         {seasonOrdered.length > 0 && (
           <>
-            <div className="mini-label">Jump to a matchday</div>
+            <div className="label">Jump to a matchday</div>
             <div className="jump-strip">
               {seasonOrdered.map((m) => {
                 const current = m.id === match.id;
@@ -300,7 +300,7 @@ export default function Matchday() {
 
       <div className="card section form-next">
         <div>
-          <div className="mini-label">Form</div>
+          <div className="label">Form</div>
           <FormBadges matches={form} />
         </div>
         <NextUp next={nextFixture} teams={teams} />
@@ -310,7 +310,7 @@ export default function Matchday() {
         <div className="grid match-cards section">
           {star && (
             <div className="card">
-              <h3 className="card-label">Man of the Match</h3>
+              <h3 className="label ruled">Man of the Match</h3>
               <div className="motm-feature">
                 <span className="avatar">{initials(star.player.name)}</span>
                 <span>
@@ -334,7 +334,7 @@ export default function Matchday() {
           )}
           {avgFor != null && (
             <div className="card">
-              <h3 className="card-label">How it compares</h3>
+              <h3 className="label ruled">How it compares</h3>
               <dl className="compare">
                 <div>
                   <dt>This game</dt>
@@ -368,7 +368,7 @@ export default function Matchday() {
 
       {milestones.length > 0 && (
         <div className="card section">
-          <h3 className="card-label">Worth noting</h3>
+          <h3 className="label ruled">Worth noting</h3>
           <ul className="milestones">
             {milestones.map((m, i) => (
               <li key={i}>

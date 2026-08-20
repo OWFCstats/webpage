@@ -23,20 +23,36 @@ softening the palette or from photography we don't have yet.
 
 ### What this replaces
 
-The site currently reads as templated for four specific reasons, and the system
-below exists to fix each one:
+The site read as templated for four specific reasons, and the system below
+exists to fix each one. Three are done; the fourth is what Phase 3 is for.
 
-| Problem | Fix |
-| --- | --- |
-| One typeface (Manrope) at weight 800 doing every job | A display face, a text face, and a condensed face for data |
-| 12px radius + soft double shadow + white card on cream, applied to all ~40 cards equally | Three surfaces with a rule about when each is used, no shadows on content |
-| Twelve near-identical tiny-uppercase label styles (0.62–0.75rem) | One label style. 0.75rem is the floor |
-| Three overlapping palettes (CSS tokens, a chart `SERIES` array, per-component hex props) | One token set. No hex literals in components, ever |
+| Problem | Fix | |
+| --- | --- | --- |
+| One typeface (Manrope) at weight 800 doing every job | A display face, a text face, and a condensed face for data | done |
+| Twelve near-identical tiny-uppercase label styles (0.62–0.75rem) | One label style. 0.75rem is the floor | done |
+| Three overlapping palettes (CSS tokens, a chart `SERIES` array, per-component hex props) | One token set. No hex literals in components, ever | done |
+| One `.card` class on all ~40 surfaces equally, whatever the section is | Three surfaces with a rule about when each is used | Phase 3 |
+
+The radius and the shadow came across with the token swap rather than waiting
+for Phase 3 — the token set has no 12px radius and no shadow for content, so
+there was nothing for `.card` to keep. What's left for Phase 3 is the part that
+needs judgement: which sections are boards and which are sheets.
 
 ## Colour
 
 Every colour lives in `styles/tokens.css` as a custom property. A hex literal in
 a component or passed as a prop is a bug.
+
+Two things follow from that, because a token can't be written down twice:
+
+- **A tint is `color-mix()` off a token**, never a second literal —
+  `color-mix(in srgb, var(--gold) 12%, transparent)` for the gold wash on a
+  highlighted row. Change the gold and every wash follows.
+- **JavaScript reads tokens, it doesn't hold them.** Recharts and the
+  sparklines put colours in SVG attributes, where `var()` is invalid, so
+  `lib/tokens.js` reads the computed value off `:root`. It also owns the one
+  place that says which token a stat wears, so goals are the same brass on a
+  leaderboard bar, a sparkline and a chart line.
 
 ### Ground and ink
 
@@ -106,8 +122,8 @@ Fixed order, assigned in sequence, never cycled. Ordered so the two warm darks
 aren't adjacent.
 
 ```
-1  #8f6a14  brass      2  #2f6f8f  blue       3  #a8501a  orange
-4  #4a3f7a  plum       5  #2f6b46  green
+--series-1  #8f6a14  brass    --series-2  #2f6f8f  blue    --series-3  #a8501a  orange
+--series-4  #4a3f7a  plum     --series-5  #2f6b46  green
 ```
 
 All clear 4.5:1 on paper, so a series colour can also label its own line
@@ -118,10 +134,16 @@ directly and skip the legend.
 Two families, three roles.
 
 ```css
---font-display: 'Fraunces', Georgia, serif;
---font-text:    'Archivo', system-ui, sans-serif;
---font-data:    'Archivo Narrow', 'Archivo', system-ui, sans-serif;
+--font-display: 'Fraunces Variable', Fraunces, Georgia, serif;
+--font-text:    'Archivo Variable', Archivo, system-ui, sans-serif;
+--font-data:    'Archivo Narrow', 'Archivo Variable', Archivo, system-ui, sans-serif;
 ```
+
+Self-hosted through `@fontsource`, imported in `main.jsx`, so the type doesn't
+depend on a third-party CDN staying up. Fontsource ships the variable faces
+under their own family names — `'Fraunces Variable'`, `'Archivo Variable'` —
+which is why both spellings are in each stack; the `Variable` one is what
+loads.
 
 **Fraunces** (display) — page titles, player names, scores, the mark on a
 badge. Variable, with a slightly hand-cut quality that suits an amateur club
@@ -132,19 +154,20 @@ rather than a corporate one. Mixed case, always. Weight 500–700, tracking
 enough width to read at 16px on a phone.
 
 **Archivo Narrow** (data) — every table, every league standing, every stat cell,
-with `font-variant-numeric: tabular-nums`. This is functional, not stylistic:
-condensed figures are what let the full 10-column league table fit a 375px
-screen. Today the CSS hides P, D, GF and GA below 480px to avoid a side-scroll.
-With condensed figures it doesn't have to.
+every figure, with `font-variant-numeric: tabular-nums`. This is functional,
+not stylistic: condensed figures took the ten-column league table from a
+side-scroll at every phone width to fitting at 375px with four columns hidden,
+and fitting outright at 414. See *Mobile* for what the last 23px costs.
 
 **No all-caps headings.** The one uppercase style is `.label` below, and
 nothing else in the site is set in caps.
 
 ### Scale
 
-Seven steps. Nothing outside this list, and **0.75rem is the floor** — the
-current CSS has seven distinct sizes between 0.62rem and 0.75rem all doing the
-same job.
+Seven steps. Nothing outside this list, and **0.75rem is the floor** — the old
+CSS used forty-nine distinct sizes, twelve of them below the floor and all
+doing the same job, which is how a label ended up smaller than the caption
+beside it.
 
 | Token | Size | Face | Use |
 | --- | --- | --- | --- |
@@ -154,10 +177,24 @@ same job.
 | `--t-subtitle` | 1.125rem | Archivo 600 | Card heading |
 | `--t-body` | 1rem | Archivo 400 | Body copy |
 | `--t-small` | 0.875rem | Archivo 400 | Secondary, captions |
-| `--t-micro` | 0.75rem | Archivo 600 | Labels only. The floor |
+| `--t-micro` | 0.75rem | Archivo 600 | Labels, and the smallest marks. The floor |
 
-`.label` — the single label style. `--t-micro`, weight 600, tracking `0.08em`,
-uppercase, `--ink-soft`. Column headers and section eyebrows. That's it.
+`.label` — the single label style, and the only uppercase in the site.
+`--t-micro`, weight 600, tracking `0.08em`, uppercase, `--ink-soft`. Column
+headers and section eyebrows. `.label.ruled` adds the hairline that closes off
+a card heading. On a dark ground it takes `--on-board-soft`, scoped next to the
+primitive rather than restated by every page that uses a board.
+
+`table.data th`, `.field > span` and `dl.compare dt` are in the same rule
+rather than carrying the class, since they are labels by virtue of being what
+they are. One caveat learned the hard way: the rule can't set `display: block`
+across that group — a `th` that is `display: block` stops being a table cell
+and the whole row lays out vertically. Block belongs on `.label` alone.
+
+`--t-micro` also carries the smallest non-label marks, where there is no step
+below it to fall to: the W/D/L badge, the H/A venue mark, a tag, an avatar's
+initials, the "of 34" beside a placing, the "vs squad avg" caption in a stat
+cell. Those are set in `--font-data`, not the text face.
 
 Form inputs stay at 16px minimum so iOS doesn't zoom the page on focus. This is
 already right in the admin CSS — keep it.
@@ -185,7 +222,8 @@ fixtures.
 shadow**. Separation inside a sheet is a hairline rule, not a nested box.
 
 Dropping the shadow and taking the radius from 12px to 4px is most of what
-stops this reading as a SaaS dashboard.
+stops this reading as a SaaS dashboard, and `.card` already does both — what
+Phase 3 changes is which sections stop being cards at all.
 
 ### Plate — metal
 
@@ -315,6 +353,11 @@ The design target, not a fallback. Every change gets checked at 375px first.
 - **A table that side-scrolls is a bug.** Condensed data figures buy the room;
   where they aren't enough, restructure into rows (`ResultList` is the pattern),
   don't hide columns.
+- **The league table is the one exception, and it's measured.** All ten columns
+  in `--font-data` at `--t-small` with 4px cell padding come to 332px. A 375px
+  phone leaves the table 309px inside the card, so P, D, GF and GA still come
+  out below 480px. The missing 23px is the card's own 1rem of padding either
+  side, not the figures — which makes it Phase 3's to find, not the type's.
 - Admin data entry is a phone-first flow — it's used on a Saturday night at a
   pub table. Sticky save, big inputs, one record per block.
 
@@ -327,7 +370,7 @@ an earlier one, never the reverse:
 ```
 styles/
   index.css         the import list. The only place load order is decided
-  tokens.css        custom properties only. No selectors
+  tokens.css        custom properties only. :root, and nothing else
   base.css          reset and element defaults — bare tags, no classes
   layout.css        the frame: masthead, nav, main column, footer, tab bar
   primitives.css    the shared vocabulary
@@ -335,6 +378,11 @@ styles/
   pages/            one file per route. The last resort, and the smallest
   admin.css         the write side, loaded last
 ```
+
+`tokens.css` carries one media query, and it is the only selector allowed to
+join `:root` there: `--t-display` and `--t-headline` drop a step on a phone,
+and putting that in the token layer is what stops every page from having to
+know about it.
 
 A rule earns a place in `primitives.css` by being wanted in three or more
 places. Two rules of thumb that follow from it:

@@ -13,6 +13,7 @@ import {
   resultOf,
   seasonsOf,
 } from '../lib/stats';
+import { statColour, statToken } from '../lib/tokens';
 
 function initials(name) {
   return name.split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase();
@@ -51,11 +52,11 @@ function Hero({ player, career, seasonsActive }) {
         </div>
       </div>
       <div className="career-line">
-        <div><span className="v">{career.appearances}</span><span className="k">Apps</span></div>
-        <div><span className="v">{career.goals}</span><span className="k">Goals</span></div>
-        <div><span className="v">{career.assists}</span><span className="k">Assists</span></div>
-        <div><span className="v">{career.cleanSheets}</span><span className="k">Clean sheets</span></div>
-        <div><span className="v">{career.motm}</span><span className="k">MOTM</span></div>
+        <div><span className="v">{career.appearances}</span><span className="label">Apps</span></div>
+        <div><span className="v">{career.goals}</span><span className="label">Goals</span></div>
+        <div><span className="v">{career.assists}</span><span className="label">Assists</span></div>
+        <div><span className="v">{career.cleanSheets}</span><span className="label">Clean sheets</span></div>
+        <div><span className="v">{career.motm}</span><span className="label">MOTM</span></div>
       </div>
     </div>
   );
@@ -66,7 +67,7 @@ function MilestoneStrip({ milestones }) {
   if (milestones.length === 0) return null;
   return (
     <div className="section">
-      <h3 className="card-label">Milestone watch</h3>
+      <h3 className="label ruled">Milestone watch</h3>
       <div className="ms-strip">
         {milestones.map((m, i) => (
           <div key={m.key} className={`ms${i === 0 ? ' lead' : ''}`}>
@@ -87,7 +88,7 @@ function MilestoneStrip({ milestones }) {
 function Honours({ honours }) {
   return (
     <div className="card">
-      <h3 className="card-label">Honours</h3>
+      <h3 className="label ruled">Honours</h3>
       <HonourGrid honours={honours} />
     </div>
   );
@@ -98,7 +99,7 @@ function FirstsTable({ firsts }) {
   if (!debut) return null;
   return (
     <div className="card">
-      <h3 className="card-label">Firsts &amp; bests</h3>
+      <h3 className="label ruled">Firsts &amp; bests</h3>
       <div className="table-wrap">
         <table className="data firsts">
           <tbody>
@@ -165,7 +166,7 @@ function FormCard({ form, scoringRun, sinceGoal, favouriteOpponent, teams }) {
   const scoredIn = form.filter((f) => f.app.goals > 0).length;
   return (
     <div className="card">
-      <h3 className="card-label">Last {form.length} played</h3>
+      <h3 className="label ruled">Last {form.length} played</h3>
       <div className="form-games">
         {form.map(({ app, match }) => (
           <Link key={app.id} to={`/matchday/${match.id}`} className="fg" title={`${formatDate(match.date)} vs ${match.opponent}`}>
@@ -200,7 +201,7 @@ function FormCard({ form, scoringRun, sinceGoal, favouriteOpponent, teams }) {
 function RankCard({ ranks }) {
   return (
     <div className="card">
-      <h3 className="card-label">Where they rank</h3>
+      <h3 className="label ruled">Where they rank</h3>
       <ul className="rank-list">
         {ranks.map((r) => (
           <li key={r.key}>
@@ -227,7 +228,7 @@ function ordinal(n) {
 function MatesCard({ teammates }) {
   return (
     <div className="card">
-      <h3 className="card-label">Most played alongside</h3>
+      <h3 className="label ruled">Most played alongside</h3>
       <ul className="mate-list">
         {teammates.map((t) => (
           <li key={t.player.id}>
@@ -246,7 +247,7 @@ function SeasonCards({ seasons, bestSeason }) {
   if (seasons.length === 0) return null;
   return (
     <div className="section">
-      <h3 className="card-label">Season by season</h3>
+      <h3 className="label ruled">Season by season</h3>
       <div className="season-cards">
         {seasons.map((s) => (
           <div key={s.season} className={`season-card${bestSeason && s.season === bestSeason.season ? ' best' : ''}`}>
@@ -255,10 +256,10 @@ function SeasonCards({ seasons, bestSeason }) {
               {bestSeason && s.season === bestSeason.season && <span className="tag gold">Best</span>}
             </div>
             <div className="sc-row">
-              <div><span className="v">{s.appearances}</span><span className="k">Apps</span></div>
-              <div><span className="v">{s.goals}</span><span className="k">Goals</span></div>
-              <div><span className="v">{s.assists}</span><span className="k">Assists</span></div>
-              <div><span className="v">{s.cleanSheets}</span><span className="k">CS</span></div>
+              <div><span className="v">{s.appearances}</span><span className="label">Apps</span></div>
+              <div><span className="v">{s.goals}</span><span className="label">Goals</span></div>
+              <div><span className="v">{s.assists}</span><span className="label">Assists</span></div>
+              <div><span className="v">{s.cleanSheets}</span><span className="label">CS</span></div>
             </div>
           </div>
         ))}
@@ -286,15 +287,17 @@ function Sparkline({ values, colour }) {
   );
 }
 
+// Each cell's colour comes from its stat, in lib/tokens.js — the same one the
+// leaderboard bar and the career chart use for it.
 const STAT_CELLS = [
-  { key: 'goals', label: 'Goals', colour: '#b8860b' },
-  { key: 'appearances', label: 'Appearances', colour: '#3f4149' },
-  { key: 'assists', label: 'Assists', colour: '#2a78d6' },
-  { key: 'cleanSheets', label: 'Clean sheets', colour: '#5ba3c9' },
-  { key: 'goalInvolvements', label: 'G+A', colour: '#eb6834' },
-  { key: 'motm', label: 'MOTM', colour: '#b8860b' },
-  { key: 'starts', label: 'Starts', colour: '#3f4149' },
-  { key: 'goalsPerGame', label: 'Goals / game', colour: '#eb6834', decimal: true },
+  { key: 'goals', label: 'Goals' },
+  { key: 'appearances', label: 'Appearances' },
+  { key: 'assists', label: 'Assists' },
+  { key: 'cleanSheets', label: 'Clean sheets' },
+  { key: 'goalInvolvements', label: 'G+A' },
+  { key: 'motm', label: 'MOTM' },
+  { key: 'starts', label: 'Starts' },
+  { key: 'goalsPerGame', label: 'Goals / game', decimal: true },
 ];
 
 function StatGrid({ career, seasons, ranks, squadAverage, squadMax }) {
@@ -313,12 +316,12 @@ function StatGrid({ career, seasons, ranks, squadAverage, squadMax }) {
               <span className="sc-v">{c.decimal ? rate(value) : value}</span>
               {rank?.rank != null && <span className="sc-rank">{ordinal(rank.rank)}</span>}
             </div>
-            <div className="sc-k">{c.label}</div>
-            <Sparkline values={oldestFirst.map((s) => s[c.key])} colour={c.colour} />
+            <div className="label">{c.label}</div>
+            <Sparkline values={oldestFirst.map((s) => s[c.key])} colour={statColour(c.key)} />
             <div className="sc-vs">
               <span>squad avg {c.decimal ? rate(avg) : Math.round(avg * 10) / 10}</span>
               <span className="sc-bar">
-                <i style={{ width: `${max > 0 ? Math.round((value / max) * 100) : 0}%`, background: c.colour }} />
+                <i style={{ width: `${max > 0 ? Math.round((value / max) * 100) : 0}%`, background: `var(${statToken(c.key)})` }} />
               </span>
             </div>
           </div>
@@ -513,7 +516,7 @@ export default function PlayerDetail() {
       {played && view === 'stats' && (
         <>
           <div className="section">
-            <h3 className="card-label">Career, against the squad</h3>
+            <h3 className="label ruled">Career, against the squad</h3>
             <StatGrid
               career={career}
               seasons={seasons}

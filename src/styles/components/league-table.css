@@ -5,35 +5,42 @@
 table.data.league-table td.lt-pos,
 table.data.league-table th.lt-pos {
   text-align: center;
-  font-weight: 800;
+  font-weight: 700;
   color: var(--ink-soft);
   width: 2rem;
 }
 
-table.data.league-table td.lt-club { font-weight: 700; }
+table.data.league-table td.lt-club { font-weight: 600; }
 
-table.data.league-table td.lt-pts { font-weight: 800; color: var(--black); }
+table.data.league-table td.lt-pts { font-weight: 700; color: var(--ink); }
 
 table.data.league-table td.lt-gd { color: var(--ink-soft); }
 
-table.data.league-table tr.lt-us { background: rgba(227, 180, 33, 0.1); }
+table.data.league-table tr.lt-us { background: color-mix(in srgb, var(--gold) 12%, transparent); }
 
 table.data.league-table tr.lt-us td.lt-pos { color: var(--gold-deep); }
 
-table.data.league-table tr.lt-us:hover { background: rgba(227, 180, 33, 0.14); }
+table.data.league-table tr.lt-us:hover { background: color-mix(in srgb, var(--gold) 18%, transparent); }
 
 /* The standings are typed in by hand, so when they were last touched is part
    of reading them. */
-.lt-updated { margin: 0.7rem 0 0; font-size: 0.78rem; }
+.lt-updated { margin: 0.7rem 0 0; font-size: var(--t-small); }
 
 /* Shown for a season with nothing entered — one honest line, not a mocked-up
    table for data that isn't there. */
 .lt-placeholder { margin: 0; }
 
+/* The condensed data face plus tighter cells brings all ten columns down to
+   332px, and a 375px phone leaves the table 309 inside the card. So P, D, GF
+   and GA still come out here, and the last 23px is Phase 3's to find: the
+   shortfall is the card's own 1rem padding either side, not the figures. */
 @media (max-width: 480px) {
+  table.data.league-table th,
+  table.data.league-table td { padding: 0.5rem 0.25rem; }
+
   .league-table .lt-hide-narrow { display: none; }
 
   /* The club name is what forces the table wider than the columns need —
-  letting it wrap keeps every column on screen without a side-scroll. */
-  .league-table td.lt-club { white-space: normal; max-width: 30vw; }
+  letting it wrap keeps every remaining column on screen. */
+  .league-table td.lt-club { white-space: normal; max-width: 34vw; }
 }

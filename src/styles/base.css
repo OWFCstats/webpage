@@ -14,10 +14,10 @@
 
 body {
   margin: 0;
-  font-family: 'Manrope Variable', system-ui, -apple-system, sans-serif;
-  background: var(--bg);
+  font-family: var(--font-text);
+  background: var(--paper);
   color: var(--ink);
-  font-size: 16px;
+  font-size: var(--t-body);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }
@@ -34,31 +34,39 @@ body {
   }
 }
 
+/* Headings are the display face, mixed case. Nothing here is ever set in caps
+   — that is .label's job and only .label's. */
 h1, h2, h3 {
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  color: var(--black);
-  margin: 0 0 0.5rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+  margin: 0 0 var(--s2);
 }
 
 h1 {
-  font-size: 2.3rem;
-  line-height: 1.15;
+  font-size: var(--t-display);
+  line-height: 1.1;
 }
 
 h1::after {
   content: '';
   display: block;
   width: 56px;
-  height: 4px;
-  margin-top: 0.45rem;
-  border-radius: 2px;
+  height: 3px;
+  margin-top: var(--s2);
   background: var(--gold);
 }
 
-h2 { font-size: 1.35rem; }
+h2 { font-size: var(--t-title); }
 
-h3 { font-size: 1.05rem; }
+/* A card heading is the text face: at 1.125rem the display face stops reading
+   as a heading and starts reading as body copy set slightly large. */
+h3 {
+  font-family: var(--font-text);
+  font-size: var(--t-subtitle);
+  letter-spacing: 0;
+}
 
 a {
   color: inherit;
@@ -66,9 +74,3 @@ a {
 }
 
 p { margin: 0.3rem 0; }
-
-@media (max-width: 700px) {
-  h1 { font-size: 1.7rem; }
-
-  h2 { font-size: 1.15rem; }
-}

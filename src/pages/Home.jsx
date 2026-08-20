@@ -19,6 +19,7 @@ import {
   seasonTrend,
   venueTeam,
 } from '../lib/stats';
+import { token } from '../lib/tokens';
 
 function initials(name) {
   return name.split(' ').map((w) => w[0]).slice(0, 2).join('');
@@ -101,14 +102,14 @@ export default function Home() {
     <div className="home">
       <div className="home-head">
         <h1>Old Wellingtonians FC</h1>
-        {currentSeason && <span className="home-season">Season {currentSeason}</span>}
+        {currentSeason && <span className="label">Season {currentSeason}</span>}
       </div>
 
       <div className="home-grid">
         <section className="card home-widget home-next">
           <div className="home-widget-head">
             <div>
-              <span className="home-eyebrow">Upcoming</span>
+              <span className="label">Upcoming</span>
               <h2>Next fixture</h2>
             </div>
           </div>
@@ -119,7 +120,7 @@ export default function Home() {
                   <span className="fixture-badge us">OW</span>
                   <span className="fixture-team">Old Wellingtonians</span>
                 </span>
-                <span className="fixture-vs">v</span>
+                <span className="fixture-vs label">v</span>
                 <span className="fixture-side">
                   <span className="fixture-badge them">{initials(next.opponent)}</span>
                   <Link to={`/opponents/${opponentSlug(teams, next)}`} className="fixture-team">
@@ -152,7 +153,7 @@ export default function Home() {
         <section className="card home-widget home-result">
           <div className="home-widget-head">
             <div>
-              <span className="home-eyebrow">Last time out</span>
+              <span className="label">Last time out</span>
               <h2>{lastMatch ? <>{lastMatch.opponent} <VenueBadge venue={lastMatch.venue} /></> : 'Last time out'}</h2>
             </div>
             {lastMatch && <span className="home-widget-note">{formatDate(lastMatch.date)}</span>}
@@ -184,7 +185,7 @@ export default function Home() {
       <section className="card home-widget home-form">
         <div className="home-widget-head">
           <div>
-            <span className="home-eyebrow">Momentum</span>
+            <span className="label">Momentum</span>
             <h2>Recent form</h2>
           </div>
         </div>
@@ -209,7 +210,7 @@ export default function Home() {
           </div>
           {trend.length >= 3 && (
             <div className="home-form-trend">
-              <Sparkline values={trend.map((t) => t.points)} stroke="#5ba3c9" />
+              <Sparkline values={trend.map((t) => t.points)} stroke={token('--series-2')} />
               <p className="muted home-spark-note">Points accumulated across the season</p>
             </div>
           )}
@@ -219,7 +220,7 @@ export default function Home() {
       <section className="card home-widget home-stats">
         <div className="home-widget-head">
           <div>
-            <span className="home-eyebrow">Overview</span>
+            <span className="label">Overview</span>
             <h2>Season stats</h2>
           </div>
           <Link className="more" to="/season">Full season →</Link>
@@ -228,15 +229,15 @@ export default function Home() {
           <div className="home-stat-tiles">
             <div className="home-stat-tile">
               <b>{summary.played}</b>
-              <em>Played</em>
+              <em className="label">Played</em>
             </div>
             <div className="home-stat-tile">
               <b>{cleanSheets}</b>
-              <em>Clean sheets</em>
+              <em className="label">Clean sheets</em>
             </div>
             <div className="home-stat-tile">
               <b>{winRate === null ? '—' : `${winRate}%`}</b>
-              <em>Win rate</em>
+              <em className="label">Win rate</em>
             </div>
           </div>
           <div className="home-bars">

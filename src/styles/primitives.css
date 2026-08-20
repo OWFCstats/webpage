@@ -5,11 +5,15 @@
    check is how the old single stylesheet reached 2,654 lines. */
 
 /* ---- building blocks ---- */
+
+/* Still one class doing every surface — Phase 3 splits it into sheet, board
+   and plate. What it can already do is stop looking like a SaaS panel: the
+   token set has no 12px radius and no shadow for content, so a card is a
+   hairline on paper and nothing more. */
 .card {
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  background: var(--paper);
+  border: 1px solid var(--rule-firm);
+  border-radius: var(--r);
   padding: 1.1rem 1.2rem;
 }
 
@@ -38,11 +42,44 @@
   .grid.cols-2, .grid.cols-3, .grid.cols-4 { grid-template-columns: repeat(2, 1fr); }
 
   .stat-tile { padding: 0.85rem 0.5rem; }
-
-  .stat-tile .value { font-size: 1.75rem; }
-
-  .stat-tile .label { font-size: 0.66rem; letter-spacing: 0.07em; }
 }
+
+/* ---- the one label style ----
+   Column headers and section eyebrows. This is the only uppercase in the
+   site: twelve near-identical tiny-caps styles between 0.62rem and 0.75rem
+   used to do this job, and 0.75rem is the floor. */
+.label,
+table.data th,
+.field > span,
+dl.compare dt {
+  font-family: var(--font-text);
+  font-size: var(--t-micro);
+  font-style: normal;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  line-height: 1.35;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+/* Block on the class only: a th that is display:block stops being a table
+   cell and the whole row lays out vertically. */
+.label { display: block; }
+
+/* A label that closes off what sits above it — an engraved rule, not a box. */
+.label.ruled {
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: var(--s2);
+  margin-bottom: var(--s3);
+}
+
+/* On a dark ground the label takes the board's own secondary ink. Scoped to
+   the primitive rather than spread across the pages that use a board. */
+.player-hero .label,
+.scoreboard .label,
+.match-hero .label,
+.lead-hero .label,
+.home-result .label { color: var(--on-board-soft); }
 
 .stat-tile {
   text-align: center;
@@ -50,18 +87,13 @@
 }
 
 .stat-tile .value {
-  font-size: 2.3rem;
-  font-weight: 800;
-  color: var(--black);
+  font-family: var(--font-display);
+  font-size: var(--t-headline);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--ink);
   line-height: 1.1;
-}
-
-.stat-tile .label {
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
 }
 
 .section {
@@ -78,8 +110,8 @@
 }
 
 .section-head .more {
-  font-size: 0.82rem;
-  font-weight: 700;
+  font-size: var(--t-small);
+  font-weight: 600;
   color: var(--gold-deep);
 }
 
@@ -94,64 +126,67 @@
 .form-badge {
   width: 26px;
   height: 26px;
-  border-radius: 7px;
+  border-radius: var(--r);
   display: grid;
   place-items: center;
-  font-size: 0.75rem;
-  font-weight: 800;
-  color: #fff;
+  font-family: var(--font-data);
+  font-size: var(--t-micro);
+  font-weight: 700;
+  color: var(--on-board);
 }
 
-.form-badge.W { background: var(--green); }
+.form-badge.W { background: var(--win); }
 
-.form-badge.D { background: #a3a6ad; }
+.form-badge.D { background: var(--draw); }
 
-.form-badge.L { background: var(--red); }
+.form-badge.L { background: var(--loss); }
 
 .result-pill {
   display: inline-block;
   min-width: 22px;
   text-align: center;
   padding: 0.1rem 0.4rem;
-  border-radius: 6px;
-  font-weight: 800;
-  font-size: 0.78rem;
-  color: #fff;
+  border-radius: var(--r);
+  font-family: var(--font-data);
+  font-weight: 700;
+  font-size: var(--t-micro);
+  color: var(--on-board);
 }
 
-.result-pill.W { background: var(--green); }
+.result-pill.W { background: var(--win); }
 
-.result-pill.D { background: #a3a6ad; }
+.result-pill.D { background: var(--draw); }
 
-.result-pill.L { background: var(--red); }
+.result-pill.L { background: var(--loss); }
 
 .tag {
   display: inline-block;
-  font-size: 0.72rem;
-  font-weight: 700;
+  font-size: var(--t-micro);
+  font-weight: 600;
   padding: 0.12rem 0.5rem;
-  border-radius: 999px;
-  background: rgba(91, 163, 201, 0.14);
-  color: #2d6f96;
+  border-radius: var(--r-pill);
+  background: color-mix(in srgb, var(--sky) 30%, transparent);
+  color: var(--sky-deep);
 }
 
 .tag.orange {
-  background: rgba(232, 119, 46, 0.14);
-  color: #b25317;
+  background: color-mix(in srgb, var(--tangerine) 16%, transparent);
+  color: var(--tangerine-deep);
 }
 
 /* Plain type rather than a chip: these sit next to the coloured W/D/L pills,
    and a second filled badge pulled attention away from the result. */
 .venue-badge {
   margin-left: 0.4rem;
-  font-size: 0.68rem;
-  font-weight: 700;
+  font-family: var(--font-data);
+  font-size: var(--t-micro);
+  font-weight: 600;
   letter-spacing: 0.06em;
-  color: #9b978d;
+  color: var(--ink-soft);
 }
 
 .scoreboard .venue-badge,
-.player-hero .venue-badge { color: #7d7a72; }
+.player-hero .venue-badge { color: var(--on-board-soft); }
 
 /* ---- tables ---- */
 .table-wrap {
@@ -164,25 +199,24 @@
     position: sticky;
     left: 0;
     z-index: 1;
-    background: var(--card);
-    box-shadow: 1px 0 0 var(--line);
+    background: var(--paper);
+    box-shadow: 1px 0 0 var(--rule);
   }
 }
 
+/* Condensed figures with tabular spacing: this is what lets a ten-column
+   league table fit a 375px screen without hiding columns. */
 table.data {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.95rem;
+  font-family: var(--font-data);
+  font-size: var(--t-small);
+  font-variant-numeric: tabular-nums;
 }
 
 table.data th {
   text-align: left;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-  border-bottom: 2px solid var(--line);
+  border-bottom: 1px solid var(--rule-firm);
   padding: 0.5rem 0.6rem;
   white-space: nowrap;
 }
@@ -192,7 +226,7 @@ table.data th.sortable {
   user-select: none;
 }
 
-table.data th.sortable:hover { color: var(--black); }
+table.data th.sortable:hover { color: var(--ink); }
 
 table.data th .arrow {
   color: var(--gold-deep);
@@ -201,7 +235,7 @@ table.data th .arrow {
 
 table.data td {
   padding: 0.55rem 0.6rem;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid var(--rule);
   white-space: nowrap;
 }
 
@@ -210,14 +244,14 @@ table.data tbody tr {
 }
 
 table.data tbody tr:hover {
-  background: rgba(227, 180, 33, 0.06);
+  background: color-mix(in srgb, var(--gold) 7%, transparent);
 }
 
 table.data td.num, table.data th.num { text-align: right; }
 
 table.data td.score-cell, table.data th.score-cell { text-align: center; }
 
-table.data a { font-weight: 700; }
+table.data a { font-weight: 600; }
 
 table.data a:hover { color: var(--gold-deep); }
 
@@ -232,19 +266,21 @@ table.data a:hover { color: var(--gold-deep); }
 
 .controls label,
 .controls > span {
-  font-size: 0.78rem;
-  font-weight: 700;
+  font-size: var(--t-small);
+  font-weight: 600;
   color: var(--ink-soft);
 }
 
+/* --t-body is 16px, which is the point: anything smaller and iOS zooms the
+   page in when the field takes focus. */
 select, input[type='text'], input[type='number'], input[type='date'],
 input[type='email'], input[type='password'], textarea {
   font: inherit;
-  font-size: 0.9rem;
+  font-size: var(--t-body);
   padding: 0.45rem 0.6rem;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: #fff;
+  border: 1px solid var(--rule-firm);
+  border-radius: var(--r);
+  background: var(--paper);
   color: var(--ink);
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
@@ -252,7 +288,7 @@ input[type='email'], input[type='password'], textarea {
 select:focus, input:focus, textarea:focus {
   outline: none;
   border-color: var(--gold);
-  box-shadow: 0 0 0 3px rgba(227, 180, 33, 0.2);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--gold) 25%, transparent);
 }
 
 textarea {
@@ -264,14 +300,14 @@ textarea {
 
 button, .btn {
   font: inherit;
-  font-weight: 700;
-  font-size: 0.88rem;
+  font-weight: 600;
+  font-size: var(--t-small);
   padding: 0.5rem 1rem;
-  border-radius: 8px;
+  border-radius: var(--r);
   border: 1px solid transparent;
   cursor: pointer;
   background: var(--gold);
-  color: var(--black);
+  color: var(--board);
   transition: filter 0.15s ease, transform 0.05s ease;
   display: inline-block;
 }
@@ -286,20 +322,20 @@ button:disabled {
 }
 
 button.secondary, .btn.secondary {
-  background: #fff;
-  border-color: var(--line);
+  background: var(--paper);
+  border-color: var(--rule-firm);
   color: var(--ink);
 }
 
 button.danger {
-  background: #fff;
-  border-color: rgba(201, 70, 61, 0.4);
-  color: var(--red);
+  background: var(--paper);
+  border-color: color-mix(in srgb, var(--loss) 45%, transparent);
+  color: var(--loss);
 }
 
+/* Padding only — the type scale has no step below the button's own. */
 button.small {
   padding: 0.3rem 0.65rem;
-  font-size: 0.8rem;
 }
 
 /* ---- forms ---- */
@@ -315,23 +351,16 @@ button.small {
   gap: 0.25rem;
 }
 
-.field > span {
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--ink-soft);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-
 .field.checkbox {
   flex-direction: row;
   align-items: center;
   gap: 0.5rem;
 }
 
+/* A checkbox's own text is a sentence, not a column header. */
 .field.checkbox > span {
-  font-size: 0.9rem;
-  font-weight: 500;
+  font-size: var(--t-body);
+  font-weight: 400;
   color: var(--ink);
   text-transform: none;
   letter-spacing: normal;
@@ -346,24 +375,24 @@ button.small {
 
 .notice {
   padding: 0.7rem 0.9rem;
-  border-radius: 8px;
-  font-size: 0.86rem;
+  border-radius: var(--r);
+  font-size: var(--t-small);
   font-weight: 600;
 }
 
 .notice.error {
-  background: rgba(201, 70, 61, 0.1);
-  color: var(--red);
+  background: color-mix(in srgb, var(--loss) 12%, transparent);
+  color: var(--loss);
 }
 
 .notice.ok {
-  background: rgba(61, 154, 95, 0.12);
-  color: var(--green);
+  background: color-mix(in srgb, var(--win) 14%, transparent);
+  color: var(--win);
 }
 
 .muted {
   color: var(--ink-soft);
-  font-size: 0.86rem;
+  font-size: var(--t-small);
 }
 
 .empty {
@@ -372,46 +401,22 @@ button.small {
   padding: 2rem 1rem;
 }
 
-/* ---- charts ---- */
 .page-intro {
   max-width: 65ch;
   margin-bottom: 1.2rem;
 }
 
-@media (max-width: 700px) {
-  .page-intro { font-size: 0.88rem; }
-}
-
-/* ---- ranked boards: leader + chasers ---- */
-.eyebrow {
-  font-size: 0.63rem;
-  font-weight: 800;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--gold);
-  margin-bottom: 0.4rem;
-}
-
 .form-badge.fixture {
   background: none;
-  border: 1.5px dashed var(--line);
+  border: 1.5px dashed var(--rule-firm);
 }
 
 .form-badge.current {
-  outline: 2px solid var(--black);
+  outline: 2px solid var(--board);
   outline-offset: 2px;
 }
 
 .form-next .next-up .fixture-location { display: block; margin-top: 0.15rem; }
-
-.mini-label {
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-  margin-bottom: 0.25rem;
-}
 
 /* ---- chips + segmented control ---- */
 .chip-row {
@@ -426,20 +431,20 @@ button.small {
 .chip-row::-webkit-scrollbar { display: none; }
 
 .chip-btn {
-  background: #fff;
-  border: 1px solid var(--line);
+  background: var(--paper);
+  border: 1px solid var(--rule-firm);
   color: var(--ink-soft);
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   padding: 0.32rem 0.85rem;
-  font-size: 0.84rem;
+  font-size: var(--t-small);
   white-space: nowrap;
   flex: none;
 }
 
 .chip-btn.active {
-  background: var(--black);
-  border-color: var(--black);
-  color: var(--gold);
+  background: var(--board);
+  border-color: var(--board);
+  color: var(--gold-leaf);
 }
 
 .season-new {
@@ -456,8 +461,8 @@ button.small {
 
 .seg {
   display: inline-flex;
-  background: #edebe3;
-  border-radius: 9px;
+  background: var(--sheet);
+  border-radius: var(--r);
   padding: 3px;
   gap: 0;
 }
@@ -465,44 +470,27 @@ button.small {
 .seg button {
   background: none;
   color: var(--ink-soft);
-  border-radius: 7px;
+  border-radius: var(--r-sm);
   padding: 0.4rem 1.1rem;
 }
 
+/* The active thumb of a segmented control is one of the few things on the
+   page that genuinely sits above what's behind it. */
 .seg button.active {
-  background: #fff;
-  color: var(--black);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--board) 14%, transparent);
 }
 
 .show-all { text-align: center; margin: 0.8rem 0 0.2rem; }
 
-.card-label {
-  font-size: 0.75rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-  border-bottom: 2px solid var(--line);
-  padding-bottom: 0.45rem;
-  margin-bottom: 0.7rem;
-}
-
 dl.compare { margin: 0; }
 
-dl.compare > div { padding: 0.45rem 0; border-bottom: 1px solid var(--line); }
+dl.compare > div { padding: 0.45rem 0; border-bottom: 1px solid var(--rule); }
 
 dl.compare > div:last-child { border-bottom: none; }
 
-dl.compare dt {
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-}
-
-dl.compare dd { margin: 0.1rem 0 0; font-size: 0.92rem; }
+dl.compare dd { margin: 0.1rem 0 0; font-size: var(--t-body); }
 
 .milestones { list-style: none; margin: 0; padding: 0; }
 
@@ -511,8 +499,8 @@ dl.compare dd { margin: 0.1rem 0 0; font-size: 0.92rem; }
   gap: 0.7rem;
   align-items: baseline;
   padding: 0.45rem 0;
-  border-bottom: 1px solid var(--line);
-  font-size: 0.92rem;
+  border-bottom: 1px solid var(--rule);
+  font-size: var(--t-small);
 }
 
 .milestones li:last-child { border-bottom: none; }
@@ -521,13 +509,14 @@ dl.compare dd { margin: 0.1rem 0 0; font-size: 0.92rem; }
   flex: none;
   min-width: 26px;
   height: 26px;
-  border-radius: 6px;
-  background: rgba(227, 180, 33, 0.14);
+  border-radius: var(--r);
+  background: color-mix(in srgb, var(--gold) 16%, transparent);
   color: var(--gold-deep);
   display: inline-grid;
   place-items: center;
-  font-weight: 800;
-  font-size: 0.78rem;
+  font-family: var(--font-data);
+  font-weight: 700;
+  font-size: var(--t-micro);
   padding: 0 0.3rem;
 }
 
@@ -536,7 +525,7 @@ dl.compare dd { margin: 0.1rem 0 0; font-size: 0.92rem; }
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  border: 3px solid var(--line);
+  border: 3px solid var(--rule);
   border-top-color: var(--gold);
   animation: spin 0.8s linear infinite;
 }
@@ -545,20 +534,20 @@ dl.compare dd { margin: 0.1rem 0 0; font-size: 0.92rem; }
   to { transform: rotate(360deg); }
 }
 
-.tag.dark { background: #2a2d34; color: #cfccc2; }
+.tag.dark { background: var(--board-soft); color: var(--on-board-soft); }
 
-.tag.gold { background: var(--gold); color: var(--black); }
+.tag.gold { background: var(--gold); color: var(--board); }
 
 /* Games with a goal or an assist in them, so the eye lands on the good days. */
-table.data tbody tr.scored-row { background: #fffdf5; }
+table.data tbody tr.scored-row { background: color-mix(in srgb, var(--gold) 8%, transparent); }
 
-table.data tbody tr.scored-row:hover { background: #fdf8e8; }
+table.data tbody tr.scored-row:hover { background: color-mix(in srgb, var(--gold) 14%, transparent); }
 
 button.secondary.active, .btn.secondary.active {
   border-color: var(--gold);
-  background: #fffdf5;
+  background: color-mix(in srgb, var(--gold) 8%, transparent);
 }
 
 .fixture-location { margin-top: 0.4rem; }
 
-td .fixture-location { margin: 0.25rem 0 0; font-size: 0.78rem; }
+td .fixture-location { margin: 0.25rem 0 0; font-size: var(--t-small); }

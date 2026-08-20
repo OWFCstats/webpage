@@ -13,7 +13,7 @@
   align-items: center;
   gap: 0.7rem;
   padding: 0.55rem 0;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid var(--rule);
 }
 
 .player-list li:last-child .player-row { border-bottom: none; }
@@ -22,20 +22,19 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: #edebe3;
+  background: var(--sheet);
   color: var(--ink-soft);
   display: grid;
   place-items: center;
-  font-weight: 800;
-  font-size: 0.72rem;
+  font-family: var(--font-data);
+  font-weight: 700;
+  font-size: var(--t-micro);
   flex: none;
 }
 
 .player-row .who { min-width: 0; }
 
-.player-row .who strong { display: block; font-size: 0.95rem; }
-
-.player-row .who .muted { font-size: 0.78rem; }
+.player-row .who strong { display: block; font-size: var(--t-body); }
 
 .player-row .nums {
   margin-left: auto;
@@ -48,14 +47,7 @@
 
 .player-row .nums strong {
   display: block;
-  font-size: 1rem;
+  font-family: var(--font-data);
+  font-size: var(--t-body);
   font-variant-numeric: tabular-nums;
-}
-
-.player-row .nums em {
-  font-style: normal;
-  font-size: 0.62rem;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
 }

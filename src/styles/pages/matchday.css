@@ -2,26 +2,28 @@
 
 /* score display */
 .scoreline {
-  font-size: 2.2rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
+  font-family: var(--font-display);
+  font-size: var(--t-headline);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  font-variant-numeric: tabular-nums;
 }
 
 .match-hero {
-  background: var(--black);
-  color: #f3f0e6;
-  border-radius: var(--radius);
+  background: var(--board);
+  color: var(--on-board);
+  border-radius: var(--r);
   padding: 1.5rem;
   border-bottom: 3px solid var(--gold);
 }
 
-.match-hero h1 { color: #fff; }
+.match-hero h1 { color: var(--on-board); }
 
-.match-hero .muted { color: #a5a297; }
+.match-hero .muted { color: var(--on-board-soft); }
 
 .report-body {
   max-width: 720px;
-  font-size: 0.97rem;
+  font-size: var(--t-body);
   line-height: 1.7;
   white-space: pre-wrap;
 }
@@ -37,23 +39,23 @@
 
 .matchday-stepper .nav {
   flex: none;
-  font-size: 0.84rem;
-  font-weight: 700;
+  font-size: var(--t-small);
+  font-weight: 600;
   color: var(--ink);
   white-space: nowrap;
 }
 
 .matchday-stepper .nav.disabled {
-  color: var(--ink-soft);
-  opacity: 0.4;
+  color: var(--ink-faint);
   pointer-events: none;
 }
 
 .matchday-stepper .count {
   flex: 1;
   text-align: center;
-  font-size: 0.78rem;
-  font-weight: 700;
+  font-family: var(--font-data);
+  font-size: var(--t-small);
+  font-weight: 600;
   color: var(--ink-soft);
 }
 
@@ -75,13 +77,11 @@
 
 .form-next .next-up strong { display: block; }
 
-.form-next .next-up .muted { font-size: 0.82rem; }
-
 /* ---- match centre ---- */
 .scoreboard {
-  background: var(--black);
-  color: #f3f0e6;
-  border-radius: var(--radius);
+  background: var(--board);
+  color: var(--on-board);
+  border-radius: var(--r);
   border-bottom: 3px solid var(--gold);
   overflow: hidden;
 }
@@ -103,51 +103,53 @@
   margin: 0 auto 0.45rem;
   display: grid;
   place-items: center;
-  font-weight: 800;
-  font-size: 1rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--t-body);
 }
 
-.sb-side.us .badge { background: var(--gold); color: var(--black); }
+.sb-side.us .badge { background: var(--gold); color: var(--board); }
 
-.sb-side.them .badge { background: #2a2d34; color: #cfccc2; }
+.sb-side.them .badge { background: var(--board-soft); color: var(--on-board-soft); }
 
-.sb-side .team { display: block; font-weight: 800; color: #fff; line-height: 1.2; }
+.sb-side .team {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--on-board);
+  line-height: 1.2;
+}
 
-.sb-side .sub { display: block; font-size: 0.75rem; color: #8e8b83; margin-top: 0.15rem; }
+.sb-side .sub { display: block; font-size: var(--t-small); color: var(--on-board-soft); margin-top: 0.15rem; }
 
 .sb-mid { text-align: center; }
 
 .sb-mid .score {
   display: block;
-  font-size: 3rem;
-  font-weight: 800;
-  letter-spacing: -0.04em;
+  font-family: var(--font-display);
+  font-size: var(--t-display);
+  font-weight: 600;
+  letter-spacing: -0.015em;
   line-height: 1;
-  color: #fff;
+  color: var(--on-board);
+  font-variant-numeric: tabular-nums;
 }
 
-.sb-mid .score.upcoming { color: #8e8b83; }
+.sb-mid .score.upcoming { color: var(--on-board-soft); }
 
-.sb-mid .state {
-  display: block;
-  font-size: 0.72rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: #8e8b83;
-  margin-top: 0.4rem;
-}
+.sb-mid .state { margin-top: 0.4rem; }
 
 .sb-strip {
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  border-top: 1px solid color-mix(in srgb, var(--on-board) 14%, transparent);
   padding: 0.7rem 1.5rem;
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem 1.4rem;
-  font-size: 0.85rem;
-  color: #b4b1a8;
+  font-size: var(--t-small);
+  color: var(--on-board-soft);
 }
 
-.sb-strip strong { color: #fff; }
+.sb-strip strong { color: var(--on-board); }
 
 /* One or two cards depending on whether a "how it compares" average exists,
    so a lone card has to fill the row instead of leaving a hole. */
@@ -159,50 +161,57 @@
   width: 52px;
   height: 52px;
   border-radius: 50%;
-  background: var(--black);
-  color: var(--gold);
+  background: var(--board);
+  color: var(--gold-leaf);
   display: grid;
   place-items: center;
-  font-weight: 800;
-  font-size: 1rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--t-body);
   flex: none;
 }
 
-.motm-name { font-size: 1.2rem; font-weight: 800; display: block; }
+.motm-name {
+  font-family: var(--font-display);
+  font-size: var(--t-subtitle);
+  font-weight: 600;
+  display: block;
+}
 
-.motm-line { display: block; font-size: 0.85rem; margin-top: 0.15rem; }
+.motm-line { display: block; font-size: var(--t-small); margin-top: 0.15rem; }
 
-.boot-line { margin: 0.8rem 0 0; padding-top: 0.7rem; border-top: 1px solid var(--line); font-size: 0.82rem; }
+.boot-line { margin: 0.8rem 0 0; padding-top: 0.7rem; border-top: 1px solid var(--rule); font-size: var(--t-small); }
 
-.prior-meeting { margin-right: 0.8rem; font-weight: 700; }
+.prior-meeting { margin-right: 0.8rem; font-weight: 600; }
 
 .squad-pills { display: flex; flex-wrap: wrap; gap: 0.35rem; }
 
 .squad-pill {
-  font-size: 0.84rem;
+  font-size: var(--t-small);
   font-weight: 600;
-  background: #f1efe7;
-  border: 1px solid var(--line);
-  border-radius: 999px;
+  background: var(--sheet);
+  border: 1px solid var(--rule);
+  border-radius: var(--r-pill);
   padding: 0.22rem 0.7rem;
 }
 
-.squad-pill.scored { background: var(--black); border-color: var(--black); color: #fff; }
+.squad-pill.scored { background: var(--board); border-color: var(--board); color: var(--on-board); }
 
-.squad-pill.motm { background: var(--gold); border-color: var(--gold); color: var(--black); font-weight: 800; }
+.squad-pill.motm { background: var(--gold); border-color: var(--gold); color: var(--board); font-weight: 700; }
 
 .squad-pill em {
   font-style: normal;
   opacity: 0.65;
-  font-size: 0.72rem;
+  font-family: var(--font-data);
+  font-size: var(--t-micro);
   margin-left: 0.3rem;
 }
 
-.squad-pill em.card-mark { color: var(--orange); opacity: 1; }
+.squad-pill em.card-mark { color: var(--tangerine-deep); opacity: 1; }
 
 .squad-pill.scored em.card-mark, .squad-pill.motm em.card-mark { color: inherit; }
 
-.squad-pill.as-button { cursor: pointer; font: inherit; font-size: 0.84rem; font-weight: 600; }
+.squad-pill.as-button { cursor: pointer; font: inherit; font-size: var(--t-small); font-weight: 600; }
 
 .squad-pill.as-button:hover { filter: none; border-color: var(--gold); }
 
@@ -215,15 +224,11 @@
 
   .sb-side { display: flex; align-items: center; gap: 0.6rem; text-align: left; }
 
-  .sb-side .badge { margin: 0; width: 36px; height: 36px; font-size: 0.78rem; }
+  .sb-side .badge { margin: 0; width: 36px; height: 36px; font-size: var(--t-micro); }
 
   .sb-side .sub { margin-top: 0; }
 
-  .sb-mid .score { font-size: 2.5rem; }
-
   .grid.match-cards { grid-template-columns: 1fr; }
-}
 
-@media (max-width: 700px) {
   .form-next .next-up { text-align: left; }
 }

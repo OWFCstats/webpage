@@ -202,11 +202,11 @@ function SeasonEditor({ season, existing, teams }) {
       </label>
 
       <div className="league-grid league-head section">
-        <span>Pos</span>
-        <span>Club</span>
-        {STATS.map((s) => <span key={s.key} className="num">{s.label}</span>)}
-        <span className="num">GD</span>
-        <span className="num">Pts</span>
+        <span className="label">Pos</span>
+        <span className="label">Club</span>
+        {STATS.map((s) => <span key={s.key} className="label num">{s.label}</span>)}
+        <span className="label num">GD</span>
+        <span className="label num">Pts</span>
         <span />
       </div>
 
@@ -241,7 +241,7 @@ function SeasonEditor({ season, existing, teams }) {
               // The label reads as a caption on a phone, where the header row
               // is off; on a wide screen the header does that job instead.
               <label className="lg-stat" key={s.key}>
-                <span>{s.label}</span>
+                <span className="label">{s.label}</span>
                 <input
                   type="number"
                   min="0"
@@ -253,8 +253,8 @@ function SeasonEditor({ season, existing, teams }) {
                 />
               </label>
             ))}
-            <span className="num lg-derived">{gd > 0 ? `+${gd}` : gd}<em>GD</em></span>
-            <span className="num lg-derived lg-pts">{pts}<em>Pts</em></span>
+            <span className="num lg-derived">{gd > 0 ? `+${gd}` : gd}<em className="label">GD</em></span>
+            <span className="num lg-derived lg-pts">{pts}<em className="label">Pts</em></span>
             <span className="lg-actions">
               <button type="button" className="secondary small" aria-label={`Move row ${i + 1} up`}
                 onClick={() => move(i, -1)} disabled={i === 0}>↑</button>
