@@ -2,15 +2,15 @@ import { useMemo } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import { ErrorNote, Spinner } from '../components/bits';
+import { formatDate } from '../lib/format';
 import {
   currentStreak,
-  formatDate,
   isPlayed,
   opponentMatches,
   resultOf,
   seasonSummary,
   venueSummary,
-} from '../lib/stats';
+} from '../lib/matches';
 
 const US = 'Old Wellingtonians';
 

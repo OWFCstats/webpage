@@ -4,7 +4,7 @@ import { supabase } from '../../lib/supabase';
 import { useData } from '../../context/DataContext';
 import { Spinner } from '../../components/bits';
 import PlayerPicker from '../../components/PlayerPicker';
-import { formatDate } from '../../lib/stats';
+import { formatDate } from '../../lib/format';
 
 // A matchday squad is usually 11 + subs; start with enough slots for that and
 // let the admin add more if needed.

@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useData } from '../context/DataContext';
-import { formatDateTime, leagueStandings } from '../lib/stats';
+import { formatDateTime } from '../lib/format';
+import { leagueStandings } from '../lib/league';
 
 /**
  * League table widget, reading the standings an admin enters each week

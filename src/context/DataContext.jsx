@@ -2,8 +2,9 @@ import { createContext, useCallback, useContext, useEffect, useRef, useState } f
 import { supabase, supabaseConfigured } from '../lib/supabase';
 
 // The whole club dataset is a few hundred rows at most, so we load it in one
-// go and derive every stat client-side (see lib/stats.js). refresh() is called
-// by admin pages after any write so public views stay current.
+// go and derive every stat client-side (see lib/matches.js, players.js,
+// awards.js, league.js and charts.js). refresh() is called by admin pages
+// after any write so public views stay current.
 
 const DataContext = createContext(null);
 

@@ -4,7 +4,7 @@ import { supabase } from '../../lib/supabase';
 import { useData } from '../../context/DataContext';
 import TeamPicker from '../../components/TeamPicker';
 import SeasonPicker from '../../components/SeasonPicker';
-import { seasonsOf } from '../../lib/stats';
+import { seasonsOf } from '../../lib/matches';
 
 /**
  * A walkover is awarded, not played: no team sheet, no individual scorers.

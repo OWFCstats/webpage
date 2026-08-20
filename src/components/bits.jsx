@@ -1,6 +1,7 @@
 import { useId } from 'react';
 import { Link } from 'react-router-dom';
-import { formatDate, resultOf } from '../lib/stats';
+import { formatDate } from '../lib/format';
+import { resultOf } from '../lib/matches';
 
 export function Spinner() {
   return <div className="spinner" aria-label="Loading" />;

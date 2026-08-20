@@ -4,14 +4,9 @@ import { useData } from '../context/DataContext';
 import { ErrorNote, HonourGrid, Spinner } from '../components/bits';
 import BarBoard from '../components/BarBoard';
 import ResultList from '../components/ResultList';
-import {
-  clubHallOfFame,
-  clubRecords,
-  formatDate,
-  playerTotals,
-  plural,
-  seasonRecords,
-} from '../lib/stats';
+import { formatDate, plural } from '../lib/format';
+import { playerTotals } from '../lib/players';
+import { clubHallOfFame, clubRecords, seasonRecords } from '../lib/awards';
 
 /**
  * The marks the club is measured against — the things that appear nowhere

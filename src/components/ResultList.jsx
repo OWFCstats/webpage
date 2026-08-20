@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
-import { formatDate, matchHomeAway, resultOf } from '../lib/stats';
+import { formatDate } from '../lib/format';
+import { matchHomeAway, resultOf } from '../lib/matches';
 
 /**
  * One row per played match: result pill, home team, score, away team — read

@@ -7,22 +7,20 @@ import LeagueTable from '../components/LeagueTable';
 import ResultList from '../components/ResultList';
 import SortableTable from '../components/SortableTable';
 import { useIsNarrow } from '../lib/useIsNarrow';
+import { formatDate, formatKickoff, monthYear } from '../lib/format';
 import {
   CLUB_NAME,
   fixtures,
-  formatDate,
-  formatKickoff,
   matchHomeAway,
-  monthYear,
   opponentSlug,
   playedMatches,
-  playerTotals,
   resultOf,
   seasonsOf,
   seasonSummary,
   venueSummary,
   venueTeam,
-} from '../lib/stats';
+} from '../lib/matches';
+import { playerTotals } from '../lib/players';
 
 // Charts pull in Recharts (~400kB); they stay in their own chunk and load
 // only when someone opens the Charts view.

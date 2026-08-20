@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { useData } from '../context/DataContext';
-import { slugify } from '../lib/stats';
+import { slugify } from '../lib/matches';
 
 /**
  * Select over the clubs in `teams` — never Old Wellingtonians itself, since

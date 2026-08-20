@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useData } from '../../context/DataContext';
-import { slugify } from '../../lib/stats';
+import { slugify } from '../../lib/matches';
 import SortableTable from '../../components/SortableTable';
 
 const BLANK = {
