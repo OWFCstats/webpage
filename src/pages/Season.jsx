@@ -91,7 +91,7 @@ export default function Season() {
               is why the widget still names the season it's showing. */}
           <LeagueTable season={season === 'all' ? seasons[0] : activeSeason} full showSeasonLink={false} />
 
-          <div className="card section">
+          <div className="sheet section">
             <h2>Results</h2>
             {narrow ? (
               <ResultList matches={results} emptyText="No results in this season yet." />
@@ -198,7 +198,7 @@ export default function Season() {
           )}
         </div>
 
-        <aside className="card season-aside">
+        <aside className="sheet season-aside">
           <div className="flat-block">
             <div className="label ruled">Season at a glance</div>
             <div className="grid cols-4">

@@ -11,7 +11,7 @@
 .result-row {
   display: flex;
   align-items: center;
-  gap: 0.7rem;
+  gap: var(--s3);
   min-height: 44px;
   padding: 0.55rem 0;
   border-bottom: 1px solid var(--rule);

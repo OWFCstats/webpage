@@ -26,7 +26,7 @@ export default function LeagueTable({ season, full = false, showSeasonLink = tru
   const note = [season, division].filter(Boolean).join(' · ');
 
   return (
-    <section className="card home-widget home-table">
+    <section className="sheet home-widget home-table">
       <div className="home-widget-head">
         <div>
           <span className="label">Standings</span>

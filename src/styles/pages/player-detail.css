@@ -7,14 +7,12 @@
 /* ---- player pages ------------------------------------------------------ */
 
 /* Career totals in the same dark band the Match Centre scoreboard uses, so a
-   player page opens like an occasion rather than a report. */
+   player page opens like an occasion rather than a report. The ground, the ink
+   and the gilded edge come from .board. */
 .player-hero {
-  background: var(--board);
-  border-radius: var(--r);
-  padding: 1.3rem 1.4rem;
   display: flex;
   align-items: center;
-  gap: 1.2rem;
+  gap: var(--s4);
   flex-wrap: wrap;
 }
 
@@ -55,7 +53,7 @@
 
 .player-hero .career-line {
   display: flex;
-  gap: 1.5rem;
+  gap: var(--s5);
   flex-wrap: wrap;
 }
 
@@ -72,7 +70,7 @@
   margin-bottom: 0.32rem;
 }
 
-.player-views { margin-top: 1.1rem; }
+.player-views { margin-top: var(--s4); }
 
 /* ---- milestone watch ---- */
 
@@ -81,7 +79,7 @@
 .ms-strip {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(158px, 1fr));
-  gap: 0.7rem;
+  gap: var(--s3);
 }
 
 .ms {
@@ -154,10 +152,10 @@ table.data.firsts td:nth-child(2) { white-space: nowrap; color: var(--ink-soft);
 
 table.data.firsts tbody tr:hover { background: transparent; }
 
-.card-foot { font-size: var(--t-small); margin: 0.7rem 0 0; }
+.card-foot { font-size: var(--t-small); margin: var(--s3) 0 0; }
 
 /* ---- personal form ---- */
-.form-games { display: flex; gap: 0.45rem; flex-wrap: wrap; }
+.form-games { display: flex; gap: var(--s2); flex-wrap: wrap; }
 
 .fg {
   border: 1px solid var(--rule);
@@ -285,15 +283,10 @@ table.data.firsts tbody tr:hover { background: transparent; }
 .season-cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 0.8rem;
+  gap: var(--s3);
 }
 
-.season-card {
-  border: 1px solid var(--rule);
-  border-radius: var(--r);
-  padding: 0.75rem 0.85rem;
-  background: var(--paper);
-}
+.season-card { padding: var(--s3); }
 
 .season-card.best { border-color: var(--gold); background: color-mix(in srgb, var(--gold) 8%, transparent); }
 
@@ -306,7 +299,7 @@ table.data.firsts tbody tr:hover { background: transparent; }
   gap: 0.4rem;
 }
 
-.season-card .sc-row { display: flex; gap: 1rem; margin-top: 0.55rem; }
+.season-card .sc-row { display: flex; gap: var(--s4); margin-top: var(--s2); }
 
 .season-card .sc-row .v {
   display: block;
@@ -322,17 +315,14 @@ table.data.firsts tbody tr:hover { background: transparent; }
 .stat-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(168px, 1fr));
-  gap: 0.7rem;
+  gap: var(--s3);
 }
 
 .stat-cell {
-  background: var(--paper);
-  border: 1px solid var(--rule);
-  border-radius: var(--r);
-  padding: 0.7rem 0.75rem;
+  padding: var(--s3);
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: var(--s1);
 }
 
 .stat-cell .sc-top { display: flex; align-items: baseline; justify-content: space-between; gap: 0.4rem; }
@@ -371,13 +361,13 @@ table.data.firsts tbody tr:hover { background: transparent; }
 .more-hint-row { text-align: center; }
 
 @media (max-width: 700px) {
-  .player-hero { gap: 0.9rem; padding: 1.1rem; }
+  .player-hero { gap: var(--s3); }
 
   .player-hero .crest { width: 46px; height: 46px; font-size: var(--t-body); }
 
-  .player-hero .career-line { gap: 1.1rem; width: 100%; justify-content: space-between; }
+  .player-hero .career-line { gap: var(--s4); width: 100%; justify-content: space-between; }
 
   .grid.player-split { grid-template-columns: 1fr; }
 
-  .season-card .sc-row { gap: 0.8rem; }
+  .season-card .sc-row { gap: var(--s3); }
 }

@@ -24,23 +24,57 @@ table.data.league-table tr.lt-us:hover { background: color-mix(in srgb, var(--go
 
 /* The standings are typed in by hand, so when they were last touched is part
    of reading them. */
-.lt-updated { margin: 0.7rem 0 0; font-size: var(--t-small); }
+.lt-updated { margin: var(--s3) 0 0; font-size: var(--t-small); }
 
 /* Shown for a season with nothing entered — one honest line, not a mocked-up
    table for data that isn't there. */
 .lt-placeholder { margin: 0; }
 
-/* The condensed data face plus tighter cells brings all ten columns down to
-   332px, and a 375px phone leaves the table 309 inside the card. So P, D, GF
-   and GA still come out here, and the last 23px is Phase 3's to find: the
-   shortfall is the card's own 1rem padding either side, not the figures. */
+/* Where the missing 23px came from. Phase 2 got all ten columns down to the
+   width of a phone and still had to hide four of them, because the surface
+   holding the table spent 16px either side on its own padding. Below 480 the
+   sheet gives that back: the standings run to the hairline and the cell padding
+   is the only inset, while the head and the footnote keep the surface's edge.
+
+   Measured rather than eyeballed — at 375px the table needs 309px of the 341px
+   this leaves it, so the club names wrap less than they did before.
+
+   Two classes deep on purpose: .home-widget sets the padding this undoes, and
+   it lives in a later layer. */
 @media (max-width: 480px) {
+  .home-widget.home-table {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .home-table > .home-widget-head,
+  .home-table > .lt-updated,
+  .home-table > .lt-placeholder {
+    padding-left: var(--s4);
+    padding-right: var(--s4);
+  }
+
   table.data.league-table th,
   table.data.league-table td { padding: 0.5rem 0.25rem; }
 
-  .league-table .lt-hide-narrow { display: none; }
+  /* The row rules still run edge to edge — it's an engraved line across the
+  sheet, not a box — so the breathing room at the two ends goes on the end
+  cells rather than on the table. */
+  table.data.league-table th:first-child,
+  table.data.league-table td:first-child { padding-left: var(--s2); }
+
+  table.data.league-table th:last-child,
+  table.data.league-table td:last-child { padding-right: var(--s2); }
 
   /* The club name is what forces the table wider than the columns need —
-  letting it wrap keeps every remaining column on screen. */
+  letting it wrap is what buys the last of the room. */
   .league-table td.lt-club { white-space: normal; max-width: 34vw; }
+}
+
+/* Below 360px even the full width isn't enough: the ten columns need 303px and
+   the narrowest phones leave 286px, and the shortfall is the club names, which
+   can't shrink past their longest word. So the four secondary columns still
+   come out there — measured, and the only width where they do. */
+@media (max-width: 359px) {
+  .league-table .lt-hide-narrow { display: none; }
 }

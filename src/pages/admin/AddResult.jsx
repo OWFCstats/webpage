@@ -192,7 +192,7 @@ export default function AddResult() {
       <p className="label wizard-title">{STEPS[step]}</p>
 
       {step === 0 && (
-        <div className="card">
+        <div className="sheet">
           <div className="form-grid">
             <div className="field" style={{ gridColumn: '1 / -1' }}>
               <span>Season</span>
@@ -263,7 +263,7 @@ export default function AddResult() {
       )}
 
       {step === 1 && (
-        <div className="card">
+        <div className="sheet">
           <div className="controls">
             <input
               type="text"
@@ -312,7 +312,7 @@ export default function AddResult() {
       )}
 
       {step === 2 && (
-        <div className="card">
+        <div className="sheet">
           {gf != null && (
             <div className={`notice ${remaining === 0 ? 'ok' : 'error'}`} style={{ marginBottom: '0.8rem' }}>
               {remaining === 0
@@ -344,7 +344,7 @@ export default function AddResult() {
       )}
 
       {step === 3 && (
-        <div className="card">
+        <div className="sheet">
           <h3>Man of the Match</h3>
           <div className="squad-pills" style={{ margin: '0.5rem 0 1.1rem' }}>
             {selected.map((p) => (

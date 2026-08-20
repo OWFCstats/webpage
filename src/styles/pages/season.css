@@ -1,24 +1,25 @@
 /* Season: the two-column layout that puts the table and results in the main
    column and the summary in the aside. */
 
-/* ---- flat blocks: a label and a hairline, no card surface of their own —
-   for sections that don't need to read as a distinct bubble, whether they
-   sit on the page background or inside another card. The label itself is the
-   shared .label.ruled primitive. ---- */
+/* ---- flat blocks: a label and a hairline, no surface of their own — for
+   sections that don't need to read as a distinct bubble, whether they sit on
+   the page background or inside a sheet. The label itself is the shared
+   .label.ruled primitive, and the hairline is how a sheet separates its parts.
+   ---- */
 .flat-block {
-  margin-top: 1.8rem;
+  margin-top: var(--s6);
 }
 
 .flat-block:first-child {
   margin-top: 0;
 }
 
-/* ---- season page: table and results lead the main column, one card
+/* ---- season page: table and results lead the main column, one sheet
    carries the at-a-glance summary, most-involved bars and the charts
    toggle ---- */
 .season-layout {
   display: grid;
-  gap: 1.8rem;
+  gap: var(--s6);
   align-items: start;
 }
 

@@ -6,8 +6,8 @@
    component — see BarBoard.jsx. */
 
 .bar-board h3 {
-  margin-bottom: 0.7rem;
-  padding-bottom: 0.5rem;
+  margin-bottom: var(--s3);
+  padding-bottom: var(--s2);
   border-bottom: 1px solid var(--rule-firm);
 }
 
@@ -20,7 +20,7 @@
 .bar-row {
   display: grid;
   grid-template-columns: 1fr auto;
-  gap: 0.15rem 0.6rem;
+  gap: 0.15rem var(--s2);
   padding: 0.4rem 0 0.5rem;
 }
 
@@ -67,16 +67,17 @@
 }
 
 .lead-hero {
-  background: var(--board);
-  color: var(--on-board);
-  padding: 1.3rem 1.4rem 1.2rem;
+  border-radius: 0;
+  padding: var(--s5) var(--s5) var(--s4);
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 1rem;
+  gap: var(--s4);
   flex-wrap: wrap;
 }
 
+/* The leader's own name, not a link colour: it is the largest thing on the
+   board and gold would fight the tally beside it. */
 .lead-hero .who {
   font-family: var(--font-display);
   font-weight: 600;
@@ -86,7 +87,9 @@
   color: var(--on-board);
 }
 
-.lead-hero .rate { color: var(--on-board-soft); font-size: var(--t-small); margin-top: 0.25rem; }
+.lead-hero .who:hover { color: var(--gold-leaf); }
+
+.lead-hero .rate { color: var(--on-board-soft); font-size: var(--t-small); margin-top: var(--s1); }
 
 /* Gold on a dark ground: the leader's tally is the one number on the board
    that is supposed to be wanted. */
@@ -100,15 +103,17 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* The band runs to the sheet's edge, so the padding belongs to the two halves
+   rather than to the surface. */
 .lead-card { padding: 0; overflow: hidden; }
 
-.lead-chase { padding: 0.4rem 1.4rem 1.1rem; }
+.lead-chase { padding: var(--s1) var(--s5) var(--s4); }
 
 .chase-row {
   display: grid;
   grid-template-columns: 22px 1fr auto;
   align-items: center;
-  gap: 0.1rem 0.7rem;
+  gap: 0.1rem var(--s3);
   padding: 0.45rem 0;
 }
 

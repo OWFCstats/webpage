@@ -61,7 +61,7 @@ export default function WalkoverForm({ onDone, onCancel }) {
   }
 
   return (
-    <div className="card section">
+    <div className="sheet section">
       <h2>Walkover</h2>
       <p className="muted">
         The opposition didn't show — record the automatic 3–0 without a team sheet.

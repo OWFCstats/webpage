@@ -38,7 +38,7 @@ function Hero({ player, career, seasonsActive }) {
     ? `${seasonsActive[0]}${seasonsActive.length > 1 ? ` – ${seasonsActive[seasonsActive.length - 1]}` : ''}`
     : 'No appearances yet';
   return (
-    <div className="player-hero">
+    <div className="board player-hero">
       <span className="crest">{initials(player.name)}</span>
       <div className="who">
         <h1>{player.name}</h1>
@@ -87,7 +87,7 @@ function MilestoneStrip({ milestones }) {
 
 function Honours({ honours }) {
   return (
-    <div className="card">
+    <div className="sheet">
       <h3 className="label ruled">Honours</h3>
       <HonourGrid honours={honours} />
     </div>
@@ -98,7 +98,7 @@ function FirstsTable({ firsts }) {
   const { debut, firstGoal, bestGame, bestSeason } = firsts;
   if (!debut) return null;
   return (
-    <div className="card">
+    <div className="sheet">
       <h3 className="label ruled">Firsts &amp; bests</h3>
       <div className="table-wrap">
         <table className="data firsts">
@@ -165,7 +165,7 @@ function FirstsTable({ firsts }) {
 function FormCard({ form, scoringRun, sinceGoal, favouriteOpponent, teams }) {
   const scoredIn = form.filter((f) => f.app.goals > 0).length;
   return (
-    <div className="card">
+    <div className="sheet">
       <h3 className="label ruled">Last {form.length} played</h3>
       <div className="form-games">
         {form.map(({ app, match }) => (
@@ -200,7 +200,7 @@ function FormCard({ form, scoringRun, sinceGoal, favouriteOpponent, teams }) {
 
 function RankCard({ ranks }) {
   return (
-    <div className="card">
+    <div className="sheet">
       <h3 className="label ruled">Where they rank</h3>
       <ul className="rank-list">
         {ranks.map((r) => (
@@ -227,7 +227,7 @@ function ordinal(n) {
 
 function MatesCard({ teammates }) {
   return (
-    <div className="card">
+    <div className="sheet">
       <h3 className="label ruled">Most played alongside</h3>
       <ul className="mate-list">
         {teammates.map((t) => (
@@ -250,7 +250,7 @@ function SeasonCards({ seasons, bestSeason }) {
       <h3 className="label ruled">Season by season</h3>
       <div className="season-cards">
         {seasons.map((s) => (
-          <div key={s.season} className={`season-card${bestSeason && s.season === bestSeason.season ? ' best' : ''}`}>
+          <div key={s.season} className={`sheet season-card${bestSeason && s.season === bestSeason.season ? ' best' : ''}`}>
             <div className="sc-year">
               {s.season}
               {bestSeason && s.season === bestSeason.season && <span className="tag gold">Best</span>}
@@ -311,7 +311,7 @@ function StatGrid({ career, seasons, ranks, squadAverage, squadMax }) {
         const max = squadMax[c.key] ?? 0;
         const rank = rankByKey.get(c.key);
         return (
-          <div key={c.key} className="stat-cell">
+          <div key={c.key} className="sheet stat-cell">
             <div className="sc-top">
               <span className="sc-v">{c.decimal ? rate(value) : value}</span>
               {rank?.rank != null && <span className="sc-rank">{ordinal(rank.rank)}</span>}
@@ -340,7 +340,7 @@ function MatchLog({ log, seasons }) {
       (!goalsOnly || app.goals + app.assists > 0),
   );
   return (
-    <div className="section card">
+    <div className="section sheet">
       <div className="section-head">
         <h2>Match log</h2>
         <button
@@ -433,7 +433,7 @@ export default function PlayerDetail() {
   if (error) return <ErrorNote message={error} />;
   if (!player) {
     return (
-      <div className="empty card">
+      <div className="empty sheet">
         Player not found. <Link className="more" to="/players">All players →</Link>
       </div>
     );
@@ -472,7 +472,7 @@ export default function PlayerDetail() {
       )}
 
       {!played && (
-        <div className="empty card section">
+        <div className="empty sheet section">
           No appearances recorded yet. Everything on this page fills in from the first
           game. <Link className="more" to="/season">Fixtures →</Link>
         </div>
@@ -532,7 +532,7 @@ export default function PlayerDetail() {
             </p>
           </div>
 
-          <div className="section card">
+          <div className="section sheet">
             <h2>Season by season</h2>
             <div className="table-wrap">
               <table className="data">

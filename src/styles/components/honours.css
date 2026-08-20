@@ -6,13 +6,15 @@
 .honours {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
-  gap: 0.5rem;
+  gap: var(--s2);
 }
 
+/* Not a sheet: Phase 5 replaces this grid with tiered plates, so it keeps its
+   own box rather than adopting a surface it is about to stop being. */
 .honour {
   border: 1px solid var(--rule);
   border-radius: var(--r);
-  padding: 0.55rem 0.4rem;
+  padding: var(--s2);
   text-align: center;
   background: var(--paper);
   opacity: 0.62;

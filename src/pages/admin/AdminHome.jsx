@@ -20,7 +20,7 @@ export default function AdminHome() {
 
   return (
     <div className="section">
-      <div className="card admin-cta">
+      <div className="sheet admin-cta">
         <div>
           <h2>Just played?</h2>
           <p className="muted">
@@ -43,7 +43,7 @@ export default function AdminHome() {
       )}
 
       {needLineup.length > 0 && (
-        <div className="card section">
+        <div className="sheet section">
           <h2>Needs attention</h2>
           <ul className="attention">
             {needLineup.map((m) => (
@@ -62,12 +62,12 @@ export default function AdminHome() {
       )}
 
       <div className="grid cols-2 section">
-        <div className="card">
+        <div className="sheet">
           <h2>Players</h2>
           <p className="muted">{players.length} in the squad list.</p>
           <p><Link className="btn small secondary" to="/admin/players">Manage players</Link></p>
         </div>
-        <div className="card">
+        <div className="sheet">
           <h2>Matches</h2>
           <p className="muted">
             {matches.length} recorded. Edit any match, its lineup or its report

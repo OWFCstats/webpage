@@ -68,7 +68,7 @@ export default function PlayerCareerChart({ arc, career }) {
     : null;
 
   return (
-    <section className="card chart-card">
+    <section className="sheet chart-card">
       <div className="chart-head">
         <div>
           <h2>Career arc</h2>

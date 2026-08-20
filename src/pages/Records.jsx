@@ -58,7 +58,7 @@ export default function Records() {
 
       <div className="section">
         <h2>Hall of fame</h2>
-        <div className="card">
+        <div className="sheet">
           <HonourGrid honours={hallOfFame} />
           <p className="muted card-foot">
             A badge belongs to the club as soon as anyone reaches it. The quiet ones
@@ -95,7 +95,7 @@ export default function Records() {
  */
 function Record({ label, headline, span, matches = [], foot, empty }) {
   return (
-    <div className="card record">
+    <div className="sheet record">
       <h3 className="label ruled">{label}</h3>
       {headline ? (
         <>
@@ -197,10 +197,10 @@ function Award({ award }) {
  *  themselves so the two stay in step. */
 function HonoursBoard({ seasons }) {
   if (seasons.length === 0) {
-    return <div className="empty card">No season on record yet. The first one fills this in.</div>;
+    return <div className="empty sheet">No season on record yet. The first one fills this in.</div>;
   }
   return (
-    <div className="card">
+    <div className="board">
       <div className="table-wrap">
         <table className="data">
           <thead>
@@ -234,10 +234,10 @@ function HonoursBoard({ seasons }) {
  *  with that season already selected for anyone who wants the detail. */
 function SeasonIndex({ seasons }) {
   if (seasons.length === 0) {
-    return <div className="empty card">No season on record yet.</div>;
+    return <div className="empty sheet">No season on record yet.</div>;
   }
   return (
-    <div className="card">
+    <div className="sheet">
       <div className="table-wrap">
         <table className="data">
           <thead>

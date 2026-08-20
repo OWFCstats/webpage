@@ -95,7 +95,7 @@ export default function PlayersHub() {
         </div>
 
         {full ? (
-          <div className="card">
+          <div className="sheet">
             <p className="muted">
               Per-game rates count only matches actually played. “Dropouts” is the
               number of times a player was picked but withdrew within 24 hours of
@@ -136,7 +136,7 @@ export default function PlayersHub() {
             />
           </div>
         ) : (
-          <div className="card">
+          <div className="sheet">
             <div className="controls">
               <input
                 type="text"

@@ -7,9 +7,9 @@
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  gap: 1rem;
+  gap: var(--s4);
   flex-wrap: wrap;
-  margin-bottom: 1.2rem;
+  margin-bottom: var(--s5);
 }
 
 .home-head h1 { margin-bottom: 0; }
@@ -20,35 +20,41 @@
 .home-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+  gap: var(--s4);
   align-items: start;
-  margin-bottom: 1rem;
+  margin-bottom: var(--s4);
 }
 
 /* Grid items default to min-width:auto, so wide content inside one would push
    the whole track past the viewport. */
 .home-grid > * { min-width: 0; }
 
-.home-widget { padding: 1.05rem 1.15rem 1.2rem; }
+/* A widget is a sheet that sits in a row of them, so it takes a step off the
+   sheet's own padding to keep four of them across a phone from reading as
+   four boxes rather than one dashboard. */
+.home-widget { padding: var(--s4); }
 
 .home-widget-head {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  gap: 0.8rem;
-  margin-bottom: 0.85rem;
+  gap: var(--s3);
+  margin-bottom: var(--s3);
 }
 
 .home-widget-head h2 { font-size: var(--t-subtitle); margin: 0; }
 
-.home-widget-note { font-size: var(--t-small); white-space: nowrap; }
+/* Not nowrap: the note carries a date on most widgets but a whole division
+   name on the standings, and an admin can type one of any length. Wrapping is
+   what keeps the longest of them inside a 320px viewport. */
+.home-widget-note { font-size: var(--t-small); text-align: right; }
 
 .home-widget-head-right {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 0.2rem;
-  flex: none;
+  gap: var(--s1);
+  min-width: 0;
 }
 
 .home-widget .more {
@@ -65,14 +71,14 @@
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 0.5rem;
+  gap: var(--s2);
 }
 
 .fixture-side {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.45rem;
+  gap: var(--s2);
   flex: 1;
   min-width: 0;
 }
@@ -104,15 +110,15 @@ a.fixture-team:hover { color: var(--gold-deep); }
 
 /* The "v" between the two sides — a label, so it takes the label style and
    only needs its own position here. */
-.fixture-vs { padding-top: 1rem; }
+.fixture-vs { padding-top: var(--s4); }
 
 .fixture-meta {
-  margin-top: 0.9rem;
-  padding-top: 0.75rem;
+  margin-top: var(--s3);
+  padding-top: var(--s3);
   border-top: 1px solid var(--rule);
   display: flex;
   flex-wrap: wrap;
-  gap: 0.25rem 1rem;
+  gap: var(--s1) var(--s4);
   font-size: var(--t-small);
   color: var(--ink-soft);
 }
@@ -121,7 +127,7 @@ a.fixture-team:hover { color: var(--gold-deep); }
 
 .fixture-countdown {
   display: inline-block;
-  margin-top: 0.7rem;
+  margin-top: var(--s3);
   padding: 0.25rem 0.65rem;
   border-radius: var(--r-pill);
   background: color-mix(in srgb, var(--sky) 34%, transparent);
@@ -137,14 +143,14 @@ a.fixture-team:hover { color: var(--gold-deep); }
 .home-form-body {
   display: flex;
   flex-direction: column;
-  gap: 0.9rem;
+  gap: var(--s3);
 }
 
 .home-form-main { flex: 1; min-width: 0; }
 
 .home-form-list {
   list-style: none;
-  margin: 0.9rem 0 0;
+  margin: var(--s3) 0 0;
   padding: 0;
   font-size: var(--t-small);
 }
@@ -176,15 +182,15 @@ a.fixture-team:hover { color: var(--gold-deep); }
   display: block;
   width: 100%;
   height: 40px;
-  margin-top: 0.9rem;
+  margin-top: var(--s3);
 }
 
 .home-spark-note { margin: 0.25rem 0 0; }
 
 @media (min-width: 760px) {
-  .home-form-body { flex-direction: row; align-items: flex-start; gap: 1.6rem; }
+  .home-form-body { flex-direction: row; align-items: flex-start; gap: var(--s5); }
 
-  .home-form-trend { width: 220px; padding-top: 1.6rem; }
+  .home-form-trend { width: 220px; padding-top: var(--s5); }
 
   .home-form-trend .home-spark { margin-top: 0; }
 }
@@ -193,22 +199,13 @@ a.fixture-team:hover { color: var(--gold-deep); }
 
 /* Compact and dark, like the KPI strip this replaced — a teaser for the full
    scoreboard treatment on Matchday, not a second copy of it. */
-.home-result {
-  background: var(--board);
-  color: var(--on-board);
-}
-
-.home-result h2 { color: var(--on-board); }
-
 .home-result .home-widget-note { color: var(--on-board-soft); }
-
-.home-result .empty { color: var(--on-board-soft); }
 
 .hr-score {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  margin: 0.85rem 0 0.65rem;
+  gap: var(--s2);
+  margin: var(--s3) 0 var(--s2);
 }
 
 .hr-score-value {
@@ -221,31 +218,36 @@ a.fixture-team:hover { color: var(--gold-deep); }
 }
 
 .hr-line {
-  margin: 0.3rem 0;
+  margin: var(--s1) 0;
   font-size: var(--t-small);
   color: var(--on-board-soft);
 }
 
 .hr-line strong { color: var(--on-board); }
 
-.home-result .more { color: var(--gold-leaf); display: inline-block; margin-top: 0.6rem; }
+/* .home-widget .more is two classes deep and would otherwise out-specify
+   .board a, putting paper gold on a dark ground. */
+.home-result .more { color: var(--gold-leaf); display: inline-block; margin-top: var(--s2); }
 
 /* ---- season stats widget ---- */
-.home-stats { margin-top: 1rem; }
+.home-stats { margin-top: var(--s4); }
 
-.home-stats-body { display: flex; flex-direction: column; gap: 1rem; }
+.home-stats-body { display: flex; flex-direction: column; gap: var(--s4); }
 
 .home-stat-tiles {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 0.6rem;
+  gap: var(--s2);
 }
 
+/* Inset rather than a sheet: these sit inside a surface, and --sheet is the
+   recessed ground. A nested sheet inside a sheet would be the box-in-a-box the
+   design system rules out. */
 .home-stat-tile {
   background: var(--sheet);
   border: 1px solid var(--rule);
   border-radius: var(--r);
-  padding: 0.6rem 0.5rem;
+  padding: var(--s2);
   text-align: center;
 }
 
@@ -260,9 +262,9 @@ a.fixture-team:hover { color: var(--gold-deep); }
   margin-bottom: 0.3rem;
 }
 
-.home-bars { display: flex; flex-direction: column; gap: 0.55rem; }
+.home-bars { display: flex; flex-direction: column; gap: var(--s2); }
 
-.home-bar { display: flex; align-items: center; gap: 0.6rem; font-size: var(--t-small); }
+.home-bar { display: flex; align-items: center; gap: var(--s2); font-size: var(--t-small); }
 
 .home-bar-label {
   width: 68px;
@@ -306,7 +308,7 @@ a.fixture-team:hover { color: var(--gold-deep); }
 }
 
 @media (min-width: 760px) {
-  .home-stats-body { flex-direction: row; align-items: center; gap: 2.2rem; }
+  .home-stats-body { flex-direction: row; align-items: center; gap: var(--s6); }
 
   .home-stat-tiles { flex: none; width: 42%; }
 
@@ -319,12 +321,26 @@ a.fixture-team:hover { color: var(--gold-deep); }
   .home-grid { grid-template-columns: 1fr; }
 }
 
+@media (max-width: 480px) {
+  /* Two columns fighting over 250px left the heading wrapping mid-phrase and
+  the note wrapping beside it. Stacked, the heading gets the row it needs and
+  the note and the link share the one beneath. */
+  .home-widget-head { flex-direction: column; align-items: stretch; gap: var(--s1); }
+
+  .home-widget-head-right {
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--s3);
+  }
+
+  .home-widget-note { text-align: left; }
+}
+
 @media (max-width: 700px) {
-  .home-grid { gap: 0.8rem; }
+  .home-grid { gap: var(--s3); }
 
-  .home-stats { margin-top: 0.8rem; }
+  .home-stats { margin-top: var(--s3); }
 
-  .home-widget { padding: 0.95rem 1rem 1.05rem; }
-
-  .home-head { margin-bottom: 0.9rem; }
+  .home-head { margin-bottom: var(--s3); }
 }

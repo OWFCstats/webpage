@@ -103,7 +103,7 @@ function MatchFormInner({ match, isNew, matchId }) {
   }
 
   return (
-    <div className="section card">
+    <div className="section sheet">
       <h2>{isNew ? 'Create match' : `Edit match — vs ${match.opponent}`}</h2>
       <form onSubmit={submit}>
         <div className="form-grid">

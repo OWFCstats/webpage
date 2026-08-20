@@ -47,7 +47,7 @@ export default function LeagueAdmin() {
 
   return (
     <div className="section">
-      <div className="card">
+      <div className="sheet">
         <h2>League table</h2>
         <p className="muted">
           Standings as published by the league — the only figures here that
@@ -69,7 +69,7 @@ export default function LeagueAdmin() {
           teams={teams}
         />
       ) : (
-        <div className="card empty">Pick a season above to enter its table.</div>
+        <div className="sheet empty">Pick a season above to enter its table.</div>
       )}
     </div>
   );
@@ -183,7 +183,7 @@ function SeasonEditor({ season, existing, teams }) {
   }
 
   return (
-    <div className="card section">
+    <div className="sheet section">
       <div className="section-head">
         <h2>{season}</h2>
         <span className="muted">

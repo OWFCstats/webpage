@@ -1,7 +1,7 @@
 /* Players hub: the squad list. Phase 6 splits this page into a squad view
    and a leaderboards view behind one nav entry. */
 
-/* ---- players hub card list ---- */
+/* ---- players hub squad list ---- */
 .player-list {
   list-style: none;
   margin: 0;
@@ -11,7 +11,7 @@
 .player-row {
   display: flex;
   align-items: center;
-  gap: 0.7rem;
+  gap: var(--s3);
   padding: 0.55rem 0;
   border-bottom: 1px solid var(--rule);
 }
