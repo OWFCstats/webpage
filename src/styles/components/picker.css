@@ -1,0 +1,81 @@
+/* Searchable picker used by the player, team and season selectors. */
+
+/* ---- searchable player picker ---- */
+.picker {
+  position: relative;
+}
+
+.picker-input {
+  width: 100%;
+}
+
+.picker-clear {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--ink-soft);
+  font-size: 1.1rem;
+  line-height: 1;
+  padding: 0.15rem 0.35rem;
+}
+
+.picker-clear:hover { color: var(--red); filter: none; }
+
+.picker-list {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 3px);
+  left: 0;
+  right: 0;
+  max-height: 240px;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0.25rem;
+  list-style: none;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(22, 23, 27, 0.12);
+}
+
+.picker-option {
+  width: 100%;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  text-align: left;
+  background: none;
+  border: none;
+  border-radius: 7px;
+  padding: 0.35rem 0.5rem;
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: var(--ink);
+}
+
+.picker-option.active:not(:disabled) {
+  background: rgba(227, 180, 33, 0.16);
+  filter: none;
+}
+
+.picker-option:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.picker-meta {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+
+.picker-empty {
+  padding: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}

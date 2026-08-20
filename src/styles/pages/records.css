@@ -1,0 +1,35 @@
+/* Records: club record cards. A record nobody holds keeps its card and says
+   so — naming it is the point. */
+
+/* ---- club records ---- */
+
+/* Cards size to their own content — a record holding one game stays short
+   next to a run holding five. */
+.grid.records {
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  align-items: start;
+}
+
+.grid.records > * { min-width: 0; }
+
+.record .record-headline {
+  font-size: 1.45rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: var(--black);
+}
+
+.record .record-span { margin-bottom: 0.2rem; }
+
+/* A record nobody holds keeps its card at full size. Naming the record is the
+   point; a collapsed or blank card would read as a fault rather than as a
+   club with its first season still running. */
+.record .record-empty { margin: 0.35rem 0 0; }
+
+/* Layout for the all-time leader boards. */
+.grid.boards {
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  /* Cards size to their own content — boards with fewer names stay short. */
+  align-items: start;
+}

@@ -1,0 +1,33 @@
+/* The stylesheet, in layer order. Order is load-bearing: a later layer may
+   override an earlier one, never the reverse. Adding an import out of order,
+   or putting a page style where a component should own it, is how the single
+   2,654-line file happened — read docs/DESIGN.md before adding to any of it.
+
+   tokens      custom properties only, no selectors
+   base        reset and element defaults
+   layout      the frame every page sits in: header, nav, main, footer, tabs
+   primitives  the shared vocabulary — anything several pages reach for
+   components  one file per shared component
+   pages       one file per route. The last resort, and the smallest layer  */
+
+@import './tokens.css';
+@import './base.css';
+@import './layout.css';
+@import './primitives.css';
+
+@import './components/picker.css';
+@import './components/bar-board.css';
+@import './components/charts.css';
+@import './components/result-list.css';
+@import './components/honours.css';
+@import './components/league-table.css';
+
+@import './pages/home.css';
+@import './pages/matchday.css';
+@import './pages/season.css';
+@import './pages/players.css';
+@import './pages/records.css';
+@import './pages/player-detail.css';
+
+/* Last: the write side sits on top of everything the public pages set. */
+@import './admin.css';

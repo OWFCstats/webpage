@@ -1,0 +1,45 @@
+/* The badge grid, shared by a player's own honours and the club Hall of
+   Fame — the same idea one level up. Phase 5 rebuilds this as tiered
+   plates; see docs/DESIGN.md. */
+
+/* ---- honours ---- */
+.honours {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+  gap: 0.5rem;
+}
+
+.honour {
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  padding: 0.55rem 0.4rem;
+  text-align: center;
+  background: #fdfcf8;
+  opacity: 0.62;
+}
+
+/* Earned ones are the point of the grid — gold, full strength, unmissable. */
+.honour.earned {
+  background: var(--gold);
+  border-color: var(--gold);
+  opacity: 1;
+}
+
+.honour .hn {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--ink);
+  line-height: 1.25;
+}
+
+.honour .hd {
+  display: block;
+  font-size: 0.65rem;
+  color: var(--ink-soft);
+  margin-top: 0.18rem;
+}
+
+.honour.earned .hn { color: var(--black); }
+
+.honour.earned .hd { color: rgba(22, 23, 27, 0.68); }
