@@ -77,7 +77,7 @@ export default function Layout() {
             <Crest />
             <span>
               <span className="name">Old Wellingtonians FC</span>
-              <span className="sub">Club Statistics</span>
+              <span className="sub label">Club Statistics</span>
             </span>
           </NavLink>
           <nav className="main-nav">

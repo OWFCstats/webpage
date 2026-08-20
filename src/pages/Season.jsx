@@ -154,7 +154,7 @@ export default function Season() {
 
           {upcoming.length > 0 && (
             <div className="flat-block">
-              <div className="flat-block-label">Upcoming</div>
+              <div className="label ruled">Upcoming</div>
               <div className="table-wrap">
                 <table className="data">
                   <tbody>
@@ -200,7 +200,7 @@ export default function Season() {
 
         <aside className="card season-aside">
           <div className="flat-block">
-            <div className="flat-block-label">Season at a glance</div>
+            <div className="label ruled">Season at a glance</div>
             <div className="grid cols-4">
               <StatTile plain value={summary.played} label="Played" />
               <StatTile plain value={`${summary.won}-${summary.drawn}-${summary.lost}`} label="W-D-L" />
@@ -246,12 +246,12 @@ export default function Season() {
           </div>
 
           <div className="flat-block">
-            <div className="flat-block-label">Most involved</div>
-            <BarBoard rows={totals} statKey="appearances" accent="#3f4149" limit={4} bare />
+            <div className="label ruled">Most involved</div>
+            <BarBoard rows={totals} statKey="appearances" limit={4} bare />
           </div>
 
           <div className="flat-block">
-            <div className="flat-block-label">Charts</div>
+            <div className="label ruled">Charts</div>
             <div className="seg" role="tablist" aria-label="Season view">
               <button
                 type="button"

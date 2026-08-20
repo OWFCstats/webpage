@@ -25,7 +25,7 @@ function initials(name) {
 function Stepper({ value, onChange, label, max = 99 }) {
   return (
     <span className="stepper">
-      <span className="mini-label">{label}</span>
+      <span className="label">{label}</span>
       <span className="stepper-controls">
         <button type="button" className="secondary small" aria-label={`Fewer ${label}`}
           onClick={() => onChange(Math.max(0, value - 1))} disabled={value === 0}>−</button>
@@ -189,7 +189,7 @@ export default function AddResult() {
           <span key={s} className={i < step ? 'done' : i === step ? 'on' : undefined} />
         ))}
       </div>
-      <p className="mini-label wizard-title">{STEPS[step]}</p>
+      <p className="label wizard-title">{STEPS[step]}</p>
 
       {step === 0 && (
         <div className="card">

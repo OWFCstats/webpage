@@ -70,9 +70,9 @@ export default function Records() {
       <div className="section">
         <h2>All-time leaders</h2>
         <div className="grid boards">
-          <BarBoard title="Goals" rows={allTime} statKey="goals" accent="#b8860b" limit={5} />
-          <BarBoard title="Appearances" rows={allTime} statKey="appearances" accent="#3f4149" limit={5} />
-          <BarBoard title="Man of the Match" rows={allTime} statKey="motm" accent="#5ba3c9" limit={5} />
+          <BarBoard title="Goals" rows={allTime} statKey="goals" limit={5} />
+          <BarBoard title="Appearances" rows={allTime} statKey="appearances" limit={5} />
+          <BarBoard title="Man of the Match" rows={allTime} statKey="motm" limit={5} />
         </div>
         <p className="muted card-foot">
           Every season together. <Link className="more" to="/players">Players</Link> has the
@@ -96,7 +96,7 @@ export default function Records() {
 function Record({ label, headline, span, matches = [], foot, empty }) {
   return (
     <div className="card record">
-      <h3 className="card-label">{label}</h3>
+      <h3 className="label ruled">{label}</h3>
       {headline ? (
         <>
           <div className="record-headline">{headline}</div>

@@ -1,5 +1,6 @@
 /* Chart card frame and tooltip for the Recharts plots. The plots themselves
-   are styled in JS — see the chart rules in docs/DESIGN.md.
+   are styled in JS — see the chart rules in docs/DESIGN.md, and lib/tokens.js
+   for how they read their colours out of tokens.css.
 
    .chart-split and .chart-body.auto are currently unused; Phase 7 decides
    whether they come back or come out. */
@@ -29,7 +30,7 @@
 
 .chart-sub {
   max-width: 70ch;
-  font-size: 0.85rem;
+  font-size: var(--t-small);
   margin: 0;
 }
 
@@ -47,18 +48,20 @@
    its own inline height, so a grid track here would not constrain it. */
 .chart-split { width: 100%; }
 
+/* A tooltip does float above the page, so this is one of the few things that
+   keeps a shadow. */
 .chart-tip {
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  box-shadow: var(--shadow);
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: var(--r);
+  box-shadow: var(--shadow-pop);
   padding: 0.6rem 0.75rem;
-  font-size: 0.85rem;
+  font-size: var(--t-small);
 }
 
 .chart-tip-head {
-  font-weight: 700;
-  color: var(--black);
+  font-weight: 600;
+  color: var(--ink);
   margin-bottom: 0.3rem;
 }
 
@@ -71,13 +74,14 @@
 
 .chart-tip-row strong {
   margin-left: auto;
+  font-family: var(--font-data);
   font-variant-numeric: tabular-nums;
 }
 
 .chart-tip-swatch {
   width: 9px;
   height: 9px;
-  border-radius: 3px;
+  border-radius: var(--r-sm);
   flex: none;
 }
 
@@ -95,8 +99,6 @@
   }
 
   .chart-head button { align-self: flex-start; }
-
-  .chart-sub { font-size: 0.82rem; }
 
   .chart-body { height: 300px; }
 }

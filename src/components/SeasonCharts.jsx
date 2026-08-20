@@ -22,20 +22,20 @@ import {
   stableColourSlots,
   topScorerRace,
 } from '../lib/stats';
+import { fontPx, series, token } from '../lib/tokens';
 
-// Categorical series palette — validated for the white card surface: every slot
-// clears the lightness/chroma bands, adjacent-pair CVD separation, the
-// normal-vision floor and 3:1 contrast. Assign in sequence, never cycle.
-const SERIES = ['#b8860b', '#4a3aa7', '#eb6834', '#2a78d6', '#008300'];
-const GRID = '#e6e4dc';
-const AXIS = '#c3c2b7';
-const MUTED = '#7c7a73';
-const PAST = '#9d9a92';
-const POSITIVE = '#2a78d6';
-const NEGATIVE = '#c9463d';
-
-const axisStyle = { fontSize: 12, fill: MUTED };
-const axisStyleNarrow = { fontSize: 10, fill: MUTED };
+// Recharts writes these into SVG attributes, where var() is invalid, so they
+// are read out of tokens.css rather than written down again here. Read at
+// render rather than at module load: the stylesheet has to be applied first.
+const chartColours = () => ({
+  grid: token('--rule'),
+  axis: token('--rule-firm'),
+  muted: token('--ink-soft'),
+  past: token('--ink-faint'),
+  positive: token('--series-2'),
+  negative: token('--loss'),
+  dot: token('--paper'),
+});
 
 /** Card with a finding as its subtitle — a sentence, not a description of the
  *  axes — and the data table one press away. */
@@ -81,7 +81,7 @@ function staggerOffsets(entries, gap = 14) {
 function EndLabel({ x, y, value, index, lastIndex, fill, text, dy = 0 }) {
   if (index !== lastIndex) return null;
   return (
-    <text x={x + 8} y={y + dy} dy={4} fill={fill} fontSize={12} fontWeight={700}>
+    <text x={x + 8} y={y + dy} dy={4} fill={fill} fontSize={fontPx('--t-micro')} fontWeight={600}>
       {text ?? value}
     </text>
   );
@@ -132,6 +132,7 @@ function findings(race, trend) {
 export default function SeasonCharts({ season, activeSeason }) {
   const { players, matches, appearances } = useData();
   const narrow = useIsNarrow();
+  const c = chartColours();
 
   const colourSlots = useMemo(
     () => stableColourSlots(players, matches, appearances),
@@ -158,14 +159,17 @@ export default function SeasonCharts({ season, activeSeason }) {
   const { race, trend, comparison, raceOffsets, text } = charts;
   const currentSeason = comparison.seasons[0];
 
-  const tick = narrow ? axisStyleNarrow : axisStyle;
-  const yWidth = narrow ? 26 : 36;
+  // 0.75rem is the floor everywhere, charts included — a 10px axis tick was
+  // the smallest type on the site.
+  const tick = { fontSize: fontPx('--t-micro'), fill: c.muted };
+  // 26 was sized for a 10px tick; two digits at the 0.75rem floor need 30.
+  const yWidth = narrow ? 30 : 36;
   const rightGap = narrow ? 12 : 20;
   const raceRightGap = narrow ? 12 : 78;
-  const legendStyle = { fontSize: narrow ? 11 : 12, paddingTop: 6 };
+  const legendStyle = { fontSize: fontPx('--t-micro'), paddingTop: 6 };
 
   const colourFor = (playerId, fallbackIndex) =>
-    SERIES[(colourSlots.get(playerId) ?? fallbackIndex) % SERIES.length];
+    series(colourSlots.get(playerId) ?? fallbackIndex);
 
   return (
     <div className="chart-stack section">
@@ -195,11 +199,11 @@ export default function SeasonCharts({ season, activeSeason }) {
         <ResponsiveContainer>
           {/* Right margin leaves room for the end-of-line name labels. */}
           <LineChart data={race.points} margin={{ top: 8, right: raceRightGap, bottom: 24, left: 4 }}>
-            <CartesianGrid stroke={GRID} vertical={false} />
-            <XAxis dataKey="matchday" tick={tick} stroke={AXIS} tickLine={false}>
+            <CartesianGrid stroke={c.grid} vertical={false} />
+            <XAxis dataKey="matchday" tick={tick} stroke={c.axis} tickLine={false}>
               <Label value="Matchday" position="insideBottom" offset={-12} style={tick} />
             </XAxis>
-            <YAxis allowDecimals={false} tick={tick} stroke={AXIS} tickLine={false} width={yWidth} />
+            <YAxis allowDecimals={false} tick={tick} stroke={c.axis} tickLine={false} width={yWidth} />
             <Tooltip content={<TooltipBox labelKey="label" unit=" goals" />} />
             <Legend verticalAlign="bottom" iconType="plainline" wrapperStyle={legendStyle} />
             {race.players.map((p, i) => (
@@ -211,7 +215,7 @@ export default function SeasonCharts({ season, activeSeason }) {
                 stroke={colourFor(p.id, i)}
                 strokeWidth={2}
                 dot={false}
-                activeDot={{ r: 4, strokeWidth: 2, stroke: '#fff' }}
+                activeDot={{ r: 4, strokeWidth: 2, stroke: c.dot }}
               >
                 {!narrow && (
                   <LabelList
@@ -263,11 +267,11 @@ export default function SeasonCharts({ season, activeSeason }) {
       >
         <ResponsiveContainer>
           <LineChart data={comparison.points} margin={{ top: 8, right: rightGap, bottom: 24, left: 4 }}>
-            <CartesianGrid stroke={GRID} vertical={false} />
-            <XAxis dataKey="matchday" tick={tick} stroke={AXIS} tickLine={false}>
+            <CartesianGrid stroke={c.grid} vertical={false} />
+            <XAxis dataKey="matchday" tick={tick} stroke={c.axis} tickLine={false}>
               <Label value="Matchday" position="insideBottom" offset={-12} style={tick} />
             </XAxis>
-            <YAxis allowDecimals={false} tick={tick} stroke={AXIS} tickLine={false} width={yWidth} />
+            <YAxis allowDecimals={false} tick={tick} stroke={c.axis} tickLine={false} width={yWidth} />
             <Tooltip content={<TooltipBox labelKey="__none" unit=" pts" />} />
             <Legend verticalAlign="bottom" iconType="plainline" wrapperStyle={legendStyle} />
             {/* Oldest first so the focused season paints on top. */}
@@ -279,11 +283,11 @@ export default function SeasonCharts({ season, activeSeason }) {
                   type="linear"
                   dataKey={s}
                   name={s}
-                  stroke={isFocused ? SERIES[0] : PAST}
+                  stroke={isFocused ? series(0) : c.past}
                   strokeWidth={isFocused ? 2.5 : 1.75}
                   strokeOpacity={isFocused ? 1 : 0.8}
                   dot={false}
-                  activeDot={{ r: 4, strokeWidth: 2, stroke: '#fff' }}
+                  activeDot={{ r: 4, strokeWidth: 2, stroke: c.dot }}
                   connectNulls={false}
                 />
               );
@@ -321,29 +325,29 @@ export default function SeasonCharts({ season, activeSeason }) {
           <AreaChart data={trend} margin={{ top: 8, right: rightGap, bottom: 24, left: 4 }}>
             <defs>
               <linearGradient id="gf" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor={POSITIVE} stopOpacity={0.18} />
-                <stop offset="100%" stopColor={POSITIVE} stopOpacity={0.02} />
+                <stop offset="0%" stopColor={c.positive} stopOpacity={0.18} />
+                <stop offset="100%" stopColor={c.positive} stopOpacity={0.02} />
               </linearGradient>
             </defs>
-            <CartesianGrid stroke={GRID} vertical={false} />
-            <XAxis dataKey="matchday" tick={tick} stroke={AXIS} tickLine={false}>
+            <CartesianGrid stroke={c.grid} vertical={false} />
+            <XAxis dataKey="matchday" tick={tick} stroke={c.axis} tickLine={false}>
               <Label value="Matchday" position="insideBottom" offset={-12} style={tick} />
             </XAxis>
-            <YAxis allowDecimals={false} tick={tick} stroke={AXIS} tickLine={false} width={yWidth} />
+            <YAxis allowDecimals={false} tick={tick} stroke={c.axis} tickLine={false} width={yWidth} />
             <Tooltip content={<TooltipBox labelKey="label" />} />
             <Legend verticalAlign="bottom" iconType="plainline" wrapperStyle={legendStyle} />
             {/* Linear, not smoothed: each point is a discrete match result. */}
             <Area
               type="linear" dataKey="goalsFor" name="Scored"
-              stroke={POSITIVE} strokeWidth={2} fill="url(#gf)"
-              dot={{ r: 2.5, fill: POSITIVE, strokeWidth: 0 }}
-              activeDot={{ r: 5, strokeWidth: 2, stroke: '#fff' }}
+              stroke={c.positive} strokeWidth={2} fill="url(#gf)"
+              dot={{ r: 2.5, fill: c.positive, strokeWidth: 0 }}
+              activeDot={{ r: 5, strokeWidth: 2, stroke: c.dot }}
             />
             <Area
               type="linear" dataKey="goalsAgainst" name="Conceded"
-              stroke={NEGATIVE} strokeWidth={2} fill="none" strokeOpacity={0.9}
-              dot={{ r: 2.5, fill: NEGATIVE, strokeWidth: 0 }}
-              activeDot={{ r: 5, strokeWidth: 2, stroke: '#fff' }}
+              stroke={c.negative} strokeWidth={2} fill="none" strokeOpacity={0.9}
+              dot={{ r: 2.5, fill: c.negative, strokeWidth: 0 }}
+              activeDot={{ r: 5, strokeWidth: 2, stroke: c.dot }}
             />
           </AreaChart>
         </ResponsiveContainer>

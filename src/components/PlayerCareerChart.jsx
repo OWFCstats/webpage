@@ -13,15 +13,20 @@ import {
 } from 'recharts';
 import { formatDate } from '../lib/stats';
 import { useIsNarrow } from '../lib/useIsNarrow';
+import { fontPx, statColour, token } from '../lib/tokens';
 
-// Same three colours the leaderboard chips use for these stats, taken from the
-// validated series palette so they clear 3:1 on the white card.
-const INVOLVEMENTS = '#eb6834';
-const GOALS = '#b8860b';
-const ASSISTS = '#2a78d6';
-const GRID = '#e6e4dc';
-const AXIS = '#c3c2b7';
-const MUTED = '#7c7a73';
+// The same colours these three stats wear everywhere else, and the frame
+// colours, read out of tokens.css — Recharts puts them in SVG attributes,
+// where var() is invalid. See lib/tokens.js.
+const chartColours = () => ({
+  involvements: statColour('goalInvolvements'),
+  goals: statColour('goals'),
+  assists: statColour('assists'),
+  grid: token('--rule'),
+  axis: token('--rule-firm'),
+  muted: token('--ink-soft'),
+  dot: token('--paper'),
+});
 
 function ArcTooltip({ active, payload, label }) {
   if (!active || !payload?.length) return null;
@@ -53,7 +58,9 @@ function ArcTooltip({ active, payload, label }) {
 export default function PlayerCareerChart({ arc, career }) {
   const [showTable, setShowTable] = useState(false);
   const narrow = useIsNarrow();
-  const tick = { fontSize: narrow ? 10 : 12, fill: MUTED };
+  const c = chartColours();
+  // The 0.75rem floor applies to the axis too, not just to HTML.
+  const tick = { fontSize: fontPx('--t-micro'), fill: c.muted };
   const enough = arc.length >= 2 && career.goalInvolvements > 0;
 
   const finding = enough
@@ -112,36 +119,36 @@ export default function PlayerCareerChart({ arc, career }) {
             <ComposedChart data={arc} margin={{ top: 8, right: narrow ? 12 : 20, bottom: 44, left: 4 }}>
               <defs>
                 <linearGradient id="arc-ga" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor={INVOLVEMENTS} stopOpacity={0.22} />
-                  <stop offset="100%" stopColor={INVOLVEMENTS} stopOpacity={0.02} />
+                  <stop offset="0%" stopColor={c.involvements} stopOpacity={0.22} />
+                  <stop offset="100%" stopColor={c.involvements} stopOpacity={0.02} />
                 </linearGradient>
               </defs>
-              <CartesianGrid stroke={GRID} vertical={false} />
-              <XAxis dataKey="n" tick={tick} stroke={AXIS} tickLine={false}>
+              <CartesianGrid stroke={c.grid} vertical={false} />
+              <XAxis dataKey="n" tick={tick} stroke={c.axis} tickLine={false}>
                 <Label value="Appearance" position="insideBottom" offset={-12} style={tick} />
               </XAxis>
-              <YAxis allowDecimals={false} tick={tick} stroke={AXIS} tickLine={false} width={narrow ? 26 : 36} />
+              <YAxis allowDecimals={false} tick={tick} stroke={c.axis} tickLine={false} width={narrow ? 30 : 36} />
               <Tooltip content={<ArcTooltip />} />
-              <Legend verticalAlign="bottom" iconType="plainline" wrapperStyle={{ fontSize: narrow ? 11 : 12, paddingTop: 20 }} />
+              <Legend verticalAlign="bottom" iconType="plainline" wrapperStyle={{ fontSize: fontPx('--t-micro'), paddingTop: 20 }} />
               <Area
                 type="monotone"
                 dataKey="involvements"
                 name="Goal involvements"
-                stroke={INVOLVEMENTS}
+                stroke={c.involvements}
                 strokeWidth={2.75}
                 fill="url(#arc-ga)"
                 dot={false}
-                activeDot={{ r: 5, strokeWidth: 2, stroke: '#fff' }}
+                activeDot={{ r: 5, strokeWidth: 2, stroke: c.dot }}
               />
               <Line
                 type="monotone" dataKey="goals" name="Goals"
-                stroke={GOALS} strokeWidth={1.75} strokeOpacity={0.9} dot={false}
-                activeDot={{ r: 4, strokeWidth: 2, stroke: '#fff' }}
+                stroke={c.goals} strokeWidth={1.75} strokeOpacity={0.9} dot={false}
+                activeDot={{ r: 4, strokeWidth: 2, stroke: c.dot }}
               />
               <Line
                 type="monotone" dataKey="assists" name="Assists"
-                stroke={ASSISTS} strokeWidth={1.75} strokeOpacity={0.9} dot={false}
-                activeDot={{ r: 4, strokeWidth: 2, stroke: '#fff' }}
+                stroke={c.assists} strokeWidth={1.75} strokeOpacity={0.9} dot={false}
+                activeDot={{ r: 4, strokeWidth: 2, stroke: c.dot }}
               />
             </ComposedChart>
           </ResponsiveContainer>

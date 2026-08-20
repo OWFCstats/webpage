@@ -8,10 +8,10 @@
 
 /* admin */
 .admin-bar {
-  background: rgba(232, 119, 46, 0.1);
-  border: 1px solid rgba(232, 119, 46, 0.25);
-  color: #9a4a15;
-  border-radius: 8px;
+  background: color-mix(in srgb, var(--tangerine) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--tangerine) 30%, transparent);
+  color: var(--tangerine-deep);
+  border-radius: var(--r);
 }
 
 /* ---- admin lineup slots ---- */
@@ -23,14 +23,10 @@
   align-items: center;
 }
 
+/* Type comes from .label on the row itself; this is only the rule under it. */
 .lineup-head {
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
   padding-bottom: 0.4rem;
-  border-bottom: 2px solid var(--line);
+  border-bottom: 1px solid var(--rule-firm);
   margin-bottom: 0.5rem;
 }
 
@@ -50,8 +46,9 @@
 }
 
 .slot-no {
-  font-size: 0.78rem;
-  font-weight: 700;
+  font-family: var(--font-data);
+  font-size: var(--t-small);
+  font-weight: 600;
   color: var(--ink-soft);
   text-align: right;
 }
@@ -69,7 +66,7 @@
     grid-template-columns: 26px 1fr 1fr 1fr;
     row-gap: 0.35rem;
     padding: 0.6rem 0;
-    border-bottom: 1px solid var(--line);
+    border-bottom: 1px solid var(--rule);
   }
 }
 
@@ -86,13 +83,8 @@
 }
 
 .league-head {
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
   padding-bottom: 0.4rem;
-  border-bottom: 2px solid var(--line);
+  border-bottom: 1px solid var(--rule-firm);
   margin-bottom: 0.5rem;
 }
 
@@ -118,15 +110,16 @@
 
 /* Every column is captioned by the header row on a wide screen, so the
    per-input labels only earn their space once that header is gone. */
-.lg-stat > span,
-.lg-derived em { display: none; }
+.lg-stat > .label,
+.lg-derived .label { display: none; }
 
 .lg-derived {
-  font-weight: 800;
+  font-family: var(--font-data);
+  font-weight: 700;
   color: var(--ink-soft);
 }
 
-.lg-derived.lg-pts { color: var(--black); }
+.lg-derived.lg-pts { color: var(--ink); }
 
 .lg-actions {
   display: flex;
@@ -142,7 +135,7 @@
 .league-actions { margin-top: 1.2rem; }
 
 .league-save {
-  font-size: 1rem;
+  font-size: var(--t-body);
   padding: 0.7rem 1.3rem;
 }
 
@@ -153,7 +146,7 @@
     grid-template-columns: repeat(6, 1fr);
     gap: 0.45rem 0.5rem;
     padding: 0.8rem 0;
-    border-bottom: 1px solid var(--line);
+    border-bottom: 1px solid var(--rule);
   }
 
   .league-grid .lg-pos,
@@ -163,25 +156,8 @@
 
   .league-grid .lg-club { grid-column: span 4; }
 
-  .lg-stat > span,
-  .lg-derived em {
-    display: block;
-    font-size: 0.62rem;
-    font-weight: 700;
-    letter-spacing: 0.07em;
-    text-transform: uppercase;
-    color: var(--ink-soft);
-  }
-
-  .lg-derived em { font-style: normal; }
-
-  /* 16px keeps iOS from zooming the page in on focus, and a taller box is a
-  kinder target for a thumb. */
-  .league-grid input,
-  .league-grid select {
-    font-size: 16px;
-    padding: 0.6rem 0.5rem;
-  }
+  .lg-stat > .label,
+  .lg-derived .label { display: block; }
 
   .lg-actions button { padding: 0.5rem 0.6rem; }
 
@@ -190,8 +166,8 @@
   .league-actions {
     position: sticky;
     bottom: 0;
-    background: var(--card);
-    border-top: 1px solid var(--line);
+    background: var(--paper);
+    border-top: 1px solid var(--rule);
     padding: 0.8rem 0;
   }
 }
@@ -218,8 +194,8 @@
   justify-content: space-between;
   gap: 0.8rem;
   padding: 0.55rem 0;
-  border-bottom: 1px solid var(--line);
-  font-size: 0.9rem;
+  border-bottom: 1px solid var(--rule);
+  font-size: var(--t-small);
 }
 
 .attention li:last-child { border-bottom: none; }
@@ -242,11 +218,13 @@
 
 .wizard-steps { display: flex; gap: 0.3rem; margin-bottom: 0.6rem; }
 
-.wizard-steps span { flex: 1; height: 4px; border-radius: 2px; background: #e0ddd3; }
+/* --rule, not --sheet: a step you haven't reached still has to be visible
+   against the paper. */
+.wizard-steps span { flex: 1; height: 4px; border-radius: var(--r-sm); background: var(--rule); }
 
 .wizard-steps span.on { background: var(--gold); }
 
-.wizard-steps span.done { background: var(--black); }
+.wizard-steps span.done { background: var(--board); }
 
 .wizard-title { margin-bottom: 0.6rem; }
 
@@ -260,87 +238,87 @@
   text-align: left;
   background: none;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--r);
   padding: 0.5rem 0.4rem;
   font: inherit;
-  font-size: 0.95rem;
+  font-size: var(--t-body);
   color: var(--ink);
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid var(--rule);
 }
 
 .pick-list li:last-child .pick-row { border-bottom: none; }
 
-.pick-row:hover { filter: none; background: rgba(227, 180, 33, 0.07); }
+.pick-row:hover { filter: none; background: color-mix(in srgb, var(--gold) 8%, transparent); }
 
-.pick-row.picked { background: rgba(227, 180, 33, 0.1); }
+.pick-row.picked { background: color-mix(in srgb, var(--gold) 12%, transparent); }
 
 .pick-row .avatar, .stat-row .avatar {
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  background: #edebe3;
+  background: var(--sheet);
   color: var(--ink-soft);
   display: grid;
   place-items: center;
-  font-weight: 800;
-  font-size: 0.68rem;
+  font-family: var(--font-data);
+  font-weight: 700;
+  font-size: var(--t-micro);
   flex: none;
 }
 
 .pick-row .who { font-weight: 600; min-width: 0; }
 
-.pick-row .who .muted { font-weight: 500; font-size: 0.78rem; }
+.pick-row .who .muted { font-weight: 400; }
 
 .pick-row .tick {
   margin-left: auto;
   width: 24px;
   height: 24px;
-  border-radius: 7px;
-  border: 1.5px solid var(--line);
+  border-radius: var(--r);
+  border: 1.5px solid var(--rule-firm);
   display: grid;
   place-items: center;
-  font-size: 0.8rem;
-  color: #fff;
+  font-size: var(--t-small);
+  color: var(--on-board);
   flex: none;
 }
 
-.pick-row.picked .tick { background: var(--green); border-color: var(--green); }
+.pick-row.picked .tick { background: var(--win); border-color: var(--win); }
 
 .stat-row {
   display: flex;
   align-items: center;
   gap: 0.7rem;
   padding: 0.6rem 0;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid var(--rule);
   flex-wrap: wrap;
 }
 
 .stat-list li:last-child { border-bottom: none; }
 
-.stat-row .who { font-weight: 700; min-width: 0; flex: 1; }
+.stat-row .who { font-weight: 600; min-width: 0; flex: 1; }
 
 .stat-row .steppers { display: flex; gap: 1.1rem; }
 
 .stepper { display: inline-flex; flex-direction: column; align-items: center; gap: 0.15rem; }
-
-.stepper .mini-label { margin: 0; font-size: 0.6rem; }
 
 .stepper-controls { display: inline-flex; align-items: center; gap: 0.35rem; }
 
 .stepper-controls b {
   min-width: 20px;
   text-align: center;
-  font-size: 1rem;
+  font-family: var(--font-data);
+  font-size: var(--t-body);
   font-variant-numeric: tabular-nums;
 }
 
-.stepper-controls button { padding: 0.15rem 0.55rem; font-size: 0.95rem; line-height: 1.2; }
+.stepper-controls button { padding: 0.15rem 0.55rem; font-size: var(--t-body); line-height: 1.2; }
 
 .wizard-actions { justify-content: flex-start; align-items: center; }
 
 .wizard-actions button:last-child, .wizard-actions .btn:last-child { margin-left: auto; }
 
-.wizard-note { font-size: 0.8rem; margin-top: 0.6rem; }
+.wizard-note { font-size: var(--t-small); margin-top: 0.6rem; }
 
 @media (max-width: 700px) {
   .stat-row .steppers { width: 100%; justify-content: flex-start; padding-left: 2.4rem; }

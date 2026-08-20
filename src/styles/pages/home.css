@@ -14,14 +14,6 @@
 
 .home-head h1 { margin-bottom: 0; }
 
-.home-season {
-  font-size: 0.78rem;
-  font-weight: 800;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-}
-
 /* Next fixture and last result lead the page side by side on wider screens;
    on a phone they stack in DOM order so both still land in the first
    screen's worth of scrolling. */
@@ -47,19 +39,9 @@
   margin-bottom: 0.85rem;
 }
 
-.home-widget-head h2 { font-size: 1.02rem; margin: 0; }
+.home-widget-head h2 { font-size: var(--t-subtitle); margin: 0; }
 
-.home-eyebrow {
-  display: block;
-  font-size: 0.62rem;
-  font-weight: 800;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: #2d6f96;
-  margin-bottom: 0.15rem;
-}
-
-.home-widget-note { font-size: 0.78rem; white-space: nowrap; }
+.home-widget-note { font-size: var(--t-small); white-space: nowrap; }
 
 .home-widget-head-right {
   display: flex;
@@ -70,8 +52,8 @@
 }
 
 .home-widget .more {
-  font-size: 0.78rem;
-  font-weight: 700;
+  font-size: var(--t-small);
+  font-weight: 600;
   color: var(--gold-deep);
   white-space: nowrap;
 }
@@ -101,41 +83,37 @@
   border-radius: 50%;
   display: grid;
   place-items: center;
-  font-weight: 800;
-  font-size: 0.78rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--t-micro);
   flex: none;
 }
 
-.fixture-badge.us { background: var(--gold); color: var(--black); }
+.fixture-badge.us { background: var(--gold); color: var(--board); }
 
-.fixture-badge.them { background: #2a2d34; color: #cfccc2; }
+.fixture-badge.them { background: var(--board-soft); color: var(--on-board-soft); }
 
 .fixture-team {
-  font-size: 0.8rem;
-  font-weight: 700;
+  font-size: var(--t-small);
+  font-weight: 600;
   text-align: center;
   line-height: 1.3;
 }
 
 a.fixture-team:hover { color: var(--gold-deep); }
 
-.fixture-vs {
-  font-size: 0.72rem;
-  font-weight: 800;
-  color: var(--ink-soft);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  padding-top: 1rem;
-}
+/* The "v" between the two sides — a label, so it takes the label style and
+   only needs its own position here. */
+.fixture-vs { padding-top: 1rem; }
 
 .fixture-meta {
   margin-top: 0.9rem;
   padding-top: 0.75rem;
-  border-top: 1px solid var(--line);
+  border-top: 1px solid var(--rule);
   display: flex;
   flex-wrap: wrap;
   gap: 0.25rem 1rem;
-  font-size: 0.82rem;
+  font-size: var(--t-small);
   color: var(--ink-soft);
 }
 
@@ -145,11 +123,11 @@ a.fixture-team:hover { color: var(--gold-deep); }
   display: inline-block;
   margin-top: 0.7rem;
   padding: 0.25rem 0.65rem;
-  border-radius: 999px;
-  background: rgba(91, 163, 201, 0.16);
-  color: #2d6f96;
-  font-size: 0.74rem;
-  font-weight: 800;
+  border-radius: var(--r-pill);
+  background: color-mix(in srgb, var(--sky) 34%, transparent);
+  color: var(--sky-deep);
+  font-size: var(--t-micro);
+  font-weight: 700;
 }
 
 /* ---- recent form widget ---- */
@@ -168,7 +146,7 @@ a.fixture-team:hover { color: var(--gold-deep); }
   list-style: none;
   margin: 0.9rem 0 0;
   padding: 0;
-  font-size: 0.85rem;
+  font-size: var(--t-small);
 }
 
 .home-form-list li {
@@ -177,7 +155,7 @@ a.fixture-team:hover { color: var(--gold-deep); }
   justify-content: space-between;
   gap: 0.7rem;
   padding: 0.35rem 0;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid var(--rule);
 }
 
 .home-form-list li:last-child { border-bottom: none; }
@@ -188,6 +166,7 @@ a.fixture-team:hover { color: var(--gold-deep); }
 
 .home-form-list strong {
   white-space: nowrap;
+  font-family: var(--font-data);
   font-variant-numeric: tabular-nums;
 }
 
@@ -200,7 +179,7 @@ a.fixture-team:hover { color: var(--gold-deep); }
   margin-top: 0.9rem;
 }
 
-.home-spark-note { font-size: 0.72rem; margin: 0.25rem 0 0; }
+.home-spark-note { margin: 0.25rem 0 0; }
 
 @media (min-width: 760px) {
   .home-form-body { flex-direction: row; align-items: flex-start; gap: 1.6rem; }
@@ -215,17 +194,15 @@ a.fixture-team:hover { color: var(--gold-deep); }
 /* Compact and dark, like the KPI strip this replaced — a teaser for the full
    scoreboard treatment on Matchday, not a second copy of it. */
 .home-result {
-  background: var(--black);
-  color: #f3f0e6;
+  background: var(--board);
+  color: var(--on-board);
 }
 
-.home-result h2 { color: #fff; }
+.home-result h2 { color: var(--on-board); }
 
-.home-result .home-eyebrow { color: var(--blue); }
+.home-result .home-widget-note { color: var(--on-board-soft); }
 
-.home-result .home-widget-note { color: #9a978e; }
-
-.home-result .empty { color: #9a978e; }
+.home-result .empty { color: var(--on-board-soft); }
 
 .hr-score {
   display: flex;
@@ -235,21 +212,23 @@ a.fixture-team:hover { color: var(--gold-deep); }
 }
 
 .hr-score-value {
-  font-size: 2rem;
-  font-weight: 800;
-  color: #fff;
+  font-family: var(--font-display);
+  font-size: var(--t-headline);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--on-board);
   font-variant-numeric: tabular-nums;
 }
 
 .hr-line {
   margin: 0.3rem 0;
-  font-size: 0.85rem;
-  color: #cfccc2;
+  font-size: var(--t-small);
+  color: var(--on-board-soft);
 }
 
-.hr-line strong { color: #fff; }
+.hr-line strong { color: var(--on-board); }
 
-.home-result .more { color: var(--gold); display: inline-block; margin-top: 0.6rem; }
+.home-result .more { color: var(--gold-leaf); display: inline-block; margin-top: 0.6rem; }
 
 /* ---- season stats widget ---- */
 .home-stats { margin-top: 1rem; }
@@ -263,41 +242,32 @@ a.fixture-team:hover { color: var(--gold-deep); }
 }
 
 .home-stat-tile {
-  background: #faf9f5;
-  border: 1px solid var(--line);
-  border-radius: 10px;
+  background: var(--sheet);
+  border: 1px solid var(--rule);
+  border-radius: var(--r);
   padding: 0.6rem 0.5rem;
   text-align: center;
 }
 
 .home-stat-tile b {
   display: block;
-  font-size: 1.3rem;
-  font-weight: 800;
-  line-height: 1;
-  color: var(--black);
-  font-variant-numeric: tabular-nums;
-}
-
-.home-stat-tile em {
-  font-style: normal;
-  display: block;
-  margin-top: 0.3rem;
-  font-size: 0.6rem;
+  font-family: var(--font-data);
+  font-size: var(--t-subtitle);
   font-weight: 700;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
+  line-height: 1;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 0.3rem;
 }
 
 .home-bars { display: flex; flex-direction: column; gap: 0.55rem; }
 
-.home-bar { display: flex; align-items: center; gap: 0.6rem; font-size: 0.82rem; }
+.home-bar { display: flex; align-items: center; gap: 0.6rem; font-size: var(--t-small); }
 
 .home-bar-label {
   width: 68px;
   flex: none;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--ink-soft);
   white-space: nowrap;
 }
@@ -305,28 +275,29 @@ a.fixture-team:hover { color: var(--gold-deep); }
 .home-bar-track {
   flex: 1;
   height: 10px;
-  border-radius: 5px;
-  background: #eceadf;
+  border-radius: var(--r-sm);
+  background: var(--sheet);
   overflow: hidden;
 }
 
 .home-bar-fill {
   display: block;
   height: 100%;
-  border-radius: 5px;
+  border-radius: var(--r-sm);
   transition: width 0.4s ease;
 }
 
 .home-bar-fill.gf { background: var(--gold); }
 
-.home-bar-fill.ga { background: var(--blue); }
+.home-bar-fill.ga { background: var(--sky-deep); }
 
 .home-bar-value {
   width: 26px;
   flex: none;
   text-align: right;
-  font-weight: 800;
-  color: var(--black);
+  font-family: var(--font-data);
+  font-weight: 700;
+  color: var(--ink);
   font-variant-numeric: tabular-nums;
 }
 

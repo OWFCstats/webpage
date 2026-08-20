@@ -10,11 +10,11 @@
 }
 
 .honour {
-  border: 1px solid var(--line);
-  border-radius: 9px;
+  border: 1px solid var(--rule);
+  border-radius: var(--r);
   padding: 0.55rem 0.4rem;
   text-align: center;
-  background: #fdfcf8;
+  background: var(--paper);
   opacity: 0.62;
 }
 
@@ -27,19 +27,20 @@
 
 .honour .hn {
   display: block;
-  font-size: 0.78rem;
-  font-weight: 800;
+  font-family: var(--font-display);
+  font-size: var(--t-small);
+  font-weight: 600;
   color: var(--ink);
   line-height: 1.25;
 }
 
 .honour .hd {
   display: block;
-  font-size: 0.65rem;
+  font-size: var(--t-micro);
   color: var(--ink-soft);
   margin-top: 0.18rem;
 }
 
-.honour.earned .hn { color: var(--black); }
+.honour.earned .hn { color: var(--board); }
 
-.honour.earned .hd { color: rgba(22, 23, 27, 0.68); }
+.honour.earned .hd { color: color-mix(in srgb, var(--board) 72%, transparent); }

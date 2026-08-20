@@ -89,7 +89,12 @@ being a page — move them to `components/`. Anything over ~250 lines is telling
 you something.
 
 **`lib/` is split by domain, not by size.** Formatting, matches, players,
-awards, league, charts. A helper goes where its subject lives.
+awards, league, charts, tokens. A helper goes where its subject lives.
+
+`lib/tokens.js` is the one that isn't about football: it reads the design
+tokens out of `styles/tokens.css` for the charts and sparklines, which put
+colours in SVG attributes where `var()` doesn't work. No colour is ever written
+down in JS.
 
 ## Conventions
 

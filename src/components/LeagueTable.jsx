@@ -29,7 +29,7 @@ export default function LeagueTable({ season, full = false, showSeasonLink = tru
     <section className="card home-widget home-table">
       <div className="home-widget-head">
         <div>
-          <span className="home-eyebrow">Standings</span>
+          <span className="label">Standings</span>
           <h2>League table</h2>
         </div>
         <div className="home-widget-head-right">

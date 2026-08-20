@@ -6,13 +6,14 @@ import SortableTable from '../components/SortableTable';
 import BarBoard from '../components/BarBoard';
 import { playerTotals, rate, seasonsOf } from '../lib/stats';
 
+// Each board's colour comes from its stat, in lib/tokens.js.
 const BOARDS = [
-  { key: 'goals', label: 'Goals', accent: '#b8860b' },
-  { key: 'assists', label: 'Assists', accent: '#5ba3c9' },
-  { key: 'goalInvolvements', label: 'G+A', accent: '#e8772e' },
-  { key: 'appearances', label: 'Apps', accent: '#3f4149' },
-  { key: 'motm', label: 'MOTM', accent: '#b8860b' },
-  { key: 'cleanSheets', label: 'Clean sheets', accent: '#5ba3c9' },
+  { key: 'goals', label: 'Goals' },
+  { key: 'assists', label: 'Assists' },
+  { key: 'goalInvolvements', label: 'G+A' },
+  { key: 'appearances', label: 'Apps' },
+  { key: 'motm', label: 'MOTM' },
+  { key: 'cleanSheets', label: 'Clean sheets' },
 ];
 
 // The card list leads with regulars; the long tail of one-game players
@@ -81,7 +82,6 @@ export default function PlayersHub() {
           title={board.label}
           rows={rows}
           statKey={stat}
-          accent={board.accent}
           limit={8}
         />
       </div>
@@ -158,9 +158,9 @@ export default function PlayersHub() {
                       </span>
                     </span>
                     <span className="nums">
-                      <span><strong>{r.goals}</strong><em>G</em></span>
-                      <span><strong>{r.assists}</strong><em>A</em></span>
-                      <span><strong>{r.motm}</strong><em>MOTM</em></span>
+                      <span><strong>{r.goals}</strong><em className="label">G</em></span>
+                      <span><strong>{r.assists}</strong><em className="label">A</em></span>
+                      <span><strong>{r.motm}</strong><em className="label">MOTM</em></span>
                     </span>
                   </Link>
                 </li>

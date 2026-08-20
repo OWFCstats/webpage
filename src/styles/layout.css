@@ -6,8 +6,8 @@
 
 /* ---- layout ---- */
 .site-header {
-  background: var(--black);
-  color: #f3f0e6;
+  background: var(--board);
+  color: var(--on-board);
   border-bottom: 3px solid var(--gold);
 }
 
@@ -40,24 +40,24 @@
   place-items: center;
   border-radius: 50%;
   background: var(--gold);
-  color: var(--black);
-  font-weight: 800;
-  font-size: 0.8rem;
+  color: var(--board);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--t-small);
 }
 
 .brand .name {
-  font-weight: 800;
-  font-size: 1.25rem;
-  letter-spacing: -0.01em;
-  color: #fff;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--t-subtitle);
+  letter-spacing: -0.015em;
+  color: var(--on-board);
 }
 
+/* The one label in the site that takes gold: it sits under the crest and is
+   the club's own name for itself. */
 .brand .sub {
   display: block;
-  font-size: 0.68rem;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
   color: var(--gold);
 }
 
@@ -69,21 +69,21 @@ nav.main-nav {
 
 nav.main-nav a {
   padding: 0.5rem 0.85rem;
-  border-radius: 8px;
-  font-weight: 700;
-  font-size: 0.95rem;
-  color: #cfccc2;
+  border-radius: var(--r);
+  font-weight: 600;
+  font-size: var(--t-small);
+  color: var(--on-board-soft);
   transition: color 0.15s ease, background 0.15s ease;
 }
 
 nav.main-nav a:hover {
-  color: #fff;
-  background: rgba(255, 255, 255, 0.07);
+  color: var(--on-board);
+  background: color-mix(in srgb, var(--on-board) 8%, transparent);
 }
 
 nav.main-nav a.active {
-  color: var(--gold);
-  background: rgba(227, 180, 33, 0.12);
+  color: var(--gold-leaf);
+  background: color-mix(in srgb, var(--gold) 14%, transparent);
 }
 
 main.page {
@@ -103,9 +103,9 @@ main.page {
 }
 
 .site-footer {
-  border-top: 1px solid var(--line);
+  border-top: 1px solid var(--rule);
   color: var(--ink-soft);
-  font-size: 0.8rem;
+  font-size: var(--t-small);
   text-align: center;
   padding: 1.2rem;
 }
@@ -127,10 +127,6 @@ main.page {
     width: 38px;
   }
 
-  .brand .name { font-size: 1.05rem; }
-
-  .brand .sub { font-size: 0.6rem; }
-
   /* The five sections live in the bottom tab bar here — only Admin / Log in
   stays in the header, and it must never be hidden. */
   nav.main-nav a.section-link { display: none; }
@@ -142,7 +138,6 @@ main.page {
 
   nav.main-nav a {
     white-space: nowrap;
-    font-size: 0.88rem;
     padding: 0.4rem 0.7rem;
   }
 
@@ -159,10 +154,10 @@ main.page {
     bottom: 0;
     z-index: 40;
     display: grid;
-    /* Five tabs now Home leads the set — tighter type so "Matchday" still
-       fits on one line at 320px. */
+    /* Five tabs now Home leads the set — the condensed data face is what
+       keeps "Matchday" on one line at 320px at the 0.75rem floor. */
     grid-template-columns: repeat(5, 1fr);
-    background: var(--black);
+    background: var(--board);
     border-top: 2px solid var(--gold);
     padding-bottom: env(safe-area-inset-bottom, 0);
   }
@@ -177,14 +172,14 @@ main.page {
     min-height: 44px;
     padding: 0.5rem 0.1rem 0.55rem;
     text-align: center;
-    color: #8e8b83;
-    font-size: 0.58rem;
+    color: var(--on-board-soft);
+    font-family: var(--font-data);
+    font-size: var(--t-micro);
     line-height: 1.3;
-    font-weight: 700;
-    letter-spacing: -0.01em;
+    font-weight: 600;
   }
 
-  .tab-bar a.active { color: var(--gold); }
+  .tab-bar a.active { color: var(--gold-leaf); }
 
   .tab-bar svg {
     display: block;
