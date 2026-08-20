@@ -1,0 +1,359 @@
+/* Home: the next fixture, the last result, standings, form and season
+   totals. The one page a visitor who has never played for the club sees
+   first. */
+
+/* ---- home dashboard ---------------------------------------------------- */
+.home-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.2rem;
+}
+
+.home-head h1 { margin-bottom: 0; }
+
+.home-season {
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+/* Next fixture and last result lead the page side by side on wider screens;
+   on a phone they stack in DOM order so both still land in the first
+   screen's worth of scrolling. */
+.home-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  align-items: start;
+  margin-bottom: 1rem;
+}
+
+/* Grid items default to min-width:auto, so wide content inside one would push
+   the whole track past the viewport. */
+.home-grid > * { min-width: 0; }
+
+.home-widget { padding: 1.05rem 1.15rem 1.2rem; }
+
+.home-widget-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.8rem;
+  margin-bottom: 0.85rem;
+}
+
+.home-widget-head h2 { font-size: 1.02rem; margin: 0; }
+
+.home-eyebrow {
+  display: block;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #2d6f96;
+  margin-bottom: 0.15rem;
+}
+
+.home-widget-note { font-size: 0.78rem; white-space: nowrap; }
+
+.home-widget-head-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.2rem;
+  flex: none;
+}
+
+.home-widget .more {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--gold-deep);
+  white-space: nowrap;
+}
+
+.home-widget .more:hover { text-decoration: underline; }
+
+/* ---- next fixture widget ---- */
+.fixture-teams {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.fixture-side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.fixture-badge {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 0.78rem;
+  flex: none;
+}
+
+.fixture-badge.us { background: var(--gold); color: var(--black); }
+
+.fixture-badge.them { background: #2a2d34; color: #cfccc2; }
+
+.fixture-team {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-align: center;
+  line-height: 1.3;
+}
+
+a.fixture-team:hover { color: var(--gold-deep); }
+
+.fixture-vs {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding-top: 1rem;
+}
+
+.fixture-meta {
+  margin-top: 0.9rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--line);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+}
+
+.fixture-meta strong { color: var(--ink); }
+
+.fixture-countdown {
+  display: inline-block;
+  margin-top: 0.7rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(91, 163, 201, 0.16);
+  color: #2d6f96;
+  font-size: 0.74rem;
+  font-weight: 800;
+}
+
+/* ---- recent form widget ---- */
+
+/* Stacked on a phone; side by side once the card is wide enough for the
+   sparkline to read as a companion to the list rather than a squeeze. */
+.home-form-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.home-form-main { flex: 1; min-width: 0; }
+
+.home-form-list {
+  list-style: none;
+  margin: 0.9rem 0 0;
+  padding: 0;
+  font-size: 0.85rem;
+}
+
+.home-form-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.7rem;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.home-form-list li:last-child { border-bottom: none; }
+
+.home-form-list a { font-weight: 600; min-width: 0; }
+
+.home-form-list a:hover { color: var(--gold-deep); }
+
+.home-form-list strong {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.home-form-trend { flex: none; }
+
+.home-spark {
+  display: block;
+  width: 100%;
+  height: 40px;
+  margin-top: 0.9rem;
+}
+
+.home-spark-note { font-size: 0.72rem; margin: 0.25rem 0 0; }
+
+@media (min-width: 760px) {
+  .home-form-body { flex-direction: row; align-items: flex-start; gap: 1.6rem; }
+
+  .home-form-trend { width: 220px; padding-top: 1.6rem; }
+
+  .home-form-trend .home-spark { margin-top: 0; }
+}
+
+/* ---- last result widget ---- */
+
+/* Compact and dark, like the KPI strip this replaced — a teaser for the full
+   scoreboard treatment on Matchday, not a second copy of it. */
+.home-result {
+  background: var(--black);
+  color: #f3f0e6;
+}
+
+.home-result h2 { color: #fff; }
+
+.home-result .home-eyebrow { color: var(--blue); }
+
+.home-result .home-widget-note { color: #9a978e; }
+
+.home-result .empty { color: #9a978e; }
+
+.hr-score {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0.85rem 0 0.65rem;
+}
+
+.hr-score-value {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+
+.hr-line {
+  margin: 0.3rem 0;
+  font-size: 0.85rem;
+  color: #cfccc2;
+}
+
+.hr-line strong { color: #fff; }
+
+.home-result .more { color: var(--gold); display: inline-block; margin-top: 0.6rem; }
+
+/* ---- season stats widget ---- */
+.home-stats { margin-top: 1rem; }
+
+.home-stats-body { display: flex; flex-direction: column; gap: 1rem; }
+
+.home-stat-tiles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.6rem;
+}
+
+.home-stat-tile {
+  background: #faf9f5;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.6rem 0.5rem;
+  text-align: center;
+}
+
+.home-stat-tile b {
+  display: block;
+  font-size: 1.3rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--black);
+  font-variant-numeric: tabular-nums;
+}
+
+.home-stat-tile em {
+  font-style: normal;
+  display: block;
+  margin-top: 0.3rem;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.home-bars { display: flex; flex-direction: column; gap: 0.55rem; }
+
+.home-bar { display: flex; align-items: center; gap: 0.6rem; font-size: 0.82rem; }
+
+.home-bar-label {
+  width: 68px;
+  flex: none;
+  font-weight: 700;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+
+.home-bar-track {
+  flex: 1;
+  height: 10px;
+  border-radius: 5px;
+  background: #eceadf;
+  overflow: hidden;
+}
+
+.home-bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: 5px;
+  transition: width 0.4s ease;
+}
+
+.home-bar-fill.gf { background: var(--gold); }
+
+.home-bar-fill.ga { background: var(--blue); }
+
+.home-bar-value {
+  width: 26px;
+  flex: none;
+  text-align: right;
+  font-weight: 800;
+  color: var(--black);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-bar-fill { transition: none; }
+}
+
+@media (min-width: 760px) {
+  .home-stats-body { flex-direction: row; align-items: center; gap: 2.2rem; }
+
+  .home-stat-tiles { flex: none; width: 42%; }
+
+  .home-bars { flex: 1; }
+}
+
+@media (max-width: 900px) {
+  /* Fixture and result stack in DOM order, which already puts the two
+  things a visitor lands on Home for right at the top. */
+  .home-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 700px) {
+  .home-grid { gap: 0.8rem; }
+
+  .home-stats { margin-top: 0.8rem; }
+
+  .home-widget { padding: 0.95rem 1rem 1.05rem; }
+
+  .home-head { margin-bottom: 0.9rem; }
+}

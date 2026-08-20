@@ -1,0 +1,20 @@
+/* Custom properties, and nothing else. No selectors below :root.
+   Phase 2 of docs/ROADMAP.md replaces these values; the names are the
+   contract every other file in here depends on. */
+
+:root {
+  --gold: #e3b421;
+  --gold-deep: #b8860b;
+  --black: #16171b;
+  --ink: #23252b;
+  --ink-soft: #5c5f6a;
+  --bg: #f7f6f2;
+  --card: #ffffff;
+  --line: #e6e4dc;
+  --blue: #5ba3c9;
+  --orange: #e8772e;
+  --green: #3d9a5f;
+  --red: #c9463d;
+  --radius: 12px;
+  --shadow: 0 1px 2px rgba(22, 23, 27, 0.05), 0 4px 16px rgba(22, 23, 27, 0.05);
+}

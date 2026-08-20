@@ -1,0 +1,39 @@
+/* Standings table. Typed in by an admin, so it carries an "updated" line;
+   the club's own row is highlighted. */
+
+/* ---- league table widget ---- */
+table.data.league-table td.lt-pos,
+table.data.league-table th.lt-pos {
+  text-align: center;
+  font-weight: 800;
+  color: var(--ink-soft);
+  width: 2rem;
+}
+
+table.data.league-table td.lt-club { font-weight: 700; }
+
+table.data.league-table td.lt-pts { font-weight: 800; color: var(--black); }
+
+table.data.league-table td.lt-gd { color: var(--ink-soft); }
+
+table.data.league-table tr.lt-us { background: rgba(227, 180, 33, 0.1); }
+
+table.data.league-table tr.lt-us td.lt-pos { color: var(--gold-deep); }
+
+table.data.league-table tr.lt-us:hover { background: rgba(227, 180, 33, 0.14); }
+
+/* The standings are typed in by hand, so when they were last touched is part
+   of reading them. */
+.lt-updated { margin: 0.7rem 0 0; font-size: 0.78rem; }
+
+/* Shown for a season with nothing entered — one honest line, not a mocked-up
+   table for data that isn't there. */
+.lt-placeholder { margin: 0; }
+
+@media (max-width: 480px) {
+  .league-table .lt-hide-narrow { display: none; }
+
+  /* The club name is what forces the table wider than the columns need —
+  letting it wrap keeps every column on screen without a side-scroll. */
+  .league-table td.lt-club { white-space: normal; max-width: 30vw; }
+}

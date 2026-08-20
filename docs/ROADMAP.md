@@ -16,14 +16,26 @@ page, the tokens, surfaces and stats modules it needs already exist.
 
 ---
 
-## Phase 1 — Split the CSS, change nothing
+## Phase 1 — Split the CSS, change nothing ✅
 
-Break `src/styles.css` (2,654 lines) into the layer structure in `DESIGN.md`,
-carrying the **current values across unchanged**.
+`src/styles.css` (2,654 lines) became `src/styles/` in the layer structure in
+`DESIGN.md`, carrying every value across unchanged.
 
-**Done means:** the site is pixel-identical to before, and every rule lives in
-the layer it belongs to. Any rule that can't be placed gets a comment saying
-why.
+Verified pixel-identical three ways rather than by eye:
+
+- **Rule inventory.** 1,752 declarations before, 1,752 after, none lost, none
+  gained.
+- **Cascade.** Splitting a file reorders rules, so all 14,111 pairs that share
+  a property and changed relative order were checked. Every one is decided by
+  specificity, carries the same value either way, or targets elements that can
+  never be the same node. Zero could change a resolved value.
+- **Rendering.** A fixture holding every component's real markup, rendered
+  under the old and new bundles at 11 breakpoints: 566 elements × every
+  computed property × 11 widths = 2,621,146 comparisons, zero differences.
+
+Three dead rules turned up and were left in place with a comment, since this
+phase only moves things: `.grid.leaders` (replaced by `.grid.boards`),
+`.chart-split` and `.chart-body.auto`. Phases 3 and 7 remove them.
 
 Doing this before the token swap means Phase 2 is a small diff in one file
 instead of a 2,600-line rewrite where visual and structural changes are

@@ -320,18 +320,30 @@ The design target, not a fallback. Every change gets checked at 375px first.
 
 ## CSS structure
 
-`styles.css` is 2,654 lines in one file, with primitives and page-specific
-one-offs interleaved and no ordering principle. Split into layers, loaded in
-this order:
+The single 2,654-line `styles.css` is gone. Layers load in this order, set by
+`styles/index.css`, and the order is load-bearing — a later layer may override
+an earlier one, never the reverse:
 
 ```
 styles/
+  index.css         the import list. The only place load order is decided
   tokens.css        custom properties only. No selectors
-  base.css          reset, element defaults, type scale
-  primitives.css    .sheet .board .plate .label .btn .table .grid .tag
+  base.css          reset and element defaults — bare tags, no classes
+  layout.css        the frame: masthead, nav, main column, footer, tab bar
+  primitives.css    the shared vocabulary
   components/       one file per shared component
-  pages/            one file per page. The last resort
+  pages/            one file per route. The last resort, and the smallest
+  admin.css         the write side, loaded last
 ```
+
+A rule earns a place in `primitives.css` by being wanted in three or more
+places. Two rules of thumb that follow from it:
+
+- A variant scoped by a page's own class still belongs with the primitive it
+  modifies, not with the page — `.scoreboard .venue-badge` lives next to
+  `.venue-badge`.
+- A file under `pages/` growing past ~80 lines means something in it should
+  have been a primitive.
 
 **The rule that keeps it from growing back:** before writing a new class, check
 `primitives.css`. If three pages need the same thing, it's a primitive, not a

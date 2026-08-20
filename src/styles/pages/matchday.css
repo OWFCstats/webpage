@@ -1,0 +1,229 @@
+/* Matchday: the scoreboard, the archive stepper, and the per-match cards. */
+
+/* score display */
+.scoreline {
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.match-hero {
+  background: var(--black);
+  color: #f3f0e6;
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  border-bottom: 3px solid var(--gold);
+}
+
+.match-hero h1 { color: #fff; }
+
+.match-hero .muted { color: #a5a297; }
+
+.report-body {
+  max-width: 720px;
+  font-size: 0.97rem;
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+
+/* ---- matchday: archive stepper + jump strip ---- */
+.matchday-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin: 1rem 0 0.9rem;
+}
+
+.matchday-stepper .nav {
+  flex: none;
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.matchday-stepper .nav.disabled {
+  color: var(--ink-soft);
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.matchday-stepper .count {
+  flex: 1;
+  text-align: center;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+
+.jump-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.form-next {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.form-next .next-up { text-align: right; }
+
+.form-next .next-up strong { display: block; }
+
+.form-next .next-up .muted { font-size: 0.82rem; }
+
+/* ---- match centre ---- */
+.scoreboard {
+  background: var(--black);
+  color: #f3f0e6;
+  border-radius: var(--radius);
+  border-bottom: 3px solid var(--gold);
+  overflow: hidden;
+}
+
+.sb-top {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 1rem;
+  align-items: center;
+  padding: 1.4rem 1.5rem 1.2rem;
+}
+
+.sb-side { text-align: center; }
+
+.sb-side .badge {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  margin: 0 auto 0.45rem;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 1rem;
+}
+
+.sb-side.us .badge { background: var(--gold); color: var(--black); }
+
+.sb-side.them .badge { background: #2a2d34; color: #cfccc2; }
+
+.sb-side .team { display: block; font-weight: 800; color: #fff; line-height: 1.2; }
+
+.sb-side .sub { display: block; font-size: 0.75rem; color: #8e8b83; margin-top: 0.15rem; }
+
+.sb-mid { text-align: center; }
+
+.sb-mid .score {
+  display: block;
+  font-size: 3rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: #fff;
+}
+
+.sb-mid .score.upcoming { color: #8e8b83; }
+
+.sb-mid .state {
+  display: block;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #8e8b83;
+  margin-top: 0.4rem;
+}
+
+.sb-strip {
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 0.7rem 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.4rem;
+  font-size: 0.85rem;
+  color: #b4b1a8;
+}
+
+.sb-strip strong { color: #fff; }
+
+/* One or two cards depending on whether a "how it compares" average exists,
+   so a lone card has to fill the row instead of leaving a hole. */
+.grid.match-cards { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+
+.motm-feature { display: flex; align-items: center; gap: 0.9rem; }
+
+.motm-feature .avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--black);
+  color: var(--gold);
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 1rem;
+  flex: none;
+}
+
+.motm-name { font-size: 1.2rem; font-weight: 800; display: block; }
+
+.motm-line { display: block; font-size: 0.85rem; margin-top: 0.15rem; }
+
+.boot-line { margin: 0.8rem 0 0; padding-top: 0.7rem; border-top: 1px solid var(--line); font-size: 0.82rem; }
+
+.prior-meeting { margin-right: 0.8rem; font-weight: 700; }
+
+.squad-pills { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+
+.squad-pill {
+  font-size: 0.84rem;
+  font-weight: 600;
+  background: #f1efe7;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.22rem 0.7rem;
+}
+
+.squad-pill.scored { background: var(--black); border-color: var(--black); color: #fff; }
+
+.squad-pill.motm { background: var(--gold); border-color: var(--gold); color: var(--black); font-weight: 800; }
+
+.squad-pill em {
+  font-style: normal;
+  opacity: 0.65;
+  font-size: 0.72rem;
+  margin-left: 0.3rem;
+}
+
+.squad-pill em.card-mark { color: var(--orange); opacity: 1; }
+
+.squad-pill.scored em.card-mark, .squad-pill.motm em.card-mark { color: inherit; }
+
+.squad-pill.as-button { cursor: pointer; font: inherit; font-size: 0.84rem; font-weight: 600; }
+
+.squad-pill.as-button:hover { filter: none; border-color: var(--gold); }
+
+@media (max-width: 700px) {
+  /* The top nav is Admin/Log in only at this width — all five sections live
+  in the bottom bar — so keep the strip minimal. */
+  .sb-top { grid-template-columns: 1fr; gap: 0.7rem; padding: 1.1rem 1rem 1rem; }
+
+  .sb-mid { order: -1; }
+
+  .sb-side { display: flex; align-items: center; gap: 0.6rem; text-align: left; }
+
+  .sb-side .badge { margin: 0; width: 36px; height: 36px; font-size: 0.78rem; }
+
+  .sb-side .sub { margin-top: 0; }
+
+  .sb-mid .score { font-size: 2.5rem; }
+
+  .grid.match-cards { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 700px) {
+  .form-next .next-up { text-align: left; }
+}

@@ -1,0 +1,200 @@
+/* The frame every page sits inside: masthead, brand, nav, the main column,
+   the footer, and the phone tab bar. Nothing here knows which route is open.
+
+   Section navigation lives in the bottom tab bar below 700px and in the
+   header above it — the two never both show the same links. */
+
+/* ---- layout ---- */
+.site-header {
+  background: var(--black);
+  color: #f3f0e6;
+  border-bottom: 3px solid var(--gold);
+}
+
+.site-header .inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0.9rem 1.6rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin-right: auto;
+}
+
+.brand img,
+.brand .crest-fallback {
+  height: 52px;
+  width: 52px;
+  object-fit: contain;
+}
+
+.crest-fallback {
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--gold);
+  color: var(--black);
+  font-weight: 800;
+  font-size: 0.8rem;
+}
+
+.brand .name {
+  font-weight: 800;
+  font-size: 1.25rem;
+  letter-spacing: -0.01em;
+  color: #fff;
+}
+
+.brand .sub {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+nav.main-nav {
+  display: flex;
+  gap: 0.2rem;
+  flex-wrap: wrap;
+}
+
+nav.main-nav a {
+  padding: 0.5rem 0.85rem;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #cfccc2;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+nav.main-nav a:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+nav.main-nav a.active {
+  color: var(--gold);
+  background: rgba(227, 180, 33, 0.12);
+}
+
+main.page {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2.2rem 1.6rem 3.5rem;
+  animation: page-in 0.25s ease both;
+}
+
+@keyframes page-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  main.page { animation: none; }
+}
+
+.site-footer {
+  border-top: 1px solid var(--line);
+  color: var(--ink-soft);
+  font-size: 0.8rem;
+  text-align: center;
+  padding: 1.2rem;
+}
+
+@media (max-width: 700px) {
+  .site-header .inner {
+    padding: 0.6rem 1rem;
+    gap: 0.5rem;
+    flex-wrap: nowrap;
+  }
+
+  /* Let a long club name wrap rather than push the header wider than the
+  viewport on narrow phones. */
+  .brand { min-width: 0; }
+
+  .brand img,
+  .brand .crest-fallback {
+    height: 38px;
+    width: 38px;
+  }
+
+  .brand .name { font-size: 1.05rem; }
+
+  .brand .sub { font-size: 0.6rem; }
+
+  /* The five sections live in the bottom tab bar here — only Admin / Log in
+  stays in the header, and it must never be hidden. */
+  nav.main-nav a.section-link { display: none; }
+
+  nav.main-nav {
+    flex: none;
+    flex-wrap: nowrap;
+  }
+
+  nav.main-nav a {
+    white-space: nowrap;
+    font-size: 0.88rem;
+    padding: 0.4rem 0.7rem;
+  }
+
+  /* Extra bottom room so the sticky tab bar never covers the last card. */
+  main.page { padding: 1.4rem 1rem 4.5rem; }
+}
+
+/* ---- bottom tab bar (phones only) ---- */
+.tab-bar { display: none; }
+
+@media (max-width: 700px) {
+  .tab-bar {
+    position: sticky;
+    bottom: 0;
+    z-index: 40;
+    display: grid;
+    /* Five tabs now Home leads the set — tighter type so "Matchday" still
+       fits on one line at 320px. */
+    grid-template-columns: repeat(5, 1fr);
+    background: var(--black);
+    border-top: 2px solid var(--gold);
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+
+  /* 44px minimum touch target, bought with padding rather than a bigger
+  icon or label so the bar keeps its light look. */
+  .tab-bar a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0.5rem 0.1rem 0.55rem;
+    text-align: center;
+    color: #8e8b83;
+    font-size: 0.58rem;
+    line-height: 1.3;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  .tab-bar a.active { color: var(--gold); }
+
+  .tab-bar svg {
+    display: block;
+    width: 19px;
+    height: 19px;
+    margin: 0 auto 2px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+}

@@ -1,0 +1,396 @@
+/* A player's own page: the hero, milestone strip, firsts, form, ranks,
+   teammates and per-season breakdown.
+
+   The milestone strip (.ms-*) comes out in Phase 5 — "3 to go" belongs on
+   the badge plate instead. */
+
+/* ---- player pages ------------------------------------------------------ */
+
+/* Career totals in the same dark band the Match Centre scoreboard uses, so a
+   player page opens like an occasion rather than a report. */
+.player-hero {
+  background: var(--black);
+  border-radius: var(--radius);
+  padding: 1.3rem 1.4rem;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+}
+
+.player-hero .crest {
+  width: 62px;
+  height: 62px;
+  flex: none;
+  border-radius: 12px;
+  background: var(--gold);
+  color: var(--black);
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 1.35rem;
+  letter-spacing: -0.02em;
+}
+
+.player-hero .who { flex: 1 1 240px; min-width: 0; }
+
+.player-hero .who h1 {
+  color: #fff;
+  font-size: 1.72rem;
+  margin: 0;
+}
+
+.player-hero .who h1::after { display: none; }
+
+.player-hero .who .sub {
+  color: #96938a;
+  font-size: 0.83rem;
+  margin-top: 0.25rem;
+  display: flex;
+  gap: 0.45rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.player-hero .career-line {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.player-hero .career-line > div { text-align: center; }
+
+.player-hero .career-line .v {
+  display: block;
+  color: #fff;
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.player-hero .career-line .k {
+  display: block;
+  color: #8e8b83;
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+  margin-top: 0.32rem;
+}
+
+.player-views { margin-top: 1.1rem; }
+
+/* ---- milestone watch ---- */
+
+/* minmax is small enough that a phone still gets two bars per row — five
+   full-width bars pushed the rest of the page off the first two screens. */
+.ms-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(158px, 1fr));
+  gap: 0.7rem;
+}
+
+.ms {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.75rem 0.85rem;
+}
+
+/* The closest milestone leads the row and is the only one that gets colour. */
+.ms.lead { border-color: var(--gold); background: #fffdf5; }
+
+.ms-line { font-size: 0.92rem; font-weight: 600; }
+
+.ms-line strong { color: var(--gold-deep); font-weight: 800; }
+
+.ms-track {
+  height: 5px;
+  background: #eceadf;
+  border-radius: 3px;
+  margin-top: 0.55rem;
+  overflow: hidden;
+}
+
+.ms-fill {
+  display: block;
+  height: 100%;
+  background: var(--gold);
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ms-fill { transition: none; }
+}
+
+.ms-foot {
+  font-size: 0.73rem;
+  color: var(--ink-soft);
+  margin-top: 0.35rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- firsts & bests ---- */
+.grid.player-split { grid-template-columns: 1.3fr 1fr; align-items: start; }
+
+/* Not .cols-3: those collapse to two-up on phones, which is right for stat
+   tiles and far too narrow for cards carrying lists and result badges. */
+.grid.player-cards { grid-template-columns: repeat(3, 1fr); align-items: start; }
+
+/* Grid items default to min-width:auto, so a wide table inside one pushes the
+   whole track past the viewport and .table-wrap's overflow never engages. */
+.grid.player-split > *,
+.grid.player-cards > * { min-width: 0; }
+
+@media (max-width: 900px) {
+  .grid.player-cards { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 640px) {
+  .grid.player-cards { grid-template-columns: 1fr; }
+}
+
+table.data.firsts td { vertical-align: top; }
+
+table.data.firsts td:first-child { white-space: nowrap; }
+
+table.data.firsts td:nth-child(2) { white-space: nowrap; color: var(--ink-soft); }
+
+table.data.firsts tbody tr:hover { background: transparent; }
+
+.card-foot { font-size: 0.82rem; margin: 0.7rem 0 0; }
+
+/* ---- personal form ---- */
+.form-games { display: flex; gap: 0.45rem; flex-wrap: wrap; }
+
+.fg {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.42rem 0.5rem;
+  text-align: center;
+  background: var(--card);
+  min-width: 64px;
+  max-width: 92px;
+}
+
+.fg:hover { border-color: var(--gold); }
+
+.fg-op {
+  display: block;
+  font-size: 0.67rem;
+  color: var(--ink-soft);
+  margin-top: 0.3rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fg-mine {
+  display: block;
+  font-size: 0.73rem;
+  font-weight: 800;
+  margin-top: 0.2rem;
+  color: var(--gold-deep);
+}
+
+.fg-mine.blank { color: #c3c0b5; }
+
+/* ---- ranks ---- */
+.rank-list { list-style: none; margin: 0; padding: 0; }
+
+.rank-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.45rem 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 0.87rem;
+}
+
+.rank-list li:last-child { border-bottom: none; }
+
+.rank-pos {
+  font-weight: 800;
+  font-size: 1rem;
+  min-width: 38px;
+  color: var(--black);
+  font-variant-numeric: tabular-nums;
+}
+
+.rank-pos.top { color: var(--gold-deep); }
+
+/* "1st of 10" reads as a placing; the stat's own value sits on the right, so
+   the two numbers can't be mistaken for each other. */
+.rank-den {
+  font-size: 0.7rem;
+  color: var(--ink-soft);
+  white-space: nowrap;
+  margin-left: -0.25rem;
+}
+
+.rank-what { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.rank-val {
+  margin-left: auto;
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: var(--black);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- teammates ---- */
+.mate-list { list-style: none; margin: 0; padding: 0; }
+
+.mate-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.42rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.mate-list li:last-child { border-bottom: none; }
+
+.mate-list .avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  flex: none;
+  background: #efece2;
+  color: var(--ink-soft);
+  display: grid;
+  place-items: center;
+  font-size: 0.68rem;
+  font-weight: 800;
+}
+
+.mate-name { font-size: 0.86rem; font-weight: 700; }
+
+.mate-name:hover { color: var(--gold-deep); }
+
+.mate-count {
+  margin-left: auto;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--black);
+  font-variant-numeric: tabular-nums;
+}
+
+.mate-count em { font-style: normal; font-weight: 600; color: var(--ink-soft); font-size: 0.7rem; }
+
+/* ---- season cards ---- */
+.season-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.8rem;
+}
+
+.season-card {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.75rem 0.85rem;
+  background: var(--card);
+}
+
+.season-card.best { border-color: var(--gold); background: #fffdf5; }
+
+.season-card .sc-year {
+  font-weight: 800;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.season-card .sc-year .tag { font-size: 0.62rem; }
+
+.season-card .sc-row { display: flex; gap: 1rem; margin-top: 0.55rem; }
+
+.season-card .sc-row .v {
+  display: block;
+  font-size: 1.05rem;
+  font-weight: 800;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.season-card .sc-row .k {
+  display: block;
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
+  font-weight: 700;
+  margin-top: 0.24rem;
+}
+
+/* ---- full stats view ---- */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(168px, 1fr));
+  gap: 0.7rem;
+}
+
+.stat-cell {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.7rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.stat-cell .sc-top { display: flex; align-items: baseline; justify-content: space-between; gap: 0.4rem; }
+
+.stat-cell .sc-v {
+  font-size: 1.35rem;
+  font-weight: 800;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-cell .sc-rank { font-size: 0.68rem; font-weight: 800; color: var(--gold-deep); }
+
+.stat-cell .sc-k {
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
+  font-weight: 700;
+}
+
+.stat-cell .spark { display: block; width: 100%; height: 26px; }
+
+.stat-cell .sc-vs {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.66rem;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+
+.stat-cell .sc-bar { flex: 1; height: 4px; background: #eceadf; border-radius: 2px; overflow: hidden; }
+
+.stat-cell .sc-bar i { display: block; height: 100%; }
+
+.more-hint-row { text-align: center; }
+
+@media (max-width: 700px) {
+  .player-hero { gap: 0.9rem; padding: 1.1rem; }
+
+  .player-hero .crest { width: 46px; height: 46px; font-size: 1.05rem; border-radius: 10px; }
+
+  .player-hero .who h1 { font-size: 1.4rem; }
+
+  .player-hero .career-line { gap: 1.1rem; width: 100%; justify-content: space-between; }
+
+  .player-hero .career-line .v { font-size: 1.25rem; }
+
+  .grid.player-split { grid-template-columns: 1fr; }
+
+  .season-card .sc-row { gap: 0.8rem; }
+}

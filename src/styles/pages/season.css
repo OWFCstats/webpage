@@ -1,0 +1,43 @@
+/* Season: the two-column layout that puts the table and results in the main
+   column and the summary in the aside. */
+
+/* ---- flat blocks: a label and a hairline, no card surface of their own —
+   for sections that don't need to read as a distinct bubble, whether they
+   sit on the page background or inside another card. ---- */
+.flat-block {
+  margin-top: 1.8rem;
+}
+
+.flat-block:first-child {
+  margin-top: 0;
+}
+
+.flat-block-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 0.4rem;
+  margin-bottom: 0.9rem;
+}
+
+/* ---- season page: table and results lead the main column, one card
+   carries the at-a-glance summary, most-involved bars and the charts
+   toggle ---- */
+.season-layout {
+  display: grid;
+  gap: 1.8rem;
+  align-items: start;
+}
+
+.season-layout > * { min-width: 0; }
+
+@media (min-width: 900px) {
+  .season-layout { grid-template-columns: minmax(0, 2fr) minmax(300px, 1fr); }
+
+  /* The aside is narrower than the 4-tile grid was designed for, so it
+  always runs two-up here regardless of the page's own breakpoint. */
+  .season-aside .grid.cols-4 { grid-template-columns: repeat(2, 1fr); }
+}
