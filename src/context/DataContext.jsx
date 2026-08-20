@@ -15,6 +15,7 @@ export function DataProvider({ children }) {
     appearances: [],
     teams: [],
     leagueRows: [],
+    seasonAwards: [],
     loading: true,
     error: null,
   });
@@ -30,14 +31,15 @@ export function DataProvider({ children }) {
       return;
     }
     setState((s) => ({ ...s, loading: !hasLoaded.current, error: null }));
-    const [players, matches, appearances, teams, leagueRows] = await Promise.all([
+    const [players, matches, appearances, teams, leagueRows, seasonAwards] = await Promise.all([
       supabase.from('players').select('*').order('name'),
       supabase.from('matches').select('*').order('date', { ascending: false }),
       supabase.from('appearances').select('*'),
       supabase.from('teams').select('*').order('name'),
       supabase.from('league_rows').select('*'),
+      supabase.from('season_awards').select('*'),
     ]);
-    const failed = [players, matches, appearances, teams, leagueRows].find((r) => r.error);
+    const failed = [players, matches, appearances, teams, leagueRows, seasonAwards].find((r) => r.error);
     if (failed) {
       setState((s) => ({ ...s, loading: false, error: failed.error.message }));
       return;
@@ -49,6 +51,7 @@ export function DataProvider({ children }) {
       appearances: appearances.data,
       teams: teams.data,
       leagueRows: leagueRows.data,
+      seasonAwards: seasonAwards.data,
       loading: false,
       error: null,
     });

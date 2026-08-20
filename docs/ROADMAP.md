@@ -193,40 +193,87 @@ this project doesn't have a stats test suite to run instead.
 
 ---
 
-## Phase 5 — Badges and awards *(the signature)*
+## Phase 5 — Badges and awards ✅ *(the signature)*
 
-The core incentive mechanic. Depends on Phases 2–4.
+The plate is built, and it's the only thing in the site that is one: twenty-four
+on the Records badge board, a shelf of them under a player's own hero, nothing
+else.
 
-**Schema** — one migration:
-
-- `season_awards` table: `season`, `award_key`, `player_id`, `note`,
-  `updated_at`. Homes Player of the Season now and any future hand-picked
-  award without another migration.
+**Schema** — one migration, `migration_2026_08_season_awards.sql`. A
+`season_awards` table keyed by `award_key` rather than given a Player of the
+Season column, so the next hand-picked award the club invents needs a row and
+not a migration. It's the second and last thing on this site an admin types in;
+league standings are the other.
 
 **Derived, no schema needed:**
 
-- Tier thresholds (bronze / silver / gold) on the existing career rungs.
-- Repeat-count badges: 5 hat-tricks, 5 MOTMs, and others countable from
-  appearance rows.
-- Rename the derived season awards to the club's names: Golden Boot, Assist
-  King, The Dependable, Most MOTM.
+- A **fixed three-rung ladder** per badge, one metal each — not the rolling
+  round-number rungs the old milestone bars chased, because a badge has to be
+  nameable and "the next multiple of ten" isn't. The thresholds and the
+  reasoning are in `DESIGN.md`; the short version is that they're calibrated
+  against a fourteen-game season so bronze lands in a first season.
+- Three badges no career total can express — hat-tricks, Golden Boots and
+  ever-present seasons — counted off the appearance rows in `plateTotals`.
+- The season awards now carry the club's names: Golden Boot, Assist King, The
+  Dependable, Most MOTM, and Player of the Season leading them.
 
-**UI:**
-
-- Build the plate component (clipped corners, metal tiers, earned / not-yet).
-- Player page: plates directly under the hero — earned first, then the closest
-  two or three unearned.
-- Records: the club plate board, and the season honours board as a ruled gilded
-  table.
-- **Remove** the five milestone progress bars (`MilestoneStrip`,
-  `playerMilestones`, `.ms-*` CSS) and the `.honour` grid they sit above. Both
-  kept their own bordered boxes through Phase 3 rather than adopting `.sheet`,
-  because this phase deletes them.
-- Admin: a Player of the Season field per season, alongside the League tab.
-
-**Done means:** a player opening their own page sees what they've won and what's
+**Done means** a player opening their own page sees what they've won and what's
 within reach in the first screen, and the admin can record Player of the Season
-from a phone.
+from a phone. Both hold, measured rather than eyeballed:
+
+- **The first screen.** At 375×667 the hero ends at 295px and the shelf runs
+  from 357px, three plates across. Owen Gibbons — the most-decorated name in the
+  database with five — gets all five plus the first plate he's chasing above the
+  fold, with the seventh and eighth cut by it. The view selector moved below the
+  shelf to make that true.
+- **The admin.** One block per season in a single sheet with one save, a
+  type-to-search player picker and an optional note. Clearing a season deletes
+  its row, so the board goes back to "not voted yet" rather than keeping a name
+  nobody picked.
+- **Every route at 320 / 360 / 375 / 414 / 700 / 900 / 1400.** Records, a
+  player's overview and full-stats views, a player with no appearances, the
+  awards admin and Home, rendered against a fixture built from the real season
+  import: nothing overflows the viewport, no text computes below 12px, nothing
+  on a board resolves to paper ink or a paper ground, and every plate resolves
+  both of its clip paths.
+- **The metals are distinct**, checked by forcing all three into their earned
+  state rather than waiting for someone to earn a silver: bronze `#a8703f`,
+  silver `#9ca3aa`, gold `#c8952a`, each with its own tinted fill.
+
+**Removed, as scheduled:** `MilestoneStrip`, `playerMilestones`,
+`nextMilestone`, the rung ladder behind them, `HonourGrid`, `clubHallOfFame`,
+the `.ms-*` rules, `components/honours.css` and `.grid.player-split`. The two
+surfaces that kept their own bordered boxes through Phase 3 rather than adopting
+`.sheet` — `.honour` and `.ms` — are both gone, so nothing paper-coloured in the
+site draws a surface by hand any more.
+
+Four judgement calls worth recording, since they're the kind that get
+re-argued:
+
+- **The honours board is not a matrix.** `DESIGN.md` said season down the left,
+  award across. Five awards plus a season is six columns of names and no
+  condensed face fits that at 375px — and hiding columns is ruled out. So the
+  season heads its own block, and above 700px it steps into a left gutter, which
+  gets the printed board's reading order back. `DESIGN.md` now says so.
+- **The mark is always the plain count.** The doc specified `×5` for
+  repeat-count badges. One mark format across every plate is worth more than
+  per-badge phrasing, and "3 Hat-tricks" reads better than "×3 Hat-tricks"
+  anyway. The tier moved onto the plate as a hallmark line instead, which is
+  where the "colour alone never carries the tier" rule needed it.
+- **A plate is never nested.** A plate is a box, so a plate inside a sheet is
+  the box-in-a-box the system rules out. The badge board sits directly on the
+  page, which is also what buys three plates across at 375px instead of two.
+- **`plate.css` is a component file, not a primitive.** The one deliberate
+  exception to a surface being shared vocabulary, and the reason is the
+  exception: keeping the plate with the component that owns it is what stops it
+  becoming a general-purpose fourth surface.
+
+One operational note, because it bites on deploy and not in review: the
+`season_awards` migration has to run in Supabase *before* this lands on `main`.
+`DataContext` loads every table in one `Promise.all` and surfaces the first
+error, so a missing table is a blank site rather than a missing column. That's
+the same shape `league_rows` shipped in, and consistent beats clever here — a
+per-table fallback would hide real errors.
 
 ---
 

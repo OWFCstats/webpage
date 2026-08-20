@@ -3,6 +3,7 @@
 
 import { playedMatches, resultOf, isCleanSheet, seasonsOf, seasonSummary, isPlayed } from './matches';
 import { playerTotals } from './players';
+import { monthYear } from './format';
 
 /**
  * Longest streak of consecutive matches satisfying `ok`, over an oldest-first
@@ -58,12 +59,18 @@ export function clubRecords(matches) {
   };
 }
 
-/** The four awards a season hands out, in the order the honours board reads. */
+/**
+ * The five awards a season hands out, in the order the honours board reads
+ * them. Player of the Season leads because it's the one the players vote on —
+ * and the only one no formula produces, which is why it needs a row in
+ * `season_awards` and an admin to type it in.
+ */
 const SEASON_AWARDS = [
-  { key: 'goals', label: 'Golden boot' },
-  { key: 'appearances', label: 'Most appearances' },
+  { key: 'player-of-the-season', label: 'Player of the Season', voted: true },
+  { key: 'goals', label: 'Golden Boot' },
+  { key: 'assists', label: 'Assist King' },
+  { key: 'appearances', label: 'The Dependable' },
   { key: 'motm', label: 'Most MOTM' },
-  { key: 'assists', label: 'Most assists' },
 ];
 
 /**
@@ -84,12 +91,24 @@ function leadersIn(totals, key) {
 }
 
 /**
- * One row per season, newest first: the summary the season index shows, the
- * competitions played in it, and the four awards. Ties are kept whole — two
- * players on nine goals both won the boot (the same rule playerProfile uses
- * for a player's own Golden Boot honour).
+ * A hand-picked award, shaped like a derived one so the honours board renders
+ * both the same way. No mark: a vote doesn't have a number behind it, and
+ * printing one would imply the arithmetic decided it.
  */
-export function seasonRecords(players, matches, appearances) {
+function votedAward(seasonAwards, playerById, season, key) {
+  const row = seasonAwards.find((r) => r.season === season && r.award_key === key);
+  const player = row ? playerById.get(row.player_id) : null;
+  return { value: null, note: row?.note?.trim() || null, leaders: player ? [player] : [] };
+}
+
+/**
+ * One row per season, newest first: the summary the season index shows, the
+ * competitions played in it, and the five awards. Ties are kept whole on the
+ * derived four — two players on nine goals both won the boot, and the rows
+ * can't say which of them mattered more.
+ */
+export function seasonRecords(players, matches, appearances, seasonAwards = []) {
+  const playerById = new Map(players.map((p) => [p.id, p]));
   return seasonsOf(matches).map((season) => {
     const seasonMatches = matches.filter((m) => m.season === season);
     const totals = playerTotals(players, seasonMatches, appearances);
@@ -99,91 +118,213 @@ export function seasonRecords(players, matches, appearances) {
       competitions: [
         ...new Set(seasonMatches.filter(isPlayed).map((m) => m.competition)),
       ].sort(),
-      awards: SEASON_AWARDS.map((a) => ({ ...a, ...leadersIn(totals, a.key) })),
+      awards: SEASON_AWARDS.map((a) => ({
+        ...a,
+        ...(a.voted
+          ? votedAward(seasonAwards, playerById, season, a.key)
+          : leadersIn(totals, a.key)),
+      })),
     };
   });
 }
 
-/** The career rungs the club can claim, tight at the bottom so an early club
- *  has something to chase, and long enough to still mean something at 100. */
-const CLUB_BADGES = [
-  { key: 'apps-10', stat: 'appearances', target: 10, name: '10 appearances' },
-  { key: 'apps-25', stat: 'appearances', target: 25, name: '25 appearances' },
-  { key: 'apps-50', stat: 'appearances', target: 50, name: '50 appearances' },
-  { key: 'apps-100', stat: 'appearances', target: 100, name: '100 appearances' },
-  { key: 'goals-5', stat: 'goals', target: 5, name: '5 goals' },
-  { key: 'goals-25', stat: 'goals', target: 25, name: '25 goals' },
-];
+
+// ---------------------------------------------------------------------------
+// Plates — the career badges
+// ---------------------------------------------------------------------------
+
+/** One metal per rung, lowest first. Named on the plate as well as worn by it:
+ *  bronze and gold are close at badge size, so colour never carries the tier
+ *  on its own. */
+const TIERS = ['bronze', 'silver', 'gold'];
 
 /**
- * Club milestone badges — the player honours grid one level up. A badge
- * belongs to the club as soon as anyone reaches it, and carries the name of
- * whoever got there; the rest stay quiet rather than showing a zero. Returned
- * in ladder order, not earned-first: where the gold stops is the story.
+ * The plate ladder. Three rungs per badge, one metal each, and the thresholds
+ * are set against a fourteen-game season: bronze inside a first season for
+ * anyone who keeps turning up, silver in a second, gold a mark that takes a
+ * few years. A ladder whose bottom rung is out of reach is decoration — most
+ * of the squad should already hold something the day this ships.
+ *
+ * The first five read straight off a career total. The last three can't: a
+ * hat-trick, a Golden Boot and an ever-present season are events, counted from
+ * the appearance rows in plateTotals. `one` is the label at a rung of one,
+ * where the plural reads wrong.
  */
-export function clubHallOfFame(players, matches, appearances) {
+const PLATES = [
+  { key: 'appearances', label: 'Appearances', rungs: [5, 15, 30] },
+  { key: 'goals', label: 'Goals', rungs: [3, 10, 25] },
+  { key: 'assists', label: 'Assists', rungs: [3, 10, 25] },
+  { key: 'cleanSheets', label: 'Clean sheets', rungs: [2, 6, 15] },
+  { key: 'motm', label: 'MOTM', rungs: [2, 5, 12] },
+  { key: 'hatTricks', label: 'Hat-tricks', one: 'Hat-trick', rungs: [1, 3, 6] },
+  { key: 'goldenBoots', label: 'Golden Boots', one: 'Golden Boot', rungs: [1, 2, 3], seasonal: true },
+  { key: 'everPresent', label: 'Ever-present', rungs: [1, 2, 3], seasonal: true },
+];
+
+/** How many unearned plates follow the earned ones on a player's shelf. Enough
+ *  to give them something to chase, few enough to stay on the first screen. */
+const CHASING_SHOWN = 3;
+
+/** The parts of a plate that don't depend on who is looking at it. */
+function plateFace(family, rung, tierIndex) {
+  return {
+    key: `${family.key}-${rung}`,
+    tier: TIERS[tierIndex],
+    mark: String(rung),
+    label: rung === 1 && family.one ? family.one : family.label,
+  };
+}
+
+/**
+ * Every plate count for the whole squad, in one pass. The three that no career
+ * total holds are worked out here rather than per player, because a Golden Boot
+ * needs each season's leaders — doing it a player at a time would re-derive
+ * every season once per name in the squad.
+ */
+function plateTotals(players, matches, appearances) {
   const matchById = new Map(matches.map((m) => [m.id, m]));
-  const playerById = new Map(players.map((p) => [p.id, p]));
-  const totals = playerTotals(players, matches, appearances);
+  const rows = new Map(
+    playerTotals(players, matches, appearances).map((r) => [
+      r.player.id,
+      { ...r, hatTricks: 0, goldenBoots: 0, everPresent: 0, bootSeasons: [], everPresentSeasons: [] },
+    ]),
+  );
 
-  // Holders of a career-total badge, biggest total first.
-  const holdersOf = (stat, target) =>
-    totals
-      .filter((r) => r[stat] >= target)
-      .sort((a, b) => b[stat] - a[stat] || a.player.name.localeCompare(b.player.name))
-      .map((r) => r.player);
-
-  const badges = CLUB_BADGES.map((b) => ({
-    key: b.key,
-    name: b.name,
-    holders: holdersOf(b.stat, b.target),
-  }));
-
-  // Three in a game, and every game of a season — the two badges no career
-  // total can express, so both are counted off the appearance rows directly.
-  const hatTrickIds = new Set();
-  const mineBySeason = new Map();
-  for (const a of appearances) {
-    const match = matchById.get(a.match_id);
-    if (a.dropout || !match || !isPlayed(match)) continue;
-    if (a.goals >= 3) hatTrickIds.add(a.player_id);
-    if (!mineBySeason.has(a.player_id)) mineBySeason.set(a.player_id, new Map());
-    const seasons = mineBySeason.get(a.player_id);
-    seasons.set(match.season, (seasons.get(match.season) ?? 0) + 1);
-  }
+  // Games the club actually played per season — the denominator for an
+  // ever-present season, and the reason it can only be counted off the rows.
   const clubGames = new Map();
   for (const m of matches) {
     if (!isPlayed(m)) continue;
     clubGames.set(m.season, (clubGames.get(m.season) ?? 0) + 1);
   }
-  const byName = (a, b) => a.name.localeCompare(b.name);
-  const named = (ids) => ids.map((id) => playerById.get(id)).filter(Boolean).sort(byName);
 
-  badges.push(
-    { key: 'hat-trick', name: 'Hat-trick', holders: named([...hatTrickIds]) },
-    {
-      key: 'ever-present',
-      name: 'Ever-present season',
-      holders: named(
-        [...mineBySeason.entries()]
-          .filter(([, seasons]) =>
-            [...seasons.entries()].some(([s, n]) => n === clubGames.get(s)))
-          .map(([id]) => id),
-      ),
-    },
+  const mineBySeason = new Map();
+  for (const a of appearances) {
+    const match = matchById.get(a.match_id);
+    const row = rows.get(a.player_id);
+    if (!row || a.dropout || !match || !isPlayed(match)) continue;
+    if (a.goals >= 3) row.hatTricks += 1;
+    if (!mineBySeason.has(a.player_id)) mineBySeason.set(a.player_id, new Map());
+    const seasons = mineBySeason.get(a.player_id);
+    seasons.set(match.season, (seasons.get(match.season) ?? 0) + 1);
+  }
+  for (const [id, seasons] of mineBySeason) {
+    const row = rows.get(id);
+    row.everPresentSeasons = [...seasons.entries()]
+      .filter(([season, n]) => n === clubGames.get(season))
+      .map(([season]) => season)
+      .sort();
+    row.everPresent = row.everPresentSeasons.length;
+  }
+
+  // Golden Boot: top scorer in a season, ties kept whole — the same rule the
+  // honours board uses, so a shared boot is a plate for both of them.
+  for (const season of seasonsOf(matches)) {
+    const totals = playerTotals(players, matches.filter((m) => m.season === season), appearances);
+    const best = Math.max(0, ...totals.map((r) => r.goals));
+    if (best === 0) continue;
+    for (const r of totals) {
+      if (r.goals !== best) continue;
+      const row = rows.get(r.player.id);
+      row.bootSeasons.push(season);
+      row.goldenBoots += 1;
+    }
+  }
+  for (const row of rows.values()) row.bootSeasons.sort();
+
+  return [...rows.values()];
+}
+
+/**
+ * One player's shelf: the best metal they hold in each badge, then the plates
+ * closest to falling. Earned ones carry when they landed, the rest what's left
+ * to go — a badge you can't see is not an incentive, so an unearned plate is
+ * present and named rather than hidden.
+ */
+export function playerPlates(player, players, matches, appearances) {
+  const mine = plateTotals(players, matches, appearances).find((r) => r.player.id === player.id);
+  if (!mine) return [];
+
+  // When each rung fell, so an earned plate can carry its own month. A career
+  // total says what a player has, never when they got there, so this walks
+  // their own games forwards. The two seasonal badges are dated by the season
+  // they were won in instead, which is the more useful answer anyway.
+  const matchById = new Map(matches.map((m) => [m.id, m]));
+  const chrono = appearances
+    .filter((a) => a.player_id === player.id && !a.dropout)
+    .map((a) => ({ app: a, match: matchById.get(a.match_id) }))
+    .filter((r) => r.match && isPlayed(r.match))
+    .sort((a, b) => (a.match.date < b.match.date ? -1 : 1));
+
+  const when = new Map();
+  const running = { appearances: 0, goals: 0, assists: 0, cleanSheets: 0, motm: 0, hatTricks: 0 };
+  for (const { app, match } of chrono) {
+    running.appearances += 1;
+    running.goals += app.goals;
+    running.assists += app.assists;
+    if (app.motm) running.motm += 1;
+    if (app.goals >= 3) running.hatTricks += 1;
+    if (isCleanSheet(match)) running.cleanSheets += 1;
+    for (const family of PLATES) {
+      if (family.seasonal) continue;
+      for (const rung of family.rungs) {
+        const id = `${family.key}:${rung}`;
+        if (running[family.key] >= rung && !when.has(id)) when.set(id, match.date);
+      }
+    }
+  }
+
+  const earned = [];
+  const chasing = [];
+  for (const family of PLATES) {
+    const have = mine[family.key];
+    const seasons = family.key === 'goldenBoots' ? mine.bootSeasons
+      : family.key === 'everPresent' ? mine.everPresentSeasons
+        : null;
+    const ladder = family.rungs.map((rung, i) => ({
+      ...plateFace(family, rung, i),
+      earned: have >= rung,
+      note: have >= rung
+        ? (seasons ? seasons[rung - 1] : monthYear(when.get(`${family.key}:${rung}`)))
+        : `${rung - have} to go`,
+      progress: Math.min(1, have / rung),
+    }));
+    const held = ladder.filter((p) => p.earned);
+    if (held.length > 0) earned.push(held[held.length - 1]);
+    const open = ladder.find((p) => !p.earned);
+    if (open) chasing.push(open);
+  }
+
+  // Best metal first, so the plate a player is proudest of leads the shelf;
+  // then the closest few they haven't got. Sorting is stable, so plates level
+  // on tier or on progress keep the ladder's own order.
+  earned.sort((a, b) => TIERS.indexOf(b.tier) - TIERS.indexOf(a.tier));
+  chasing.sort((a, b) => b.progress - a.progress);
+  return [...earned, ...chasing.slice(0, CHASING_SHOWN)];
+}
+
+/**
+ * The club plate board: every plate in the system and who holds it. A plate
+ * belongs to the club as soon as anyone reaches it and carries their name; the
+ * rest say plainly that they're still there to be taken. Ladder order, not
+ * earned-first — where the gold stops is the story.
+ */
+export function clubPlates(players, matches, appearances) {
+  const rows = plateTotals(players, matches, appearances);
+  return PLATES.flatMap((family) =>
+    family.rungs.map((rung, i) => {
+      const holders = rows
+        .filter((r) => r[family.key] >= rung)
+        .sort((a, b) => b[family.key] - a[family.key] || a.player.name.localeCompare(b.player.name))
+        .map((r) => r.player);
+      return {
+        ...plateFace(family, rung, i),
+        earned: holders.length > 0,
+        note:
+          holders.length === 0 ? 'Nobody yet'
+            : holders.length === 1 ? holders[0].name
+              : `${holders[0].name} +${holders.length - 1}`,
+      };
+    }),
   );
-
-  // The shape the honours grid renders: earned badges name a holder, the rest
-  // say plainly that the badge is still there to be taken.
-  return badges.map((b) => ({
-    key: b.key,
-    name: b.name,
-    earned: b.holders.length > 0,
-    detail:
-      b.holders.length === 0
-        ? 'Nobody yet'
-        : b.holders.length === 1
-          ? b.holders[0].name
-          : `${b.holders[0].name} +${b.holders.length - 1}`,
-  }));
 }

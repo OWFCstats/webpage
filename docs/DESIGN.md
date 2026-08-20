@@ -34,8 +34,9 @@ exists to fix each one. All four are done.
 | One `.card` class on all ~40 surfaces equally, whatever the section is | Two surfaces with a rule about when each is used, and a third for badges | done |
 
 `.card` is gone. Fifty call sites are `.sheet` and five are `.board`, and the
-judgement that split them is the rule under *Surfaces* below. The plate is real
-but unbuilt: it is badges only, and Phase 5 builds the badges.
+judgement that split them is the rule under *Surfaces* below. The plate is the
+third, and it is built: twenty-four of them on Records, a player's own shelf
+under their hero, and nothing else in the site is one.
 
 One invariant is worth keeping, because it is what stops a fourth surface
 arriving by accident: **no class whose name contains `card` draws a surface.**
@@ -127,7 +128,8 @@ Badge tiers. See *Badges* below.
 ```
 
 **Silver fails contrast as text** (2.4:1 on paper). Metals are fills, borders
-and engraved marks. Text on a plate is always `--ink` or `--on-board`.
+and engraved marks. Every word on a plate — the tier included — is `--ink` or
+`--ink-soft`, never the metal it names.
 
 ### Chart series
 
@@ -265,15 +267,32 @@ that has to be seen.
 
 A sheet is also how any paper surface is drawn, not just the ones that used to
 be cards. `.season-card` and `.stat-cell` each hand-rolled the same ground,
-border and radius; both now carry `.sheet` and set only their own padding. Two
-things deliberately still draw their own box — `.honour` and `.ms` — because
-Phase 5 deletes them, and adopting a surface on the way to being demolished is
-wasted motion. `.home-stat-tile` isn't one either, and that one is permanent:
-it uses `--sheet`, the recessed ground, because it sits *inside* a surface.
+border and radius; both now carry `.sheet` and set only their own padding. The
+two that were still drawing their own box on the way to being deleted —
+`.honour` and `.ms` — are gone with the badge rebuild, so nothing paper-coloured
+in the site draws a surface by hand any more. `.home-stat-tile` is the one
+exception and it is permanent: it uses `--sheet`, the recessed ground, because
+it sits *inside* a surface.
 
 ### Plate — metal
 
-Badges and awards only. Never anything else. See below.
+Badges and awards only. Never anything else. The shape and the tiers are under
+*Badges* below; three things about it as a surface:
+
+- **It is never nested.** A plate is a box, so a plate inside a sheet is the
+  box-in-a-box this system rules out — and on a dark ground it would break
+  contrast as well. A shelf of plates sits directly on the page, which is also
+  what buys three across on a 375px phone instead of two.
+- **The shape is two elements, not one.** The outer element is the metal edge,
+  the face sits an edge-width inside it, and both carry the clip. One element
+  can't do both, because a border follows the border box and the clipped
+  corners cut straight through it. The face's corners are cut by the edge width
+  less than the plate's, which keeps the two diagonals parallel.
+- **It lives in `components/plate.css`, not `primitives.css`.** That is the one
+  deliberate exception to surfaces being shared vocabulary, and it is the point:
+  keeping the plate with the component that owns it is what stops it being
+  reached for as a general-purpose fourth surface. If something that isn't a
+  badge wants one, the answer is a sheet.
 
 ### Rules and radius
 
@@ -323,60 +342,109 @@ the whole language.
 
 ```
 ┌──────────────┐        ┌──────────────┐
-│      50      │        │      25      │
-│ APPEARANCES  │        │    GOALS     │
-│  Mar 2026    │        │  3 to go     │
+│    BRONZE    │        │    SILVER    │
+│      5       │        │      15      │
+│ Appearances  │        │ Appearances  │
+│   Nov 2025   │        │   6 to go    │
  \____________/          \____________/
     earned                  not yet
 ```
 
-- **Earned**: metal border and a tinted fill, the mark in Fraunces at
-  `--t-headline`, the month earned beneath.
-- **Not earned**: `--rule` border, paper fill, mark in `--ink-faint`, and
-  "*n* to go". Present and named, visibly not yours. A badge you can't see is
-  not an incentive.
-- **Tier** by threshold: bronze for the first rung, silver for the middle,
-  gold for the top. Because bronze and gold are close at small sizes, the tier
-  is also named in the plate's label — colour alone never carries it.
+Four lines, and each one answers a different question:
+
+- **The tier**, in `.label` — the site's one uppercase style, so a plate needs
+  no type of its own. It's a hallmark stamped on metal. It is here because
+  bronze and gold are close at 100px and colour alone must never carry the
+  tier.
+- **The mark**: the rung itself, Fraunces at `--t-headline`, tabular. Always the
+  plain count — `5`, not `×5`, even on the repeat badges. One mark format across
+  every plate is worth more than per-badge phrasing, and "×3 Hat-tricks" reads
+  worse than "3 Hat-tricks" anyway.
+- **The category**, mixed case in the text face. Not caps: the tier above it
+  already has the uppercase, and two lines of the same shape mean neither reads
+  first. Singular at a rung of one — "1 Hat-trick", not "1 Hat-tricks".
+- **The note**: the month it landed, or "*n* to go".
+
+Earned takes a 2px metal edge and a fill tinted off that metal. Not earned takes
+a 1px `--rule` edge, a paper fill and the mark in `--ink-faint` — present and
+named, visibly not yours. A badge you can't see is not an incentive.
+
+**The ladder is fixed, three rungs per badge, one metal each.** Not the rolling
+round-number rungs a career total used to chase: a badge has to be nameable, and
+"the next multiple of ten" isn't.
+
+| Badge | Bronze | Silver | Gold |
+| --- | --- | --- | --- |
+| Appearances | 5 | 15 | 30 |
+| Goals | 3 | 10 | 25 |
+| Assists | 3 | 10 | 25 |
+| Clean sheets | 2 | 6 | 15 |
+| MOTM | 2 | 5 | 12 |
+| Hat-tricks | 1 | 3 | 6 |
+| Golden Boots | 1 | 2 | 3 |
+| Ever-present | 1 | 2 | 3 |
+
+The numbers are set against a fourteen-game season: bronze inside a first
+season for anyone who keeps turning up, silver in a second, gold a mark that
+takes years. That calibration is the whole point — a ladder whose bottom rung is
+out of reach is decoration. On the season already in the database, fifteen of
+the fifty-three names hold at least one plate and nobody holds a silver — which
+is what a first season should look like.
+
+The last three can't be read off a career total. A hat-trick, a Golden Boot and
+an ever-present season are events, so they're counted off the appearance rows —
+still derived, still no schema change.
 
 Where they appear:
 
-- **A player's own page**: directly under the hero, above everything else.
-  Earned plates first, then the two or three closest to falling. This is the
-  first thing a player sees about themselves.
-- **Records**: the club board — every plate the club has, with holders' names.
-
-Repeat-count badges (5 hat-tricks, 5 MOTMs) use the same plate with a `×5`
-mark. They're derivable from existing appearance rows — no schema change.
-
-Until then `components/honours.css` draws the badge grid as its own bordered
-box rather than as a sheet. That is deliberate: Phase 5 replaces it, and a
-surface adopted on the way to being deleted is churn.
+- **A player's own page**: directly under the hero, above the view selector and
+  everything else. The best metal they hold in each badge first, then the three
+  closest to falling, ranked on how far through the rung they are. At 375px that
+  puts what they've won and the first thing within reach on the first screen.
+- **Records**: the club badge board — all twenty-four, in ladder order rather
+  than earned-first, because where the gold stops is the story. Each names
+  whoever is furthest past it, or says "Nobody yet".
 
 ### 2. Season awards — the honours board
 
 Singular, one per season, so they belong in a chronological ruled list, not a
-grid. A board-surfaced table: season down the left, award across, name in gold.
-This is the school-hall honours board, and it reads as one because it's ruled
-and gilded rather than boxed.
+grid. A `.board` surface: one block per season, newest first, the award as a
+caption on the left and the name in gold at the right-hand edge, with an
+engraved hairline under each and a firmer one between seasons. The rules are
+what make it read as a board rather than as a table that lost its borders.
 
 | Award | Source |
 | --- | --- |
+| **Player of the Season** | **voted by the players, entered by an admin** |
 | Golden Boot | most goals — derived |
 | Assist King | most assists — derived |
 | The Dependable | most appearances — derived |
 | Most MOTM | most MOTM awards — derived |
-| **Player of the Season** | **voted by the players, entered by an admin** |
 
-Player of the Season is the only award a formula can't produce, and inventing
-one would be arbitrary and argued with. It needs a `season_awards` table and an
-admin field — see `docs/ROADMAP.md`.
+Player of the Season leads, and the hairline under it is gold rather than the
+board's own grey: it separates the one name the players chose from the four the
+arithmetic did. It's the only award a formula can't produce — inventing one
+would be arbitrary and argued with — so it has a `season_awards` row and an
+admin field.
+
+**Not a matrix, and that's a change from what this doc first said.** Five awards
+plus a season is six columns of names, and no condensed face fits that on a
+375px phone; hiding columns is ruled out under *Mobile*. So the season heads its
+own block instead of holding a column. Above 700px it steps out into a left
+gutter, which puts the reading order back where a printed board has it — season
+down the left, awards across.
+
+A derived award keeps ties whole: two players level at the top both won it, and
+the rows can't say which of them mattered more. A voted award carries no mark,
+because printing one would imply the arithmetic decided it.
 
 ### 3. Live progress — removed
 
-The milestone progress bars come out. Five bars on a player's page pushed the
-things worth looking at below the fold, and "8 to go" already lives on the
-unearned plate, which is a better place for it.
+The milestone progress bars are gone, along with `MilestoneStrip`,
+`playerMilestones`, `nextMilestone` and the `.ms-*` rules. Five bars on a
+player's page pushed the things worth looking at below the fold, and "8 to go"
+lives on the unearned plate, which is a better place for it: a bar says how far
+along you are, a plate says what you get.
 
 ## Charts
 
@@ -453,6 +521,10 @@ styles/
   pages/            one file per route. The last resort, and the smallest
   admin.css         the write side, loaded last
 ```
+
+One file under `components/` is a surface rather than a component style, and
+that is deliberate: `plate.css` holds the third surface because keeping it with
+its component is what stops it spreading. See *Plate* above.
 
 `tokens.css` carries one media query, and it is the only selector allowed to
 join `:root` there: `--t-display` and `--t-headline` drop a step on a phone,

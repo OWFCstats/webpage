@@ -50,14 +50,14 @@ export function formatDateTime(iso) {
   });
 }
 
-/** "Feb 2025" — for honour badges, where a full date doesn't fit. */
+/** "Feb 2025" — for a badge plate, where a full date doesn’t fit. */
 export function monthYear(iso) {
   if (!iso) return '';
   const d = new Date(`${iso}T00:00:00`);
   return d.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' });
 }
 
-/** "1 goal" / "3 goals" — milestone copy reads as a sentence, so it has to agree. */
+/** "1 goal" / "3 goals" — the copy reads as a sentence, so it has to agree. */
 export function plural(n, one, many) {
   return `${n} ${n === 1 ? one : many}`;
 }

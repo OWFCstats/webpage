@@ -1,8 +1,10 @@
 import { useMemo, useState } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { useData } from '../context/DataContext';
-import { ErrorNote, HonourGrid, Spinner, VenueBadge } from '../components/bits';
+import { ErrorNote, Spinner, VenueBadge } from '../components/bits';
+import PlateShelf from '../components/Plate';
 import PlayerCareerChart from '../components/PlayerCareerChart';
+import { playerPlates } from '../lib/awards';
 import { formatDate, plural, rate } from '../lib/format';
 import { matchTitle, opponentSlug, resultOf, seasonsOf } from '../lib/matches';
 import { playerProfile } from '../lib/players';
@@ -51,38 +53,6 @@ function Hero({ player, career, seasonsActive }) {
         <div><span className="v">{career.cleanSheets}</span><span className="label">Clean sheets</span></div>
         <div><span className="v">{career.motm}</span><span className="label">MOTM</span></div>
       </div>
-    </div>
-  );
-}
-
-/** Progress bars only — the honours below say what happens when one fills. */
-function MilestoneStrip({ milestones }) {
-  if (milestones.length === 0) return null;
-  return (
-    <div className="section">
-      <h3 className="label ruled">Milestone watch</h3>
-      <div className="ms-strip">
-        {milestones.map((m, i) => (
-          <div key={m.key} className={`ms${i === 0 ? ' lead' : ''}`}>
-            <div className="ms-line">
-              <strong>{m.remaining}</strong> {m.remaining === 1 ? m.one : m.many} from {m.target}
-            </div>
-            <div className="ms-track">
-              <span className="ms-fill" style={{ width: `${Math.round(m.progress * 100)}%` }} />
-            </div>
-            <div className="ms-foot">{m.total} / {m.target}</div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function Honours({ honours }) {
-  return (
-    <div className="sheet">
-      <h3 className="label ruled">Honours</h3>
-      <HonourGrid honours={honours} />
     </div>
   );
 }
@@ -421,6 +391,10 @@ export default function PlayerDetail() {
     () => (player ? playerProfile(player, players, matches, appearances) : null),
     [player, players, matches, appearances],
   );
+  const plates = useMemo(
+    () => (player ? playerPlates(player, players, matches, appearances) : []),
+    [player, players, matches, appearances],
+  );
 
   if (loading) return <Spinner />;
   if (error) return <ErrorNote message={error} />;
@@ -433,7 +407,7 @@ export default function PlayerDetail() {
   }
 
   const {
-    career, log, arc, milestones, honours, firsts, seasons,
+    career, log, arc, firsts, seasons,
     ranks, teammates, favouriteOpponent, form, scoringRun, sinceGoal,
     squadAverage, squadMax, availableGames, seasonsActive,
   } = profile;
@@ -442,6 +416,13 @@ export default function PlayerDetail() {
   return (
     <div>
       <Hero player={player} career={career} seasonsActive={seasonsActive} />
+
+      {/* Plates first, above the view selector and above the stats: what a
+          player has won and what's next is why they opened their own page. */}
+      <div className="section">
+        <h3 className="label ruled">Badges</h3>
+        <PlateShelf plates={plates} />
+      </div>
 
       {played && (
         <div className="player-views">
@@ -473,11 +454,8 @@ export default function PlayerDetail() {
 
       {played && view === 'overview' && (
         <>
-          <MilestoneStrip milestones={milestones} />
-
-          <div className="grid player-split section">
+          <div className="section">
             <FirstsTable firsts={firsts} />
-            <Honours honours={honours} />
           </div>
 
           <div className="section">

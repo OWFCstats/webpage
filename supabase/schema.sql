@@ -85,7 +85,7 @@ create table if not exists public.appearances (
 -- is the one thing the club's own results can't derive -- it needs the other
 -- clubs' games -- so an admin types the published table in each week. Points
 -- and goal difference are not stored: both are derived client-side (see
--- leagueStandings in src/lib/stats.js) like every other stat here.
+-- leagueStandings in src/lib/league.js) like every other stat here.
 create table if not exists public.league_rows (
   id            uuid primary key default gen_random_uuid(),
   season        text not null,
@@ -106,6 +106,24 @@ create table if not exists public.league_rows (
   updated_at    timestamptz not null default now()
 );
 
+-- Hand-picked season awards: the honours board's one column no formula can
+-- produce. Golden Boot, Assist King, The Dependable and Most MOTM are all
+-- derived from our own rows; Player of the Season is voted by the players, so
+-- an admin types it in. Keyed by `award_key` so the next hand-picked award the
+-- club invents needs a row rather than another migration.
+create table if not exists public.season_awards (
+  id         uuid primary key default gen_random_uuid(),
+  season     text not null,
+  -- Which award this row is, e.g. 'player-of-the-season'. The client owns the
+  -- list of keys it renders; an unknown key here is simply not shown.
+  award_key  text not null,
+  player_id  uuid not null references public.players (id) on delete cascade,
+  -- Optional colour: where it was voted, what it was for. Shown under the name.
+  note       text,
+  -- Set explicitly on every save by the admin page; no trigger.
+  updated_at timestamptz not null default now()
+);
+
 create index if not exists appearances_match_id_idx  on public.appearances (match_id);
 create index if not exists appearances_player_id_idx on public.appearances (player_id);
 create index if not exists matches_season_idx        on public.matches (season);
@@ -122,6 +140,12 @@ create unique index if not exists teams_slug_idx        on public.teams (slug);
 create unique index if not exists league_rows_season_team_idx on public.league_rows (season, team_id);
 create index if not exists league_rows_season_idx on public.league_rows (season);
 
+-- One winner per award per season: re-picking replaces the name rather than
+-- forking a second row.
+create unique index if not exists season_awards_season_key_idx
+  on public.season_awards (season, award_key);
+create index if not exists season_awards_season_idx on public.season_awards (season);
+
 -- ---------------------------------------------------------------------------
 -- Row Level Security
 -- Public (anon) visitors: read-only. Logged-in (authenticated) admins: full write.
@@ -132,12 +156,13 @@ alter table public.matches     enable row level security;
 alter table public.appearances enable row level security;
 alter table public.teams       enable row level security;
 alter table public.league_rows enable row level security;
+alter table public.season_awards enable row level security;
 
 do $$
 declare
   t text;
 begin
-  foreach t in array array['players', 'matches', 'appearances', 'teams', 'league_rows'] loop
+  foreach t in array array['players', 'matches', 'appearances', 'teams', 'league_rows', 'season_awards'] loop
     execute format('drop policy if exists "Public read"  on public.%I', t);
     execute format('drop policy if exists "Admin insert" on public.%I', t);
     execute format('drop policy if exists "Admin update" on public.%I', t);
