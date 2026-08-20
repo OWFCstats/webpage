@@ -1,9 +1,6 @@
 /* Chart sheet frame and tooltip for the Recharts plots. The plots themselves
    are styled in JS — see the chart rules in docs/DESIGN.md, and lib/tokens.js
-   for how they read their colours out of tokens.css.
-
-   .chart-split and .chart-body.auto are currently unused; Phase 7 decides
-   whether they come back or come out. */
+   for how they read their colours out of tokens.css. */
 
 .chart-stack {
   display: grid;
@@ -41,14 +38,6 @@
   width: 100%;
   height: 320px;
 }
-
-/* Cards whose panes carry their own heights size to content instead. */
-.chart-body.auto { height: auto; }
-
-/* Two stacked plots sharing one x-axis (running total above, per-match below).
-   Each pane gets an explicit pixel height from the component — Recharts writes
-   its own inline height, so a grid track here would not constrain it. */
-.chart-split { width: 100%; }
 
 /* A tooltip does float above the page, so this is one of the few things that
    keeps a shadow. */
@@ -88,6 +77,15 @@
 }
 
 .recharts-surface:focus { outline: none; }
+
+/* Tabular figures on every axis, same as the tooltip above and every other
+   number on the site. A class selector, not the tick style object passed to
+   Recharts: font-variant-numeric isn't in Recharts' SVG attribute allowlist,
+   so anything but a real stylesheet rule gets silently dropped. */
+.recharts-cartesian-axis-tick text {
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
+}
 
 @media (max-width: 700px) {
   .chart-card { padding: var(--s4) var(--s3); }

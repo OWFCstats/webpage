@@ -4,7 +4,7 @@ import {
   CartesianGrid,
   ComposedChart,
   Label,
-  Legend,
+  LabelList,
   Line,
   ResponsiveContainer,
   Tooltip,
@@ -14,6 +14,7 @@ import {
 import { formatDate } from '../lib/format';
 import { useIsNarrow } from '../lib/useIsNarrow';
 import { fontPx, statColour, token } from '../lib/tokens';
+import ChartEndLabel from './ChartEndLabel';
 
 // The same colours these three stats wear everywhere else, and the frame
 // colours, read out of tokens.css — Recharts puts them in SVG attributes,
@@ -23,7 +24,6 @@ const chartColours = () => ({
   goals: statColour('goals'),
   assists: statColour('assists'),
   grid: token('--rule'),
-  axis: token('--rule-firm'),
   muted: token('--ink-soft'),
   dot: token('--paper'),
 });
@@ -59,7 +59,8 @@ export default function PlayerCareerChart({ arc, career }) {
   const [showTable, setShowTable] = useState(false);
   const narrow = useIsNarrow();
   const c = chartColours();
-  // The 0.75rem floor applies to the axis too, not just to HTML.
+  // The 0.75rem floor applies to the axis too, not just to HTML. Tabular
+  // figures land in charts.css — see the note in SeasonCharts.jsx.
   const tick = { fontSize: fontPx('--t-micro'), fill: c.muted };
   const enough = arc.length >= 2 && career.goalInvolvements > 0;
 
@@ -114,42 +115,59 @@ export default function PlayerCareerChart({ arc, career }) {
       ) : (
         <div className="chart-body">
           <ResponsiveContainer>
-            {/* Deeper bottom margin than the season charts: this one carries an
-                axis label and a three-series legend, which collide at 24. */}
-            <ComposedChart data={arc} margin={{ top: 8, right: narrow ? 12 : 20, bottom: 44, left: 4 }}>
-              <defs>
-                <linearGradient id="arc-ga" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor={c.involvements} stopOpacity={0.22} />
-                  <stop offset="100%" stopColor={c.involvements} stopOpacity={0.02} />
-                </linearGradient>
-              </defs>
+            {/* Right margin leaves room for the end-of-line series labels that
+                replace the legend. */}
+            <ComposedChart data={arc} margin={{ top: 8, right: narrow ? 12 : 64, bottom: 24, left: 4 }}>
               <CartesianGrid stroke={c.grid} vertical={false} />
-              <XAxis dataKey="n" tick={tick} stroke={c.axis} tickLine={false}>
+              <XAxis dataKey="n" tick={tick} axisLine={false} tickLine={false}>
                 <Label value="Appearance" position="insideBottom" offset={-12} style={tick} />
               </XAxis>
-              <YAxis allowDecimals={false} tick={tick} stroke={c.axis} tickLine={false} width={narrow ? 30 : 36} />
+              <YAxis allowDecimals={false} tick={tick} axisLine={false} tickLine={false} width={narrow ? 30 : 36} />
               <Tooltip content={<ArcTooltip />} />
-              <Legend verticalAlign="bottom" iconType="plainline" wrapperStyle={{ fontSize: fontPx('--t-micro'), paddingTop: 20 }} />
+              {/* Linear, not smoothed: each point is a discrete appearance. A flat
+                  low-alpha fill, not a gradient, per the chart rules. */}
               <Area
-                type="monotone"
+                type="linear"
                 dataKey="involvements"
                 name="Goal involvements"
                 stroke={c.involvements}
                 strokeWidth={2.75}
-                fill="url(#arc-ga)"
+                fill={c.involvements}
+                fillOpacity={0.14}
                 dot={false}
                 activeDot={{ r: 5, strokeWidth: 2, stroke: c.dot }}
-              />
+              >
+                {!narrow && (
+                  <LabelList
+                    dataKey="involvements"
+                    content={<ChartEndLabel lastIndex={arc.length - 1} fill={c.involvements} text="G+A" />}
+                  />
+                )}
+              </Area>
               <Line
-                type="monotone" dataKey="goals" name="Goals"
+                type="linear" dataKey="goals" name="Goals"
                 stroke={c.goals} strokeWidth={1.75} strokeOpacity={0.9} dot={false}
                 activeDot={{ r: 4, strokeWidth: 2, stroke: c.dot }}
-              />
+              >
+                {!narrow && (
+                  <LabelList
+                    dataKey="goals"
+                    content={<ChartEndLabel lastIndex={arc.length - 1} fill={c.goals} text="Goals" dy={-8} />}
+                  />
+                )}
+              </Line>
               <Line
-                type="monotone" dataKey="assists" name="Assists"
+                type="linear" dataKey="assists" name="Assists"
                 stroke={c.assists} strokeWidth={1.75} strokeOpacity={0.9} dot={false}
                 activeDot={{ r: 4, strokeWidth: 2, stroke: c.dot }}
-              />
+              >
+                {!narrow && (
+                  <LabelList
+                    dataKey="assists"
+                    content={<ChartEndLabel lastIndex={arc.length - 1} fill={c.assists} text="Assists" dy={8} />}
+                  />
+                )}
+              </Line>
             </ComposedChart>
           </ResponsiveContainer>
         </div>
