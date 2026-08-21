@@ -151,10 +151,11 @@ Two things follow from that, because a token can't be written down twice:
 
 > **Decided, lands in Phase 11.** `tokens.css` still carries the previous
 > values until then, so a component written against the table below will look
-> wrong on `main`. The old values are kept in the roadmap, not here.
+> wrong on `main`. The old values are kept in the roadmap, not here. The token
+> *names* below are unchanged and stay that way — only values move.
 
 ```
---ground       #f1f3ef   page background. Cool off-white, pulled from the brand mint
+--paper        #f1f3ef   page background. Cool off-white, pulled from the brand mint
 --sheet        #e6e9e2   recessed and inset areas, table stripes
 --board        #16281f   dark sections. Racing green
 --board-soft   #1d3227   raised areas inside a dark section
@@ -166,10 +167,17 @@ Two things follow from that, because a token can't be written down twice:
 --on-board-soft #96958c  secondary text on a dark ground
 ```
 
-`--ground` is the load-bearing one. Warm cream plus a high-contrast serif plus a
+`--paper` is the load-bearing one. Warm cream plus a high-contrast serif plus a
 terracotta accent is the look every generated site has right now, and the old
 `#faf8f4` was squarely in it; going cool takes the site out of that family in one
 move, and the hue comes from the brand's own mint rather than from nowhere.
+
+It is called `--paper` and not `--ground` on purpose. A draft of Phase 11 renamed
+it: 19 references across 10 files, two of them JSX, for nothing a reader of the
+site can see — and this document calls the light surface paper throughout, so the
+rename would have fought the doc as well as the code. **A token name is the
+contract every other file depends on.** Change a value freely; change a name only
+when the name is wrong.
 
 `--board` is racing green rather than near-black. Green is not one of the three
 brand colours — it is the ground they sit on, the way black was on the school's
@@ -222,6 +230,13 @@ with the rest.
 
 Badge tiers. See *Badges* below.
 
+> **The ramps land in Phase 11, with the rest of the token layer.** `tokens.css`
+> carries three flat values today — `--bronze`, `--silver`, `--gold-tier` — which
+> is what `plate.css` reads. Only Phase 15 needs the full ramps, but they are
+> tokens, so they arrive with the tokens rather than riding in on a component;
+> the live plates move onto stop 2 of each and keep working until the icons
+> replace them.
+
 A metal is a four-stop ramp, not a single value, because a flat fill does not
 read as metal. Darkest to lightest:
 
@@ -243,6 +258,11 @@ a ground that isn't white — so they are separated by hue instead.
 engraved marks; every word on a badge is `--ink` or `--ink-soft`.
 
 ### Chart series
+
+> **The order below lands in Phase 11.** `tokens.css` has `--series-4` and
+> `--series-5` the other way round today. It is a swap of two values and no JS
+> changes: `lib/tokens.js` maps appearances to `--series-4` by name, so the stat
+> stops wearing plum by the token underneath it changing.
 
 Fixed order, assigned in sequence, never cycled. Ordered so the two warm darks
 aren't adjacent.
@@ -369,6 +389,10 @@ Home. All five render — the leaderboard leader is `LeadBoard` in
 `components/BarBoard.jsx`, and it heads the Players page. See *Leaderboards and
 the squad* below for which stat earns it.
 
+That file goes in Phase 14 and the leader row is rebuilt with the cards. The
+occasion survives the component; this paragraph gets updated in that commit
+rather than left describing a file that isn't there.
+
 `--board` ground, `--on-board` text, display face, gold accents, 1px `--gold`
 bottom border. No radius above 4px. Sparingly — if half the page is board, none
 of it feels like an occasion. Measured, since "sparingly" invites argument: no
@@ -453,8 +477,9 @@ than judged by eye:
   them anyway.
 
 A dark medallion behind a light metal fixes the light-on-light case and makes a
-badge read as an actual medal. It is drawn and parked, not needed for the phases
-that land the icons.
+badge read as an actual medal. It is parked and, like every other badge asset, not
+in this repository — so it is a decision waiting on a file, not a file waiting on
+a phase. Nothing in phases 14–17 needs it.
 
 ### Rules and radius
 
@@ -533,10 +558,23 @@ Clean sheets stays, and stays empty: the club has never kept one. "Nobody has
 this yet" is a live target when it's one badge among four. It was noise when it
 was three plates among twenty-four.
 
+**Clean sheets is a team badge, and its copy says so.** `lib/matches.js` gives
+one to every player who appeared in a match with nothing conceded — positions
+are fluid at this level, so there is no GK/DEF gating and there shouldn't be.
+The consequence is that the club's first clean sheet hands bronze to eleven
+people at once, which makes it the only Class 1 badge that isn't a personal
+total. That is accepted, not fixed: a clean sheet *is* a team achievement, and
+naming it as one on the badge stops it reading as a participation prize.
+
 **Class 2 — events, stackable, no tiers.** Man of the Match, hat-trick, brace.
 A hat-trick is a thing that happened, not a rung on a ladder — "3 hat-tricks" as
 a tier reads oddly where "hat-trick ×3" doesn't. These carry a small multiplier
 and appear inline under a player's name.
+
+**A brace is exactly two.** The larger event replaces the smaller one rather
+than stacking with it, so three goals is a hat-trick and nothing else, and four
+goals is one hat-trick and not also two braces. In `lib/awards.js` that is
+`goals === 2` against the existing `goals >= 3`.
 
 **Class 3 — season honours, trophies, one per season.** Four, and they are
 exactly the honours board's rows, so the board and the badges cannot drift.
@@ -571,6 +609,15 @@ badge that can only be looked at, and this club's distribution is WhatsApp.
 
 ### The icons
 
+> **None of the artwork is in this repository.** No SVG, no PNG, no `public/`
+> directory — which is also why the masthead renders its `OW` monogram fallback
+> instead of a crest. Eleven drawings are needed (four career badges, four
+> trophies, the MOTM star, the brace, and `public/crest.png`), and the contrast
+> figures quoted below were measured in a session whose files were never
+> committed, so they have to be taken again against whatever lands. The rules
+> survive; the numbers are examples until then. `docs/ROADMAP.md` → *The
+> artwork* holds the list and what it gates.
+
 The club's own drawings, recoloured by the ramp rather than hand-tinted: read
 each drawing's tonal range, map it onto a slice of the metal. That keeps the
 relationships the artwork already has — a glove's palm stays lighter than its
@@ -599,8 +646,10 @@ Two views behind one nav entry, plus a third for the numbers. **Players is this
 season; Records is all time** — the same components, different scope, so the two
 can't drift.
 
-> **Phases 16–17.** The card format below replaces the six stacked bar boards
-> that are live today.
+> **Phases 14 and 17.** The card format below replaces the six stacked bar
+> boards that are live today. Phase 14 comes before Records is split, because
+> Records renders this component and can be neither built nor measured without
+> it.
 
 ### The boards
 
@@ -616,6 +665,17 @@ A grid of cards, one per stat. Each card: a heading with the stat's icon, then
 - **The footer answers "where am I".** `You're 18th of 47 · 2 apps`. That is the
   question the old design answered by making a player scan six boards of six
   names for their own.
+
+**Both pages run the whole list of six.** `LEADERBOARD_STATS` in
+`components/LeaderBoards.jsx` is already the one shared list — goals, assists,
+goals + assists, appearances, MOTM, clean sheets. Records shows three of them
+today; that was a workaround for the page being 4,823px long, and splitting it
+fixes the cause rather than the symptom.
+
+**Players carries no all-time scope.** Its season picker offers "All time"
+today, which with Records → All-time on the same component is one board reached
+two ways — the duplication this split exists to remove. Season's picker loses
+its "All seasons" option for the same reason. One question, one address.
 
 **This reverses an earlier rule and the reversal is deliberate.** The previous
 system put every board on the page at once, on the grounds that "a leaderboard
@@ -730,7 +790,11 @@ The design target, not a fallback. Every change gets checked at 375px first.
 - 44px minimum touch target, bought with padding.
 - **A table that side-scrolls is a bug, and `.table-wrap` is not a fix.**
   Condensed figures buy the room; where they aren't enough, restructure into rows
-  (`ResultList` is the pattern), don't hide columns.
+  (the result row under *Structure* is the pattern), don't hide columns.
+
+  One trap for whoever reads this before Phase 10 lands: the component called
+  `ResultList` today renders the sentence, not the row. The pattern is what
+  Phase 10 rebuilds inside it, not what is in there now.
 
   This rule was in the doc and the site still broke it, which is worth recording
   because the failure was in the *check*, not the rule. Three phases asserted "no
@@ -776,6 +840,10 @@ A page has a height budget, because "no one scrolls to the bottom" is not a vibe
 to argue about — it's measurable, and information at the bottom of a 4,800px
 phone page is information that doesn't exist.
 
+**This table is the authority for these numbers.** The roadmap tracks where each
+page started and which phase closes the gap; the budget itself is a design
+constraint, so it lives here.
+
 | Page | Budget at 375px |
 | --- | --- |
 | Home | 1,600 |
@@ -784,12 +852,21 @@ phone page is information that doesn't exist.
 | Players → Leaderboards | 1,400 |
 | Records → any sub-page | 2,000 |
 | Player detail | 2,400 |
+| Opponent detail | 2,000 |
 | Players → Squad | no cap — it's a roster, and every name belongs on it |
 
 Records is a reference document and earns length, which is why it splits into
-sub-pages rather than shrinking. Home doesn't. `npm run shots` (Phase 9) reports
-the real numbers, and the roadmap records where each page started — every one of
-them is over budget today.
+sub-pages rather than shrinking. Home doesn't. The opponent page is the same kind
+of document as a Records sub-page and takes the same number. `npm run shots`
+(Phase 9) reports the real numbers, and the roadmap records where each page
+started — every one of them is over budget today except Matchday.
+
+Matchday is the exception and it is a thin one: 1,857 against 1,900. Phase 20
+*adds* to that page — labels on fourteen stepper chips, a key for the squad pills
+— so the room has to come from somewhere inside it, and it does: the comparison
+table moves onto the result row and the pitch address leaves the scoreboard for
+the fixture. **A budget that gets edited to fit what was built is not a budget.**
+If it can't be met, that's a finding to write down.
 
 ## CSS structure
 
