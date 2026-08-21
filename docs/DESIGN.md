@@ -3,6 +3,13 @@
 Read this before changing anything visual. If a change needs something this
 doc doesn't cover, add it here in the same commit.
 
+**Where a section carries a blockquote naming a phase, that part is decided but
+not built yet** — a component written against it will look wrong on `main` until
+that phase lands. Everything without a marker is live. The markers come out as
+each phase closes; `docs/ROADMAP.md` has the order and what "done" means. A doc
+that quietly describes a site that doesn't exist is worse than no doc, which is
+why the plan is marked rather than merged in silently.
+
 ## Direction
 
 **The honours board and the team sheet.**
@@ -21,6 +28,16 @@ tabular precision, a nameplate you either have or don't.
 Warmth comes from the type, the copy and the badge board. It does not come from
 softening the palette or from photography we don't have yet.
 
+Two things sharpen that direction, decided after a page-by-page review:
+
+- **The dark ground is racing green, not near-black.** `#16281f`. Leather,
+  wealth, a board in a school hall — and it answers the objection to black,
+  which is that a near-black surface makes a small club's site feel like a void.
+  It warms the dark rather than removing it, and gold sits better on it.
+- **The label device comes from the school's own brand**, which is bold text on
+  a solid field of colour. That replaces the tiny uppercase eyebrow, and it is
+  the one place the design is allowed to be loud.
+
 ### What this replaces
 
 The site read as templated for four specific reasons, and the system below
@@ -32,6 +49,16 @@ exists to fix each one. All four are done.
 | Twelve near-identical tiny-uppercase label styles (0.62–0.75rem) | One label style. 0.75rem is the floor | done |
 | Three overlapping palettes (CSS tokens, a chart `SERIES` array, per-component hex props) | One token set. No hex literals in components, ever | done |
 | One `.card` class on all ~40 surfaces equally, whatever the section is | Two surfaces with a rule about when each is used, and a third for badges | done |
+
+Those four were about *how the site is built*. A later review found four more
+that are about *what a page says*, and the system below now covers them too.
+
+| Problem | Fix | Phase |
+| --- | --- | --- |
+| Warm cream ground, high-contrast serif, terracotta accent — the current generated-design default, arrived at by assembling tokens rather than choosing them | The brand's own three colours, aged, on a cool ground; Caslon for the display face | 11 |
+| A match result written as running text, so it wraps mid-name and never lines up: 14 rows of Season, 5 club records, Home's form list | One result row on a shared grid | 10 |
+| Four heading treatments across 30 sections, and 15 blocks of explanatory prose | One block device, one grammar, no essays | 12 |
+| 24 badge plates of which 19 said "Nobody yet", with unearned silver identical to unearned gold | Three classes of badge; only one is tiered | 15 |
 
 `.card` is gone. Fifty call sites are `.sheet` and five are `.board`, and the
 judgement that split them is the rule under *Surfaces* below. The plate is the
@@ -52,6 +79,58 @@ So if a rule named `…card…` ever grows a `background`, a `border` and a
 `border-radius` together, that's the system drifting back, not a special
 case.
 
+## Structure
+
+Three decisions about what a page shows, before any decision about how it looks.
+
+> **Phases 10 and 13.** Sub-pages land in 13; the result row and the season rule
+> land in 10. Today Records, Season and Players are each one long page.
+
+### Sections do not grow; they gain depth
+
+Five sections, and that does not change. What changes is that a section may have
+**sub-pages**, reached by a segmented control at the top of it, each with a real
+address. Tapping a bottom tab lands on the section's default sub-page.
+
+| Section | Sub-pages | Default |
+| --- | --- | --- |
+| Home | — | — |
+| Matchday | — | — |
+| Season | Season · Charts | Season |
+| Players | Leaderboards · Squad · Data centre | Leaderboards |
+| Records | Badges · Honours · All-time | Badges |
+
+This extends a pattern the site already runs twice rather than inventing one. A
+dropdown on the bottom bar was rejected: a tap that opens a menu instead of
+navigating is the thing people dislike most about mobile nav. Sub-pages get real
+addresses because links into a group chat are how this club actually shares
+things.
+
+**Who owns what**, since three sections used to overlap: Home is the landing
+page and answers "what's happening". Season owns one season's detail. **Players
+is this season's leaderboards; Records is all time.** Records also owns
+everything above a single season — badges, honours, club records.
+
+### A result is a row, not a sentence
+
+```
+[W]  Old Stoics          4–1   H
+[D]  Old Salopians       1–1   A
+```
+
+Opponent, our score always first, venue as a letter, W/D/L as a chip, all on one
+`grid-template-columns` shared by every row. This is a primitive, not a page
+style: four places render a scoreline and all four use it. Written as prose it
+wraps mid-name and puts our own club's name in every row of the season.
+
+### The current season is the most recent season with a result
+
+Not the most recent season with a *row*. Fixtures are rows, so entering one
+fixture for next season used to abandon the last one and take every derived
+figure to zero — four of Home's five sections became empty states in the month a
+newcomer is most likely to be sent the link. A season being over is a thing to
+label (`2025/26 · final`), not a reason to show nothing.
+
 ## Colour
 
 Every colour lives in `styles/tokens.css` as a custom property. A hex literal in
@@ -70,11 +149,15 @@ Two things follow from that, because a token can't be written down twice:
 
 ### Ground and ink
 
+> **Decided, lands in Phase 11.** `tokens.css` still carries the previous
+> values until then, so a component written against the table below will look
+> wrong on `main`. The old values are kept in the roadmap, not here.
+
 ```
---paper        #faf8f4   page background. Warm near-white, deliberately not cream
---sheet        #f1eee6   recessed and inset areas, table stripes
---board        #1a1c19   dark sections. Near-black with a green undertone
---board-soft   #262a25   raised areas inside a dark section
+--ground       #f1f3ef   page background. Cool off-white, pulled from the brand mint
+--sheet        #e6e9e2   recessed and inset areas, table stripes
+--board        #16281f   dark sections. Racing green
+--board-soft   #1d3227   raised areas inside a dark section
 
 --ink          #20221f   body text
 --ink-soft     #6a6a63   secondary text, labels           (5.2:1 on paper)
@@ -83,9 +166,15 @@ Two things follow from that, because a token can't be written down twice:
 --on-board-soft #96958c  secondary text on a dark ground
 ```
 
-The green undertone in `--board` is the one nod to the Sweethatco reference.
-It stops the dark sections reading as UI chrome and makes gold sit warmer on
-them. Green is *not* a brand colour — it never appears anywhere else.
+`--ground` is the load-bearing one. Warm cream plus a high-contrast serif plus a
+terracotta accent is the look every generated site has right now, and the old
+`#faf8f4` was squarely in it; going cool takes the site out of that family in one
+move, and the hue comes from the brand's own mint rather than from nowhere.
+
+`--board` is racing green rather than near-black. Green is not one of the three
+brand colours — it is the ground they sit on, the way black was on the school's
+own site, and it is what makes the dark surfaces read as leather instead of as UI
+chrome.
 
 ### Identity
 
@@ -93,22 +182,32 @@ Gold and black are Wellington College's, and they're the kit. They carry
 identity, and they mark what matters — never used just to fill space.
 
 ```
---gold        #c8952a   brass. Borders, accents, the active state
---gold-leaf   #e8c14f   gold on a dark ground only            (10:1 on board)
---gold-deep   #8f6a14   gold as text on paper                 (4.7:1 on paper)
+--gold        #c9992b   brass. Borders, accents, the active state
+--gold-leaf   #e6c65f   gold on a dark ground only
+--gold-deep   #8c6716   gold as text on the ground
 ```
+
+Brass is `#f8d118` — the school's yellow — aged. The school uses it at full
+strength on black; at full strength on a light ground it is a highlighter.
 
 ### Accents
 
-The school's baby blue and orange. These carry data and secondary emphasis, so
-gold stays scarce enough to mean something.
+The school's other two colours, aged, each with exactly one job — so gold stays
+scarce enough to mean something and no page is a splash of all three.
 
 ```
---sky         #8fc4dd   light school blue — fills on dark grounds only
---sky-deep    #2f6f8f   links and text on paper               (5.2:1)
---tangerine   #e07a2f   fills, chart marks on dark grounds
---tangerine-deep #a8501a  text on paper                       (5.2:1)
+--verdigris      #8fb3a6   the accent, and the "this row is us" wash
+--verdigris-deep #3f6b5c   links and text on the ground
+--burnt          #bf6a22   rationed: competition tags. Nothing else
 ```
+
+Verdigris is `#a6d7ca` aged. That pale aqua is what the tokens used to call
+"sky"; the `#2f6f8f` dark blue that was actually in use is not a club colour at
+all, and verdigris takes over every job it had.
+
+Burnt is `#f37d02` aged, and it is deliberately kept to one use. Three
+near-primaries all shouting is the reason the school's own palette needs
+discipline rather than enthusiasm.
 
 ### Results
 
@@ -123,13 +222,25 @@ with the rest.
 
 Badge tiers. See *Badges* below.
 
+A metal is a four-stop ramp, not a single value, because a flat fill does not
+read as metal. Darkest to lightest:
+
 ```
---bronze  #a8703f     --silver  #9ca3aa     --gold-tier  #c8952a
+--bronze-1..4   #6b3a1a  #a9612c  #d18f57  #f0c8a0
+--silver-1..4   #3d4449  #79838a  #a9b2b9  #d4dbdf
+--gold-1..4     #4d3606  #a87d18  #dcb143  #f9ecb8
+--diamond-1..4  #24505f  #528799  #8ec2d3  #c8e7f1
 ```
 
-**Silver fails contrast as text** (2.4:1 on paper). Metals are fills, borders
-and engraved marks. Every word on a plate — the tier included — is `--ink` or
-`--ink-soft`, never the metal it names.
+Four tiers, not three: diamond is the fourth, and it is icy rather than another
+warm metal so it cannot be mistaken for gold.
+
+Bronze is deliberately coppery rather than dark brown. Bronze and gold are
+adjacent hues, and separating them by lightness fails the moment either sits on
+a ground that isn't white — so they are separated by hue instead.
+
+**A metal is never text.** Silver is 2.4:1 on the ground. Metals are fills and
+engraved marks; every word on a badge is `--ink` or `--ink-soft`.
 
 ### Chart series
 
@@ -137,33 +248,46 @@ Fixed order, assigned in sequence, never cycled. Ordered so the two warm darks
 aren't adjacent.
 
 ```
---series-1  #8f6a14  brass    --series-2  #2f6f8f  blue    --series-3  #a8501a  orange
---series-4  #4a3f7a  plum     --series-5  #2f6b46  green
+--series-1  #8c6716  brass      --series-2  #3f6b5c  verdigris
+--series-3  #a2551a  burnt      --series-4  #2f6b46  green
+--series-5  #4a3f7a  plum
 ```
 
-All clear 4.5:1 on paper, so a series colour can also label its own line
-directly and skip the legend.
+All clear 4.5:1 on the ground, so a series colour can label its own line directly
+and skip the legend. Plum drops to last: it was carrying appearances, which is
+the club's most-looked-at stat, in a colour with no basis in anything.
 
 ## Type
 
 Two families, three roles.
 
+> **The display face changes in Phase 11.** Everything else in this section is
+> live.
+
 ```css
---font-display: 'Fraunces Variable', Fraunces, Georgia, serif;
+--font-display: 'Libre Caslon Display', Georgia, serif;
 --font-text:    'Archivo Variable', Archivo, system-ui, sans-serif;
 --font-data:    'Archivo Narrow', 'Archivo Variable', Archivo, system-ui, sans-serif;
 ```
 
 Self-hosted through `@fontsource`, imported in `main.jsx`, so the type doesn't
-depend on a third-party CDN staying up. Fontsource ships the variable faces
-under their own family names — `'Fraunces Variable'`, `'Archivo Variable'` —
-which is why both spellings are in each stack; the `Variable` one is what
-loads.
+depend on a third-party CDN staying up. Fontsource ships the variable faces under
+their own family names — `'Archivo Variable'` — which is why both spellings are
+in the Archivo stacks; the `Variable` one is what loads. Caslon Display has one
+weight, which is the point: a display face used at three sizes does not need a
+weight axis.
 
-**Fraunces** (display) — page titles, player names, scores, the mark on a
-badge. Variable, with a slightly hand-cut quality that suits an amateur club
-rather than a corporate one. Mixed case, always. Weight 500–700, tracking
-`-0.015em` at large sizes.
+**Libre Caslon Display** (display) — page titles, player names, scores, the
+figure on a badge. Caslon is the English printing letterform, which is what a
+school honours board is actually painted in: squarer serifs, less contrast in the
+thins, no stylistic wobble. Mixed case, always. Tracking `-0.015em` at large
+sizes.
+
+It replaces **Fraunces**, which was a good serif doing an honest job and is also
+on a very large number of sites designed in the last two years. The reason for
+the swap is not that Fraunces is bad type; it is that a club trading on
+permanence should not be set in the face of the moment. Caslon has a reason
+behind it, which is the whole test.
 
 **Archivo** (text) — body copy, buttons, labels, navigation. A grotesque with
 enough width to read at 16px on a phone.
@@ -174,8 +298,9 @@ stylistic: condensed figures are half of why the ten-column league table fits a
 375px phone at all. The other half is the surface getting out of its way — see
 *Mobile*.
 
-**No all-caps headings.** The one uppercase style is `.label` below, and
-nothing else in the site is set in caps.
+**No all-caps headings.** Uppercase appears in exactly two places: `.label`
+below, and `.block` — the label device under *Structure* — which is uppercase
+because it is text on a field of colour, where mixed case reads as a button.
 
 ### Scale
 
@@ -186,13 +311,30 @@ beside it.
 
 | Token | Size | Face | Use |
 | --- | --- | --- | --- |
-| `--t-display` | 2.75rem / 2rem phone | Fraunces 600 | Page title, big score |
-| `--t-headline` | 2rem / 1.6rem phone | Fraunces 600 | Player name, hero figure |
-| `--t-title` | 1.5rem | Fraunces 600 | Section heading |
+| `--t-display` | 2.75rem / 2rem phone | Caslon | Page title, big score |
+| `--t-headline` | 2rem / 1.6rem phone | Caslon | Player name, hero figure |
+| `--t-title` | 1.5rem | Caslon | Section heading |
 | `--t-subtitle` | 1.125rem | Archivo 600 | Card heading |
 | `--t-body` | 1rem | Archivo 400 | Body copy |
 | `--t-small` | 0.875rem | Archivo 400 | Secondary, captions |
 | `--t-micro` | 0.75rem | Archivo 600 | Labels, and the smallest marks. The floor |
+
+### The block
+
+The school's brand device: bold uppercase on a solid field of colour. `.block`,
+in four variants — board, gold, verdigris, burnt.
+
+It replaces the eyebrow, and the reason is arithmetic. Across 30 sections the
+site used four different heading treatments: 4 with eyebrow + title, 15 eyebrow
+only, 7 title only, 2 neither — and on Home the eyebrow was usually the title
+again (`UPCOMING` over "Next fixture"). One device, one grammar:
+
+**A section has a block or a heading, never both saying the same word.** A block
+names what kind of thing follows; a heading names the thing. If both would say
+"Next fixture", only one of them appears.
+
+Spend it sparingly. A page with six blocks on it is the eyebrow problem again in
+a louder font.
 
 `.label` — the single label style, and the only uppercase in the site.
 `--t-micro`, weight 600, tracking `0.08em`, uppercase, `--ink-soft`. Column
@@ -219,7 +361,7 @@ already right in the admin CSS — keep it.
 Three. Each has a rule. A fourth surface means the system is wrong, not that
 this case is special.
 
-### Board — dark, gilded
+### Board — green, gilded
 
 For occasions and honours, and there are five of them: the matchday scoreboard,
 a player's hero, the honours board, the leaderboard leader, the last result on
@@ -251,6 +393,14 @@ The gold edge is 1px, not the 3px the scoreboard used to carry. With five boards
 in the site rather than one dark section, a 3px rule on each read as five
 underlines; the masthead keeps its 3px because it is the frame, not an occasion.
 
+**The board is no longer rationed to one per page.** That rule existed to stop a
+near-black surface swallowing a page. Racing green does not swallow a page, and
+"every section weighs the same" turned out to be the single most consistent
+complaint about every screen — a stack of forty identical sheets with one dark
+moment is not a hierarchy. A page may now carry more than one board where it has
+more than one occasion; what it may not do is alternate them, which reads as
+stripes rather than emphasis.
+
 ### Sheet — paper, ruled
 
 The default, and where most data lives: tables, lists, squad rows, stat cells,
@@ -274,25 +424,37 @@ in the site draws a surface by hand any more. `.home-stat-tile` is the one
 exception and it is permanent: it uses `--sheet`, the recessed ground, because
 it sits *inside* a surface.
 
-### Plate — metal
+### Plate — replaced by the badge icon
 
-Badges and awards only. Never anything else. The shape and the tiers are under
-*Badges* below; three things about it as a surface:
+> **Phase 15.** The plate is live today; the icon system replaces it.
 
-- **It is never nested.** A plate is a box, so a plate inside a sheet is the
-  box-in-a-box this system rules out — and on a dark ground it would break
-  contrast as well. A shelf of plates sits directly on the page, which is also
-  what buys three across on a 375px phone instead of two.
-- **The shape is two elements, not one.** The outer element is the metal edge,
-  the face sits an edge-width inside it, and both carry the clip. One element
-  can't do both, because a border follows the border box and the clipped
-  corners cut straight through it. The face's corners are cut by the edge width
-  less than the plate's, which keeps the two diagonals parallel.
-- **It lives in `components/plate.css`, not `primitives.css`.** That is the one
-  deliberate exception to surfaces being shared vocabulary, and it is the point:
-  keeping the plate with the component that owns it is what stops it being
-  reached for as a general-purpose fourth surface. If something that isn't a
-  badge wants one, the answer is a sheet.
+The plate — a rectangle with two clipped corners, one shape for every badge —
+did its job as a system and failed as a signature. Twenty-four of them, nineteen
+saying "Nobody yet", with unearned silver and unearned gold identical because the
+tier was carried by a word rather than by the metal.
+
+What replaces it is not a fourth surface. A badge is now **an icon in a metal**,
+drawn per badge, and it needs no box: it sits directly on whatever is behind it.
+That is what lets a badge appear inline under a player's name, in a leaderboard
+row and on a board, which a boxed plate never could.
+
+Two things about a metal as paint rather than as a border, both measured rather
+than judged by eye:
+
+- **The band depends on the ground.** A metal is a ramp (see *Metals*), and an
+  icon's own tones map onto a slice of it. Mapping onto the whole ramp bleaches
+  large light shapes: the trophy cup put 10% of its own footprint above 3:1
+  against the ground, and the cap 6%. Icons on the ground sit low on the ramp;
+  icons on a board sit high.
+- **Bronze goes on the ground; the light metals go on a board.** Bronze is a
+  dark metal — on green the football measured 0% of its footprint above 3:1. The
+  light metals have the mirror problem on a light page. So career badges live on
+  the ground and season trophies live on the board, which is where the pages put
+  them anyway.
+
+A dark medallion behind a light metal fixes the light-on-light case and makes a
+badge read as an actual medal. It is drawn and parked, not needed for the phases
+that land the icons.
 
 ### Rules and radius
 
@@ -331,187 +493,174 @@ Where the scale stops, and why it isn't everywhere yet:
 **This is the signature.** It's the mechanic the whole site exists for, so it
 gets the boldness and everything else stays quiet.
 
-Three kinds, three treatments. They are not interchangeable.
+> **Phase 15.** The three classes below replace the plate ladder that is live
+> today. `lib/awards.js` is the single source for the numbers; if it and this
+> table ever disagree, this table is wrong.
 
-### 1. Career badges — plates
+### Why the old ladder failed
 
-A **plate**: a rectangle with the bottom two corners clipped, like an engraved
-nameplate hung on a board. One shape for every badge. The metal carries the
-tier; an engraved label carries the category. One shape, three metals — that's
-the whole language.
+Not because the numbers were badly chosen — because of who they excluded.
+Measured against the real season: **32 of the 47 players who have turned up hold
+nothing at all**, and 19 of them played exactly once. A bottom rung of 5
+appearances is out of reach for 70% of the squad, and the site's first stated job
+is making people want to turn up. A ladder whose first rung excludes the people
+you are trying to convert is decoration.
 
-```
-┌──────────────┐        ┌──────────────┐
-│    BRONZE    │        │    SILVER    │
-│      5       │        │      15      │
-│ Appearances  │        │ Appearances  │
-│   Nov 2025   │        │   6 to go    │
- \____________/          \____________/
-    earned                  not yet
-```
+Showing all three rungs as separate objects made it worse: 24 plates carrying 8
+categories, printing each category name three times and "Nobody yet" nineteen
+times. The third rung is empty for every badge and will be for years, which is
+correct for a young club and awful as a layout.
 
-Four lines, and each one answers a different question:
+### Three classes, and only one is tiered
 
-- **The tier**, in `.label` — the site's one uppercase style, so a plate needs
-  no type of its own. It's a hallmark stamped on metal. It is here because
-  bronze and gold are close at 100px and colour alone must never carry the
-  tier.
-- **The mark**: the rung itself, Fraunces at `--t-headline`, tabular. Always the
-  plain count — `5`, not `×5`, even on the repeat badges. One mark format across
-  every plate is worth more than per-badge phrasing, and "×3 Hat-tricks" reads
-  worse than "3 Hat-tricks" anyway.
-- **The category**, mixed case in the text face. Not caps: the tier above it
-  already has the uppercase, and two lines of the same shape mean neither reads
-  first. Singular at a rung of one — "1 Hat-trick", not "1 Hat-tricks".
-- **The note**: the month it landed, or "*n* to go".
+They are not interchangeable and they do not share a shape.
 
-Earned takes a 2px metal edge and a fill tinted off that metal. Not earned takes
-a 1px `--rule` edge, a paper fill and the mark in `--ink-faint` — present and
-named, visibly not yours. A badge you can't see is not an incentive.
+**Class 1 — career badges.** Four categories, four metals. One badge per
+category, showing the metal held and progress to the next.
 
-**The ladder is fixed, three rungs per badge, one metal each.** Not the rolling
-round-number rungs a career total used to chase: a badge has to be nameable, and
-"the next multiple of ten" isn't.
+| Badge | Icon | Bronze | Silver | Gold | Diamond |
+| --- | --- | --- | --- | --- | --- |
+| Appearances | shirt | 1 | 10 | 25 | 50 |
+| Goals | football | 1 | 5 | 15 | 30 |
+| Assists | target and arrow | 1 | 4 | 12 | 25 |
+| Clean sheets | keeper's glove | 1 | 5 | 12 | 25 |
 
-| Badge | Bronze | Silver | Gold |
-| --- | --- | --- | --- |
-| Appearances | 5 | 15 | 30 |
-| Goals | 3 | 10 | 25 |
-| Assists | 3 | 10 | 25 |
-| Clean sheets | 2 | 6 | 15 |
-| MOTM | 2 | 5 | 12 |
-| Hat-tricks | 1 | 3 | 6 |
-| Golden Boots | 1 | 2 | 3 |
-| Ever-present | 1 | 2 | 3 |
+**Bronze is one.** A debut is a badge, so every player who has ever been picked
+owns something and has a shelf to add to. Diamond is roughly four seasons at
+fourteen games — a mark that takes years, which is what a top rung is for.
 
-The numbers are set against a fourteen-game season: bronze inside a first
-season for anyone who keeps turning up, silver in a second, gold a mark that
-takes years. That calibration is the whole point — a ladder whose bottom rung is
-out of reach is decoration. On the season already in the database, fifteen of
-the fifty-three names hold at least one plate and nobody holds a silver — which
-is what a first season should look like.
+Clean sheets stays, and stays empty: the club has never kept one. "Nobody has
+this yet" is a live target when it's one badge among four. It was noise when it
+was three plates among twenty-four.
 
-The last three can't be read off a career total. A hat-trick, a Golden Boot and
-an ever-present season are events, so they're counted off the appearance rows —
-still derived, still no schema change.
+**Class 2 — events, stackable, no tiers.** Man of the Match, hat-trick, brace.
+A hat-trick is a thing that happened, not a rung on a ladder — "3 hat-tricks" as
+a tier reads oddly where "hat-trick ×3" doesn't. These carry a small multiplier
+and appear inline under a player's name.
 
-Where they appear:
+**Class 3 — season honours, trophies, one per season.** Four, and they are
+exactly the honours board's rows, so the board and the badges cannot drift.
 
-- **A player's own page**: directly under the hero, above the view selector and
-  everything else. The best metal they hold in each badge first, then the three
-  closest to falling, ranked on how far through the rung they are. At 375px that
-  puts what they've won and the first thing within reach on the first screen.
-- **Records**: the club badge board — all twenty-four, in ladder order rather
-  than earned-first, because where the gold stops is the story. Each names
-  whoever is furthest past it, or says "Nobody yet".
+| Award | Icon | Source |
+| --- | --- | --- |
+| **Player of the Season** | cup | **voted by the players, entered by an admin** |
+| Golden Boot | boot on a plinth | most goals — derived |
+| Playmaker | figure striking a ball | most assists — derived |
+| The Dependable | cap on a plinth | most appearances — derived |
 
-### 2. Season awards — the honours board
+They do not tier and they do not stack into a bigger version: **winning two
+Golden Boots is the same trophy held twice**, shown as a year list. A "3× Golden
+Boot" tier would imply the third is worth more than the first, and it isn't.
 
-Singular, one per season, so they belong in a chronological ruled list, not a
-grid. A `.board` surface: one block per season, newest first, the award as a
-caption on the left and the name in gold at the right-hand edge, with an
-engraved hairline under each and a firmer one between seasons. The rules are
-what make it read as a board rather than as a table that lost its borders.
+Three rulings inside that table:
 
-| Award | Source |
-| --- | --- |
-| **Player of the Season** | **voted by the players, entered by an admin** |
-| Golden Boot | most goals — derived |
-| Assist King | most assists — derived |
-| The Dependable | most appearances — derived |
-| Most MOTM | most MOTM awards — derived |
+- **The Dependable is most appearances, not ever-present.** Nobody was
+  ever-present in 2025/26 — the best was 13 of 14 — and an award nobody can win
+  in a squad where people miss games for weddings is not an incentive.
+- **Playmaker, not Assist King.** One name for one award; the honours board and
+  the badge shelf used different words for the same thing.
+- **Most MOTM is not a season honour.** It usually goes to the same player as
+  Player of the Season, so it was a second trophy for one performance. It
+  survives as the Class 2 star, which is where a repeated event belongs.
 
-Player of the Season leads, and the hairline under it is gold rather than the
-board's own grey: it separates the one name the players chose from the four the
-arithmetic did. It's the only award a formula can't produce — inventing one
-would be arbitrary and argued with — so it has a `season_awards` row and an
-admin field.
+### A badge has its own page
 
-**Not a matrix, and that's a change from what this doc first said.** Five awards
-plus a season is six columns of names, and no condensed face fits that on a
-375px phone; hiding columns is ruled out under *Mobile*. So the season heads its
-own block instead of holding a column. Above 700px it steps out into a left
-gutter, which puts the reading order back where a printed board has it — season
-down the left, awards across.
+`/records/badges/:key`. Every holder at every tier, and who is closest to the
+next one. A badge that can be linked into the group chat is worth more than a
+badge that can only be looked at, and this club's distribution is WhatsApp.
 
-A derived award keeps ties whole: two players level at the top both won it, and
-the rows can't say which of them mattered more. A voted award carries no mark,
-because printing one would imply the arithmetic decided it.
+### The icons
 
-### 3. Live progress — removed
+The club's own drawings, recoloured by the ramp rather than hand-tinted: read
+each drawing's tonal range, map it onto a slice of the metal. That keeps the
+relationships the artwork already has — a glove's palm stays lighter than its
+back — and means a redrawn icon re-colours without anyone picking hexes.
+
+Two failure modes are worth writing down because both were shipped once:
+
+- **Do not normalise an icon to the full ramp.** Some drawings are deliberately
+  near-monochrome. Stretching two shades of black across dark-to-white turned an
+  arrow and a figure almost white and they vanished on the ground. Scale the
+  span to the source's own contrast instead.
+- **Trophies never render below 20px.** A plinth plus an object below that merges
+  into a blob. Career badges and the star hold at 16.
+
+### Live progress — removed
 
 The milestone progress bars are gone, along with `MilestoneStrip`,
 `playerMilestones`, `nextMilestone` and the `.ms-*` rules. Five bars on a
 player's page pushed the things worth looking at below the fold, and "8 to go"
-lives on the unearned plate, which is a better place for it: a bar says how far
-along you are, a plate says what you get.
+belongs on the unearned badge: a bar says how far along you are, a badge says
+what you get.
 
 ## Leaderboards and the squad
 
-Two views, one nav entry, and the leaderboard is the one that lands: it is the
-incentive board, and the roster is a tap behind it. The view and the season sit
-in the address as `?view=squad` and `?season=…`, with the defaults left out of
-it, so `/players` stays the canonical address and anything longer is a link
-somebody meant to send.
+Two views behind one nav entry, plus a third for the numbers. **Players is this
+season; Records is all time** — the same components, different scope, so the two
+can't drift.
+
+> **Phases 16–17.** The card format below replaces the six stacked bar boards
+> that are live today.
 
 ### The boards
 
-Six stats — goals, assists, goals + assists, appearances, MOTM, clean sheets —
-in that order, declared once in `components/LeaderBoards.jsx` and drawn by the
-same component on Players and on Records, so the two can't drift.
+A grid of cards, one per stat. Each card: a heading with the stat's icon, then
+**the top five**, then a footer.
 
-**Every board is on the page at once.** The old page put one behind a row of six
-chips, and that is most of what made it read as a database rather than a board:
-a leaderboard you have to click for can't show you where your name isn't.
+- **The leader takes the board's own dark row** and the display face. One name
+  gets the occasion; the rest are a list.
+- **Initials where a photo would go.** There are no photographs and there won't
+  be for a while, so the placeholder is designed rather than left as a hole.
+- **The heading links to the full list.** Five names on the page, everyone a tap
+  away.
+- **The footer answers "where am I".** `You're 18th of 47 · 2 apps`. That is the
+  question the old design answered by making a player scan six boards of six
+  names for their own.
 
-One stat is promoted to the dark band (`LeadBoard`), and on Players that's
-goals. Only one, because a page carries a single `.board` — which is also why
-the all-time set on Records has no lead: the honours board is that page's
-occasion.
+**This reverses an earlier rule and the reversal is deliberate.** The previous
+system put every board on the page at once, on the grounds that "a leaderboard
+you have to click for can't show you where your name isn't". True, and the fix
+for it is the footer line, not 2,700px of bar charts. Six capped cards show every
+board *and* fit a phone.
 
-The row limit is a hard cap of six, ties included. A board that grew to fifty
-names every September, when half the squad is level on one goal, would be
-useless in the month it matters most.
+**The bars are gone.** A bar next to a number tells you nothing the number
+didn't, and it cost every row a second line — which is most of why the page was
+2,714px tall.
 
 ### Ties
 
-Level is level, and the rows can't say which of them mattered more — the same
-rule the honours board follows.
+Level is level, and the rows can't say which of them mattered more.
 
-- **Up to three level at the top**, the band names them all — "Owen Gibbons &
-  Tom Simeon" — a type step down, with "2 players level at the top" where the
-  leader's rate line would be.
-- **Past three, the band names nobody**: "Nobody clear yet", and every level
-  name drops into the list beneath, all still ranked first. A crowd at the top
-  is a fact about the season, not a name to pick out of it.
-- **The chase list ranks by competition** — 1, 1, 3 — never by row number.
-- **A cut that lands inside a tie says so**: "…and 4 more level on 1." Without
-  that line the last name shown reads as the last name there is.
+A **rank column** handles this natively — 1, 1, 3 — which is why the card format
+gets it for free. The old format had no rank column, so it needed a sentence to
+explain each tie, and five of the six boards ended on "…and N more level on X".
+With fourteen games and a rotating squad, ties are the normal case: a format that
+needs a footnote for the normal case is the wrong format.
+
+Where the cut lands inside a tie, the footer says so, once, in the line that is
+already there.
 
 ### The squad
 
 A team sheet: monogram, name, then Apps, Goals and Assists in fixed columns
-under one set of heads. The head and every row share one
-`grid-template-columns`, and that sharing is the point — the old list labelled
-all three figures on every row, so "MOTM" made each row a different shape and no
-column lined up down the page. Labels belong at the top of a column, once.
+under one set of heads. The head and every row share one `grid-template-columns`,
+and that sharing is the point — labels belong at the top of a column, once.
 
-Three figures, not four: a fourth column leaves a 375px phone no room for a
-name, and MOTM has a board of its own a tap away. Apps leads them, because
-turning up is the thing this club is trying to reward.
+Three figures, not four: a fourth column leaves a 375px phone no room for a name.
+Apps leads them, because turning up is the thing this club is trying to reward.
+
+**Every name is on the page.** All 47, not the first 12 with a "Show all" button
+— this is the page people open to find themselves, and a player with three
+appearances should not have to tap to exist. One affordance for narrowing, the
+search box, and that's it; "Full table" and "Show all 47" both go.
+
+**Two views, list or cards.** The list is the team sheet above. Cards give each
+player a tile carrying their badge icons, which is what makes the badges visible
+without opening a profile. Both views read from one row-shape definition.
 
 A zero takes `--ink-soft` — it's true, and it isn't the point. A name wraps
 rather than clips: half a name is worse than a two-line one on the page where
 people come to find their own.
-
-Behind the list, unchanged, is the full sortable table — thirteen columns in a
-`.table-wrap`, for the argument about whose season it was.
-
-The list is `components/SquadList.jsx` with `styles/components/squad-list.css`,
-and the Players route now has no page stylesheet at all. `.grid.boards`, the
-grid a set of boards sits in, moved to `styles/components/bar-board.css` for the
-same reason: two pages can't share a class that lives in one of their page
-files.
 
 ## Charts
 
@@ -579,9 +728,25 @@ The design target, not a fallback. Every change gets checked at 375px first.
 - Bottom tab bar owns section navigation below 700px; the header keeps the crest
   and Admin only. This works — don't undo it.
 - 44px minimum touch target, bought with padding.
-- **A table that side-scrolls is a bug.** Condensed data figures buy the room;
-  where they aren't enough, restructure into rows (`ResultList` is the pattern),
-  don't hide columns.
+- **A table that side-scrolls is a bug, and `.table-wrap` is not a fix.**
+  Condensed figures buy the room; where they aren't enough, restructure into rows
+  (`ResultList` is the pattern), don't hide columns.
+
+  This rule was in the doc and the site still broke it, which is worth recording
+  because the failure was in the *check*, not the rule. Three phases asserted "no
+  table side-scrolls **outside** a `.table-wrap`" — a weaker claim that a wrapped
+  table passes by definition, since the wrap's whole job is to scroll. Measured
+  inside the wrap, Records' season index hid **319px** at 375px and 374px at
+  320px, taking Position and Top scorer with it, and the sticky first column made
+  it look like a complete table. Player detail's Firsts & bests hid 122px and cut
+  text mid-word.
+
+  So the assertion is: **no `.table-wrap` has `scrollWidth > clientWidth` at any
+  supported width**, and no leaf element does either — that second one is the
+  clipped-name bug ("Old Cheltonians" needing 82px in 74px). `npm run
+  check:layout` owns both, and it arrives in Phase 9 along with the committed
+  fixture — until then this rule has no enforcement, which is exactly how it came
+  to be broken.
 - **The league table shows all ten columns from 360px up, and it's measured.**
   Phase 2 got the columns down to the width of a phone in `--font-data` and
   still had to hide four of them, because the surface holding the table spent
@@ -600,7 +765,31 @@ The design target, not a fallback. Every change gets checked at 375px first.
   same breakpoint to drop its monogram, which is not a column — a stand-in for a
   photo is the one thing in that row that isn't data.
 - Admin data entry is a phone-first flow — it's used on a Saturday night at a
-  pub table. Sticky save, big inputs, one record per block.
+  pub table. Sticky save, big inputs, one record per block. This is also why the
+  data centre reports per-appearance rates and not per-90: minutes would be
+  eleven to sixteen numbers typed per match on a phone, and entry burden is what
+  kills a volunteer-run stats site.
+
+### Page length
+
+A page has a height budget, because "no one scrolls to the bottom" is not a vibe
+to argue about — it's measurable, and information at the bottom of a 4,800px
+phone page is information that doesn't exist.
+
+| Page | Budget at 375px |
+| --- | --- |
+| Home | 1,600 |
+| Matchday | 1,900 |
+| Season | 2,200 |
+| Players → Leaderboards | 1,400 |
+| Records → any sub-page | 2,000 |
+| Player detail | 2,400 |
+| Players → Squad | no cap — it's a roster, and every name belongs on it |
+
+Records is a reference document and earns length, which is why it splits into
+sub-pages rather than shrinking. Home doesn't. `npm run shots` (Phase 9) reports
+the real numbers, and the roadmap records where each page started — every one of
+them is over budget today.
 
 ## CSS structure
 
@@ -660,3 +849,11 @@ growing past ~80 lines means something in it should have been a primitive.
 - **No component library.** Vanilla CSS with tokens. The site is ~7k lines;
   adding Tailwind or a UI kit now would be more migration than benefit.
 - **No animation library.** CSS transitions cover everything above.
+- **No sixth section.** Depth goes into a sub-page of one of the five, per
+  *Structure*. A section is expensive to add and expensive to rename — `App.jsx`
+  already carries seven redirect shims.
+- **No per-90 stats.** They need minutes, which nobody is going to type. See
+  *Mobile*.
+- **No stored aggregates.** Still true and still the load-bearing rule:
+  everything is derived. The two exceptions are league standings and the voted
+  Player of the Season, and there is not a third.
