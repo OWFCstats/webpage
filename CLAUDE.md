@@ -21,20 +21,31 @@ morning. Data is entered on a phone too. Mobile is the design target, not the
 fallback.
 
 Anyone who has never played for the club should be able to land on Home and
-see a real, competitive team.
+see a real, competitive team — within a screen or two of scrolling. That is not
+a first-screen requirement, though: the first screen belongs to the squad, and
+what it owes them is the last result and a name.
 
 ## Sections (don't add a sixth)
 
 Five public sections. The nav does not grow. If something new doesn't belong in
 one of these, that's a sign it doesn't belong yet.
 
-| Section | Owns |
-| --- | --- |
-| **Home** | What's happening now: next fixture, last result, league position, form. Plus one player-facing hook (MOTM of the last game). |
-| **Matchday** | One match at a time: scoreboard, squad, report, and the archive stepper across the season. |
-| **Season** | One season as a whole: the league table, results, and season charts. |
-| **Players** | The squad and the leaderboards — two views behind one nav entry, chosen by a selector at the top of the page. Individual player pages hang off it. |
-| **Records** | Above any one season: club records, the honours board, the club badge board, all-time leaders. |
+| Section | Owns | Sub-pages |
+| --- | --- | --- |
+| **Home** | What's happening now, led by the last result with its MOTM named on the same surface. League position, form, next fixture. | — |
+| **Matchday** | One match at a time: scoreboard, squad, report, and the archive stepper across the season. | — |
+| **Season** | One season as a whole. | Season · Charts |
+| **Players** | **This season.** The leaderboards, the squad, and the numbers. Individual player pages hang off it. | Leaderboards · Squad · Data centre |
+| **Records** | **All time**, and anything above a single season. | Badges · Honours · All-time |
+
+**A section may have sub-pages; the nav still has five entries.** Depth goes
+into a sub-page with a real address, reached by a segmented control at the top of
+the section — not into a sixth tab and not into a dropdown on the bottom bar. See
+*Structure* in `docs/DESIGN.md`.
+
+The Players/Records split is the one to keep straight, because they used to
+render the same leaderboard component with a season selector and therefore said
+the same thing twice: **Players is scoped to a season, Records is all-time.**
 
 Admin sits behind a login and is lazy-loaded, so a public visitor never
 downloads it.
@@ -112,8 +123,11 @@ down in JS.
 
 ## Conventions
 
-- **Mobile first.** Check every change at 375px before anything else. A table
-  that side-scrolls on a phone is a bug.
+- **Mobile first.** Check every change at 375px before anything else — with
+  `npm run shots` and `npm run check:layout` once Phase 9 has added them, and by
+  hand at 320/375/1400 until then. A table that side-scrolls is a bug *including
+  inside a `.table-wrap`*: that loophole is how two tables shipped hiding a third
+  of themselves. Pages have height budgets; see *Mobile* in `docs/DESIGN.md`.
 - **Comments explain why, not what.** The existing ones are the house style:
   short, specific, and about the decision rather than the mechanics. Keep that.
 - **No new page-specific CSS class without checking the primitives first.**
@@ -123,7 +137,15 @@ down in JS.
 - **One branch per change**, single purpose, descriptive commit. This part is
   already working well — keep it.
 - **Empty states are content.** A record nobody holds still gets named. The club
-  is early, not empty, and the copy should say so.
+  is early, not empty, and the copy should say so. An empty state says what to do
+  next; it does not explain the design.
+- **Explain decisions in the docs, not on the page.** Fifteen blocks of
+  explanatory prose had accumulated across eleven components — a five-line
+  paragraph under the honours board was longer than the five awards above it. If
+  a section needs a paragraph to justify itself, that paragraph belongs in
+  `docs/DESIGN.md` and the section probably needs redesigning.
+- **The current season is the most recent season with a result**, not with a row.
+  Entering next season's fixtures must never blank the site.
 
 ## Working agreement
 
