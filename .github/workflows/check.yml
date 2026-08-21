@@ -7,6 +7,11 @@
 # check:layout is expected to be RED on main until Phase 10 lands. It names the
 # bugs it is failing on and which phase owns each one; a failure that isn't on
 # scripts/expected-failures.js is a regression.
+#
+# Node 22, not 20: @supabase/supabase-js declares node >=22, `--test` only takes
+# a glob from 22 on, and the JSON import attribute in fixtures/ wants a recent
+# loader. deploy.yml still pins 20 — it only has to run `vite build`, and
+# bumping it isn't this branch's business.
 
 name: Checks
 
@@ -24,7 +29,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
       - run: npm ci
       # The fixture is committed; this proves it still matches the import it
@@ -40,7 +45,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium
@@ -53,7 +58,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
       - run: npm ci
       # No Supabase credentials on a pull request, and none needed: the build
