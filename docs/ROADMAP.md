@@ -207,6 +207,14 @@ the phase that owns that page:
 | Season's upcoming-fixtures table hides 7px at 320px, and fits from 360px up | Phase 18 |
 | The opponent page's home/away split hides 36px at 320px, and fits from 360px up | Phase 21 |
 
+**And it put a number on the pre-season emptiness.** On the `pre-season`
+dataset, Home is **1,430px** — inside its 1,600px budget for the first time,
+because four of five sections have nothing to say. Players → Leaderboards falls
+to an empty 900px, Season to 1,977px, and Records *grows* to 5,396px on the
+strength of one blank 2026/27 row. A page meeting its budget by having no
+content is not a page meeting its budget, and `shots/pre-season/375/home.png` is
+now the thing Phase 10 has to answer to.
+
 Three things are worth knowing before the next phase:
 
 - **The check is red on `main` until Phase 10.** The six failures are the three
