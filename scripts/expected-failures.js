@@ -40,9 +40,13 @@ export const EXPECTED = [
     match: 'flat-block',
     owner: 'Phase 18',
     why:
-      'Season\'s upcoming-fixtures table is 7px too wide at 320px and fits '
-      + 'everywhere else. Found by this check rather than by the review, and it '
-      + 'is the fixture list — which Phase 18 restructures onto the result row.',
+      'Season\'s upcoming-fixtures table is a few pixels too wide at 320px — 7px '
+      + 'on one platform\'s font metrics, 4px on CI\'s — and fits everywhere else. '
+      + 'Found by this check rather than by the review, and it is the fixture '
+      + 'list, which Phase 18 restructures onto the result row. If this entry '
+      + 'ever goes stale, check whether the table actually changed before '
+      + 'crediting a fix: a 4px overflow is close enough to the noise floor that '
+      + 'a font change could close it on its own.',
   },
   {
     invariant: 'table-wrap-scrolls',

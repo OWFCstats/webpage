@@ -204,7 +204,7 @@ the phase that owns that page:
 
 | Found | Owner |
 | --- | --- |
-| Season's upcoming-fixtures table hides 7px at 320px, and fits from 360px up | Phase 18 |
+| Season's upcoming-fixtures table hides 4–7px at 320px, and fits from 360px up | Phase 18 |
 | The opponent page's home/away split hides 36px at 320px, and fits from 360px up | Phase 21 |
 
 **And it put a number on the pre-season emptiness.** On the `pre-season`
@@ -214,6 +214,16 @@ to an empty 900px, Season to 1,977px, and Records *grows* to 5,396px on the
 strength of one blank 2026/27 row. A page meeting its budget by having no
 content is not a page meeting its budget, and `shots/pre-season/375/home.png` is
 now the thing Phase 10 has to answer to.
+
+**The check reproduces across machines, in identity but not to the pixel.** CI
+names the same six failures and the same four known ones, on the same routes and
+the same elements — but the measurements move by 2–4px, because font metrics
+differ between platforms ("Old Cheltonians" needs 80px on CI and 82px locally,
+in the same 74px). That is why the expected-failure list matches on invariant,
+route and element rather than on a number: an entry keyed to a pixel count would
+go stale on a font update. It is also why the Season finding is the one to watch —
+a 4px overflow is close enough to the noise floor that a font change could close
+it without anyone fixing the table, and the entry says so.
 
 Three things are worth knowing before the next phase:
 
@@ -594,8 +604,8 @@ The top of this page already works — the league table and the season summary a
 a good pair and they stay together.
 
 - **Results** use the Phase 10 row, so a season reads as a column of scores.
-- **Upcoming fixtures** move onto that row too, and off a table: it hides 7px at
-  320px, which `check:layout` found and holds against this phase. It is the
+- **Upcoming fixtures** move onto that row too, and off a table: it hides 4–7px
+  at 320px, which `check:layout` found and holds against this phase. It is the
   smallest of the table findings and the cheapest to retire, because the row
   already exists by then.
 - **Charts move to their own sub-page** at full width. They are currently behind

@@ -825,8 +825,9 @@ The design target, not a fallback. Every change gets checked at 375px first.
   not a hidden column.
 
   Running it found two more than the review did, both at widths nobody had
-  measured: Season's upcoming-fixtures table hides 7px at 320px, and the opponent
-  page's home/away split hides 36px at 320px. Neither is being fixed on the way
+  measured: Season's upcoming-fixtures table hides a handful of pixels at 320px
+  (4–7px, depending on the platform's font metrics), and the opponent page's
+  home/away split hides 36px at 320px. Neither is being fixed on the way
   past — they are on `scripts/expected-failures.js` against the phases that own
   those pages (18 and 21). That list is the whole reason the check is worth
   having: it can tell a scheduled bug from a regression, and an entry that stops
