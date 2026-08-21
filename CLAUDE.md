@@ -58,13 +58,24 @@ not for what it currently shows.
 
 React 18 + Vite, React Router (hash routing), Supabase (Postgres + auth),
 Recharts. Deployed to GitHub Pages by `.github/workflows/deploy.yml` on push to
-`main`.
+`main`; `.github/workflows/check.yml` runs the tests, the layout invariants and
+a production build on every pull request.
 
 ```sh
 npm install
-npm run dev
+npm run dev             # needs Supabase credentials in .env.local
+npm run dev:fixture     # the real pages on the committed fixture, no credentials
 npm run build
+
+npm test                # lib/ unit tests, over the fixture
+npm run check:layout    # the mobile invariants, as assertions
+npm run shots           # every route × width to shots/, with page heights
 ```
+
+No test needs a database. `fixtures/` holds the club's real 2025/26 season
+parsed to JSON plus the states one season doesn't contain, and `vite.config.js`
+aliases `lib/supabase` to a stub when `FIXTURE` is set — `src/` has no idea any
+of it exists. See `fixtures/README.md`.
 
 Public pages are read-only. Writes require a Supabase login and are enforced by
 Row Level Security, not by the UI. The publishable key is a public client key —
@@ -82,9 +93,16 @@ src/
   pages/admin/             the write side, lazy-loaded
   styles/                  see docs/DESIGN.md
 supabase/                  schema.sql + one migration file per change
+fixtures/                  the committed season, the datasets, the Supabase stub
+scripts/                   the harness: shots, check:layout, the invariants
+tests/                     node --test over lib/, against the fixture
 docs/DESIGN.md             the design system — read before touching UI
 docs/ROADMAP.md            what's planned, in order
 ```
+
+`fixtures/`, `scripts/` and `tests/` are outside `src/` on purpose: nothing the
+site ships imports them, and the fixture stub reaches the app through one alias
+in `vite.config.js` rather than a flag anybody has to remember to unset.
 
 **Everything is derived, nothing is stored twice.** Player totals, records,
 form, badges, points, goal difference — all computed from `players`, `matches`,
@@ -123,11 +141,14 @@ down in JS.
 
 ## Conventions
 
-- **Mobile first.** Check every change at 375px before anything else — with
-  `npm run shots` and `npm run check:layout` once Phase 9 has added them, and by
-  hand at 320/375/1400 until then. A table that side-scrolls is a bug *including
-  inside a `.table-wrap`*: that loophole is how two tables shipped hiding a third
-  of themselves. Pages have height budgets; see *Mobile* in `docs/DESIGN.md`.
+- **Mobile first.** Check every change at 375px before anything else, with
+  `npm run check:layout` and `npm run shots`. A table that side-scrolls is a bug
+  *including inside a `.table-wrap`*: that loophole is how two tables shipped
+  hiding a third of themselves, and the check now asserts the rule as
+  `DESIGN.md` states it rather than the weaker version that passed. It is red on
+  `main` until Phase 10 — every failure names the phase that owns it, and
+  anything not on `scripts/expected-failures.js` is a regression. Pages have
+  height budgets; see *Mobile* in `docs/DESIGN.md`.
 - **Comments explain why, not what.** The existing ones are the house style:
   short, specific, and about the decision rather than the mechanics. Keep that.
 - **No new page-specific CSS class without checking the primitives first.**

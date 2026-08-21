@@ -25,8 +25,22 @@ and is enforced by Row Level Security, not just the UI.
 
 ```sh
 npm install
-npm run dev
+npm run dev            # needs Supabase credentials in .env.local
 ```
+
+No credentials to hand? `fixtures/` holds the club's real 2025/26 season plus the
+states one season doesn't contain, and the site runs on it:
+
+```sh
+npm run dev:fixture    # the real pages, no database
+npm test               # unit tests over lib/
+npm run check:layout   # the mobile invariants, as assertions
+npm run shots          # every route × width to shots/, with page heights
+```
+
+`check:layout` is deliberately red on `main` until Phase 10: it names each bug it
+fails on and the phase that owns it. See `fixtures/README.md` and
+`docs/ROADMAP.md`.
 
 ## Deploy (GitHub Pages)
 

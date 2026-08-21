@@ -11,3 +11,6 @@ dist/
 # misc
 .DS_Store
 *.log
+
+# Screenshot output from `npm run shots` — regenerate, never commit.
+shots/
