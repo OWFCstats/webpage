@@ -14,10 +14,10 @@ pages still don't work. This half is information design, and it comes out of a
 page-by-page review against the real 2025/26 data — 53 players, 14 matches, 169
 appearances — plus a set of decisions recorded in `DESIGN.md`.
 
-**One thing runs in parallel and should start now: the badge artwork.** Phase 15
-needs eleven drawings and none of them are in this repo — see *The artwork* below.
-It is the only dependency in this plan that code can't unblock, and it decides
-whether phases 15 and 16 run in that order or the other way round.
+**The badge artwork has landed** — ten drawings in `src/assets/badges/`, ahead of
+Phase 10. It was the only dependency in this plan that code couldn't unblock, and
+with it here phases 14 → 15 → 16 run in that order. The crest is the one file
+still outstanding. See *The artwork* below for what arrived and what it settles.
 
 ---
 
@@ -109,31 +109,114 @@ duplication the Players/Records split exists to kill. Phases 18 and 21 take them
 
 ## The artwork
 
-Phase 15 is the signature, and it is the one phase blocked on something outside
-the repo. Recording the state plainly, because a previous session's measurements
-were not committed and reading the docs alone would suggest otherwise:
+Phase 15 is the signature, and it was the one phase blocked on something outside
+the repo. **It is unblocked: ten drawings landed in `src/assets/badges/` before
+Phase 10**, one file per badge, named for the slug the badge page will use.
 
-**There are no image assets in this repository.** No `public/`, no SVG, no PNG,
-nothing. The masthead is rendering its `OW` monogram fallback because
-`public/crest.png` doesn't exist either (`components/Layout.jsx`). So Phase 15
-needs, as files:
+| File | Class | Tiers |
+| --- | --- | --- |
+| `appearances.svg` | career badge — shirt | four metals |
+| `goals.svg` | career badge — football | four metals |
+| `assists.svg` | career badge — target and arrow | four metals |
+| `clean-sheets.svg` | career badge — keeper's glove | four metals |
+| `player-of-the-season.svg` | season trophy — cup | gold only |
+| `golden-boot.svg` | season trophy — boot on a plinth | gold only |
+| `playmaker.svg` | season trophy — figure striking a ball | gold only |
+| `the-dependable.svg` | season trophy — cap | gold only |
+| `motm.svg` | event — star | gold only |
+| `hat-trick.svg` | event — three footballs | gold only |
 
-- the four career badges — shirt, football, target and arrow, keeper's glove
-- the four season trophies — cup, boot on a plinth, figure striking a ball, cap
-- the two Class 2 events — a Man of the Match star, and a brace
-- `public/crest.png`
+**Only the four career badges tier.** A trophy is one trophy: winning the Golden
+Boot twice is the same gold boot twice, and there is no bronze Player of the
+Season. The same holds for the two events — a hat-trick is a hat-trick. So the
+metal ramps are read by four drawings and the other six are gold and stay gold.
+An earlier draft of this section, and the artwork brief the icons arrived with,
+both showed all ten in four metals; that was wrong in both.
 
-That is eleven drawings, not the two the earlier plan named as missing. The
-recolour pipeline and the contrast measurements described in `DESIGN.md` under
-*The icons* are decisions that survive; the artefacts they were measured against
-do not exist here and the measuring has to be redone against whatever lands.
+Four of those six arrive gold in the file. **`playmaker.svg` and `hat-trick.svg`
+do not** — the figure is a black silhouette and the footballs are black and
+white — so those two are recoloured once, to gold, and never again. That is the
+only recolouring outside Class 1.
 
-**Commit the artwork in its own commit, before phase order matters.** It has the
-longest lead time of anything in this plan and it gates nothing else, so it can
-happen alongside Phase 9. If it is not ready when Phase 13 closes, run
-**14 → 16 → 15** instead of 14 → 15 → 16: Records ships with Honours as its
-default sub-page, and Phase 15's done-test includes flipping the default back to
-Badges. That flip is written into Phase 15 rather than left to be remembered.
+**The brace is gone**, from the badge system and from the artwork. It never had
+a drawing and it no longer needs one.
+
+**Still eleven drawings, and a different eleven.** The list this section carried
+before named a brace and forgot the hat-trick, so the count came out right by
+cancelling two errors. The eleventh is `public/crest.png`, which **did not
+arrive** — the masthead keeps rendering its `OW` monogram fallback
+(`components/Layout.jsx`) and Phase 19's fixture row keeps its empty circle until
+it does. Nothing else waits on it.
+
+### What the drawings measure
+
+The contrast figures `DESIGN.md` quoted were taken in a session whose files were
+never committed. These are taken against the committed ones: each drawing
+rendered at 256px, composited on the ground, and scored as **the share of its own
+ink clearing 3:1**. The grounds are Phase 11's — `--paper #f1f3ef` and `--board
+#16281f` — because the palette changes underneath this phase; against today's
+values nothing moves by more than four points.
+
+| Drawing | on paper | on board | tonal span |
+| --- | --- | --- | --- |
+| appearances | 11% | 90% | 0.00–0.60 |
+| assists | 100% | **0%** | 0.00–0.03 |
+| clean-sheets | 64% | 73% | 0.00–0.56 |
+| goals | 100% | **0%** | 0.03–0.03 |
+| golden-boot | 44% | 57% | 0.00–0.77 |
+| hat-trick | 38% | 63% | 0.03–1.00 |
+| motm | 21% | 100% | 0.18–0.84 |
+| player-of-the-season | 11% | 90% | 0.10–0.77 |
+| playmaker | 100% | **0%** | 0.00–0.00 |
+| the-dependable | **0%** | 100% | 0.52–0.60 |
+
+Three rulings come out of that table:
+
+- **The ground rule survives, and now it has the club's own numbers behind it.**
+  The set splits three ways. The near-black drawings — assists, goals, playmaker
+  — are perfect on paper and score **0%** on green. The gold ones invert it: the
+  cap scores 0% on paper and 100% on the board, the cup and the shirt 11% against
+  90%. Only the four that carry both a gold and a dark mass — the glove, the
+  boot, the hat-trick footballs — are middling on each and good on neither.
+  Career badges on the ground, season trophies on a board, which is where the
+  pages put them.
+- **A ramp cannot recolour a silhouette.** Assists, goals and playmaker have a
+  tonal span under 0.04: there is no range in them to map onto a metal. The
+  recolour pipeline reads a drawing's own tones, so for those three it has
+  nothing to read and the metal has to be a flat fill. Only appearances and
+  clean-sheets carry enough span for a mapped ramp. This is the same failure
+  `DESIGN.md` records as "do not normalise an icon to the full ramp", caught this
+  time before it shipped rather than after.
+- **The medallion is no longer parked.** A gold cup on a light page is 11%
+  whatever the ramp does, because a cup is mostly highlight — that is not a band
+  that can be tuned, it is the drawing. The dark medallion behind a light metal is
+  the fix, it is in the brief the artwork arrived with, and it moves into Phase 15.
+
+### What Phase 15 inherits, and what it has to fix
+
+- **`motm.svg` is 471 KB of embedded bitmap** — a 1241×1179 raster behind a
+  luminance mask — against 3–22 KB for the nine that are paths. It is the only
+  drawing in the set that is not vector, and it carries 1.5 million pixels for a
+  star that renders into about 2,300 of them at its 16px floor on a retina phone.
+  It also carries a gradient, so `check:layout` reports it unmeasurable rather
+  than measuring it. Redraw it as paths, or down-sample the raster; do not ship
+  471 KB to a phone for a star.
+- **`the-dependable.svg` has a stray path.** A near-white hairline
+  (`fill="#f6ffff"`) floats in empty space above and right of the cap, with
+  nothing joining it to the drawing. It reads as a speck of dirt on the board.
+  The artwork is committed exactly as the club supplied it, so this is recorded
+  rather than quietly edited — but it wants deleting before the icons ship.
+- **The check measures the wrong ink on a multi-fill drawing.** `collect.js`
+  reads `fill` off the root `<svg>`, which is right for the nav icons and the
+  sparklines it was built for — they are one colour, set from CSS — and wrong for
+  a drawing whose colour lives on up to thirty-six child paths. On these files it reads
+  the initial value, black, and would pass a gold cup on green while failing it
+  on paper. Phase 15 extends the invariant to composite the rendered footprint,
+  which is what the table above already does.
+
+The recolour pipeline and the ground rule described in `DESIGN.md` under *The
+icons* survive intact. The numbers under them are now measured against files that
+exist.
 
 ---
 
@@ -237,8 +320,10 @@ Three things are worth knowing before the next phase:
   for eleven phases would stop being read. `npm run shots` prints the full table.
 - **Icon contrast has nothing to bite on yet.** 668 icons measured per run, all
   of them the nav and the sparklines, all passing. A bitmap is reported as
-  unmeasurable rather than as a pass, so the check starts naming the badge
-  artwork the moment any of it lands.
+  unmeasurable rather than as a pass. The badge artwork has since landed as
+  files, but nothing renders it yet and the invariant could not read it if it
+  did — it takes the ink off the root `<svg>`, which is one colour for a nav icon
+  and meaningless for a ten-fill drawing. Phase 15 extends it; see *The artwork*.
 
 ---
 
@@ -473,14 +558,15 @@ all-time scope.
 
 ## Phase 15 — The badge system
 
-The signature, and the biggest phase. Depends on Phase 13's routes, and on
-artwork that is not in this repo — see *The artwork* above before starting.
+The signature, and the biggest phase. Depends on Phase 13's routes and on the
+artwork, which is in `src/assets/badges/` — read *The artwork* above before
+starting, because it carries the measurements this phase is held to.
 
 **Three classes, not one grid of 24.**
 
 *Class 1 — career badges, four metals.* One badge per category showing the metal
 held. Bronze is a debut, so all 47 players who have turned up own something —
-against 15 of 47 today.
+against 15 of 47 today. **These four are the only badges that tier.**
 
 | Badge | Bronze | Silver | Gold | Diamond | Holders now |
 | --- | --- | --- | --- | --- | --- |
@@ -501,16 +587,12 @@ total. That is accepted rather than fixed: a clean sheet *is* a team
 achievement, and the badge's own line names it as one so it doesn't read as a
 participation prize.
 
-*Class 2 — events, stackable, no tiers.* Man of the Match, hat-trick, brace. A
-hat-trick is a thing that happened, not a rung; these carry a small multiplier
-(`×2`) and appear inline under a player's name.
+*Class 2 — events, stackable, no tiers, gold.* Man of the Match and the
+hat-trick. A hat-trick is a thing that happened, not a rung; these carry a small
+multiplier (`×2`) and appear inline under a player's name. `lib/awards.js`
+already counts hat-tricks on `goals >= 3` and that rule is unchanged.
 
-**A brace is exactly two.** Three goals is a hat-trick and nothing else — the
-larger event replaces the smaller one rather than stacking with it, so a
-four-goal game is one hat-trick and not also two braces. `lib/awards.js` counts
-hat-tricks on `goals >= 3` today; the brace is `goals === 2`.
-
-*Class 3 — season honours, trophies, one per season.* Player of the Season
+*Class 3 — season honours, trophies, one per season, gold.* Player of the Season
 (voted), Golden Boot, Playmaker, The Dependable. They do not tier and do not
 stack into a bigger version — two Golden Boots is the same trophy twice, shown
 as a year list. **The Dependable is most appearances**, not ever-present: nobody
@@ -522,24 +604,45 @@ is removed** — it usually goes to the same player as Player of the Season — 
 survives as the Class 2 star; **Assist King is renamed Playmaker**; and
 `everPresent` and its `PLATES` family come out with it.
 
+**The brace is not built** — see *There is no brace* in `DESIGN.md`. It leaves no
+code behind: nothing in `lib/awards.js` ever counted one.
+
+**Six of the ten drawings never tier**, so the recolour work is four badges ×
+four metals plus two one-off passes to gold, not ten × four. Two of the four
+career badges — assists and goals — are near-monochrome silhouettes with no
+tonal span to map, so their metal is a flat stop rather than a mapped ramp. The
+measurements are in *The artwork*.
+
 **A badge has its own page.** `/records/badges/:key` lists every holder at every
-tier and who is closest, so a badge is linkable into the group chat.
+tier and who is closest, so a badge is linkable into the group chat. The keys are
+the artwork's filenames.
 
-**The icons are the club's own artwork**, recoloured by a ramp rather than
-hand-tinted: read each drawing's tonal range, map it onto a metal. Two findings
-belong in `DESIGN.md` and have to be re-measured against the committed files:
-the band depends on the ground (paper metals sit low on the ramp, board metals
-high, or large light shapes bleach out), and **bronze belongs on paper while the
-light metals belong on the board**.
+**The medallion is built here, not parked.** A dark disc behind a light metal.
+The three gold-dominant drawings — cup, cap, star — score 0–21% of their own ink
+against paper and 90–100% against the board, and that is the drawing rather than
+the band: a cup is mostly highlight, so no ramp fixes it. Trophies and events sit
+on a medallion wherever the page around them is light; career badges sit on the
+ground in bronze and on a medallion above it.
 
-**If this phase runs after Phase 16**, because the artwork wasn't ready, it also
-flips Records' default sub-page from Honours back to Badges — in `App.jsx`, in
-Phase 13's map above and in `DESIGN.md`'s copy of it.
+**`check:layout` needs extending before it can hold this phase.** Its icon
+invariant reads `fill` off the root `<svg>`, which is one colour for the nav and
+the sparklines and meaningless for a drawing that carries its colour on thirty-six
+child paths. It has to composite the rendered footprint and score the share of
+ink clearing 3:1, which is the measurement *The artwork* reports. Until it does,
+it would pass a gold cup on green and fail the same cup on paper for the same
+reason: it is reading black either way.
 
-**Done means** the badge board is 4 cards + 3 stackables + 4 trophies, not 24
-plates; every badge has a detail page; a player's own page shows their tier
-icons under their name; no icon renders below its floor (20px for trophies, 16px
-for the rest); the ladder table above matches `lib/awards.js` exactly.
+**Two artwork defects come off *The artwork*'s list here.** `motm.svg` is 471 KB
+of embedded bitmap and has to become paths or a down-sampled raster before it
+ships to a phone; `the-dependable.svg` has a stray near-white hairline floating
+beside the cap that has to be deleted.
+
+**Done means** the badge board is 4 cards + 2 stackables + 4 trophies, not 24
+plates; every badge has a detail page; a player's own page shows their tier icons
+under their name; no icon renders below its floor (20px for trophies, 16px for
+the rest); no drawing scores under 3:1 across the majority of its ink on the
+ground it ships on; `motm.svg` is under 20 KB; the ladder table above matches
+`lib/awards.js` exactly.
 
 ---
 
@@ -635,8 +738,8 @@ Season entries come off `scripts/expected-failures.js`.
   site. Season leads with something else.
 - **The next fixture is a compact row**, not a 280px card carrying eight words
   with a black circle where a crest should be. That circle is the missing
-  `public/crest.png` — if the crest lands with the badge artwork, it fills;
-  either way the row is designed for both states.
+  `public/crest.png`, which did not land with the badge artwork — so the row is
+  designed for both states and ships in the empty one until the file arrives.
 - **The pre-season state is a real design**, not four stacked empty states —
   Phase 10 makes that possible and this phase makes it look intentional.
 
@@ -766,9 +869,6 @@ Named so they don't get lost, and not built yet.
 - **About us** — club story and a team photo. Needs a photo worth showing.
 - **Player photos** — real headshots. Blocked on collecting 30 of them; the
   design works without them and the initials placeholder is fine.
-- **A dark medallion for badge icons** — the one thing that makes silver, gold
-  and diamond sing on a light page, and it makes them read as actual medals.
-  Designed; not needed for the layouts in phases 14–17.
 - **Final league positions per season** — the Records season index has a
   Position column that stays blank; needs standings entered per season.
 - **Head-to-head pages** — the opponent page exists and Phase 21 tidies it; a
@@ -778,9 +878,9 @@ Named so they don't get lost, and not built yet.
 - **A figure recipe in the type layer** — the display face at 600 weight with
   `-0.015em` and tabular figures is written out in twelve rules. One decision in
   `DESIGN.md`'s *Type* section, not a component question.
-- **Icons as paths rather than bitmaps** — whichever of the eleven drawings
-  arrive as embedded bitmaps will work through the recolour pipeline, but real
-  paths scale better. A note for whoever exports them, not a phase.
+- **The crest** — `public/crest.png`, the one drawing of the eleven that has not
+  arrived. The masthead and Phase 19's fixture row are both designed for its
+  absence, so this is a file to chase rather than work to schedule.
 
 ---
 
