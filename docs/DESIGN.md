@@ -250,6 +250,9 @@ read as metal. Darkest to lightest:
 Four tiers, not three: diamond is the fourth, and it is icy rather than another
 warm metal so it cannot be mistaken for gold.
 
+**Only the four career badges read the ramps.** Season trophies and the two
+events are single gold and do not tier, so sixteen recolours exist, not forty.
+
 Bronze is deliberately coppery rather than dark brown. Bronze and gold are
 adjacent hues, and separating them by lightness fails the moment either sits on
 a ground that isn't white — so they are separated by hue instead.
@@ -462,24 +465,31 @@ drawn per badge, and it needs no box: it sits directly on whatever is behind it.
 That is what lets a badge appear inline under a player's name, in a leaderboard
 row and on a board, which a boxed plate never could.
 
-Two things about a metal as paint rather than as a border, both measured rather
-than judged by eye:
+Three things about a metal as paint rather than as a border, all measured
+rather than judged by eye:
 
 - **The band depends on the ground.** A metal is a ramp (see *Metals*), and an
   icon's own tones map onto a slice of it. Mapping onto the whole ramp bleaches
-  large light shapes: the trophy cup put 10% of its own footprint above 3:1
-  against the ground, and the cap 6%. Icons on the ground sit low on the ramp;
-  icons on a board sit high.
+  large light shapes: measured on the committed files, the trophy cup puts 11% of
+  its own footprint above 3:1 against paper and the cap 0%. Icons on the ground
+  sit low on the ramp; icons on a board sit high.
 - **Bronze goes on the ground; the light metals go on a board.** Bronze is a
-  dark metal — on green the football measured 0% of its footprint above 3:1. The
-  light metals have the mirror problem on a light page. So career badges live on
-  the ground and season trophies live on the board, which is where the pages put
-  them anyway.
+  dark metal — on green the football measures 0% of its footprint above 3:1, and
+  so do the target and the playmaker figure. The light metals have the mirror
+  problem on a light page. So career badges live on the ground and season
+  trophies live on the board, which is where the pages put them anyway.
+- **A ramp cannot recolour a silhouette.** The pipeline reads a drawing's own
+  tonal range and maps it onto a slice of the metal. Three of the ten have no
+  range to read: assists spans 0.00–0.03 in luminance, goals 0.03–0.03,
+  playmaker 0.00–0.00. For those the metal is a flat stop, not a mapped band.
+  Appearances (0.00–0.60) and clean sheets (0.00–0.56) are the two career badges
+  with enough span for a ramp to do anything.
 
 A dark medallion behind a light metal fixes the light-on-light case and makes a
-badge read as an actual medal. It is parked and, like every other badge asset, not
-in this repository — so it is a decision waiting on a file, not a file waiting on
-a phase. Nothing in phases 14–17 needs it.
+badge read as an actual medal. **It is no longer parked** — it arrived in the
+brief with the artwork, and the measurements say it is not optional: a gold cup
+on a light page is 11% whatever the band does, because a cup is mostly highlight.
+Phase 15 builds it.
 
 ### Rules and radius
 
@@ -541,7 +551,8 @@ correct for a young club and awful as a layout.
 They are not interchangeable and they do not share a shape.
 
 **Class 1 — career badges.** Four categories, four metals. One badge per
-category, showing the metal held and progress to the next.
+category, showing the metal held and progress to the next. **These four are the
+only badges that tier**, and so the only four drawings the metal ramps touch.
 
 | Badge | Icon | Bronze | Silver | Gold | Diamond |
 | --- | --- | --- | --- | --- | --- |
@@ -566,29 +577,33 @@ people at once, which makes it the only Class 1 badge that isn't a personal
 total. That is accepted, not fixed: a clean sheet *is* a team achievement, and
 naming it as one on the badge stops it reading as a participation prize.
 
-**Class 2 — events, stackable, no tiers.** Man of the Match, hat-trick, brace.
-A hat-trick is a thing that happened, not a rung on a ladder — "3 hat-tricks" as
-a tier reads oddly where "hat-trick ×3" doesn't. These carry a small multiplier
-and appear inline under a player's name.
+**Class 2 — events, stackable, no tiers, gold.** Man of the Match and the
+hat-trick. A hat-trick is a thing that happened, not a rung on a ladder — "3
+hat-tricks" as a tier reads oddly where "hat-trick ×3" doesn't. These carry a
+small multiplier and appear inline under a player's name. `lib/awards.js` counts
+a hat-trick on `goals >= 3` and that is the whole rule.
 
-**A brace is exactly two.** The larger event replaces the smaller one rather
-than stacking with it, so three goals is a hat-trick and nothing else, and four
-goals is one hat-trick and not also two braces. In `lib/awards.js` that is
-`goals === 2` against the existing `goals >= 3`.
+**There is no brace.** An earlier version of this section carried one as a third
+event on `goals === 2`. It is out: two goals is a good afternoon, not a thing
+with a name, and a badge for it cheapens the one beside it. Nothing in
+`lib/awards.js` ever counted one, so it leaves no code behind.
 
-**Class 3 — season honours, trophies, one per season.** Four, and they are
-exactly the honours board's rows, so the board and the badges cannot drift.
+**Class 3 — season honours, trophies, one per season, gold.** Four, and they
+are exactly the honours board's rows, so the board and the badges cannot drift.
 
 | Award | Icon | Source |
 | --- | --- | --- |
 | **Player of the Season** | cup | **voted by the players, entered by an admin** |
 | Golden Boot | boot on a plinth | most goals — derived |
 | Playmaker | figure striking a ball | most assists — derived |
-| The Dependable | cap on a plinth | most appearances — derived |
+| The Dependable | cap | most appearances — derived |
 
 They do not tier and they do not stack into a bigger version: **winning two
 Golden Boots is the same trophy held twice**, shown as a year list. A "3× Golden
-Boot" tier would imply the third is worth more than the first, and it isn't.
+Boot" tier would imply the third is worth more than the first, and it isn't. So
+there is no bronze Player of the Season and no diamond boot: a trophy is gold.
+The cup, the boot and the cap arrive gold in the file; the playmaker figure
+arrives as a black silhouette and is recoloured once, to gold, and never again.
 
 Three rulings inside that table:
 
@@ -609,20 +624,20 @@ badge that can only be looked at, and this club's distribution is WhatsApp.
 
 ### The icons
 
-> **None of the artwork is in this repository.** No SVG, no PNG, no `public/`
-> directory — which is also why the masthead renders its `OW` monogram fallback
-> instead of a crest. Eleven drawings are needed (four career badges, four
-> trophies, the MOTM star, the brace, and `public/crest.png`), and the contrast
-> figures quoted below were measured in a session whose files were never
-> committed, so they have to be taken again against whatever lands. The rules
-> survive; the numbers are examples until then. `docs/ROADMAP.md` → *The
-> artwork* holds the list and what it gates.
+> **The artwork is here.** Ten drawings in `src/assets/badges/`, one per badge,
+> named for the slug its page will use: four career badges, four trophies, the
+> MOTM star and the hat-trick. The numbers below are measured against those files
+> — the earlier ones were taken in a session whose artwork was never committed.
+> The eleventh drawing, `public/crest.png`, has not arrived, which is why the
+> masthead still renders its `OW` monogram fallback. `docs/ROADMAP.md` → *The
+> artwork* holds the full table and the two defects Phase 15 has to fix.
 >
-> `npm run check:layout` measures the 3:1 rule on every icon it can read — the
-> five nav icons and the sparklines, which are inline SVG and pass — and reports
-> a bitmap as *unmeasurable* rather than as a pass, because it can't read the ink
-> in one. So the moment a drawing lands the check starts naming it, and Phase 15
-> takes the numbers against the real files.
+> `npm run check:layout` cannot yet hold this. Its icon rule reads `fill` off the
+> root `<svg>`, which is one colour for the five nav icons and the sparklines it
+> was written against and meaningless for a drawing carrying colour on up to
+> thirty-six child paths — on these files it reads the initial value, black. Phase 15
+> extends it to composite the rendered footprint. Until then the figures here are
+> taken by hand, the same way.
 
 The club's own drawings, recoloured by the ramp rather than hand-tinted: read
 each drawing's tonal range, map it onto a slice of the metal. That keeps the
@@ -634,7 +649,9 @@ Two failure modes are worth writing down because both were shipped once:
 - **Do not normalise an icon to the full ramp.** Some drawings are deliberately
   near-monochrome. Stretching two shades of black across dark-to-white turned an
   arrow and a figure almost white and they vanished on the ground. Scale the
-  span to the source's own contrast instead.
+  span to the source's own contrast instead — and where there is no span at all,
+  as with the target, the football and the playmaker figure, take one stop flat
+  rather than inventing a range. See *Plate* above for the measurements.
 - **Trophies never render below 20px.** A plinth plus an object below that merges
   into a blob. Career badges and the star hold at 16.
 

@@ -86,6 +86,7 @@ data is protected by RLS, not by hiding it.
 ```
 src/
   main.jsx, App.jsx        routing, providers
+  assets/badges/           the club's badge drawings, one SVG per badge
   context/                 AuthContext (session), DataContext (one load, shared)
   lib/                     derivation and helpers — no JSX
   components/              presentational; shared at the top, one dir per page
@@ -103,6 +104,12 @@ docs/ROADMAP.md            what's planned, in order
 `fixtures/`, `scripts/` and `tests/` are outside `src/` on purpose: nothing the
 site ships imports them, and the fixture stub reaches the app through one alias
 in `vite.config.js` rather than a flag anybody has to remember to unset.
+
+`src/assets/badges/` is inside `src/` for the opposite reason: the four career
+badges are recoloured per tier, which means their fills have to be reachable, so
+they are inlined rather than served as images. A file there is named for the
+badge's own slug and nothing else goes in it. `public/` stays for what the
+browser fetches whole — today that is only the crest.
 
 **Everything is derived, nothing is stored twice.** Player totals, records,
 form, badges, points, goal difference — all computed from `players`, `matches`,
