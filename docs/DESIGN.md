@@ -617,6 +617,12 @@ badge that can only be looked at, and this club's distribution is WhatsApp.
 > committed, so they have to be taken again against whatever lands. The rules
 > survive; the numbers are examples until then. `docs/ROADMAP.md` → *The
 > artwork* holds the list and what it gates.
+>
+> `npm run check:layout` measures the 3:1 rule on every icon it can read — the
+> five nav icons and the sparklines, which are inline SVG and pass — and reports
+> a bitmap as *unmeasurable* rather than as a pass, because it can't read the ink
+> in one. So the moment a drawing lands the check starts naming it, and Phase 15
+> takes the numbers against the real files.
 
 The club's own drawings, recoloured by the ramp rather than hand-tinted: read
 each drawing's tonal range, map it onto a slice of the metal. That keeps the
@@ -808,9 +814,24 @@ The design target, not a fallback. Every change gets checked at 375px first.
   So the assertion is: **no `.table-wrap` has `scrollWidth > clientWidth` at any
   supported width**, and no leaf element does either — that second one is the
   clipped-name bug ("Old Cheltonians" needing 82px in 74px). `npm run
-  check:layout` owns both, and it arrives in Phase 9 along with the committed
-  fixture — until then this rule has no enforcement, which is exactly how it came
-  to be broken.
+  check:layout` owns both, on every route at 320/360/375/414/700/1400 against
+  both fixture datasets, and it runs on every pull request.
+
+  It is stated as "a scroller holding a table" rather than as `.table-wrap`, so a
+  wrapper introduced later under another name is covered by the rule instead of
+  by somebody remembering to add it. The chip rows — the Matchday stepper, the
+  season chips — are deliberate horizontal scrollers and hold no table, so they
+  fall outside it by construction: a stepper is a control, and scrolling one is
+  not a hidden column.
+
+  Running it found two more than the review did, both at widths nobody had
+  measured: Season's upcoming-fixtures table hides a handful of pixels at 320px
+  (4–7px, depending on the platform's font metrics), and the opponent page's
+  home/away split hides 36px at 320px. Neither is being fixed on the way
+  past — they are on `scripts/expected-failures.js` against the phases that own
+  those pages (18 and 21). That list is the whole reason the check is worth
+  having: it can tell a scheduled bug from a regression, and an entry that stops
+  failing fails the run, so the phase that fixes one has to delete it.
 - **The league table shows all ten columns from 360px up, and it's measured.**
   Phase 2 got the columns down to the width of a phone in `--font-data` and
   still had to hide four of them, because the surface holding the table spent
@@ -858,8 +879,11 @@ constraint, so it lives here.
 Records is a reference document and earns length, which is why it splits into
 sub-pages rather than shrinking. Home doesn't. The opponent page is the same kind
 of document as a Records sub-page and takes the same number. `npm run shots`
-(Phase 9) reports the real numbers, and the roadmap records where each page
-started — every one of them is over budget today except Matchday.
+reports the real numbers — page by page, at every supported width, into
+`shots/heights.json` — and the roadmap records where each page started. Every
+one of them is over budget today except Matchday, and `check:layout` prints the
+gap on every run without failing on it: the phase that owns each page closes its
+own, and a check that went red for eleven phases would stop being read.
 
 Matchday is the exception and it is a thin one: 1,857 against 1,900. Phase 20
 *adds* to that page — labels on fourteen stepper chips, a key for the squad pills

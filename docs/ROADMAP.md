@@ -3,9 +3,10 @@
 Living document. One phase per branch, in order. Each phase says what "done"
 means so it can't quietly expand.
 
-Phases 0–8 built the foundation: the CSS layers, the tokens, the surfaces, the
-stats modules, the badge system, the charts and the page/component split. That
-work holds and none of it is being undone.
+Phases 0–9 built the foundation: the CSS layers, the tokens, the surfaces, the
+stats modules, the badge system, the charts, the page/component split, and the
+fixture and checks that let the rest of it be measured. That work holds and none
+of it is being undone.
 
 Phases 9 onward are different in kind. Everything up to 8 fixed *how the site is
 built*; none of it changed *what a page decides to say first*, which is why the
@@ -20,7 +21,7 @@ whether phases 15 and 16 run in that order or the other way round.
 
 ---
 
-## What phases 0–8 established
+## What phases 0–9 established
 
 | # | Phase | What it left behind |
 | --- | --- | --- |
@@ -33,6 +34,7 @@ whether phases 15 and 16 run in that order or the other way round.
 | 6 | Players page | Leaderboard first, squad as a team sheet |
 | 7 | Charts | Linear lines, flat fills, direct labels |
 | 8 | Page components | Every page reads as a layout, longest 247 lines |
+| 9 | Let the repo see itself | A committed fixture, `npm run shots`, `npm run check:layout`, unit tests, and a CI job holding all three |
 
 The rulings from those phases that still bind are in `DESIGN.md`. Two are worth
 repeating because later phases keep bumping into them: **everything is derived,
@@ -179,6 +181,64 @@ off-by-one in either.
 **Done means** `npm run check:layout` fails on `main` today, naming the three
 known bugs, and every later phase leaves it passing; the check runs on every
 pull request. No `src/` change.
+
+### Built — what landed, and what it found
+
+All of the above, plus the unit tests. No `src/` change: `fixtures/`, `scripts/`
+and `tests/` are new directories and the only edit inside the app's own tree is
+the `resolve.alias` in `vite.config.js`, which is only added when `FIXTURE` is
+set. `.github/workflows/check.yml` runs the tests, the layout invariants and a
+production build on every pull request; the build job greps `dist/` for a club
+we have never played, so the fixture can't reach a deploy.
+
+The harness reproduces the review's own numbers, which is the evidence that it
+measures the site rather than a fixture-shaped approximation of it: Records'
+season index hides **319px at 375px and 374px at 320px**, Firsts & bests hides
+**122px at 375px**, "Old Cheltonians" needs **82px in 74px**, Matchday is
+**1,857px** and the squad roster **1,254px** — the same figures the page-by-page
+review reported by hand.
+
+**It found two bugs the review didn't**, both at widths nobody had measured, and
+neither is fixed on the way past — each is on the expected-failure list against
+the phase that owns that page:
+
+| Found | Owner |
+| --- | --- |
+| Season's upcoming-fixtures table hides 4–7px at 320px, and fits from 360px up | Phase 18 |
+| The opponent page's home/away split hides 36px at 320px, and fits from 360px up | Phase 21 |
+
+**And it put a number on the pre-season emptiness.** On the `pre-season`
+dataset, Home is **1,430px** — inside its 1,600px budget for the first time,
+because four of five sections have nothing to say. Players → Leaderboards falls
+to an empty 900px, Season to 1,977px, and Records *grows* to 5,396px on the
+strength of one blank 2026/27 row. A page meeting its budget by having no
+content is not a page meeting its budget, and `shots/pre-season/375/home.png` is
+now the thing Phase 10 has to answer to.
+
+**The check reproduces across machines, in identity but not to the pixel.** CI
+names the same six failures and the same four known ones, on the same routes and
+the same elements — but the measurements move by 2–4px, because font metrics
+differ between platforms ("Old Cheltonians" needs 80px on CI and 82px locally,
+in the same 74px). That is why the expected-failure list matches on invariant,
+route and element rather than on a number: an entry keyed to a pixel count would
+go stale on a font update. It is also why the Season finding is the one to watch —
+a 4px overflow is close enough to the noise floor that a font change could close
+it without anyone fixing the table, and the entry says so.
+
+Three things are worth knowing before the next phase:
+
+- **The check is red on `main` until Phase 10.** The six failures are the three
+  bugs Phase 10 owns, counted per route and per clipped name. Everything else is
+  on `scripts/expected-failures.js` with a phase against it, and an entry that
+  stops failing fails the run — so the phase that fixes one deletes it in the
+  same commit.
+- **Height budgets are reported, not asserted.** Every page but Matchday is over
+  today and the phase that closes each gap is named below; a check that ran red
+  for eleven phases would stop being read. `npm run shots` prints the full table.
+- **Icon contrast has nothing to bite on yet.** 668 icons measured per run, all
+  of them the nav and the sparklines, all passing. A bitmap is reported as
+  unmeasurable rather than as a pass, so the check starts naming the badge
+  artwork the moment any of it lands.
 
 ---
 
@@ -544,6 +604,10 @@ The top of this page already works — the league table and the season summary a
 a good pair and they stay together.
 
 - **Results** use the Phase 10 row, so a season reads as a column of scores.
+- **Upcoming fixtures** move onto that row too, and off a table: it hides 4–7px
+  at 320px, which `check:layout` found and holds against this phase. It is the
+  smallest of the table findings and the cheapest to retire, because the row
+  already exists by then.
 - **Charts move to their own sub-page** at full width. They are currently behind
   a toggle at the bottom of a 3,530px phone page, squeezed into a corner, which
   means they effectively don't exist. The Results/Charts toggle is deleted; the
@@ -555,7 +619,8 @@ a good pair and they stay together.
   season; a link across to Records replaces the option.
 
 **Done means** the Season page under 2,200px at 375px; the charts get the full
-column width; the redundant toggle is gone; the picker offers seasons only.
+column width; the redundant toggle is gone; the picker offers seasons only; the
+Season entries come off `scripts/expected-failures.js`.
 
 ---
 
@@ -628,10 +693,13 @@ interest.
 **The opponent page** appears in no phase and has no budget. It gets one here —
 **2,000px**, the same as a Records sub-page, since it is the same kind of
 reference document. Phase 10 already rebuilds its meetings table; this phase
-gives the head-to-head and pitch details the same once-over.
+gives the head-to-head and pitch details the same once-over. The head-to-head
+table hides 36px at 320px — found by `check:layout`, not by the review, and held
+against this phase.
 
 **Done means** Player detail under 2,400px at 375px; the opponent page under
-2,000px; both pages' budgets recorded in `DESIGN.md`; `check:layout` clean.
+2,000px; both pages' budgets recorded in `DESIGN.md`; `check:layout` clean —
+which by then means the expected-failure list is empty.
 
 ---
 
@@ -663,19 +731,31 @@ the whole idea is wrong for mobile and it says so; the footnote exists.
 they are a design constraint, and a component author reads that file. This table
 is the tracking view: where each page started, so a phase can show it moved.
 
-| Page | Today | Budget | Phase that meets it |
-| --- | --- | --- | --- |
-| Home | 2,091 | 1,600 | 19 |
-| Matchday | 1,857 | 1,900 | 20 |
-| Season | 3,530 | 2,200 | 18 |
-| Players → Leaderboards | 2,714 | 1,400 | 14 |
-| Players → Squad | 1,254 | no cap — it's a roster | 17 |
-| Records → any sub-page | 4,823 (one page) | 2,000 | 16 |
-| Player detail | 2,941 | 2,400 | 21 |
-| Opponent detail | not measured | 2,000 | 21 |
+*Review* is what the page-by-page review measured by hand. *Harness* is
+`npm run shots` on the `mid-season` fixture at 375px, which is what every phase
+from here is measured by. Where they differ, the fixture is carrying two matches
+the real season doesn't have — a walkover and a clean sheet — which lengthens
+anything that lists results. Matchday and the squad roster land on the same pixel
+either way, which is the check that the harness measures the same thing the
+review did.
+
+| Page | Review | Harness | Budget | Phase that meets it |
+| --- | --- | --- | --- | --- |
+| Home | 2,091 | 2,068 | 1,600 | 19 |
+| Matchday | 1,857 | 1,857 | 1,900 | 20 |
+| Season | 3,530 | 3,672 | 2,200 | 18 |
+| Players → Leaderboards | 2,714 | 2,997 | 1,400 | 14 |
+| Players → Squad | 1,254 | 1,254 | no cap — it's a roster | 17 |
+| Records → any sub-page | 4,823 (one page) | 5,071 (one page) | 2,000 | 16 |
+| Player detail | 2,941 | 2,940 | 2,400 | 21 |
+| Opponent detail | not measured | 1,196 | 2,000 | 21 |
 
 Records earns length as a reference document, which is why it splits rather than
 shrinks. Home does not.
+
+The opponent page turns out to be the only one already inside its budget, along
+with Matchday. That is not a reason to leave it alone — it is 1,196px because
+half of what it should say isn't there yet, and Phase 21 owns both ends of that.
 
 ---
 

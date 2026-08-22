@@ -1,0 +1,76 @@
+# The check that keeps the design rules honest.
+#
+# Before this, .github/workflows only built on push to main, so nothing ran the
+# layout invariants unless a human remembered to — and three rounds of
+# measurement drifted precisely because no job held them (ROADMAP → Phase 9).
+#
+# check:layout is expected to be RED on main until Phase 10 lands. It names the
+# bugs it is failing on and which phase owns each one; a failure that isn't on
+# scripts/expected-failures.js is a regression.
+#
+# Node 22, not 20: @supabase/supabase-js declares node >=22, `--test` only takes
+# a glob from 22 on, and the JSON import attribute in fixtures/ wants a recent
+# loader. deploy.yml still pins 20 — it only has to run `vite build`, and
+# bumping it isn't this branch's business.
+
+name: Checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # The fixture is committed; this proves it still matches the import it
+      # was parsed from rather than having drifted by hand.
+      - run: npm run fixtures:build
+      - run: git diff --exit-code fixtures/2025-26.json
+      - run: npm test
+
+  layout:
+    name: layout invariants
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run check:layout
+
+  build:
+    name: production build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # No Supabase credentials on a pull request, and none needed: the build
+      # only has to compile.
+      - run: npm run build
+      # And the fixture stayed out of it. vite.config.js only adds the alias
+      # when FIXTURE is set and nothing here sets it, but a shipped bundle
+      # carrying a fake season and `supabaseConfigured = true` is bad enough to
+      # be worth one grep for a club we have never played.
+      - name: the fixture is not in the bundle
+        run: |
+          if grep -rq 'Old Amplefordians' dist; then
+            echo 'fixture data found in dist/ — the resolve.alias leaked into the build'
+            exit 1
+          fi
