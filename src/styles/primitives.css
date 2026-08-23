@@ -83,6 +83,11 @@
   gap: var(--s4);
 }
 
+/* Grid items default to min-width:auto, so a child that can't shrink below
+   its own content — a table, a nowrap row of stats — pushes the whole track,
+   and the page, past the viewport. */
+.grid > * { min-width: 0; }
+
 .grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
 
 .grid.cols-3 { grid-template-columns: repeat(3, 1fr); }

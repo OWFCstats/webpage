@@ -1,0 +1,15 @@
+/* The opponent page: head-to-head record and pitch details around the
+   meetings list (Phase 10 built the list itself, onto the shared result row).
+
+   The head-to-head table is P/W/D/L/GF/GA/GD plus a row label — eight columns
+   for three rows — and the default `table.data` padding leaves it needing
+   290px against the 254px a 320px phone gives the sheet. Condensed figures
+   buy the room back (DESIGN.md → Mobile), the same fix the league table
+   already uses below its own first breakpoint, so no column comes off it. */
+@media (max-width: 359px) {
+  table.data.h2h th,
+  table.data.h2h td { padding: 0.5rem 0.3rem; }
+
+  table.data.h2h th:first-child,
+  table.data.h2h td:first-child { padding-left: 0; }
+}

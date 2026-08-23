@@ -29,6 +29,7 @@
 @import './pages/season.css';
 @import './pages/records.css';
 @import './pages/player-detail.css';
+@import './pages/opponent-detail.css';
 
 /* Last: the write side sits on top of everything the public pages set. */
 @import './admin.css';
