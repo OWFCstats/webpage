@@ -48,7 +48,8 @@ export default function App() {
                 <Route path="matchday" element={<Matchday />} />
                 <Route path="matchday/:matchId" element={<Matchday />} />
                 <Route path="season" element={<Season />} />
-                <Route path="players" element={<PlayersHub />} />
+                <Route path="players" element={<PlayersHub view="leaders" />} />
+                <Route path="players/squad" element={<PlayersHub view="squad" />} />
                 <Route path="players/:playerId" element={<PlayerDetail />} />
                 <Route path="opponents/:name" element={<OpponentDetail />} />
                 <Route path="records" element={<Records />} />

@@ -83,9 +83,13 @@ case.
 
 Three decisions about what a page shows, before any decision about how it looks.
 
-> **Phase 13.** Sub-pages land in 13. Today Records, Season and Players are
-> each one long page. The result row and the season rule below are built —
-> they landed in Phase 10.
+> **Phase 13.** The sub-navigation mechanism landed in 13, and Players is the
+> first section running on it — `/players` and `/players/squad` are real
+> addresses now. Season and Records are still each one long page: Season's
+> Charts move to their own address in Phase 18, when the content is rebuilt
+> to fill it, and Records splits in Phase 16, once Phase 14 and 15 have built
+> what its three sub-pages show. The result row and the season rule below are
+> built — they landed in Phase 10.
 
 ### Sections do not grow; they gain depth
 

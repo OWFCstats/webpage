@@ -45,7 +45,7 @@ export const ROUTES = [
   { id: 'season', route: '/season', name: 'Season', budget: 'Season', charts: true },
   { id: 'season-all', route: '/season?season=all', name: 'Season — all seasons', budget: 'Season', charts: true },
   { id: 'players', route: '/players', name: 'Players — leaderboards', budget: 'Players → Leaderboards' },
-  { id: 'players-squad', route: '/players?view=squad', name: 'Players — squad', budget: 'Players → Squad' },
+  { id: 'players-squad', route: '/players/squad', name: 'Players — squad', budget: 'Players → Squad' },
   {
     id: 'player-regular',
     route: `/players/${player('Owen Gibbons')}`,
