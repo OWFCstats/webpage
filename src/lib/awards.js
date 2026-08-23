@@ -60,18 +60,146 @@ export function clubRecords(matches) {
 }
 
 /**
- * The five awards a season hands out, in the order the honours board reads
- * them. Player of the Season leads because it's the one the players vote on —
- * and the only one no formula produces, which is why it needs a row in
- * `season_awards` and an admin to type it in.
+ * The badge system, in one place: three classes, and only the first of them
+ * tiers. `docs/DESIGN.md` → *Badges and awards* is the prose; if the two ever
+ * disagree, this file is right and the doc is wrong.
  */
-const SEASON_AWARDS = [
-  { key: 'player-of-the-season', label: 'Player of the Season', voted: true },
-  { key: 'goals', label: 'Golden Boot' },
-  { key: 'assists', label: 'Assist King' },
-  { key: 'appearances', label: 'The Dependable' },
-  { key: 'motm', label: 'Most MOTM' },
+
+/** The four metals, lowest first. A tier is a metal and nothing else — the
+ *  word isn't printed anywhere, because the drawing in the metal is the badge. */
+export const METALS = ['bronze', 'silver', 'gold', 'diamond'];
+
+/**
+ * Class 1 — career badges, four metals, one badge per category.
+ *
+ * **Bronze is one.** A debut is a badge, so everyone who has ever been picked
+ * owns something and has a shelf to add to; the ladder this replaced started
+ * at five appearances, which 70% of the squad could not reach. Diamond is
+ * roughly four seasons at fourteen games — a mark that takes years, which is
+ * what a top rung is for.
+ *
+ * `key` is the drawing's own filename in src/assets/badges, and the address of
+ * the badge's page.
+ */
+export const CAREER_BADGES = [
+  {
+    key: 'appearances',
+    class: 'career',
+    label: 'Appearances',
+    stat: 'appearances',
+    tiers: [1, 10, 25, 50],
+    line: 'Turn up once and it is yours. Fifty is four seasons of Saturdays.',
+  },
+  {
+    key: 'goals',
+    class: 'career',
+    label: 'Goals',
+    stat: 'goals',
+    tiers: [1, 5, 15, 30],
+    line: 'One goal, in any competition, at any point in a season.',
+  },
+  {
+    key: 'assists',
+    class: 'career',
+    label: 'Assists',
+    stat: 'assists',
+    tiers: [1, 4, 12, 25],
+    line: 'The pass before the goal counts as much as the goal here.',
+  },
+  {
+    key: 'clean-sheets',
+    class: 'career',
+    label: 'Clean sheets',
+    stat: 'cleanSheets',
+    tiers: [1, 5, 12, 25],
+    // Every player in a match with nothing conceded gets one — positions are
+    // fluid at this level, so there is no GK or defender gating. The club's
+    // first will hand bronze to eleven people at once, which is why the badge
+    // names itself a team badge rather than reading as a participation prize.
+    team: true,
+    line: 'A team badge: everyone who played in a match with nothing conceded.',
+  },
 ];
+
+/**
+ * Class 2 — events. Stackable, no tiers, gold. A hat-trick is a thing that
+ * happened, not a rung on a ladder: "3 hat-tricks" as a tier reads oddly where
+ * "hat-trick ×3" doesn't.
+ */
+export const EVENT_BADGES = [
+  {
+    key: 'motm',
+    class: 'event',
+    label: 'Man of the Match',
+    stat: 'motm',
+    line: 'Voted in the changing room, one a game.',
+  },
+  {
+    key: 'hat-trick',
+    class: 'event',
+    label: 'Hat-trick',
+    stat: 'hatTricks',
+    line: 'Three goals in one game. Two is a good afternoon; three has a name.',
+  },
+];
+
+/**
+ * Class 3 — season honours. Trophies, one per season, gold, and they are
+ * exactly the honours board's rows, so the board and the badge shelf cannot
+ * drift. They do not tier and do not stack into a bigger version: two Golden
+ * Boots is the same trophy twice, shown as a year list.
+ *
+ * Player of the Season leads because it's the one the players vote on — and
+ * the only one no formula produces, which is why it needs a row in
+ * `season_awards` and an admin to type it in. `stat` is what the other three
+ * are read off; `key` is both the drawing and the `award_key` a voted row
+ * carries.
+ *
+ * Most MOTM was a fifth here and is gone: it usually went to the same player
+ * as Player of the Season, so it was a second trophy for one performance. It
+ * survives as the Class 2 star, which is where a repeated event belongs.
+ */
+export const SEASON_AWARDS = [
+  {
+    key: 'player-of-the-season',
+    class: 'trophy',
+    label: 'Player of the Season',
+    voted: true,
+    line: 'Voted by the players at the end-of-season dinner.',
+  },
+  {
+    key: 'golden-boot',
+    class: 'trophy',
+    label: 'Golden Boot',
+    stat: 'goals',
+    line: 'Most goals in a season. A tie is kept whole — both of them won it.',
+  },
+  {
+    key: 'playmaker',
+    class: 'trophy',
+    label: 'Playmaker',
+    stat: 'assists',
+    line: 'Most assists in a season. One name for one award.',
+  },
+  {
+    key: 'the-dependable',
+    class: 'trophy',
+    label: 'The Dependable',
+    stat: 'appearances',
+    // Most appearances, not ever-present: nobody was ever-present in 2025/26
+    // and an award nobody can win in a squad where people miss games for
+    // weddings is not an incentive.
+    line: 'Most appearances in a season. Most, not every one.',
+  },
+];
+
+/** Every badge in the system, in the order the board shows them. */
+export const BADGES = [...CAREER_BADGES, ...EVENT_BADGES, ...SEASON_AWARDS];
+
+/** One badge by key, or null — the badge page reads its key off the address. */
+export function badgeByKey(key) {
+  return BADGES.find((b) => b.key === key) ?? null;
+}
 
 /**
  * Everyone level at the top of one stat, and the mark they share. Empty when
@@ -103,9 +231,9 @@ function votedAward(seasonAwards, playerById, season, key) {
 
 /**
  * One row per season, newest first: the summary the season index shows, the
- * competitions played in it, and the five awards. Ties are kept whole on the
- * derived four — two players on nine goals both won the boot, and the rows
- * can't say which of them mattered more.
+ * competitions played in it, and the four trophies. Ties are kept whole on
+ * the derived three — two players on nine goals both won the boot, and the
+ * rows can't say which of them mattered more.
  */
 export function seasonRecords(players, matches, appearances, seasonAwards = []) {
   const playerById = new Map(players.map((p) => [p.id, p]));
@@ -122,209 +250,261 @@ export function seasonRecords(players, matches, appearances, seasonAwards = []) 
         ...a,
         ...(a.voted
           ? votedAward(seasonAwards, playerById, season, a.key)
-          : leadersIn(totals, a.key)),
+          : leadersIn(totals, a.stat)),
       })),
     };
   });
 }
 
-
 // ---------------------------------------------------------------------------
-// Plates — the career badges
+// Who holds what
 // ---------------------------------------------------------------------------
-
-/** One metal per rung, lowest first. Named on the plate as well as worn by it:
- *  bronze and gold are close at badge size, so colour never carries the tier
- *  on its own. */
-const TIERS = ['bronze', 'silver', 'gold'];
 
 /**
- * The plate ladder. Three rungs per badge, one metal each, and the thresholds
- * are set against a fourteen-game season: bronze inside a first season for
- * anyone who keeps turning up, silver in a second, gold a mark that takes a
- * few years. A ladder whose bottom rung is out of reach is decoration — most
- * of the squad should already hold something the day this ships.
- *
- * The first five read straight off a career total. The last three can't: a
- * hat-trick, a Golden Boot and an ever-present season are events, counted from
- * the appearance rows in plateTotals. `one` is the label at a rung of one,
- * where the plural reads wrong.
+ * One row per player carrying everything the badges are counted from: the
+ * career totals, the hat-tricks no total holds, and the date each career tier
+ * fell. The dates are why this walks every appearance in order rather than
+ * reading the totals — a total says what a player has, never when they got
+ * there, and an earned badge that can't say when is a number, not a memory.
  */
-const PLATES = [
-  { key: 'appearances', label: 'Appearances', rungs: [5, 15, 30] },
-  { key: 'goals', label: 'Goals', rungs: [3, 10, 25] },
-  { key: 'assists', label: 'Assists', rungs: [3, 10, 25] },
-  { key: 'cleanSheets', label: 'Clean sheets', rungs: [2, 6, 15] },
-  { key: 'motm', label: 'MOTM', rungs: [2, 5, 12] },
-  { key: 'hatTricks', label: 'Hat-tricks', one: 'Hat-trick', rungs: [1, 3, 6] },
-  { key: 'goldenBoots', label: 'Golden Boots', one: 'Golden Boot', rungs: [1, 2, 3], seasonal: true },
-  { key: 'everPresent', label: 'Ever-present', rungs: [1, 2, 3], seasonal: true },
-];
-
-/** How many unearned plates follow the earned ones on a player's shelf. Enough
- *  to give them something to chase, few enough to stay on the first screen. */
-const CHASING_SHOWN = 3;
-
-/** The parts of a plate that don't depend on who is looking at it. */
-function plateFace(family, rung, tierIndex) {
-  return {
-    key: `${family.key}-${rung}`,
-    tier: TIERS[tierIndex],
-    mark: String(rung),
-    label: rung === 1 && family.one ? family.one : family.label,
-  };
-}
-
-/**
- * Every plate count for the whole squad, in one pass. The three that no career
- * total holds are worked out here rather than per player, because a Golden Boot
- * needs each season's leaders — doing it a player at a time would re-derive
- * every season once per name in the squad.
- */
-function plateTotals(players, matches, appearances) {
+function badgeRows(players, matches, appearances) {
   const matchById = new Map(matches.map((m) => [m.id, m]));
   const rows = new Map(
     playerTotals(players, matches, appearances).map((r) => [
       r.player.id,
-      { ...r, hatTricks: 0, goldenBoots: 0, everPresent: 0, bootSeasons: [], everPresentSeasons: [] },
+      { ...r, hatTricks: 0, since: new Map() },
     ]),
   );
-
-  // Games the club actually played per season — the denominator for an
-  // ever-present season, and the reason it can only be counted off the rows.
-  const clubGames = new Map();
-  for (const m of matches) {
-    if (!isPlayed(m)) continue;
-    clubGames.set(m.season, (clubGames.get(m.season) ?? 0) + 1);
-  }
-
-  const mineBySeason = new Map();
-  for (const a of appearances) {
-    const match = matchById.get(a.match_id);
-    const row = rows.get(a.player_id);
-    if (!row || a.dropout || !match || !isPlayed(match)) continue;
-    if (a.goals >= 3) row.hatTricks += 1;
-    if (!mineBySeason.has(a.player_id)) mineBySeason.set(a.player_id, new Map());
-    const seasons = mineBySeason.get(a.player_id);
-    seasons.set(match.season, (seasons.get(match.season) ?? 0) + 1);
-  }
-  for (const [id, seasons] of mineBySeason) {
-    const row = rows.get(id);
-    row.everPresentSeasons = [...seasons.entries()]
-      .filter(([season, n]) => n === clubGames.get(season))
-      .map(([season]) => season)
-      .sort();
-    row.everPresent = row.everPresentSeasons.length;
-  }
-
-  // Golden Boot: top scorer in a season, ties kept whole — the same rule the
-  // honours board uses, so a shared boot is a plate for both of them.
-  for (const season of seasonsOf(matches)) {
-    const totals = playerTotals(players, matches.filter((m) => m.season === season), appearances);
-    const best = Math.max(0, ...totals.map((r) => r.goals));
-    if (best === 0) continue;
-    for (const r of totals) {
-      if (r.goals !== best) continue;
-      const row = rows.get(r.player.id);
-      row.bootSeasons.push(season);
-      row.goldenBoots += 1;
-    }
-  }
-  for (const row of rows.values()) row.bootSeasons.sort();
-
-  return [...rows.values()];
-}
-
-/**
- * One player's shelf: the best metal they hold in each badge, then the plates
- * closest to falling. Earned ones carry when they landed, the rest what's left
- * to go — a badge you can't see is not an incentive, so an unearned plate is
- * present and named rather than hidden.
- */
-export function playerPlates(player, players, matches, appearances) {
-  const mine = plateTotals(players, matches, appearances).find((r) => r.player.id === player.id);
-  if (!mine) return [];
-
-  // When each rung fell, so an earned plate can carry its own month. A career
-  // total says what a player has, never when they got there, so this walks
-  // their own games forwards. The two seasonal badges are dated by the season
-  // they were won in instead, which is the more useful answer anyway.
-  const matchById = new Map(matches.map((m) => [m.id, m]));
   const chrono = appearances
-    .filter((a) => a.player_id === player.id && !a.dropout)
-    .map((a) => ({ app: a, match: matchById.get(a.match_id) }))
-    .filter((r) => r.match && isPlayed(r.match))
+    .map((app) => ({ app, match: matchById.get(app.match_id) }))
+    .filter(({ app, match }) => match && isPlayed(match) && !app.dropout && rows.has(app.player_id))
     .sort((a, b) => (a.match.date < b.match.date ? -1 : 1));
 
-  const when = new Map();
-  const running = { appearances: 0, goals: 0, assists: 0, cleanSheets: 0, motm: 0, hatTricks: 0 };
+  const running = new Map();
   for (const { app, match } of chrono) {
-    running.appearances += 1;
-    running.goals += app.goals;
-    running.assists += app.assists;
-    if (app.motm) running.motm += 1;
-    if (app.goals >= 3) running.hatTricks += 1;
-    if (isCleanSheet(match)) running.cleanSheets += 1;
-    for (const family of PLATES) {
-      if (family.seasonal) continue;
-      for (const rung of family.rungs) {
-        const id = `${family.key}:${rung}`;
-        if (running[family.key] >= rung && !when.has(id)) when.set(id, match.date);
+    const row = rows.get(app.player_id);
+    const tally = running.get(app.player_id)
+      ?? { appearances: 0, goals: 0, assists: 0, cleanSheets: 0, motm: 0 };
+    tally.appearances += 1;
+    tally.goals += app.goals;
+    tally.assists += app.assists;
+    if (app.motm) tally.motm += 1;
+    if (isCleanSheet(match)) tally.cleanSheets += 1;
+    if (app.goals >= 3) row.hatTricks += 1;
+    running.set(app.player_id, tally);
+    for (const b of CAREER_BADGES) {
+      for (const threshold of b.tiers) {
+        const id = `${b.key}:${threshold}`;
+        if (tally[b.stat] >= threshold && !row.since.has(id)) row.since.set(id, match.date);
       }
     }
   }
+  return [...rows.values()];
+}
 
-  const earned = [];
-  const chasing = [];
-  for (const family of PLATES) {
-    const have = mine[family.key];
-    const seasons = family.key === 'goldenBoots' ? mine.bootSeasons
-      : family.key === 'everPresent' ? mine.everPresentSeasons
-        : null;
-    const ladder = family.rungs.map((rung, i) => ({
-      ...plateFace(family, rung, i),
-      earned: have >= rung,
-      note: have >= rung
-        ? (seasons ? seasons[rung - 1] : monthYear(when.get(`${family.key}:${rung}`)))
-        : `${rung - have} to go`,
-      progress: Math.min(1, have / rung),
-    }));
-    const held = ladder.filter((p) => p.earned);
-    if (held.length > 0) earned.push(held[held.length - 1]);
-    const open = ladder.find((p) => !p.earned);
-    if (open) chasing.push(open);
-  }
-
-  // Best metal first, so the plate a player is proudest of leads the shelf;
-  // then the closest few they haven't got. Sorting is stable, so plates level
-  // on tier or on progress keep the ladder's own order.
-  earned.sort((a, b) => TIERS.indexOf(b.tier) - TIERS.indexOf(a.tier));
-  chasing.sort((a, b) => b.progress - a.progress);
-  return [...earned, ...chasing.slice(0, CHASING_SHOWN)];
+/** The highest tier a count reaches, as an index into METALS, or -1. */
+function tierIndex(count, tiers) {
+  let index = -1;
+  tiers.forEach((threshold, i) => {
+    if (count >= threshold) index = i;
+  });
+  return index;
 }
 
 /**
- * The club plate board: every plate in the system and who holds it. A plate
- * belongs to the club as soon as anyone reaches it and carries their name; the
- * rest say plainly that they're still there to be taken. Ladder order, not
- * earned-first — where the gold stops is the story.
+ * One career badge as one player holds it: the metal, when it fell, and what
+ * the next one costs. An unearned badge is still a badge — it comes back with
+ * `metal: null` and the count to go, because a badge you can't see is not an
+ * incentive.
  */
-export function clubPlates(players, matches, appearances) {
-  const rows = plateTotals(players, matches, appearances);
-  return PLATES.flatMap((family) =>
-    family.rungs.map((rung, i) => {
-      const holders = rows
-        .filter((r) => r[family.key] >= rung)
-        .sort((a, b) => b[family.key] - a[family.key] || a.player.name.localeCompare(b.player.name))
-        .map((r) => r.player);
+function careerBadge(row, family) {
+  const count = row[family.stat];
+  const i = tierIndex(count, family.tiers);
+  return {
+    ...family,
+    count,
+    metal: i < 0 ? null : METALS[i],
+    since: i < 0 ? null : monthYear(row.since.get(`${family.key}:${family.tiers[i]}`)),
+    next:
+      i + 1 < family.tiers.length
+        ? { metal: METALS[i + 1], threshold: family.tiers[i + 1], need: family.tiers[i + 1] - count }
+        : null,
+  };
+}
+
+/**
+ * Every season each trophy was won in, newest first, keyed by badge. Read off
+ * `seasonRecords` rather than worked out again, which is what stops the
+ * honours board and the trophy shelf ever disagreeing.
+ */
+function trophySeasons(players, matches, appearances, seasonAwards) {
+  const won = new Map(SEASON_AWARDS.map((a) => [a.key, []]));
+  for (const season of seasonRecords(players, matches, appearances, seasonAwards)) {
+    for (const award of season.awards) {
+      if (award.leaders.length === 0) continue;
+      won.get(award.key).push({ season: season.season, players: award.leaders, value: award.value });
+    }
+  }
+  return won;
+}
+
+/**
+ * One player's shelf, in three classes. Career badges are always all four,
+ * held or not; events carry a count and trophies a year list, and both are
+ * empty until they aren't — the page decides how to show a nought, but it
+ * can't be told one isn't there.
+ */
+export function playerBadges(player, players, matches, appearances, seasonAwards = []) {
+  const row = badgeRows(players, matches, appearances).find((r) => r.player.id === player.id);
+  if (!row) return { career: [], events: [], trophies: [] };
+  const won = trophySeasons(players, matches, appearances, seasonAwards);
+  return {
+    career: CAREER_BADGES.map((family) => careerBadge(row, family)),
+    events: EVENT_BADGES.map((family) => ({ ...family, count: row[family.stat] })),
+    trophies: SEASON_AWARDS.map((family) => ({
+      ...family,
+      seasons: won
+        .get(family.key)
+        .filter((win) => win.players.some((p) => p.id === player.id))
+        .map((win) => win.season),
+    })),
+  };
+}
+
+/** Rows holding at least `threshold` of a stat, most first, then by name. */
+function holdersOf(rows, stat, threshold) {
+  return rows
+    .filter((r) => r[stat] >= threshold)
+    .sort((a, b) => b[stat] - a[stat] || a.player.name.localeCompare(b.player.name));
+}
+
+/**
+ * The badge board: every badge in the club and how far it has got. A career
+ * badge reports its four tiers and who holds each, which is the story — where
+ * the gold stops says more about a young club than a list of names does.
+ */
+export function clubBadges(players, matches, appearances, seasonAwards = []) {
+  const rows = badgeRows(players, matches, appearances);
+  const won = trophySeasons(players, matches, appearances, seasonAwards);
+  return {
+    career: CAREER_BADGES.map((family) => {
+      const tiers = family.tiers.map((threshold, i) => ({
+        metal: METALS[i],
+        threshold,
+        holders: holdersOf(rows, family.stat, threshold).length,
+      }));
+      const held = tiers.filter((t) => t.holders > 0);
+      const leader = holdersOf(rows, family.stat, family.tiers[0])[0] ?? null;
       return {
-        ...plateFace(family, rung, i),
-        earned: holders.length > 0,
-        note:
-          holders.length === 0 ? 'Nobody yet'
-            : holders.length === 1 ? holders[0].name
-              : `${holders[0].name} +${holders.length - 1}`,
+        ...family,
+        tiers,
+        holders: tiers[0].holders,
+        // The best metal anyone in the club holds, which is what the board's
+        // icon wears. Null while nobody holds the badge at all.
+        top: held.length > 0 ? held[held.length - 1].metal : null,
+        leader: leader ? { player: leader.player, count: leader[family.stat] } : null,
       };
     }),
-  );
+    events: EVENT_BADGES.map((family) => {
+      const holders = holdersOf(rows, family.stat, 1);
+      return {
+        ...family,
+        awarded: rows.reduce((total, r) => total + r[family.stat], 0),
+        holders: holders.length,
+        leader: holders[0] ? { player: holders[0].player, count: holders[0][family.stat] } : null,
+      };
+    }),
+    trophies: SEASON_AWARDS.map((family) => ({
+      ...family,
+      wins: won.get(family.key),
+      latest: won.get(family.key)[0] ?? null,
+    })),
+  };
+}
+
+/** How many holders a badge page lists as closest, and how many names a tier
+ *  shows before it counts the rest. Enough to find yourself, few enough that
+ *  the page stays a page. */
+const LISTED = 12;
+
+/** The names a page shows, and how many it left out. The cap is soft by two:
+ *  hiding one name behind "+1 more" reads as a fault, not as a limit. */
+function capped(rows) {
+  const shown = rows.length <= LISTED + 2 ? rows : rows.slice(0, LISTED);
+  return { shown, more: rows.length - shown.length };
+}
+
+/**
+ * One badge, everybody who holds it, and who is closest to the next tier —
+ * the page a badge can be linked into the group chat with. Null for a key
+ * nothing is drawn for, which is what the route turns into a not-found.
+ */
+export function badgeDetail(key, players, matches, appearances, seasonAwards = []) {
+  const family = badgeByKey(key);
+  if (!family) return null;
+  const rows = badgeRows(players, matches, appearances);
+
+  if (family.class === 'trophy') {
+    const wins = trophySeasons(players, matches, appearances, seasonAwards).get(family.key);
+    // A trophy held twice is the same trophy twice, so the roll counts seasons
+    // rather than stacking into a bigger badge.
+    const roll = new Map();
+    for (const win of wins) {
+      for (const player of win.players) {
+        if (!roll.has(player.id)) roll.set(player.id, { player, seasons: [] });
+        roll.get(player.id).seasons.push(win.season);
+      }
+    }
+    return {
+      badge: family,
+      wins,
+      roll: [...roll.values()].sort(
+        (a, b) => b.seasons.length - a.seasons.length || a.player.name.localeCompare(b.player.name),
+      ),
+    };
+  }
+
+  if (family.class === 'event') {
+    const { shown, more } = capped(holdersOf(rows, family.stat, 1));
+    return {
+      badge: family,
+      awarded: rows.reduce((total, r) => total + r[family.stat], 0),
+      holders: shown.map((r) => ({ player: r.player, count: r[family.stat] })),
+      more,
+    };
+  }
+
+  const tiers = family.tiers.map((threshold, i) => {
+    const holders = holdersOf(rows, family.stat, threshold);
+    const { shown, more } = capped(holders);
+    return {
+      metal: METALS[i],
+      threshold,
+      count: holders.length,
+      holders: shown.map((r) => ({
+        player: r.player,
+        count: r[family.stat],
+        since: monthYear(r.since.get(`${family.key}:${threshold}`)),
+      })),
+      more,
+    };
+  });
+
+  // Who's closest: nearest to their own next tier, and only players who have
+  // been picked at least once. A name that has never appeared isn't chasing
+  // anything yet — their next badge is a debut, and that's the appearances one.
+  const chasing = rows
+    .filter((r) => r.appearances > 0 && tierIndex(r[family.stat], family.tiers) + 1 < family.tiers.length)
+    .map((r) => {
+      const next = family.tiers[tierIndex(r[family.stat], family.tiers) + 1];
+      return {
+        player: r.player,
+        count: r[family.stat],
+        metal: METALS[family.tiers.indexOf(next)],
+        need: next - r[family.stat],
+      };
+    })
+    .sort((a, b) => a.need - b.need || b.count - a.count || a.player.name.localeCompare(b.player.name));
+
+  return { badge: family, tiers, chasing: capped(chasing).shown };
 }

@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import BadgeIcon from '../BadgeIcon';
 
 /**
  * Whoever won an award, with the mark behind it. Two names where two players
@@ -28,7 +29,7 @@ export function Award({ award }) {
  * boxed. One block per season, newest first, with the awards running down it
  * and the names in gold at the right-hand edge.
  *
- * Not a matrix. Five awards plus a season is six columns of names, and no
+ * Not a matrix. Four awards plus a season is five columns of names, and no
  * condensed face fits that on a 375px phone — so the season heads its block
  * instead of holding a column. On a wide screen the year moves into a left
  * gutter, which puts the reading order back where a printed board has it.
@@ -45,7 +46,13 @@ export default function HonoursBoard({ seasons }) {
           <dl className="hb-awards">
             {s.awards.map((a) => (
               <div className={`hb-award${a.voted ? ' voted' : ''}`} key={a.key}>
-                <dt className="label">{a.label}</dt>
+                {/* The trophy itself, at the size a plinth still reads at. The
+                    four rows here are the four Class 3 badges — showing the
+                    drawing is what makes that visible rather than asserted. */}
+                <dt className="label">
+                  <BadgeIcon badge={a.key} metal={a.leaders.length > 0 ? 'gold' : null} on="board" size={20} />
+                  {a.label}
+                </dt>
                 <dd>
                   <Award award={a} />
                   {a.note && <span className="hb-note">{a.note}</span>}
@@ -55,7 +62,7 @@ export default function HonoursBoard({ seasons }) {
           </dl>
         </section>
       ))}
-      <p className="muted card-foot">Player of the Season is voted, not worked out — every other award is.</p>
+      <p className="muted card-foot">Player of the Season is voted, not worked out — the other three are.</p>
     </div>
   );
 }

@@ -68,6 +68,26 @@ export const ROUTES = [
   },
   { id: 'opponent', route: '/opponents/old-stoics', name: 'Opponent detail', budget: 'Opponent detail' },
   { id: 'records', route: '/records', name: 'Records', budget: 'Records → any sub-page' },
+  // One route per badge class: the three render different pages, and the
+  // drawings on them are what the icon invariant is measuring from Phase 15 on.
+  {
+    id: 'badge-career',
+    route: '/records/badges/appearances',
+    name: 'Badge — career, four metals',
+    budget: 'Records → any sub-page',
+  },
+  {
+    id: 'badge-event',
+    route: '/records/badges/motm',
+    name: 'Badge — a stackable event',
+    budget: 'Records → any sub-page',
+  },
+  {
+    id: 'badge-trophy',
+    route: '/records/badges/player-of-the-season',
+    name: 'Badge — a season trophy',
+    budget: 'Records → any sub-page',
+  },
 ];
 
 // Both datasets get measured. pre-season is the one nobody has looked at, and

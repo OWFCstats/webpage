@@ -10,12 +10,12 @@
 // wrapped table satisfies by definition, since the wrap's whole job is to
 // scroll. See DESIGN.md → Mobile.
 //
-// Five invariants, and they are meant not to overlap: one bug should produce
+// Six invariants, and they are meant not to overlap: one bug should produce
 // one finding. A table inside a scrolling wrap is a hidden column, not also
 // forty overflowing cells, so anything inside a clipping ancestor is left to
 // the ancestor's own finding.
 
-export function collector() {
+export async function collector() {
   // Subpixel layout rounds to integers, so a 1px difference is arithmetic
   // rather than a hidden column.
   const SLACK = 1;
@@ -123,13 +123,20 @@ export function collector() {
     }
   }
 
-  // ---- 5. Every icon clears 3:1 against the ground it sits on. ------------
-  // Contrast is computed from the ink the icon is drawn with and the first
-  // opaque background above it. Two things are reported as unmeasurable rather
-  // than guessed at: a bitmap, whose ink this can't read, and a gradient
-  // ground, whose luminance varies across the icon. Both matter for Phase 15 —
-  // none of the badge artwork is in this repository yet, so what gets measured
-  // today is the nav and the sparklines (ROADMAP → The artwork).
+  // ---- 5. Every icon clears 3:1 across the majority of its own ink. -------
+  // Composited rather than read off an attribute. The old rule took `fill`
+  // from the root <svg>, which is one colour for the five nav icons it was
+  // written against and meaningless for a badge drawing that carries its
+  // colour on up to thirty-six child paths — on those it read the initial
+  // value, black, and would have passed a gold cup on green while failing the
+  // same cup on paper. So every icon is drawn at 64px with its computed paint
+  // baked in, composited over the ground it sits on, and scored as the share
+  // of its own ink clearing 3:1. That is the measurement ROADMAP → *The
+  // artwork* reports, and Phase 15's badges are held to it.
+  //
+  // Two things are still reported as unmeasurable rather than guessed at: a
+  // bitmap, whose ink this can't read, and a gradient ground, whose luminance
+  // varies across the icon.
   const channel = (c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
   const luminance = ([r, g, b]) =>
     0.2126 * channel(r / 255) + 0.7152 * channel(g / 255) + 0.0722 * channel(b / 255);
@@ -153,6 +160,60 @@ export function collector() {
     return hi / lo;
   };
 
+  // Paint lives in CSS for the nav icons and on the paths for the badges, and
+  // a serialised copy of the node carries neither. Baking the computed value
+  // onto every element is what makes one measurement cover both.
+  const PAINT = [
+    'fill', 'stroke', 'stroke-width', 'stroke-linecap', 'stroke-linejoin',
+    'fill-opacity', 'stroke-opacity', 'opacity', 'stop-color', 'stop-opacity',
+  ];
+  function baked(el) {
+    const clone = el.cloneNode(true);
+    const from = [el, ...el.querySelectorAll('*')];
+    const to = [clone, ...clone.querySelectorAll('*')];
+    from.forEach((node, i) => {
+      const style = getComputedStyle(node);
+      for (const prop of PAINT) {
+        const value = style.getPropertyValue(prop);
+        if (value) to[i].setAttribute(prop, value);
+      }
+    });
+    return new XMLSerializer().serializeToString(clone);
+  }
+
+  const SIZE = 64;
+  const canvas = document.createElement('canvas');
+  canvas.width = SIZE;
+  canvas.height = SIZE;
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
+  const scored = new Map();
+
+  /** The share of an icon's own ink that clears 3:1 on `bg`, or null when the
+   *  drawing renders nothing at all. */
+  async function inkAbove3(markup, bg) {
+    const key = `${markup}|${bg.join(',')}`;
+    if (scored.has(key)) return scored.get(key);
+    const img = new Image(SIZE, SIZE);
+    img.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(markup)}`;
+    await img.decode();
+    ctx.clearRect(0, 0, SIZE, SIZE);
+    ctx.drawImage(img, 0, 0, SIZE, SIZE);
+    const { data } = ctx.getImageData(0, 0, SIZE, SIZE);
+    let ink = 0;
+    let clears = 0;
+    for (let i = 0; i < data.length; i += 4) {
+      const alpha = data[i + 3] / 255;
+      // Half-covered pixels are the antialiased edge, not the drawing.
+      if (alpha < 0.5) continue;
+      ink += 1;
+      const over = [0, 1, 2].map((c) => data[i + c] * alpha + bg[c] * (1 - alpha));
+      if (ratio(over, bg) >= 3) clears += 1;
+    }
+    const share = ink === 0 ? null : clears / ink;
+    scored.set(key, share);
+    return share;
+  }
+
   let iconsMeasured = 0;
   const icons = visible.filter(
     (el) =>
@@ -161,6 +222,16 @@ export function collector() {
       || /(^|[\s-])icon([\s-]|$)/.test(el.getAttribute('class') || ''),
   );
   for (const el of icons) {
+    // A wrapper around a drawing is not itself an icon — the svg inside it is,
+    // and one bug should produce one finding.
+    if (el.tagName !== 'svg' && el.querySelector('svg')) continue;
+    // A chart is not an icon. Recharts draws a whole plot into one <svg>, most
+    // of whose ink is gridlines and axis rules that are deliberately faint;
+    // scoring that as one drawing's footprint measures nothing. The series
+    // colours have their own rule — 4.5:1, so a line can label itself — in
+    // DESIGN.md → Chart series. The hand-rolled sparklines are ours and stay
+    // measured: they are one shape in one colour, which is what this reads.
+    if (el.closest('.recharts-wrapper')) continue;
     const bg = ground(el);
     if (!bg) continue;
     if (el.tagName === 'IMG') {
@@ -171,17 +242,51 @@ export function collector() {
       add('icon-unmeasurable', el, 'sits on a gradient — ground luminance varies across the icon');
       continue;
     }
-    const style = styleOf(el);
-    const stroke = parse(style.stroke);
-    const fill = parse(style.fill);
-    const ink = (stroke && stroke.alpha > 0.05 && style.stroke !== 'none' ? stroke : null)
-      ?? (fill && fill.alpha > 0.05 && style.fill !== 'none' ? fill : null)
-      ?? parse(style.color);
-    if (!ink) continue;
+    if (el.tagName !== 'svg') {
+      // Something wearing an icon class that isn't a drawing: its ink is its
+      // own text colour, which is one value and needs no compositing.
+      const ink = parse(getComputedStyle(el).color);
+      if (!ink) continue;
+      iconsMeasured += 1;
+      const contrast = ratio(ink.rgb, bg.rgb);
+      if (contrast < 3) {
+        add('icon-contrast', el, `${contrast.toFixed(2)}:1 against its ground, needs 3:1`);
+      }
+      continue;
+    }
+    let share = null;
+    try {
+      share = await inkAbove3(baked(el), bg.rgb);
+    } catch (err) {
+      add('icon-unmeasurable', el, `could not be rendered for measurement: ${err.message}`);
+      continue;
+    }
+    if (share === null) continue; // draws nothing — there is no ink to score
     iconsMeasured += 1;
-    const contrast = ratio(ink.rgb, bg.rgb);
-    if (contrast < 3) {
-      add('icon-contrast', el, `${contrast.toFixed(2)}:1 against its ground, needs 3:1`);
+    if (share < 0.5) {
+      add(
+        'icon-contrast',
+        el,
+        `${Math.round(share * 100)}% of its ink clears 3:1 against its ground, needs a majority`,
+      );
+    }
+  }
+
+  // ---- 6. No badge renders below its floor. -------------------------------
+  // A trophy is a plinth plus an object and merges into a blob under 20px; the
+  // rest hold at 16 (DESIGN.md → The icons). The component clamps to the floor,
+  // so what this catches is the other way in: a flex or grid context squeezing
+  // a drawing after the fact. The floor rides on the element rather than being
+  // restated here — the badge's own class is what sets it.
+  for (const el of visible) {
+    if (!el.classList.contains('badge-icon')) continue;
+    const floor = Number(el.dataset.floor);
+    const svg = el.querySelector('svg');
+    if (!floor || !svg) continue;
+    const box = svg.getBoundingClientRect();
+    const drawn = Math.min(box.width, box.height);
+    if (drawn < floor - SLACK) {
+      add('icon-below-floor', el, `${el.dataset.badge} draws at ${Math.round(drawn)}px, floor is ${floor}px`);
     }
   }
 

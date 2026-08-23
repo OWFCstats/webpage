@@ -2,13 +2,13 @@ import { useMemo } from 'react';
 import { useData } from '../context/DataContext';
 import { ErrorNote, Spinner } from '../components/bits';
 import LeaderBoards from '../components/LeaderBoards';
-import PlateShelf from '../components/Plate';
+import BadgeBoard from '../components/records/BadgeBoard';
 import ClubRecords from '../components/records/ClubRecords';
 import HonoursBoard from '../components/records/HonoursBoard';
 import SeasonIndex from '../components/records/SeasonIndex';
 import { plural } from '../lib/format';
 import { playerTotals } from '../lib/players';
-import { clubPlates, clubRecords, seasonRecords } from '../lib/awards';
+import { clubBadges, clubRecords, seasonRecords } from '../lib/awards';
 
 /**
  * The marks the club is measured against — the things that appear nowhere
@@ -23,7 +23,7 @@ export default function Records() {
     return {
       records: clubRecords(matches),
       seasons: seasonRecords(players, matches, appearances, seasonAwards),
-      plates: clubPlates(players, matches, appearances),
+      badges: clubBadges(players, matches, appearances, seasonAwards),
       allTime: playerTotals(players, matches, appearances),
     };
   }, [loading, players, matches, appearances, seasonAwards]);
@@ -31,7 +31,7 @@ export default function Records() {
   if (loading) return <Spinner />;
   if (error) return <ErrorNote message={error} />;
 
-  const { records, seasons, plates, allTime } = view;
+  const { records, seasons, badges, allTime } = view;
 
   return (
     <div>
@@ -55,8 +55,8 @@ export default function Records() {
 
       <div className="section">
         <h2>Badge board</h2>
-        <PlateShelf plates={plates} />
-        <p className="muted card-foot">Every badge in the club, and who's closest to the next one.</p>
+        <BadgeBoard badges={badges} />
+        <p className="muted card-foot">Every badge has a page of its own — who holds it, and who's closest.</p>
       </div>
 
       <div className="section">

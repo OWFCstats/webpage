@@ -135,10 +135,12 @@ metal ramps are read by four drawings and the other six are gold and stay gold.
 An earlier draft of this section, and the artwork brief the icons arrived with,
 both showed all ten in four metals; that was wrong in both.
 
-Four of those six arrive gold in the file. **`playmaker.svg` and `hat-trick.svg`
-do not** — the figure is a black silhouette and the footballs are black and
-white — so those two are recoloured once, to gold, and never again. That is the
-only recolouring outside Class 1.
+Four of those six were listed here as arriving gold in the file. **Three of them
+do.** `playmaker.svg` is a black silhouette and `hat-trick.svg`'s footballs are
+black and white, and `golden-boot.svg` — counted as gold here — stands on a
+plinth of five black fills that vanishes on a dark ground. Those three are
+recoloured once, to gold, and never again; the cup, the cap and the star are
+left alone. That is the only recolouring outside Class 1.
 
 **The brace is gone**, from the badge system and from the artwork. It never had
 a drawing and it no longer needs one.
@@ -163,18 +165,22 @@ ink clearing 3:1**. The grounds are Phase 11's — `--paper #f1f3ef` and `--boar
 #16281f` — because the palette changes underneath this phase; against today's
 values nothing moves by more than four points.
 
-| Drawing | on paper | on board | tonal span |
-| --- | --- | --- | --- |
-| appearances | 11% | 90% | 0.00–0.60 |
-| assists | 100% | **0%** | 0.00–0.03 |
-| clean-sheets | 64% | 73% | 0.00–0.56 |
-| goals | 100% | **0%** | 0.03–0.03 |
-| golden-boot | 44% | 57% | 0.00–0.77 |
-| hat-trick | 38% | 63% | 0.03–1.00 |
-| motm | 21% | 100% | 0.18–0.84 |
-| player-of-the-season | 11% | 90% | 0.10–0.77 |
-| playmaker | 100% | **0%** | 0.00–0.00 |
-| the-dependable | **0%** | 100% | 0.52–0.60 |
+| Drawing | on paper | on board | tonal span | as it ships, after Phase 15 |
+| --- | --- | --- | --- | --- |
+| appearances | 11% | 90% | 0.00–0.60 | 99% in bronze on paper, 100% on a medallion |
+| assists | 100% | **0%** | 0.00–0.03 | 96% / 98% |
+| clean-sheets | 64% | 73% | 0.00–0.56 | 100% / 100% |
+| goals | 100% | **0%** | 0.03–0.03 | 94% / 97% |
+| golden-boot | 44% | 57% | 0.00–0.77 | gilded, 100% on a medallion |
+| hat-trick | 38% | 63% | 0.03–1.00 | gilded, 100% |
+| motm | 0% | 100% | 0.52–0.77 | 100% |
+| player-of-the-season | 11% | 90% | 0.06–0.77 | 90% |
+| playmaker | 100% | **0%** | 0.00–0.00 | gilded, 100% |
+| the-dependable | **0%** | 100% | 0.52–0.59 | 100% |
+
+The first three columns are the drawings as the club supplied them. `motm` and
+`the-dependable` are the two rows that moved: the star is a redraw (see below)
+and the cap lost a stray highlight, which took its span with it.
 
 Three rulings come out of that table:
 
@@ -198,27 +204,28 @@ Three rulings come out of that table:
   that can be tuned, it is the drawing. The dark medallion behind a light metal is
   the fix, it is in the brief the artwork arrived with, and it moves into Phase 15.
 
-### What Phase 15 inherits, and what it has to fix
+### What Phase 15 inherited, and what it fixed
 
-- **`motm.svg` is 471 KB of embedded bitmap** — a 1241×1179 raster behind a
-  luminance mask — against 3–22 KB for the nine that are paths. It is the only
-  drawing in the set that is not vector, and it carries 1.5 million pixels for a
-  star that renders into about 2,300 of them at its 16px floor on a retina phone.
-  It also carries a gradient, so `check:layout` reports it unmeasurable rather
-  than measuring it. Redraw it as paths, or down-sample the raster; do not ship
-  471 KB to a phone for a star.
-- **`the-dependable.svg` has a stray path.** A near-white hairline
-  (`fill="#f6ffff"`) floats in empty space above and right of the cap, with
-  nothing joining it to the drawing. It reads as a speck of dirt on the board.
-  The artwork is committed exactly as the club supplied it, so this is recorded
-  rather than quietly edited — but it wants deleting before the icons ship.
-- **The check measures the wrong ink on a multi-fill drawing.** `collect.js`
-  reads `fill` off the root `<svg>`, which is right for the nav icons and the
-  sparklines it was built for — they are one colour, set from CSS — and wrong for
-  a drawing whose colour lives on up to thirty-six child paths. On these files it reads
-  the initial value, black, and would pass a gold cup on green while failing it
-  on paper. Phase 15 extends the invariant to composite the rendered footprint,
-  which is what the table above already does.
+- **`motm.svg` was 471 KB of embedded bitmap** — a 1241×1179 raster behind a
+  luminance mask — against 3–22 KB for the nine that are paths. It carried 1.5
+  million pixels for a star that renders into about 2,300 of them at its 16px
+  floor on a retina phone. **Redrawn as ten flat facets in the cup's own three
+  golds: 748 bytes**, and a unit test now fails any drawing over 25 KB or
+  carrying an `<image>`.
+- **`the-dependable.svg` had a stray path.** A near-white hairline
+  (`fill="#f6ffff"`) floated in empty space above and right of the cap, with
+  nothing joining it to the drawing, and read as a speck of dirt on the board.
+  **Deleted**, along with the clip path that existed only to hold it; a test
+  asserts the colour never comes back.
+- **The check measured the wrong ink on a multi-fill drawing.** `collect.js`
+  read `fill` off the root `<svg>`, which is right for the nav icons and the
+  sparklines it was built for — they are one colour, set from CSS — and wrong
+  for a drawing whose colour lives on up to thirty-six child paths. On those it
+  read the initial value, black, and would have passed a gold cup on green
+  while failing it on paper. **It now bakes each icon's computed paint into a
+  copy, renders it at 64px, composites it over its real ground and scores the
+  share of ink clearing 3:1**, which is what the table above reports. 1,388
+  icons are measured on a full run.
 
 The recolour pipeline and the ground rule described in `DESIGN.md` under *The
 icons* survive intact. The numbers under them are now measured against files that
@@ -1008,6 +1015,87 @@ under their name; no icon renders below its floor (20px for trophies, 16px for
 the rest); no drawing scores under 3:1 across the majority of its ink on the
 ground it ships on; `motm.svg` is under 20 KB; the ladder table above matches
 `lib/awards.js` exactly.
+
+### Built — what landed, and what it found
+
+All of it. `lib/awards.js` carries the three classes and nothing else does:
+`CAREER_BADGES`, `EVENT_BADGES` and `SEASON_AWARDS` are the ten badges, and
+`SEASON_AWARDS` is simultaneously the honours board's rows, so the two cannot
+drift. `PLATES`, `TIERS`, `everPresent`, `playerPlates` and `clubPlates` are
+gone, with `components/Plate.jsx` and `styles/components/plate.css`. Three
+functions replace them — `playerBadges` (a shelf), `clubBadges` (the board),
+`badgeDetail` (one badge's page) — over one shared pass that walks every
+appearance in date order, because a badge has to say *when* it fell and a
+career total never can.
+
+`lib/badge-art.js` is the recolour pipeline: read a drawing's own fills, map
+them onto a slice of the metal, and rewrite the paint. `components/BadgeIcon.jsx`
+is the only thing that draws a badge, and `lib/tokens.js` gained `metalRamp` so
+the hexes stay in `tokens.css` — the same reason the charts read their series
+colours from there. The drawings are inlined via `import.meta.glob(… ?raw)`,
+which is what makes the fills reachable at all.
+
+**A drawing that isn't gold in the file gets gilded, and the boot is one.**
+The plan named two — the playmaker silhouette and the black-and-white
+hat-trick footballs. The Golden Boot was counted as arriving gold and doesn't:
+five of its ten fills are black, they are the plinth, and on a dark medallion
+that plinth disappears, which is the 57% the artwork table records. Gilded, it
+measures 100%. The cup, the cap and the star are left exactly as the club drew
+them. `DESIGN.md` is corrected rather than the measurement excused.
+
+**An unearned badge is a silhouette, not a dimmed metal.** The obvious way to
+show a badge nobody holds is to fade it, and fading is exactly what costs the
+contrast this phase exists to guarantee — a 40%-opacity gold cup fails on any
+ground. So an unheld badge is drawn flat in the ground's own soft ink
+(`--ink-soft` on paper, `--on-board-soft` on a board), both of which clear
+3:1, and the tier is carried by the metal being *there* rather than by how
+bright it is.
+
+**The trophies carry no names on the badge board.** Four of them under an
+honours board that had just listed the same four winners is the page saying
+the same thing twice, which is the failure this half of the roadmap exists to
+fix. Instead the strip is four drawings and four links, and the honours board's
+own rows gained their trophy at 20px — which is also the most direct way to
+show that those rows and the Class 3 badges are the same four objects.
+
+**`.badge-rung.empty` collided with the `.empty` primitive** and inherited its
+empty-state padding, which put the two unheld rungs of every ladder 32px below
+the two held ones and cost 64px a card. Renamed to `.unheld`. Worth recording
+because it is the same class of bug the CSS split was meant to end: a component
+reaching for a word the shared vocabulary already owns.
+
+**A chart is not an icon.** The new composite measurement immediately failed
+the player career chart at 0% — Recharts draws a whole plot into one `<svg>`,
+most of whose ink is deliberately faint gridwork. The old rule passed it by
+accident, reading black off the root element. `collect.js` now excludes
+anything inside `.recharts-wrapper` by name, with the reason, and *Chart
+series* in `DESIGN.md` is the rule that governs those colours instead. The
+hand-rolled sparklines are ours and stay measured.
+
+**A sixth invariant: `icon-below-floor`.** `BadgeIcon` clamps to 20px for a
+trophy and 16px for everything else, but a clamp can't see a flex or grid
+context squeezing a badge afterwards, so the floor rides on the element as
+`data-floor` and the check measures what was actually drawn. Nothing is under
+its floor today.
+
+**Measured, not assumed.** `npm run shots` on `mid-season` at 375px: the three
+badge pages are **1,322px** (a career badge, 48 bronze holders listed),
+**900px** and **900px**, all inside the 2,000px a Records sub-page gets.
+Records went from 4,655px to **4,841px** — the badge board is 186px taller
+than the twenty-four plates it replaced, and Phase 16 is the phase that splits
+this page. Player detail went 3,059 → **3,127px** for a regular and 2,444 →
+**2,747px** for a debutant, all of it the shelf now naming all four career
+badges instead of three plates in one row; Phase 21 owns that budget.
+`check:layout` passes with the same known failures and nothing new, 1,388
+icons measured for contrast across 16 routes × 2 fixtures × 6 widths. Unit
+tests went from 54 to 66: the badge ladder is asserted against the table in
+this file, and `tests/badge-art.test.js` holds the artwork itself — every key
+is a filename, no drawing embeds a raster or exceeds 25 KB, the three
+silhouettes take one flat stop, and the cap's stray hairline can't come back.
+
+**The repository is 470 KB lighter.** The star was 471 KB of embedded bitmap
+and is 748 bytes of paths; the other nine drawings are unchanged apart from
+the cap's deleted speck.
 
 ---
 

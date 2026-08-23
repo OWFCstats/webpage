@@ -27,7 +27,7 @@ export default function SeasonIndex({ seasons }) {
           </thead>
           <tbody>
             {seasons.map((s) => {
-              const boot = s.awards.find((a) => a.key === 'goals');
+              const boot = s.awards.find((a) => a.key === 'golden-boot');
               return (
                 <tr key={s.season}>
                   <td>
