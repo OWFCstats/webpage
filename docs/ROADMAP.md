@@ -1624,6 +1624,85 @@ recording rather than a number worth editing.
 **Done means** the score reads as a scoreboard at 375px; the squad is above the
 comparison; the stepper says what each chip is; Matchday still under 1,900px.
 
+### Built — what landed, and what it found
+
+`components/matchday/Scoreboard.jsx` is two mirrored `.sb-row`s now, not a
+`1fr auto 1fr` grid with the score in its own middle column: each row is
+badge, name-and-sub, score, so `2` sits against "Old Wellingtonians" and `3`
+against the opponent rather than `2–3` floating equidistant from both. The
+mobile-only `@media (max-width: 700px)` block that used to swap the grid and
+reorder the score above both sides on a phone is gone with it — a row of
+badge/name/score reads the same way at 320px and at 1400px, so there was
+nothing left to reorder. The pitch address (`pitch_name`, `pitch_address`,
+`postcode`, the map link) came off the scoreboard entirely rather than moving:
+`venueTeam` was only ever read here to build that block, so the whole import
+goes with it. It cost nothing to lose — the same address is already on the
+opponent's own page (`components/opponent-detail/PitchDetails.jsx`) and, for
+whichever match is next, on this page's own "Next up" card
+(`components/matchday/FormAndNext.jsx`). A fixture that hasn't been played
+keeps the same two rows and a score cell of `–`, so the shape Scoreboard's own
+comment promises — "shouldn't change on kick-off" — holds for the one live
+path that reaches it unplayed: the jump-strip's own dashed chips and Home's
+"Next up" card both link straight into a fixture's `/matchday/:id`.
+
+**The stepper's "14 unlabelled chips" turned out to already be labelled — the
+two dashed ones weren't.** Rendering the jump-strip showed every played chip
+already prints its own `W`/`D`/`L` as visible text, at `--t-micro` on
+`--on-board`, which is legible in the screenshots this phase took to check —
+`DESIGN.md`'s own "W/D/L is a convention people read instantly" already
+covers that case, and adding a legend for it would explain something nobody
+was confused by. What the review's "unlabelled" was actually reaching for is
+narrower: those chips carried a `title`, which is invisible on a tap and
+unreliable to a screen reader, and the two dashed fixture chips carried no
+content at all — no letter, no accessible name, nothing a screen reader
+announces and nothing to explain the dashed style to a sighted user either.
+Both are fixed rather than the first: every chip in `MatchdayNav.jsx` now
+carries an `aria-label` alongside its `title` (matching the pattern the
+Previous/Next links already used), and a one-line caption —
+"Dashed — not played yet." — renders under the strip, only when the season
+actually has a fixture chip to explain.
+
+**The squad pill key is the same shape, for the same reason.** `SquadPills.jsx`
+already prints "3G"/"2A" on a pill, so the goals-and-assists numbers were never
+color-only; the one color with nothing standing next to it was gold for Man of
+the match, indistinguishable from the plain "scored" dark pill without
+already knowing the convention. One line — "Gold — Man of the match · Dark —
+scored." — renders under the pill list, and only when the squad actually has
+a scorer or a MOTM to explain; a clean sheet with nobody on the ball has
+nothing for the key to gloss.
+
+**The squad moved up one section**, from after the MOTM/comparison cards to
+before them — `<SquadPills>` now renders directly after `<FormAndNext>` in
+`pages/Matchday.jsx`. It doesn't move above the archive stepper or the form
+strip, which are navigation rather than the "did I play" content the roadmap
+flagged; the specific complaint was the squad sitting under a comparison
+table, and it no longer does.
+
+**The comparison table had already stopped being one.** Phase 10's own text
+warned that `ComparisonCard`'s "earlier against" list was rebuilt onto
+`dl.compare` and an inline `ResultList` specifically "to protect Phase 20's
+arithmetic" — this phase opened that file and confirmed it: there was no table
+left to move, and no height to bank from moving it. The room this phase spent
+came entirely from the pitch address leaving the scoreboard, and it was
+enough with room to spare.
+
+**Measured, not assumed.** `npm run shots` on `mid-season` at 375px: the
+default route ("Matchday — latest") was 1,861px and is **1,812px** now — under
+budget by more than it was before, not less, even after adding the two
+captions. The scoreboard's own share of the page fell from 29% to **11%** of
+it (`Records → Honours` is the new deepest board on the site at 28%, unchanged
+by this phase — `DESIGN.md`'s board-proportion claim is corrected to name it
+rather than the scoreboard this phase shrank). The two other Matchday routes
+this site measures both dropped too: "Matchday — clean sheet, debut goal, red
+card, dropout" fell from 2,382px to **2,328px**, still over this page's
+1,900px budget for a reason outside this phase's brief — four named events
+stacked on one page — and recorded rather than hidden; "Matchday — walkover,
+no team sheet" fell from 1,270px to **1,226px**, comfortably under.
+`check:layout` passes with the same 21 known failures against the
+expected-failure list and nothing new, across both fixtures and all six
+widths; all 71 existing unit tests pass unchanged, since nothing in `lib/`
+moved.
+
 ---
 
 ## Phase 21 — Player detail and the opponent page

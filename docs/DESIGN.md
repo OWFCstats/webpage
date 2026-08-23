@@ -137,6 +137,32 @@ all six read from it, plus a compact inline variant for the one that sits
 inside another card's own row rather than a list of its own. Written as prose
 it wraps mid-name and puts our own club's name in every row of the season.
 
+### A scoreboard attaches the score to the team
+
+```
+[OW] Old Wellingtonians          2
+[OS] Old Stoics                  3
+       FULL TIME · LEAGUE · [L]
+```
+
+Two mirrored rows, not three columns with the score floating between them. The
+scoreboard is the one place a result isn't the row above — `components/matchday/
+Scoreboard.jsx` keeps its own treatment rather than reusing `ResultList` — but
+it had the row's own bug: `2–3` sat in a column of its own, equidistant from
+both names and attached to neither, and on a phone it reordered above both
+sides into a full-width band, which put more distance between the number and
+the team it belonged to, not less. Each row now carries its own score, at
+every width, so nothing has to reorder or restack below 700px — the shape that
+used to need a `@media (max-width: 700px)` grid swap is now just how the two
+rows always lay out.
+
+The pitch address left the scoreboard with it. It only ever repeated the
+address already on the opponent's own page (`components/opponent-detail/
+PitchDetails.jsx`) and on the "Next up" fixture card on the same page
+(`components/matchday/FormAndNext.jsx`) — a result that's already in the book
+doesn't need directions to the ground it was played on. Logistics belongs with
+the fixture, not the trophy case.
+
 ### A list of records is a ledger
 
 The same idea as the result row, for rows that aren't matches: one grid shared
@@ -417,8 +443,13 @@ the card format.
 `--board` ground, `--on-board` text, display face, gold accents, 1px `--gold`
 bottom border. No radius above 4px. Sparingly — if half the page is board, none
 of it feels like an occasion. Measured, since "sparingly" invites argument: no
-page is more than one board, and at 375px a board is between 5% and 29% of its
-page's height — the 29% being Matchday, where the scoreboard *is* the page.
+page is more than one board, and at 375px a board runs from a few percent of
+its page's height up to the high twenties — Records' honours board, at 28%, is
+the deepest now. Matchday's scoreboard used to hold that top end at 29%, wide
+enough that the scoreboard *was* the page; Phase 20 brought it to 11% by
+attaching each score to its own team row instead of spreading a floating one
+across a three-column grid, and by moving the pitch address off the result
+entirely (see *Structure* below).
 
 The `.board` class carries all of that, including the ink for labels, links,
 `.muted`, tags and tables sitting on it. That matters more than saving five
@@ -1028,12 +1059,15 @@ running to 7,350px: the grid's measure came down to 130px so the narrowest phone
 keeps two side by side. A page that has earned its length still has to earn it at
 every width.
 
-Matchday is the exception and it is a thin one: 1,857 against 1,900. Phase 20
-*adds* to that page — labels on fourteen stepper chips, a key for the squad pills
-— so the room has to come from somewhere inside it, and it does: the comparison
-table moves onto the result row and the pitch address leaves the scoreboard for
-the fixture. **A budget that gets edited to fit what was built is not a budget.**
-If it can't be met, that's a finding to write down.
+Matchday was the thin exception, 1,857 against 1,900, before Phase 20 added to
+the page and brought it further under at the same time: a caption on the
+archive stepper naming what its dashed chips are, and a key under the squad
+pills explaining gold and dark. Both are paid for and then some — the pitch
+address left the scoreboard for the fixture and the opponent's own page, and
+attaching each score to its own team row cost less height than the
+three-column grid it replaced. The page now measures 1,812px.
+**A budget that gets edited to fit what was built is not a budget** — this one
+didn't need editing; it just got smaller.
 
 ## CSS structure
 

@@ -109,6 +109,8 @@ export default function Matchday() {
 
       <FormAndNext form={form} next={nextFixture} teams={teams} />
 
+      <SquadPills squad={squad} debutIds={debutIds} dropoutNames={dropoutNames} />
+
       {played && (star || avgFor != null) && (
         <div className="grid match-cards section">
           {star && <MotmCard star={star} seasonAppCount={seasonAppCount} boot={boot} />}
@@ -127,8 +129,6 @@ export default function Matchday() {
       <WorthNoting match={match} ctx={ctx} />
 
       <MatchReport match={match} canWrite={played && Boolean(session)} />
-
-      <SquadPills squad={squad} debutIds={debutIds} dropoutNames={dropoutNames} />
     </div>
   );
 }

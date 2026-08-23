@@ -31,6 +31,9 @@ export default function SquadPills({ squad, debutIds, dropoutNames }) {
           </Link>
         ))}
       </div>
+      {squad.some((a) => a.motm || a.goals > 0) && (
+        <p className="muted squad-key">Gold — Man of the match · Dark — scored.</p>
+      )}
       {dropoutNames.length > 0 && (
         <p className="muted" style={{ marginTop: '0.7rem' }}>
           Late dropouts (within 24h): {dropoutNames.join(', ')}
