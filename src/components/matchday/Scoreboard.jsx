@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { VenueBadge } from '../bits';
 import { formatDate, formatKickoff } from '../../lib/format';
-import { isPlayed, opponentSlug, resultOf, venueTeam } from '../../lib/matches';
+import { isPlayed, opponentSlug, resultOf } from '../../lib/matches';
 
 /** Opponent monograms come off the club name rather than a person's name, so
  *  "Old King's Scholars" has to skip the word that's only punctuation. */
@@ -11,57 +11,45 @@ function opponentInitials(name) {
 }
 
 /**
- * The page's one dark occasion: us, them, and the score. A fixture that hasn't
- * been played keeps the same frame and puts the date where the score goes —
- * the shape of the page shouldn't change on kick-off.
+ * The page's one dark occasion: each row carries its own score, so the number
+ * is never floating between the two teams it belongs to. A fixture that
+ * hasn't been played keeps the same two rows and puts a dash where the score
+ * goes — the shape of the page shouldn't change on kick-off. The pitch
+ * address lives with the fixture (the "Next up" card) and the opponent's own
+ * page, not with a result that's already in the book.
  */
 export default function Scoreboard({ match, squad, scorers, teams }) {
   const played = isPlayed(match);
   const kickoff = formatKickoff(match.kickoff_time);
-  const venue = venueTeam(match, teams);
-  const venueParts = venue
-    ? [venue.pitch_name, venue.pitch_address, venue.postcode].filter(Boolean)
-    : [];
   return (
     <div className="board scoreboard">
       <div className="sb-top">
-        <div className="sb-side us">
+        <div className="sb-row us">
           <span className="badge">OW</span>
-          <span className="team">Old Wellingtonians</span>
-          <span className="sub">{squad.length > 0 ? `${squad.length} in the squad` : match.season}</span>
+          <div className="sb-info">
+            <span className="team">Old Wellingtonians</span>
+            <span className="sub">{squad.length > 0 ? `${squad.length} in the squad` : match.season}</span>
+          </div>
+          <span className={`score${played ? '' : ' upcoming'}`}>{played ? match.goals_for : '–'}</span>
         </div>
-        <div className="sb-mid">
+        <div className="sb-row them">
+          <span className="badge">{opponentInitials(match.opponent)}</span>
+          <div className="sb-info">
+            <Link to={`/opponents/${opponentSlug(teams, match)}`} className="team">{match.opponent}</Link>
+            <span className="sub">
+              {formatDate(match.date)}{kickoff && ` · ${kickoff}`} <VenueBadge venue={match.venue} />
+            </span>
+          </div>
+          <span className={`score${played ? '' : ' upcoming'}`}>{played ? match.goals_against : '–'}</span>
+        </div>
+        <div className="sb-state label">
           {played ? (
             <>
-              <span className="score">{match.goals_for}–{match.goals_against}</span>
-              <span className="state label">
-                {match.walkover ? 'Awarded (walkover)' : 'Full time'} · {match.competition}{' '}
-                <span className={`result-pill ${resultOf(match)}`}>{resultOf(match)}</span>
-              </span>
+              {match.walkover ? 'Awarded (walkover)' : 'Full time'} · {match.competition}{' '}
+              <span className={`result-pill ${resultOf(match)}`}>{resultOf(match)}</span>
             </>
           ) : (
-            <>
-              <span className="score upcoming">v</span>
-              <span className="state label">{formatDate(match.date)} · {match.competition}</span>
-            </>
-          )}
-        </div>
-        <div className="sb-side them">
-          <span className="badge">{opponentInitials(match.opponent)}</span>
-          <Link to={`/opponents/${opponentSlug(teams, match)}`} className="team">{match.opponent}</Link>
-          <span className="sub">
-            {formatDate(match.date)}{kickoff && ` · ${kickoff}`} <VenueBadge venue={match.venue} />
-          </span>
-          {(venueParts.length > 0 || venue?.map_url) && (
-            <span className="sub">
-              {venueParts.join(', ')}
-              {venue.map_url && (
-                <>
-                  {venueParts.length > 0 && ' · '}
-                  <a href={venue.map_url} target="_blank" rel="noreferrer">Map</a>
-                </>
-              )}
-            </span>
+            match.competition
           )}
         </div>
       </div>

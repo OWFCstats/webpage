@@ -43,6 +43,7 @@ export default function MatchdayNav({ match, season, seasonOrdered, prevMatch, n
                   to={`/matchday/${m.id}`}
                   className={`form-badge ${resultOf(m)}${current ? ' current' : ''}`}
                   title={`${formatDate(m.date)} vs ${m.opponent} (${m.goals_for}–${m.goals_against})`}
+                  aria-label={`${formatDate(m.date)} vs ${m.opponent}, ${m.goals_for}–${m.goals_against}`}
                   aria-current={current ? 'page' : undefined}
                 >
                   {resultOf(m)}
@@ -53,11 +54,15 @@ export default function MatchdayNav({ match, season, seasonOrdered, prevMatch, n
                   to={`/matchday/${m.id}`}
                   className={`form-badge fixture${current ? ' current' : ''}`}
                   title={`${formatDate(m.date)} vs ${m.opponent} (upcoming)`}
+                  aria-label={`${formatDate(m.date)} vs ${m.opponent}, fixture`}
                   aria-current={current ? 'page' : undefined}
                 />
               );
             })}
           </div>
+          {seasonOrdered.some((m) => !isPlayed(m)) && (
+            <p className="muted jump-key">Dashed — not played yet.</p>
+          )}
         </>
       )}
     </div>
