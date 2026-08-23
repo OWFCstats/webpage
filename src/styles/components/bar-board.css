@@ -1,20 +1,12 @@
-/* Ranked boards: the plain bar list, the LeadBoard variant where the leader
-   takes a dark band and the chasers sit beneath it, and the grid a set of them
-   sits in — components/BarBoard.jsx and components/LeaderBoards.jsx.
+/* The plain ranked bar list — components/BarBoard.jsx's default export. Its
+   two other faces, the dark-hero LeadBoard and the grid they used to share,
+   moved to components/leaderboards.css in Phase 14: the six-board grid on
+   Players and Records is card-shaped now, no bars. This file is left with the
+   one caller still drawing a bar — Season's "Most involved" — until Phase 18
+   gives that page the same treatment.
 
-   The board's accent arrives as --bar-accent, set from a token name by the
-   component — see BarBoard.jsx. */
-
-/* A set of boards, one column on a phone. Named for the boards it holds, not
-   for the .board surface — these are sheets. It lived in pages/records.css
-   until Players wanted the same set; the component that draws them owns it now,
-   which is the only way two pages can share it without one importing the
-   other's page styles. */
-.grid.boards {
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  /* Each sizes to its own content — a board with fewer names stays short. */
-  align-items: start;
-}
+   The bars read their colour from --bar-accent, so the token name goes in as a
+   CSS custom property and the fill rules stay here. */
 
 .bar-board h3 {
   margin-bottom: var(--s3);
@@ -75,110 +67,4 @@
 
 @media (prefers-reduced-motion: reduce) {
   .bar-fill { transition: none; }
-}
-
-.lead-hero {
-  border-radius: 0;
-  padding: var(--s5) var(--s5) var(--s4);
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: var(--s4);
-  flex-wrap: wrap;
-}
-
-/* The leader's own name, not a link colour: it is the largest thing on the
-   board and gold would fight the tally beside it. */
-.lead-hero .who {
-  font-family: var(--font-display);
-  font-weight: 600;
-  letter-spacing: -0.015em;
-  font-size: var(--t-headline);
-  line-height: 1;
-  color: var(--on-board);
-}
-
-.lead-hero .who a:hover { color: var(--gold-leaf); }
-
-/* Two names level at the top are a fact, not a headline: at the display size
-   they wrap a phone into three lines and read as two separate winners. Same
-   drop for "Nobody clear yet", which is the same news with nobody to name. */
-.lead-card.shared .lead-hero .who { font-size: var(--t-title); }
-
-.lead-hero .who .unclaimed { color: var(--on-board-soft); }
-
-.lead-hero .rate { color: var(--on-board-soft); font-size: var(--t-small); margin-top: var(--s1); }
-
-/* Gold on a dark ground: the leader's tally is the one number on the board
-   that is supposed to be wanted. */
-.lead-hero .tally {
-  font-family: var(--font-display);
-  font-weight: 600;
-  letter-spacing: -0.015em;
-  font-size: var(--t-display);
-  line-height: 0.85;
-  color: var(--gold-leaf);
-  font-variant-numeric: tabular-nums;
-}
-
-/* The band runs to the sheet's edge, so the padding belongs to the two halves
-   rather than to the surface. */
-.lead-card { padding: 0; overflow: hidden; }
-
-.lead-chase { padding: var(--s1) var(--s5) var(--s4); }
-
-@media (max-width: 700px) {
-  .lead-hero { padding: var(--s4) var(--s4) var(--s3); }
-  .lead-chase { padding: var(--s1) var(--s4) var(--s4); }
-}
-
-.chase-row {
-  display: grid;
-  grid-template-columns: 22px 1fr auto;
-  align-items: center;
-  gap: 0.1rem var(--s3);
-  padding: 0.45rem 0;
-}
-
-.chase-row + .chase-row { border-top: 1px solid var(--rule); }
-
-.chase-rank {
-  font-family: var(--font-data);
-  font-weight: 700;
-  font-size: var(--t-body);
-  color: var(--ink-soft);
-  font-variant-numeric: tabular-nums;
-}
-
-.chase-name { font-weight: 600; font-size: var(--t-small); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-
-.chase-name:hover { color: var(--gold-deep); }
-
-.chase-value {
-  font-family: var(--font-data);
-  font-weight: 700;
-  font-size: var(--t-subtitle);
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-  color: var(--ink);
-}
-
-.chase-track {
-  grid-column: 2 / -1;
-  height: 5px;
-  border-radius: var(--r-sm);
-  background: var(--sheet);
-  overflow: hidden;
-}
-
-.chase-fill {
-  display: block;
-  height: 100%;
-  border-radius: var(--r-sm);
-  background: var(--bar-accent, var(--gold));
-  transition: width 0.4s ease;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .chase-fill { transition: none; }
 }

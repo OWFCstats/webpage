@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import { plural, rate } from '../lib/format';
 import { statLeaders } from '../lib/players';
 import { statToken } from '../lib/tokens';
 
@@ -25,6 +24,11 @@ function LevelNote({ count, value }) {
  *
  * The fill colour comes from the stat itself rather than a per-call prop, so
  * goals are the same brass wherever they're ranked — see lib/tokens.js.
+ *
+ * This is Season's "Most involved" board now — the six-board leaderboard grid
+ * on Players and Records moved onto the card format in `components/LeaderBoards.jsx`
+ * in Phase 14, which is also where the bars themselves are argued against. This
+ * one bar board is still live until Phase 18 gives Season the same treatment.
  */
 export default function BarBoard({ title, rows, statKey, limit = 8, bare = false }) {
   const { ranked, value, alsoLevel } = statLeaders(rows, statKey, limit);
@@ -57,98 +61,6 @@ export default function BarBoard({ title, rows, statKey, limit = 8, bare = false
     <section className="sheet bar-board">
       <h3>{title}</h3>
       {body}
-    </section>
-  );
-}
-
-/**
- * One ranked row: rank, name, tally, and a bar drawn relative to the leader so
- * the size of the gap at the top is readable, not just the order.
- */
-export function ChaseRow({ rank, row, statKey, max }) {
-  const value = row[statKey];
-  return (
-    <div className="chase-row">
-      {rank != null && <span className="chase-rank">{rank}</span>}
-      <Link className="chase-name" to={`/players/${row.player.id}`}>{row.player.name}</Link>
-      <span className="chase-value">{value}</span>
-      <span className="chase-track">
-        <span
-          className="chase-fill"
-          style={{ width: `${max ? (value / max) * 100 : 0}%` }}
-        />
-      </span>
-    </div>
-  );
-}
-
-/** Past this many level at the top, the band stops naming them: three names in
- *  the display face is a headline, six is a list in the wrong place. */
-const SHARED_NAMED = 3;
-
-/**
- * Headline board: the leader gets the dark band and a large tally, the chasers
- * sit beneath. Used for the one stat the page is really about, and it is the
- * only `.board` on the page that carries it.
- *
- * A shared lead is named in full — two players level both lead it, and the rows
- * can't say which of them mattered more, the same rule the honours board
- * follows. Past three, the band names nobody and every level name drops into
- * the list beneath, still ranked first: a crowd at the top is a fact about the
- * season, not a name to pick out of it.
- */
-export function LeadBoard({ title, rows, statKey, unit, limit = 6 }) {
-  const { value, leaders, chasers, ranked, sharedLead, alsoLevel } = statLeaders(rows, statKey, limit);
-
-  if (ranked.length === 0) {
-    return (
-      <section className="sheet">
-        <div className="section-head" style={{ marginBottom: '0.4rem' }}><h3>{title}</h3></div>
-        <p className="muted">Nothing recorded yet.</p>
-      </section>
-    );
-  }
-
-  const named = sharedLead <= SHARED_NAMED ? leaders : [];
-  const listed = named.length > 0 ? chasers : ranked;
-  const leader = named.length === 1 ? named[0] : null;
-  const perGame = leader && unit && leader.appearances
-    ? `${rate(leader[statKey] / leader.appearances)} ${unit} per game · `
-    : '';
-
-  return (
-    <section className={`sheet lead-card${named.length === 1 ? '' : ' shared'}`} style={accentStyle(statKey)}>
-      <div className="board lead-hero">
-        <div>
-          <div className="block gold">{title}</div>
-          <div className="who">
-            {named.length === 0 ? (
-              <span className="unclaimed">Nobody clear yet</span>
-            ) : (
-              named.map((r, i) => (
-                <span key={r.player.id}>
-                  {i > 0 && ' & '}
-                  <Link to={`/players/${r.player.id}`}>{r.player.name}</Link>
-                </span>
-              ))
-            )}
-          </div>
-          <div className="rate">
-            {leader
-              ? `${perGame}${plural(leader.appearances, 'appearance', 'appearances')}`
-              : `${sharedLead} players level at the top`}
-          </div>
-        </div>
-        <div className="tally">{value}</div>
-      </div>
-      {listed.length > 0 && (
-        <div className="lead-chase">
-          {listed.map((r) => (
-            <ChaseRow key={r.player.id} rank={r.rank} row={r} statKey={statKey} max={value} />
-          ))}
-          <LevelNote count={alsoLevel} value={ranked[ranked.length - 1][statKey]} />
-        </div>
-      )}
     </section>
   );
 }

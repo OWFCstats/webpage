@@ -837,6 +837,88 @@ exists to remove. **Players is this season; Records is all time.**
 against 2,714 today; no board ends on a hedge; the bars are gone; Players has no
 all-time scope.
 
+### Built — what landed, and what it found
+
+All of the above, plus a redraw of the card the plan didn't spell out in
+enough detail to build blind. `components/LeaderBoards.jsx` is a `LeaderCard`
+per stat inside a `.grid.boards`; `components/BarBoard.jsx` lost its
+`LeadBoard`/`ChaseRow` pair (the old hero board, now replaced) and kept only
+the plain bar list, which is still Season's "Most involved" board until
+Phase 18. `lib/players.js`'s `statLeaders` gained two fields rather than
+changing shape — `total` (everyone on the board, zeroes excluded) and `next`
+(the first row the cap left out, its rank already resolved against ties) — so
+the existing callers (`BarBoard`'s bar list, still reading `alsoLevel`) didn't
+need to change at all.
+
+**The grid is two cards wide on a phone, not one.** The plan's own arithmetic
+doesn't close without it: six cards stacked one to a row, even drawn as
+tightly as a card can be, cost more than the 1,400px budget has to give once
+the page's own heading, season picker, tab strip and intro line are paid for.
+`minmax(150px, 1fr)` puts two side by side from 360px up and falls back to one
+at 320px, which is the one width narrow enough that two 150px columns don't
+fit — a page nobody measures the budget at, so the fallback costs nothing.
+
+**Three things in the plan's own card description didn't survive contact with
+the budget, and are recorded here rather than silently dropped:**
+
+- **No per-game rate line under the leader's name.** The old hero board's
+  "1.07 goals per game · 14 appearances" was carried into an early draft of
+  this card and then cut — it's not in `DESIGN.md`'s own list of what a card
+  needs, and a two-up card at 165px wide has no width to spare on a second
+  line that repeats arithmetic the tally already states.
+- **No stat icon in the heading**, though an earlier draft of `DESIGN.md`
+  pictured one. There's no icon to hang there yet — Phase 15 is what draws
+  one per stat — and a heading that promises an icon slot before the artwork
+  exists is a placeholder for a placeholder. `DESIGN.md` is corrected to say
+  so rather than describe a heading that isn't built.
+- **The heading doesn't link to "the full list".** There isn't one yet: the
+  nearest page is the squad roster, sorted by appearances rather than by
+  whichever stat the card is about, and linking a "Goals" heading to a list
+  sorted by apps would answer the wrong question. Phase 22's data centre is
+  the real destination for that link, and it's the one piece of the plan this
+  phase leaves for the phase that can actually answer it.
+
+**Every row gets a rank; only the leader gets an avatar.** The plan's
+"initials where a photo would go" reads as universal, but a chaser row in a
+165px-wide card has room for a rank number, a name and a value and nothing
+else — adding a 24px monogram to four rows per card was the first thing cut
+when the grid went to two columns. The leader keeps one: it's the one row
+built to carry the occasion, and it's also the one row with the width for it.
+
+**The footer is a fact about the board, not a claim about the reader.** The
+plan's own draft copy — `You're 18th of 47 · 2 apps` — reads as a personal
+"where am I", but nothing feeding this component knows who's looking at it;
+there is no visitor identity anywhere on this site, admin login included. What
+the footer actually names is the boundary the cap drew: the rank, the field
+size and the value of the row right after the five shown, ties already
+resolved into that rank. `DESIGN.md`'s own text is corrected to describe that
+rather than a personalisation this site doesn't have and isn't building.
+The nouns it counts in are kept short on purpose — `app`/`apps`, `G+A`,
+`sheet`/`sheets` — because "6th of 48 · 9 appearances" wraps a 165px card's
+footer onto a second line and "6th of 48 · 9 apps" doesn't.
+
+**Names wrap; they don't clip.** An early pass reached for
+`text-overflow: ellipsis` to keep every row to one line, the same shortcut
+`components/BarBoard.jsx`'s `.bar-name` already took — and `check:layout`'s
+`text-clipped` invariant caught it immediately, the same way it was built to:
+"Dom Bonham-Lloyd" needing 128px in an 88px cell is exactly the clipped-name
+bug Phase 9 wrote the check to catch. Removed in favour of the site's own
+rule (`docs/DESIGN.md`, *the squad*: "a name wraps rather than clips") — some
+rows run two lines now, and that's a real, accepted cost of the two-up grid
+rather than a hidden one.
+
+**Measured, not assumed.** `npm run shots` on `mid-season` at 375px: Players →
+Leaderboards was 2,992px before this phase and is **1,370px** after, under its
+1,400px budget for the first time. Records — still one long page; Phase 16
+splits it — carries all six boards now instead of three and still *dropped*,
+from 4,831px to 4,655px, because six card-format boards cost less than three
+of the old bar boards did; it remains well over its own 2,000px budget, which
+is Phase 16's arithmetic to close, not this phase's. `check:layout` passes
+with the same 17 known failures and nothing new, across both fixtures and all
+six widths. All 50 existing unit tests pass unchanged; four more were added
+for `statLeaders`' new fields, covering a tie landing exactly on the cap and
+the all-shown case where `next` is `null`.
+
 ---
 
 ## Phase 15 — The badge system

@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-import { Link } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import { ErrorNote, Spinner } from '../components/bits';
 import LeaderBoards from '../components/LeaderBoards';
@@ -62,15 +61,10 @@ export default function Records() {
 
       <div className="section">
         <h2>All-time leaders</h2>
-        {/* Three of the six, because Records is about the marks above any one
-            season and this page is already long. The same component draws the
-            full set on Players, so the two can't drift apart. */}
-        <LeaderBoards rows={allTime} stats={['goals', 'appearances', 'motm']} limit={5} />
-        <p className="muted card-foot">
-          Every season together.{' '}
-          <Link className="more" to="/players?season=all">Players → All time</Link> has every
-          board, and a season at a time.
-        </p>
+        {/* All six, same as Players — the cards this component draws are the
+            whole reason this page fits at all now; see Phase 14. */}
+        <LeaderBoards rows={allTime} />
+        <p className="muted card-foot">Every season together. Players → Leaderboards has one season at a time.</p>
       </div>
 
       <div className="section">

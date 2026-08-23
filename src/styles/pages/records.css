@@ -1,8 +1,8 @@
 /* Records: one sheet per club record. A record nobody holds keeps its sheet and
    says so — naming it is the point. Everything else on the page is a component
    of its own: components/honours-board.css, components/plate.css and
-   components/bar-board.css, which owns the all-time leader boards and the grid
-   they sit in. */
+   components/leaderboards.css, which owns the all-time leader boards and the
+   grid they sit in. */
 
 /* ---- club records ---- */
 

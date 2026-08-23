@@ -34,12 +34,12 @@ export default function PlayersHub({ view }) {
   // render, so the default can't be resolved in a useState initialiser. The
   // Season page resolves its own the same way.
   const asked = params.get('season') ?? 'latest';
-  const season = asked === 'all' || seasons.includes(asked) ? asked : 'latest';
+  const season = seasons.includes(asked) ? asked : 'latest';
   const activeSeason = season === 'latest' ? seasons[0] : season;
 
   const pool = useMemo(() => {
     if (loading) return { rows: [], played: 0 };
-    const inScope = season === 'all' ? matches : matches.filter((m) => m.season === activeSeason);
+    const inScope = matches.filter((m) => m.season === activeSeason);
     return {
       // A player is in the pool once they were picked, not once they scored:
       // a late withdrawal is part of a squad's record too.
@@ -64,7 +64,7 @@ export default function PlayersHub({ view }) {
     setParams(next);
   };
 
-  const scope = season === 'all' ? null : activeSeason;
+  const scope = activeSeason;
 
   // The season carries across to whichever sub-page the control switches to;
   // `view` never belongs in it, since the two views are now paths, not a param.
@@ -76,10 +76,12 @@ export default function PlayersHub({ view }) {
     <div>
       <div className="section-head">
         <h1>Players</h1>
+        {/* No "All time" option here — that board is Records', reached once
+            rather than from both sections on the same component. */}
         <SeasonSelect
           seasons={seasons}
-          value={season === 'latest' ? (seasons[0] ?? 'all') : season}
-          allLabel="All time"
+          value={season === 'latest' ? (seasons[0] ?? '') : season}
+          allowAll={false}
           onChange={(next) => go({ season: next === seasons[0] ? null : next })}
         />
       </div>
@@ -115,14 +117,9 @@ export default function PlayersHub({ view }) {
         </div>
       ) : view === 'leaders' ? (
         <>
-          <LeaderBoards rows={pool.rows} lead="goals" />
+          <LeaderBoards rows={pool.rows} />
           <p className="muted card-foot">
-            {scope ? (
-              <>Switch to All time for career totals, or see honours and badges on{' '}
-                <Link className="more" to="/records">Records →</Link></>
-            ) : (
-              <>Honours and badges are on <Link className="more" to="/records">Records →</Link></>
-            )}
+            Career totals, honours and badges are on <Link className="more" to="/records">Records →</Link>
           </p>
         </>
       ) : (
