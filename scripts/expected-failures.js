@@ -17,31 +17,19 @@
 // Fields: invariant (required), route / dataset / match (optional filters —
 // `match` is a substring of the element's path or of its text), owner, why.
 //
-// One entry here is a table that hides a column at a width it was never
-// measured at, against the phase that rebuilds that table. The other two are
-// the crest, whose ink a bitmap can't be read for, at the two places it
-// renders: the masthead on every route, and — since Phase 19 — the real
-// thumbnail in Home's compact next-fixture row. Phase 10's three bugs used to
-// be deliberately absent so the run stayed red until they were fixed; they
-// are fixed, so the run is green and anything new in it is a regression.
+// The crest is the remaining pair of entries: its ink a bitmap can't be read
+// for, at the two places it renders — the masthead on every route, and —
+// since Phase 19 — the real thumbnail in Home's compact next-fixture row.
+// Phase 10's three bugs used to be deliberately absent so the run stayed red
+// until they were fixed; they are fixed, so the run is green and anything new
+// in it is a regression.
 //
-// Records' season index and Season's fixtures table were the other two
-// tables here, and both came off this list the same way — Phase 16 and
-// Phase 18 respectively rebuilt each onto the Phase 10 result row, so
-// there's no wrap left to scroll. One remains, on the opponent page.
+// Records' season index, Season's fixtures table and the opponent page's
+// home/away split were the tables that used to hide a column here, and all
+// three came off this list the same way — Phase 16, Phase 18 and Phase 21
+// respectively rebuilt or condensed each so there's no wrap left to scroll.
 
 export const EXPECTED = [
-  {
-    invariant: 'table-wrap-scrolls',
-    route: 'opponent',
-    match: 'sheet.section',
-    owner: 'Phase 21',
-    why:
-      'The opponent page\'s home/away split hides 36px at 320px and fits from '
-      + '360px up. Also found by this check and not by the review. Phase 21 owns '
-      + 'the opponent page and its 2,000px budget; the meetings table on the same '
-      + 'page is Phase 10\'s and is not on this list.',
-  },
   {
     invariant: 'icon-unmeasurable',
     match: 'a.brand',

@@ -1728,6 +1728,88 @@ against this phase.
 2,000px; both pages' budgets recorded in `DESIGN.md`; `check:layout` clean —
 which by then means the expected-failure list is empty.
 
+### Built — what landed, and what it found
+
+**The opponent page's fix is the one the plan predicted.** `HeadToHeadTable`'s
+eight columns (a blank label plus P/W/D/L/GF/GA/GD) needed 290px at 320px
+against the 254px its card gave it. `docs/DESIGN.md`'s own rule is condensed
+figures first, restructure into rows only where condensing isn't enough — and
+condensing was enough: `table.data.h2h` drops to 0.5rem/0.3rem padding below
+360px, the same breakpoint and the same fix the league table already uses, in
+a new `src/styles/pages/opponent-detail.css`. No column came off it, so the
+league table stays the only place on the site that hides one. Pitch details
+and the meetings list got their once-over and needed nothing: both were
+already clean, and the page measures 1,259px against its 2,000px budget with
+nothing else to fix.
+
+**Player detail needed a real cut, not arithmetic on the margins.** The page
+measures 3,127px today — up from the review's 2,941px, because Phase 10's
+44px rows and Phase 15's badge icons both cost more than the table cells and
+plates they replaced, same as Home and Player detail's own entry in Phase 10
+already recorded. Closing 727px meant moving content, not trimming padding:
+
+- **`SeasonCards` is deleted**, not relocated. It repeated — in four figures
+  instead of eleven, and without starts, MOTM, cards or dropouts — exactly
+  what `SeasonTable` already shows under Full stats, and `FirstsTable`'s own
+  "Best season" line already names the one year worth calling out on the
+  Overview tab. A season-by-season card grid earns its keep on a page that
+  doesn't already carry a season-by-season table two taps away; this one
+  didn't, so it's gone rather than moved.
+- **The career-arc chart and "Most played alongside" moved to Full stats.**
+  Both are reference material once you look at what they're next to on that
+  tab: the chart sits with the season table it visualises, seguing between
+  the squad-comparison stat grid above it and the season-by-season table
+  below; the teammates list sits with the stat grid it doesn't duplicate.
+  Nothing was deleted — the existing Overview/Full stats split, built for
+  exactly this "what you opened the page for" vs "the reference behind it"
+  divide, just gained two more residents on the reference side.
+
+**The two-up grid this phase tried for "Where they rank" and "Most played
+alongside" didn't survive contact with real names.** The plan's own instinct
+— condense before you relocate — said try a `.grid.cols-2` row for the two
+plainest cards, the ones with no pill badges to justify the old
+`.grid.player-cards` comment's "far too narrow" warning. It wasn't plain
+enough: `rank-list`'s fixed-width rank, "of N" and value columns leave as
+little as 15px for the label at 320px, and "Goals in 2025/26" needs 106px of
+it; `mate-list` has the same problem the moment a surname is "Dom
+Bonham-Lloyd". Both moved back to full width, stacked — the shape the
+original card grid always fell back to below 640px, which the review this
+comment is arguing with had simply never measured a two-up phone layout
+against.
+
+**Trying it anyway found a real bug, and the fix outlasts the grid that
+found it.** The half-width cards didn't clip their labels — they overflowed
+the page instead, `main.page > div > div.grid.cols-2.section > div.sheet`
+extending 107px past the viewport at 320px, because a CSS grid item defaults
+to `min-width: auto` and refuses to shrink below its own content's
+minimum. `.grid.player-cards` had carried exactly this reset for exactly
+this reason, and deleting that class along with the three-column layout
+deleted the guard with it. The fix goes on the shared primitive instead of
+back on a page-specific class: `.grid > * { min-width: 0; }` in
+`primitives.css`, so the next grid that meets a row it can't shrink doesn't
+have to relearn this. `check:layout` is what caught it — page-overflow and
+element-overflow, not the text-clipped invariant the label width suggested.
+Player detail dropped the two-up grid it was found on, so the reset now
+guards the five `.grid` call sites `check:layout` does cover — the squad's
+cards, Records' badge board, Season's four-figure summary, every leaderboard
+and Matchday's own card grid — plus admin's own `.grid.cols-2`, which the
+public check can't reach. None of them changed shape once their children
+could actually shrink; the reset only bites where a row couldn't already.
+
+**Measured, not assumed.** `npm run shots` on `mid-season` at 375px: Player
+detail — a regular fell from 3,127px to **2,241px**, comfortably inside the
+2,400px budget with room to spare rather than landing on it; the debutant
+route fell from 2,747px to **2,107px**; the never-played route is unchanged
+at 1,043px, since none of this touches the `!played` empty state. The
+opponent page is unchanged at 375px (1,259px / 1,335px) — its fix only bites
+at 320px, which is exactly where it needed to. `check:layout` passes with
+**20** known failures against the expected-failure list, one fewer than
+Phase 20 left it (the opponent table's entry is deleted in this commit) and
+nothing new across both fixtures and all six widths — including a full sweep
+of every `.grid` route on the site, checked specifically because this phase
+changed what the primitive does. All 71 existing unit tests pass unchanged,
+since nothing in `lib/` moved; `npm run build` is clean.
+
 ---
 
 ## Phase 22 — The data centre

@@ -18,7 +18,7 @@ export default function HeadToHeadTable({ overall, home, away }) {
   return (
     <div className="sheet section">
       <div className="table-wrap">
-        <table className="data">
+        <table className="data h2h">
           <thead>
             <tr>
               <th></th>

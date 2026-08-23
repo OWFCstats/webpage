@@ -973,13 +973,17 @@ The design target, not a fallback. Every change gets checked at 375px first.
   not a hidden column.
 
   Running it found two more than the review did, both at widths nobody had
-  measured: Season's upcoming-fixtures table hides a handful of pixels at 320px
+  measured: Season's upcoming-fixtures table hid a handful of pixels at 320px
   (4–7px, depending on the platform's font metrics), and the opponent page's
-  home/away split hides 36px at 320px. Neither is being fixed on the way
-  past — they are on `scripts/expected-failures.js` against the phases that own
-  those pages (18 and 21). That list is the whole reason the check is worth
-  having: it can tell a scheduled bug from a regression, and an entry that stops
-  failing fails the run, so the phase that fixes one has to delete it.
+  home/away split hid 36px at 320px. Phase 18 fixed the first by moving
+  upcoming fixtures onto the shared result row, off a table entirely; Phase 21
+  fixed the second by condensing the table's own padding at that width, the
+  same fix the league table already used below its own first breakpoint — no
+  column came off either table. Both entries came off
+  `scripts/expected-failures.js` in the commit that fixed them, which is the
+  whole reason the check is worth having: it can tell a scheduled bug from a
+  regression, and an entry that stops failing fails the run, so the phase that
+  fixes one has to delete it.
 - **The league table shows all ten columns from 360px up, and it's measured.**
   Phase 2 got the columns down to the width of a phone in `--font-data` and
   still had to hide four of them, because the surface holding the table spent
@@ -1028,12 +1032,19 @@ Records is a reference document and earns length, which is why it splits into
 sub-pages rather than shrinking. Home doesn't. The opponent page is the same kind
 of document as a Records sub-page and takes the same number. `npm run shots`
 reports the real numbers — page by page, at every supported width, into
-`shots/heights.json` — and the roadmap records where each page started. Five of
-these rows are inside their budgets now: Matchday, Players → Leaderboards
+`shots/heights.json` — and the roadmap records where each page started. Seven
+of these rows are inside their budgets now: Matchday, Players → Leaderboards
 (Phase 14), Records' three sub-pages (Phase 16), Season → Charts (Phase 18, at
-1,909px), and the opponent page, which is only inside because half of what it
-should say isn't there yet. Home, Season's own results view and Player detail
-are still over — Season came down from 3,379px to 3,248px in Phase 18 (Charts
+1,909px), the opponent page (still light on content, but measured and inside
+either way), and Player detail, which Phase 21 brought from 3,127px to
+2,241px — mostly by moving the career-arc chart and "Most played alongside"
+off the Overview tab and onto Full stats, next to the season table and squad
+comparison they already keep company with there, the same split between "what
+you open the page for" and "the reference behind it" the two tabs already draw
+everywhere else on the page. The season-by-season cards came off the page
+entirely rather than moving: they repeated, in less detail, the table Full
+stats already carries. Home and Season's own results view are still over —
+Season came down from 3,379px to 3,248px in Phase 18 (Charts
 leaving for its own address and the bars leaving "Most involved" account for
 most of that) but a season of 16 played games costs 1,286px on the shared result row
 before the league table, the summary or a single fixture is counted, and that

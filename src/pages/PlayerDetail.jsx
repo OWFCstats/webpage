@@ -10,7 +10,6 @@ import MatesCard from '../components/player-detail/MatesCard';
 import PlayerCareerChart from '../components/player-detail/PlayerCareerChart';
 import PlayerHero from '../components/player-detail/PlayerHero';
 import RankCard from '../components/player-detail/RankCard';
-import SeasonCards from '../components/player-detail/SeasonCards';
 import SeasonTable from '../components/player-detail/SeasonTable';
 import StatGrid from '../components/player-detail/StatGrid';
 import { playerBadges } from '../lib/awards';
@@ -97,10 +96,6 @@ export default function PlayerDetail() {
           </div>
 
           <div className="section">
-            <PlayerCareerChart arc={arc} career={career} />
-          </div>
-
-          <div className="grid player-cards section">
             <FormCard
               form={form}
               scoringRun={scoringRun}
@@ -108,11 +103,11 @@ export default function PlayerDetail() {
               favouriteOpponent={favouriteOpponent}
               teams={teams}
             />
-            <RankCard ranks={ranks} />
-            <MatesCard teammates={teammates} />
           </div>
 
-          <SeasonCards seasons={seasons} bestSeason={firsts.bestSeason} />
+          <div className="section">
+            <RankCard ranks={ranks} />
+          </div>
 
           <p className="section more-hint-row">
             <button type="button" className="secondary small" onClick={() => setParams({ view: 'stats' })}>
@@ -139,6 +134,14 @@ export default function PlayerDetail() {
               {career.dropouts > 0 &&
                 `, with ${plural(career.dropouts, 'late withdrawal', 'late withdrawals')}`}.
             </p>
+          </div>
+
+          <div className="section">
+            <MatesCard teammates={teammates} />
+          </div>
+
+          <div className="section">
+            <PlayerCareerChart arc={arc} career={career} />
           </div>
 
           <SeasonTable seasons={seasons} />
