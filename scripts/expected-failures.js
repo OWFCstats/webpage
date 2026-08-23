@@ -17,12 +17,13 @@
 // Fields: invariant (required), route / dataset / match (optional filters —
 // `match` is a substring of the element's path or of its text), owner, why.
 //
-// One of the two entries here is a table that hides a column at a width it
-// was never measured at, against the phase that rebuilds that table. The
-// other is the crest, whose ink a bitmap can't be read for. Phase 10's three
-// bugs used to be deliberately absent so the run stayed red until they were
-// fixed; they are fixed, so the run is green and anything new in it is a
-// regression.
+// One entry here is a table that hides a column at a width it was never
+// measured at, against the phase that rebuilds that table. The other two are
+// the crest, whose ink a bitmap can't be read for, at the two places it
+// renders: the masthead on every route, and — since Phase 19 — the real
+// thumbnail in Home's compact next-fixture row. Phase 10's three bugs used to
+// be deliberately absent so the run stayed red until they were fixed; they
+// are fixed, so the run is green and anything new in it is a regression.
 //
 // Records' season index and Season's fixtures table were the other two
 // tables here, and both came off this list the same way — Phase 16 and
@@ -55,5 +56,18 @@ export const EXPECTED = [
       + 'visually; if that ever matters it needs vector art, not a wider '
       + 'exemption here. Found kicking off Phase 10, not by the review — the '
       + 'crest didn\'t exist when the review ran.',
+  },
+  {
+    invariant: 'icon-unmeasurable',
+    route: 'home',
+    match: 'a.fixture-row > img',
+    owner: 'Phase 19',
+    why:
+      'The next-fixture row draws the same public/crest.png the masthead does, '
+      + 'in place of the "OW" text placeholder it carried before the crest '
+      + 'existed — a second bitmap render, not a second bug: the masthead\'s own '
+      + 'entry above is scoped to a.brand, so this one needs its own line rather '
+      + 'than a widened match. Same limitation, same fix if it\'s ever needed: '
+      + 'vector art, not a wider exemption here.',
   },
 ];
