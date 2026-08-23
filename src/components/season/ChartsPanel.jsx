@@ -9,7 +9,7 @@ export default function ChartsPanel({ season, activeSeason }) {
   const [view, setView] = useState('results');
   return (
     <div className="flat-block">
-      <div className="label ruled">Charts</div>
+      <div className="block board">Charts</div>
       <div className="seg" role="tablist" aria-label="Season view">
         <button
           type="button"

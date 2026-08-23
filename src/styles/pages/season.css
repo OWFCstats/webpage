@@ -1,11 +1,10 @@
 /* Season: the two-column layout that puts the table and results in the main
    column and the summary in the aside. */
 
-/* ---- flat blocks: a label and a hairline, no surface of their own — for
-   sections that don't need to read as a distinct bubble, whether they sit on
-   the page background or inside a sheet. The label itself is the shared
-   .label.ruled primitive, and the hairline is how a sheet separates its parts.
-   ---- */
+/* ---- flat blocks: a .block head and nothing else, no surface of its own —
+   for sections that don't need to read as a distinct bubble, whether they sit
+   on the page background or inside a sheet. The colour field does the
+   separating a hairline used to do. ---- */
 .flat-block {
   margin-top: var(--s6);
 }

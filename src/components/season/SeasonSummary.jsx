@@ -11,7 +11,7 @@ export default function SeasonSummary({ summary, homeAway }) {
   const gd = summary.goalsFor - summary.goalsAgainst;
   return (
     <div className="flat-block">
-      <div className="label ruled">Season at a glance</div>
+      <div className="block board">Season at a glance</div>
       <div className="grid cols-4">
         <StatTile plain value={summary.played} label="Played" />
         <StatTile plain value={`${summary.won}-${summary.drawn}-${summary.lost}`} label="W-D-L" />

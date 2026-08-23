@@ -33,7 +33,7 @@ export default function MatchdayNav({ match, season, seasonOrdered, prevMatch, n
 
       {seasonOrdered.length > 0 && (
         <>
-          <div className="label">Jump to a matchday</div>
+          <div className="block board">Jump to a matchday</div>
           <div className="jump-strip">
             {seasonOrdered.map((m) => {
               const current = m.id === match.id;

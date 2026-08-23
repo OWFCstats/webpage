@@ -6,7 +6,7 @@ import { initials } from '../../lib/format';
 export default function MotmCard({ star, seasonAppCount, boot }) {
   return (
     <div className="sheet">
-      <h3 className="label ruled">Man of the Match</h3>
+      <h3 className="block gold">Man of the Match</h3>
       <div className="motm-feature">
         <span className="avatar">{initials(star.player.name)}</span>
         <span>

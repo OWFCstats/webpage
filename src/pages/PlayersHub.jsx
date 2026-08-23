@@ -104,11 +104,12 @@ export default function PlayersHub() {
         <>
           <LeaderBoards rows={pool.rows} lead="goals" />
           <p className="muted card-foot">
-            {scope
-              ? 'Switch the season to All time for the club’s all-time leaders.'
-              : 'Every season together.'}{' '}
-            The honours board and the badge board are on{' '}
-            <Link className="more" to="/records">Records →</Link>
+            {scope ? (
+              <>Switch to All time for career totals, or see honours and badges on{' '}
+                <Link className="more" to="/records">Records →</Link></>
+            ) : (
+              <>Honours and badges are on <Link className="more" to="/records">Records →</Link></>
+            )}
           </p>
         </>
       ) : (

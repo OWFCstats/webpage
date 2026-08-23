@@ -58,7 +58,7 @@ export default function PlayerDetail() {
       {/* Plates first, above the view selector and above the stats: what a
           player has won and what's next is why they opened their own page. */}
       <div className="section">
-        <h3 className="label ruled">Badges</h3>
+        <h3 className="block gold">Badges</h3>
         <PlateShelf plates={plates} />
       </div>
 
@@ -125,7 +125,7 @@ export default function PlayerDetail() {
       {played && view === 'stats' && (
         <>
           <div className="section">
-            <h3 className="label ruled">Career, against the squad</h3>
+            <h3 className="block verdigris">Career, against the squad</h3>
             <StatGrid
               career={career}
               seasons={seasons}

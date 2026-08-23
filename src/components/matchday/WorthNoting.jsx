@@ -50,7 +50,7 @@ export default function WorthNoting({ match, ctx }) {
   if (milestones.length === 0) return null;
   return (
     <div className="sheet section">
-      <h3 className="label ruled">Worth noting</h3>
+      <h3 className="block gold">Worth noting</h3>
       <ul className="milestones">
         {milestones.map((m, i) => (
           <li key={i}>

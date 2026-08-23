@@ -35,7 +35,7 @@ body {
 }
 
 /* Headings are the display face, mixed case. Nothing here is ever set in caps
-   — that is .label's job and only .label's. */
+   — that is .label's and .block's job, not the heading's. */
 h1, h2, h3 {
   font-family: var(--font-display);
   font-weight: 600;

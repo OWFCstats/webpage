@@ -12,7 +12,7 @@ export default function LastResult({ match, ctx }) {
       <div className="home-widget-head">
         <div>
           <span className="label">Last time out</span>
-          <h2>{match ? <>{match.opponent} <VenueBadge venue={match.venue} /></> : 'Last time out'}</h2>
+          {match && <h2>{match.opponent} <VenueBadge venue={match.venue} /></h2>}
         </div>
         {match && <span className="home-widget-note">{formatDate(match.date)}</span>}
       </div>

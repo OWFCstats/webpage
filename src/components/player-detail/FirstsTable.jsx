@@ -20,7 +20,7 @@ export default function FirstsTable({ firsts }) {
   if (!debut) return null;
   return (
     <div className="sheet">
-      <h3 className="label ruled">Firsts &amp; bests</h3>
+      <h3 className="block board">Firsts &amp; bests</h3>
       <dl className="compare">
         <div>
           <dt>Debut</dt>

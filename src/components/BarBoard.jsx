@@ -120,7 +120,7 @@ export function LeadBoard({ title, rows, statKey, unit, limit = 6 }) {
     <section className={`sheet lead-card${named.length === 1 ? '' : ' shared'}`} style={accentStyle(statKey)}>
       <div className="board lead-hero">
         <div>
-          <div className="label">{title}</div>
+          <div className="block gold">{title}</div>
           <div className="who">
             {named.length === 0 ? (
               <span className="unclaimed">Nobody clear yet</span>

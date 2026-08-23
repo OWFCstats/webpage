@@ -55,11 +55,7 @@ export default function HonoursBoard({ seasons }) {
           </dl>
         </section>
       ))}
-      <p className="muted card-foot">
-        Four of the five come straight off our own rows, and a shared one names
-        everyone level at the top. Player of the Season is the exception: the
-        players vote for it, so it’s the one name here nobody worked out.
-      </p>
+      <p className="muted card-foot">Player of the Season is voted, not worked out — every other award is.</p>
     </div>
   );
 }
