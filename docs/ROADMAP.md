@@ -1136,6 +1136,108 @@ coincide, one row says so, and the list is six rows rather than seven.
 with an empty expected-failure list; five sections became three pages and
 nothing was dropped.
 
+### Built — what landed, and what it found
+
+Three real addresses on Phase 13's mechanism: `/records` (Badges, the default),
+`/records/honours` and `/records/all-time`, all three rendering `pages/Records.jsx`
+with a `view` prop — the same one-file-many-routes shape Players and Matchday
+already use. `/records/badges/:key` is untouched and still the way into a badge,
+and `/history` still lands on Badges. Measured at 375px, against one page of
+4,841px:
+
+| Sub-page | mid-season | pre-season | Budget |
+| --- | --- | --- | --- |
+| Badges | 1,667px | 1,667px | 2,000 |
+| Honours | 961px | 1,285px | 2,000 |
+| All-time | 1,880px | 1,880px | 2,000 |
+
+**The tab is each sub-page's heading.** Whatever leads a sub-page carries no
+second heading — the badge board, the honours board and the six leaderboards
+each start straight under the intro line — and a section *under* that one keeps
+its `h2`. Three of the five old headings went that way, and it is the rule the
+next section split should follow.
+
+**The height arithmetic came in with more slack than the plan expected, from
+different places.** All-time was projected at ~1,950px and measures 1,880px.
+The plan's own figure — "seven club-record rows at a 44px touch target and a
+heading (~400px)" — was wrong twice over in ways that cancelled out.
+`clubRecords` derives **six** records, not seven, and a record needs **two**
+lines rather than one: at 375px a record's name and its scoreline cannot share
+a row, so each is a caption line (name left, mark right) over the result row —
+77px each, 86px for the run that carries three chips, 58px for the run that
+carries two. The list is **453px** and the sheet around it 487px, against the
+plan's 400. What paid for it was the chrome the split removed — two `h2`s, the
+badge board's own caption, and the "every season together" footer, which is now
+the intro line and carries the link to Players.
+
+**The runs coincide in the club's real record and not in the fixture, which is
+worth knowing before reading the screenshots.** `lib/awards.js` gained
+`runsCoincide` — the two runs holding the same games is a fact about the record,
+so the derivation states it rather than leaving a component to work it out — and
+`ClubRecords` prints one row when it is true, with the note *"Also the club's
+longest winning run."* Run over `fixtures/2025-26.json` — the club's real
+14-match import, before the fixture adds anything — both runs are the same two
+games, Old Stoics 5–1 and Old Salopians 4–1, and the flag is true: the bug this
+phase was told to fix is real and now merges into one row. On the fixture
+datasets it doesn't — the walkover 3–0 and the two draws after it make an
+unbeaten run of three against a winning run of two — so the harness measures the
+**six**-row list, which is the expensive case, and the five-row merge was
+verified by forcing the flag, re-shooting and reverting. Two unit tests hold both branches, including a club with no result at
+all, where both rows stay named rather than merging into one.
+
+**Two of the season index's ten columns are gone rather than restructured, and
+that is the one qualification on "nothing was dropped".** Top scorer said
+exactly what the honours board immediately above it says, season by season —
+the same page twice, which is the failure this half of the roadmap exists to
+fix — and Position was structurally blank on every row, so it is a footnote
+until standings are entered rather than a column of "Not recorded". What is
+left is a ledger: the season and its games and competitions on the left, W-D-L
+and goals in a column on the right, under a head of labels. No wrap, nothing
+hidden, and the whole row is the link across to Season.
+
+**The club records became one ledger on `dl.compare`,** which is the pattern
+Phase 10 chose for Firsts & bests and the reason this needed no new list
+primitive — the caption line is a `dt` with the mark flexed to its right edge,
+and the row underneath is `ResultList`, so every scoreline on the site still
+comes from one component. A run is the exception: five 44px rows for one record
+would have cost more than the four records above it put together, so a run is
+its count, its games as one line of `ResultList`'s inline chips, and the months
+it spanned.
+
+**Past a phone the rows stop stretching.** At 1,400px the result row's `1fr`
+opponent column put "Old Stoics" and "5–1" 1,100px apart — the widest this row
+has ever been rendered, since every other caller sits in a column of 830px or
+less. From 700px up the ledger's rows cap their measure and cluster left; the
+hairlines still run the full width. That rule is in `DESIGN.md` under *A list of
+records is a ledger*, along with when to reach for a ledger instead of a table.
+
+**The expected-failure list is not empty, and this phase could not make it so.**
+Records' season index came off it — the wrap it was hiding behind doesn't exist
+any more — but four entries remain: Season's fixtures table on two routes
+(Phase 18), the opponent page's home/away split (Phase 21), and the crest, which
+no phase owns. "An empty list" can only ever have meant this phase's own entry;
+the rest belong to pages this phase doesn't touch, and deleting a still-failing
+entry fails the run by design.
+
+**Measured, not assumed.** `check:layout` passes with 21 known failures and
+nothing new — up from 20 because the two new routes each render the same
+unmeasurable crest, and down one for the table that no longer exists — across
+both datasets at all six widths. 68 unit tests pass, two of them new. `npm run
+build` is clean. A headless run confirms what a screenshot can't: each of the
+three addresses renders its own sub-page with the right tab carrying
+`aria-current="page"`, `/history` still redirects to Badges, and `/records/badges/motm`
+is unchanged. `styles/pages/records.css` went from 32 lines to 115 — the six
+record sheets' rules are gone and the two ledgers' are new — which is the one
+number in this phase that went the wrong way, and the trade for it is 2,961px
+of page.
+
+**Players → Leaderboards nearly paid for this.** Its footer used to point at
+`/records`; it now points at `/records/all-time`, which is the address that
+actually holds career totals. The first wording ran to two lines and took
+Leaderboards from 1,370px to 1,392px against a 1,400px budget — 8px of slack
+left. Shortened back to one line, and it measures 1,370px again. A cross-link
+is not worth a third of another page's headroom.
+
 ---
 
 ## Phase 17 — The squad view
@@ -1302,7 +1404,7 @@ review did.
 | Season | 3,530 | 3,672 | 2,200 | 18 |
 | Players → Leaderboards | 2,714 | 2,997 | 1,400 | 14 |
 | Players → Squad | 1,254 | 1,254 | no cap — it's a roster | 17 |
-| Records → any sub-page | 4,823 (one page) | 5,071 (one page) | 2,000 | 16 |
+| Records → any sub-page | 4,823 (one page) | 5,071 (one page) | 2,000 | 16 — met: 1,667 / 961 / 1,880 |
 | Player detail | 2,941 | 2,940 | 2,400 | 21 |
 | Opponent detail | not measured | 1,196 | 2,000 | 21 |
 
@@ -1322,8 +1424,9 @@ Named so they don't get lost, and not built yet.
 - **About us** — club story and a team photo. Needs a photo worth showing.
 - **Player photos** — real headshots. Blocked on collecting 30 of them; the
   design works without them and the initials placeholder is fine.
-- **Final league positions per season** — the Records season index has a
-  Position column that stays blank; needs standings entered per season.
+- **Final league positions per season** — the Records season index named a
+  Position column that was blank on every row; Phase 16 cut it to a footnote
+  and the row is waiting for it. Needs standings entered per season.
 - **Head-to-head pages** — the opponent page exists and Phase 21 tidies it; a
   proper record against each club could grow from there.
 - **New badge types** — attendance streaks, consecutive-scoring runs. Add once

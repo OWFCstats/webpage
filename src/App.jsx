@@ -53,7 +53,9 @@ export default function App() {
                 <Route path="players/squad" element={<PlayersHub view="squad" />} />
                 <Route path="players/:playerId" element={<PlayerDetail />} />
                 <Route path="opponents/:name" element={<OpponentDetail />} />
-                <Route path="records" element={<Records />} />
+                <Route path="records" element={<Records view="badges" />} />
+                <Route path="records/honours" element={<Records view="honours" />} />
+                <Route path="records/all-time" element={<Records view="all-time" />} />
                 <Route path="records/badges/:badgeKey" element={<BadgeDetail />} />
 
                 {/* Old addresses keep working — bookmarks and chat links land

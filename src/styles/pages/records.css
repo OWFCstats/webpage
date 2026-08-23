@@ -1,32 +1,115 @@
-/* Records: one sheet per club record. A record nobody holds keeps its sheet and
-   says so — naming it is the point. Everything else on the page is a component
-   of its own: components/honours-board.css, components/badge.css and
-   components/leaderboards.css, which owns the all-time leader boards and the
-   grid they sit in. */
+/* Records: the club-record list and the season index. Everything else on the
+   three sub-pages is a component of its own — components/honours-board.css,
+   components/badge.css and components/leaderboards.css, which owns the
+   all-time boards and the grid they sit in.
 
-/* ---- club records ---- */
+   Both lists here are ruled rows with their figures in a column, because both
+   replaced something that wasn't: six record sheets sized to their own
+   contents, and a ten-column index that hid 319px of itself at 375px. */
 
-/* Sheets size to their own content — a record holding one game stays short
-   next to a run holding five. */
-.grid.records {
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  align-items: start;
+/* ---- club records ----
+   dl.compare supplies the rows and the hairlines; these three rules are the
+   mark beside a record's name, the run that sits on one line, and the note
+   under it. */
+
+.record-list dt {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s3);
 }
 
-.grid.records > * { min-width: 0; }
+/* The mark reads as the record book's own right-hand column — same caption
+   ink as the name it answers to, so the scoreline below stays the loud part. */
+.record-mark {
+  flex: none;
+  text-align: right;
+}
 
-.record .record-headline {
+/* A run is a count and its games on one line: five 44px rows for one record
+   would cost more page than the four records above it put together. */
+.record-run {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.3rem 0.6rem;
+}
+
+.record-note { display: block; }
+
+/* Once the sheet is wider than a phone the row stops stretching: a scoreline
+   a thousand pixels from the name it belongs to is two facts rather than one
+   record. The hairlines still run the full width — they are the ledger. */
+@media (min-width: 700px) {
+  .record-list dt { max-width: 19rem; }
+
+  .record-list .result-row {
+    grid-template-columns: auto minmax(0, 13rem) auto auto;
+    justify-content: start;
+  }
+
+  .record-list .record-run { justify-content: start; }
+}
+
+/* ---- the season index ---- */
+
+.season-index {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.season-index li { border-bottom: 1px solid var(--rule); }
+
+.season-index li:last-child { border-bottom: none; }
+
+/* One grid for the head and every row, so the two figures line up down the
+   list — the whole reason this stopped being a table. */
+.si-head,
+.si-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: baseline;
+  gap: var(--s3);
+}
+
+.si-head { padding-bottom: var(--s2); }
+
+.si-row {
+  min-height: 44px;
+  padding: 0.5rem 0;
+  align-items: center;
+}
+
+.si-season {
   font-family: var(--font-display);
   font-size: var(--t-title);
   font-weight: 600;
   letter-spacing: -0.015em;
-  line-height: 1.2;
-  color: var(--ink);
+  line-height: 1.15;
+  min-width: 0;
 }
 
-.record .record-span { margin-bottom: var(--s1); }
+.si-scope {
+  font-family: var(--font-text);
+  font-size: var(--t-small);
+  font-weight: 400;
+  letter-spacing: normal;
+}
 
-/* A record nobody holds keeps its sheet at full size. Naming the record is the
-   point; a collapsed or blank one would read as a fault rather than as a club
-   with its first season still running. */
-.record .record-empty { margin: var(--s1) 0 0; }
+/* Full width under the figures: the season's games and competitions are a
+   caption on the row, not a fourth column. */
+.si-scope { grid-column: 1 / -1; }
+
+.si-figure,
+.si-head .label:not(:first-child) {
+  min-width: 3.4rem;
+  text-align: right;
+}
+
+.si-figure {
+  font-family: var(--font-data);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}

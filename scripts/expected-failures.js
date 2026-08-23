@@ -17,24 +17,19 @@
 // Fields: invariant (required), route / dataset / match (optional filters —
 // `match` is a substring of the element's path or of its text), owner, why.
 //
-// Four of the five entries here are a table that hides a column at a width it
+// Three of the four entries here are a table that hides a column at a width it
 // was never measured at, each against the phase that rebuilds that table. The
-// fifth is the crest, whose ink a bitmap can't be read for. Phase 10's three
+// fourth is the crest, whose ink a bitmap can't be read for. Phase 10's three
 // bugs used to be deliberately absent so the run stayed red until they were
 // fixed; they are fixed, so the run is green and anything new in it is a
 // regression.
+//
+// Records' season index was the fourth table and came off this list in Phase
+// 16: the sub-page split rebuilt it as rows, so there is no wrap left to
+// scroll. Two of the three that remain are Season's fixtures table, which
+// Phase 18 restructures the same way.
 
 export const EXPECTED = [
-  {
-    invariant: 'table-wrap-scrolls',
-    route: 'records',
-    owner: 'Phase 16',
-    why:
-      'Records\' season index hides its two most interesting columns — Position '
-      + 'and Top scorer — inside a scrolling wrap. Phase 16 splits Records into '
-      + 'sub-pages and rebuilds this table as rows; restructuring it now and again '
-      + 'in six phases\' time is the same work twice.',
-  },
   {
     invariant: 'table-wrap-scrolls',
     route: 'season',

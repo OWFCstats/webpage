@@ -27,6 +27,17 @@ function longestRun(chrono, ok) {
   };
 }
 
+/**
+ * Do two runs hold the same games? A winning run is unbeaten by definition, so
+ * a young club's longest of each is routinely the same handful of matches — and
+ * a records list that prints them as two separate marks reads as a bug rather
+ * than as a fact about a first season.
+ */
+function sameRun(a, b) {
+  if (!a || !b || a.count !== b.count) return false;
+  return a.matches.every((m, i) => m.id === b.matches[i].id);
+}
+
 /** The single match scoring highest on `score`; the earlier game keeps a
  *  record it set first. Null when nothing qualifies. */
 function recordMatch(matches, score) {
@@ -47,13 +58,18 @@ export function clubRecords(matches) {
   const played = playedMatches(matches);
   const chrono = played.slice().reverse(); // oldest first — runs read forwards
   const margin = (m) => m.goals_for - m.goals_against;
+  const longestUnbeaten = longestRun(chrono, (m) => resultOf(m) !== 'L');
+  const longestWinning = longestRun(chrono, (m) => resultOf(m) === 'W');
   return {
     played: played.length,
     biggestWin: recordMatch(played.filter((m) => resultOf(m) === 'W'), margin),
     heaviestDefeat: recordMatch(played.filter((m) => resultOf(m) === 'L'), (m) => -margin(m)),
     highestScoring: recordMatch(played, (m) => m.goals_for + m.goals_against),
-    longestUnbeaten: longestRun(chrono, (m) => resultOf(m) !== 'L'),
-    longestWinning: longestRun(chrono, (m) => resultOf(m) === 'W'),
+    longestUnbeaten,
+    longestWinning,
+    // The two runs being the same games is the club's record, not a rendering
+    // detail, so the list is told rather than left to work it out.
+    runsCoincide: sameRun(longestUnbeaten, longestWinning),
     firstCleanSheet: chrono.find(isCleanSheet) ?? null,
     cleanSheets: chrono.filter(isCleanSheet).length,
   };
