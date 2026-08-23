@@ -1007,7 +1007,14 @@ leaving for its own address and the bars leaving "Most involved" account for
 most of that) but a season of 16 played games costs 1,286px on the shared result row
 before the league table, the summary or a single fixture is counted, and that
 arithmetic doesn't close under 2,200px without cutting games off the page a
-season is supposed to keep — see `docs/ROADMAP.md`, Phase 18. `check:layout`
+season is supposed to keep — see `docs/ROADMAP.md`, Phase 18. Home came down
+from 2,113px to 1,882px in Phase 19 (the result leading, the next-fixture card
+collapsing to a row, a redundant form-chip strip coming off Recent form) but
+`LeagueTable` and `RecentForm` alone cost 844px of the page's 1,564px of
+widgets, and neither can shrink further without either breaking the "all ten
+columns from 360px up" rule below or cutting Recent form's list under the
+five results `formOf` shows everywhere else on the site — see
+`docs/ROADMAP.md`, Phase 19. `check:layout`
 prints the gap on every run without failing on it: the phase that owns each page
 closes its own where it can, and a check
 that went red for eleven phases would stop being read.

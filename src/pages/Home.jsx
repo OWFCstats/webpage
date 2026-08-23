@@ -19,7 +19,7 @@ import {
 import { seasonTrend } from '../lib/charts';
 
 export default function Home() {
-  const { players, matches, appearances, teams, loading, error } = useData();
+  const { players, matches, appearances, loading, error } = useData();
 
   const view = useMemo(() => {
     const currentSeason = currentSeasonOf(matches);
@@ -48,7 +48,6 @@ export default function Home() {
   if (matches.length === 0 && players.length === 0) {
     return (
       <div className="empty sheet">
-        <h1>Old Wellingtonians FC</h1>
         <p>No data yet. Once the first players and matches are entered, stats will appear here.</p>
       </div>
     );
@@ -60,21 +59,17 @@ export default function Home() {
 
   return (
     <div className="home">
-      <div className="home-head">
-        <h1>Old Wellingtonians FC</h1>
-        {currentSeason && (
-          <span className="label">
-            Season {currentSeason}{seasonIsFinal ? ' · final' : ''}
-          </span>
-        )}
-      </div>
+      {currentSeason && (
+        <p className="label home-season-note">
+          Season {currentSeason}{seasonIsFinal ? ' · final' : ''}
+        </p>
+      )}
 
-      <div className="home-grid">
-        <NextFixture next={next} teams={teams} />
-        <LastResult match={lastMatch} ctx={lastCtx} />
-      </div>
+      <LastResult match={lastMatch} ctx={lastCtx} />
 
       <LeagueTable season={currentSeason} />
+
+      <NextFixture next={next} />
 
       <RecentForm form={form} trend={trend} />
 

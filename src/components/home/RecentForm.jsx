@@ -1,4 +1,3 @@
-import { FormBadges } from '../bits';
 import ResultList from '../ResultList';
 import { token } from '../../lib/tokens';
 
@@ -39,8 +38,10 @@ export default function RecentForm({ form, trend }) {
       </div>
       <div className="home-form-body">
         <div className="home-form-main">
-          <FormBadges matches={form} />
-          {form.length > 0 && <ResultList matches={form} />}
+          {/* No separate chip strip: each row already opens with the same
+              colour-coded W/D/L pill, so a chip row above it repeated the
+              same five results in a smaller, less useful shape. */}
+          <ResultList matches={form} emptyText="No results yet this season." />
         </div>
         {trend.length >= 3 && (
           <div className="home-form-trend">
