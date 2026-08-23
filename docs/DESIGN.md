@@ -714,7 +714,8 @@ can't drift.
 
 > **Phase 14.** The card format below landed, on both pages — Players and
 > Records each run the whole set of six now, and Players' season picker lost
-> "All time" the same commit. Phase 17 still owns the squad view below.
+> "All time" the same commit. **Phase 17** built the squad view below: every
+> name on the page, and the tiles that put the badges on it.
 
 ### The boards
 
@@ -793,14 +794,47 @@ and that sharing is the point — labels belong at the top of a column, once.
 Three figures, not four: a fourth column leaves a 375px phone no room for a name.
 Apps leads them, because turning up is the thing this club is trying to reward.
 
-**Every name is on the page.** All 47, not the first 12 with a "Show all" button
-— this is the page people open to find themselves, and a player with three
-appearances should not have to tap to exist. One affordance for narrowing, the
-search box, and that's it; "Full table" and "Show all 47" both go.
+**Every name is on the page.** All 47 of the club's real 2025/26 squad, not the
+first 12 with a "Show all" button — this is the page people open to find
+themselves, and a player with three appearances should not have to tap to exist.
+One affordance for narrowing, the search box, and that's it; "Full table" and
+"Show all 47" are both gone.
 
-**Two views, list or cards.** The list is the team sheet above. Cards give each
-player a tile carrying their badge icons, which is what makes the badges visible
-without opening a profile. Both views read from one row-shape definition.
+**Two views, list or cards, and one row shape.** `FIGURES` in
+`components/players-hub/Squad.jsx` is the single definition of what a squad row
+says: the list turns it into a head and three columns, a tile turns it into three
+label/value pairs. One `label` each and no long form for the tiles — at 12px
+uppercase with the label style's tracking "ASSISTS" wants 57px and a tile on a
+375px phone gives a figure 47px, so spelling them out only for the cards would
+have cost the shared shape to say nothing new.
+
+**A tile's picture is the shelf.** Cards exist to put the badges on a page
+somebody will actually open, and everything else about a tile is subordinate to
+that. So:
+
+- **Held badges only**, unlike the shelf on a player's own page. That page is
+  right that a badge you can't see is not an incentive, but fifty tiles each
+  carrying four silhouettes is two hundred grey drawings and reads as absence.
+  A tile says what somebody has; the page it links to says what is next. A
+  player picked but never played holds nothing, and that tile says so.
+- **No count and no year list** beside a drawing. Those are what a shelf is for.
+- **Career-wide badges beside season figures**, because a career badge has no
+  season. Silver appearances next to one game says "this is someone who has been
+  here for years and played once this time", which is the more useful sentence,
+  and one line under the grid says which is which.
+- **No monogram.** It costs 40px of a 141px measure and puts nearly every name
+  on two lines. A stand-in for a photo we don't have is not worth folding a name
+  in half; the list is where it earns its place.
+- **One slot per drawing, medallion or not.** A bronze career badge wears no
+  disc, and in a row of six that reads as badges of two sizes rather than of two
+  metals, so an unmedalled badge takes the disc's own inset as transparent
+  padding.
+
+**The two layouts are one address apart** — `/players/squad` and
+`/players/squad?layout=cards` — not component state. A view nobody can link to
+is also a view the harness can't measure, and an unmeasured view is where a
+clipped name hides. The param is the roster's own and does not carry across to
+Leaderboards, which has nothing to do with it.
 
 A zero takes `--ink-soft` — it's true, and it isn't the point. A name wraps
 rather than clips: half a name is worse than a two-line one on the page where
@@ -967,6 +1001,15 @@ and Player detail are still over, and `check:layout` prints the gap on every run
 without failing on it: the phase that owns each page closes its own, and a check
 that went red for eleven phases would stop being read.
 
+**"No cap" is not "unmeasured".** The roster is 3,078px as a list and 4,150px as
+tiles at 375px — 49 names on the fixture, which carries two matches the real
+season doesn't, and every one of them on the page. That is the whole argument for
+the row having no budget. It is still measured at every width, and
+that is what caught the tiles collapsing to one a row on a 320px phone and
+running to 7,350px: the grid's measure came down to 130px so the narrowest phone
+keeps two side by side. A page that has earned its length still has to earn it at
+every width.
+
 Matchday is the exception and it is a thin one: 1,857 against 1,900. Phase 20
 *adds* to that page — labels on fourteen stepper chips, a key for the squad pills
 — so the room has to come from somewhere inside it, and it does: the comparison
@@ -999,9 +1042,9 @@ box of its own. See *Badge* above.
 
 These layers are ordered by how broadly a rule applies, not by who owns the
 component — which is the opposite of how `src/components/` is arranged, and
-deliberately so. `squad-list.css` styles a component only the Players page
-renders, and it still belongs under `components/`: it dresses a component, and
-the cascade cares about that rather than about which page mounts it.
+deliberately so. `squad.css` styles a component only the Players page renders,
+and it still belongs under `components/`: it dresses a component, and the cascade
+cares about that rather than about which page mounts it.
 `pages/` is for a page's own layout — the grid it arranges its sections in.
 
 `tokens.css` carries one media query, and it is the only selector allowed to
