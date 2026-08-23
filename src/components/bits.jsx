@@ -1,10 +1,25 @@
-import { useId } from 'react';
+import { useId, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { formatDate } from '../lib/format';
 import { resultOf } from '../lib/matches';
 
 export function Spinner() {
   return <div className="spinner" aria-label="Loading" />;
+}
+
+/** The club supplies public/crest.png; until it exists (or on a broken path)
+ *  this falls back to an "OW" monogram. Shared by the masthead and Home's
+ *  next-fixture row — the only two places that draw the crest itself. */
+export function Crest() {
+  const [missing, setMissing] = useState(false);
+  if (missing) return <span className="crest-fallback">OW</span>;
+  return (
+    <img
+      src={`${import.meta.env.BASE_URL}crest.png`}
+      alt="Wellington College crest"
+      onError={() => setMissing(true)}
+    />
+  );
 }
 
 export function ErrorNote({ message }) {

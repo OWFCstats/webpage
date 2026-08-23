@@ -1,56 +1,27 @@
 import { Link } from 'react-router-dom';
-import { VenueBadge } from '../bits';
-import { countdownLabel, formatDate, formatKickoff, initials } from '../../lib/format';
-import { opponentSlug, venueTeam } from '../../lib/matches';
+import { Crest, VenueBadge } from '../bits';
+import { countdownLabel, formatDate, formatKickoff } from '../../lib/format';
 
-/** The first thing a player wants on a Sunday: who, when, and where. */
-export default function NextFixture({ next, teams }) {
+/** A compact row — who, when, and where. Full logistics (kickoff, ground,
+ *  map) live on the fixture's own Matchday page, a tap away — the same trade
+ *  Season's own upcoming list makes (see UpcomingFixtures). */
+export default function NextFixture({ next }) {
   const countdown = next ? countdownLabel(next.date) : null;
   const kickoff = next ? formatKickoff(next.kickoff_time) : '';
-  const venue = next ? venueTeam(next, teams) : null;
-  const venueParts = venue
-    ? [venue.pitch_name, venue.pitch_address, venue.postcode].filter(Boolean)
-    : [];
   return (
     <section className="sheet home-widget home-next">
-      <div className="home-widget-head">
-        <div>
-          <span className="label">Upcoming</span>
-          <h2>{next ? <>{next.opponent} <VenueBadge venue={next.venue} /></> : 'Next fixture'}</h2>
-        </div>
-      </div>
+      <div className="block burnt">Upcoming</div>
       {next ? (
-        <>
-          <div className="fixture-teams">
-            <span className="fixture-side">
-              <span className="fixture-badge us">OW</span>
-              <span className="fixture-team">Old Wellingtonians</span>
+        <Link to={`/matchday/${next.id}`} className="fixture-row">
+          <Crest />
+          <span className="fixture-row-body">
+            <strong>{next.opponent}</strong>
+            <span className="muted">
+              {formatDate(next.date)}{kickoff && ` · ${kickoff}`} <VenueBadge venue={next.venue} />
             </span>
-            <span className="fixture-vs label">v</span>
-            <span className="fixture-side">
-              <span className="fixture-badge them">{initials(next.opponent)}</span>
-              <Link to={`/opponents/${opponentSlug(teams, next)}`} className="fixture-team">
-                {next.opponent}
-              </Link>
-            </span>
-          </div>
-          <div className="fixture-meta">
-            <span><strong>{formatDate(next.date)}</strong>{kickoff && ` · ${kickoff}`}</span>
-            <span>{next.competition} <VenueBadge venue={next.venue} /></span>
-          </div>
-          {(venueParts.length > 0 || venue?.map_url) && (
-            <p className="muted fixture-location">
-              {venueParts.join(', ')}
-              {venue.map_url && (
-                <>
-                  {venueParts.length > 0 && ' · '}
-                  <a href={venue.map_url} target="_blank" rel="noreferrer">Map</a>
-                </>
-              )}
-            </p>
-          )}
+          </span>
           {countdown && <span className="fixture-countdown">{countdown}</span>}
-        </>
+        </Link>
       ) : (
         <div className="empty">No fixture scheduled.</div>
       )}

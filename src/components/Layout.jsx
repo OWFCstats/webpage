@@ -1,6 +1,6 @@
-import { useState } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { Crest } from './bits';
 
 // Home is the front door — a dashboard of the season at a glance — and the
 // four sections behind it. Anything narrower than an idea of its own lives
@@ -13,19 +13,6 @@ const NAV = [
   { to: '/players', label: 'Players' },
   { to: '/records', label: 'Records' },
 ];
-
-function Crest() {
-  // The club supplies public/crest.png; until it exists we show a monogram.
-  const [missing, setMissing] = useState(false);
-  if (missing) return <span className="crest-fallback">OW</span>;
-  return (
-    <img
-      src={`${import.meta.env.BASE_URL}crest.png`}
-      alt="Wellington College crest"
-      onError={() => setMissing(true)}
-    />
-  );
-}
 
 // Simple line icons so the bottom bar reads at 16px without colour emoji.
 const ICONS = {
