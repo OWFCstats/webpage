@@ -9,7 +9,7 @@ export default function UpcomingFixtures({ upcoming, teams }) {
   if (upcoming.length === 0) return null;
   return (
     <div className="flat-block">
-      <div className="label ruled">Upcoming</div>
+      <div className="block burnt">Upcoming</div>
       <div className="table-wrap">
         <table className="data">
           <tbody>

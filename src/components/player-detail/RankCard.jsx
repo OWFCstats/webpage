@@ -3,7 +3,7 @@ import { ordinal } from '../../lib/format';
 export default function RankCard({ ranks }) {
   return (
     <div className="sheet">
-      <h3 className="label ruled">Where they rank</h3>
+      <h3 className="block board">Where they rank</h3>
       <ul className="rank-list">
         {ranks.map((r) => (
           <li key={r.key}>

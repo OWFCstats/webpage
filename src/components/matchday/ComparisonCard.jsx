@@ -9,7 +9,7 @@ const nf1 = (v) => (Math.round(v * 10) / 10).toFixed(1);
 export default function ComparisonCard({ match, avgFor, avgAgainst, priorMeetings, teams }) {
   return (
     <div className="sheet">
-      <h3 className="label ruled">How it compares</h3>
+      <h3 className="block verdigris">How it compares</h3>
       <dl className="compare">
         <div>
           <dt>This game</dt>

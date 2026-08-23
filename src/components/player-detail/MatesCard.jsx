@@ -4,7 +4,7 @@ import { initials } from '../../lib/format';
 export default function MatesCard({ teammates }) {
   return (
     <div className="sheet">
-      <h3 className="label ruled">Most played alongside</h3>
+      <h3 className="block board">Most played alongside</h3>
       <ul className="mate-list">
         {teammates.map((t) => (
           <li key={t.player.id}>

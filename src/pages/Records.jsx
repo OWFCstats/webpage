@@ -57,11 +57,7 @@ export default function Records() {
       <div className="section">
         <h2>Badge board</h2>
         <PlateShelf plates={plates} />
-        <p className="muted card-foot">
-          Every badge in the club, bronze to gold, and who holds it. A plate
-          belongs to the club as soon as anyone reaches it, and names whoever is
-          furthest past it — the quiet ones are still there to be taken.
-        </p>
+        <p className="muted card-foot">Every badge in the club, and who's closest to the next one.</p>
       </div>
 
       <div className="section">

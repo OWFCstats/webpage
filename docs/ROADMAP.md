@@ -609,6 +609,112 @@ way it is.
 both; `grep` finds no `card-foot` paragraph over 20 words; page heights drop
 measurably in `npm run shots` and the numbers are recorded here.
 
+### Built — what landed, and what it found
+
+`.block` landed in `primitives.css` as four rules — `.board`, `.gold`,
+`.verdigris`, `.burnt` — a solid field, bold text, tight chip padding, one
+`margin-bottom`. Only `.board` carries `--on-board`: gold, verdigris and burnt
+are all light-to-mid tones, so their text is `--board`'s own dark ink, the same
+choice `.tag.gold` had already made. `docs/DESIGN.md`'s `.label` entry, and the
+two code comments that still called section-eyebrow labelling `.label`'s job
+(`base.css`, `pages/season.css`), are corrected in this commit rather than left
+describing a primitive that no longer does that.
+
+**16 section heads moved onto `.block`, not 15.** The review's count of "15
+eyebrow only" is the 15 places a section's whole head was carried by a
+`.label`/`.label.ruled` span standing in for a heading — `MotmCard`, `WorthNoting`,
+`ComparisonCard`, `MatchdayNav`'s "Jump to a matchday", `PlayerDetail`'s
+"Badges" and "Career, against the squad", `FirstsTable`, `FormCard`, `RankCard`,
+`MatesCard`, `SeasonCards`, `SeasonSummary`, `ChartsPanel`, `UpcomingFixtures`
+and `Season.jsx`'s "Most involved" — and all 15 moved onto `.block`. The
+sixteenth is `BarBoard`'s `LeadBoard` in its populated state, where the same
+pattern (a `.label` carrying the whole title, no separate heading) sits inside
+`.lead-hero` rather than a `.sheet`; it wasn't in the review's 15 because
+`LeadBoard`/`BarBoard` didn't exist as today's leaderboard until Phase 14, but
+it's the exact violation this phase fixes and Phase 14 didn't touch its markup.
+Variant chosen by what the section is about, not cycled for variety: `.gold`
+for the three occasion/achievement heads (`MotmCard`, `WorthNoting`, `Badges`,
+plus `LeadBoard`'s dark-ground title), `.verdigris` for the four heads about
+our own performance against a baseline (`ComparisonCard`, `FormCard`, "Career,
+against the squad", "Most involved"), `.board` for the rest, which are plain
+reference lists with nothing to signal. Six card-level headings stay on
+`.label.ruled` and are correctly untouched: `ClubRecords`' six record cards,
+and the three plain `BarBoard` sub-boards nested under "All-time leaders" —
+both are repeated items inside one already-headed section, not a section head
+of their own, which is why the review's count didn't reach them either.
+
+**Home turned out to carry 5 eyebrow+title pairs, not 4** — `LeagueTable`'s
+"Standings"/"League table" is a fifth, on top of `NextFixture`, `LastResult`,
+`RecentForm` and `SeasonStats`. None of the five got `.block`. Unlike the 15
+above, an eyebrow+title pair with two different words already satisfies "never
+both saying the same word" — the label there is a bonus, not a fix owed — and
+`.block`'s own padding and margin cost real height with nothing on Home to pay
+for it: Home carries none of the 15 explanatory paragraphs this phase also
+cuts, so converting its five eyebrows would have made the one page with no
+offsetting cut measurably taller for a purely cosmetic upgrade. They stay
+`.label`, unchanged.
+
+**The one real duplicate is fixed anyway, without `.block`.** `LastResult`'s
+heading fell back to the literal string `'Last time out'` when there was no
+match — the exact word its own eyebrow already said. The heading is now
+conditional on a match existing at all; empty, the label alone carries the
+widget's name, same as the `.empty` line beneath it already explains why.
+`NextFixture` — `DESIGN.md`'s own cited example of "the eyebrow was usually the
+title again" — gets the same fix in spirit: its heading now names the specific
+opponent when one is fixtured, matching the pattern `LastResult` already used,
+rather than repeating the generic "Next fixture" every time. Both changes are
+content-only and cost nothing in height.
+
+**Three of the 15 explanatory paragraphs were over the 20-word line**, not the
+one the original review sampled: Records' badge-board note (40 words) and
+honours-board note (41 words) both had a scene-setting first sentence in front
+of the one fact worth keeping, and `PlayersHub`'s leaderboard note (21 words in
+its scoped form) was two sentences doing one sentence's job. All three are now
+one line: "Every badge in the club, and who's closest to the next one.";
+"Player of the Season is voted, not worked out — every other award is."; and a
+season-scoped/all-time split that keeps the "switch to All time" instruction
+in the scoped case and drops it where there's nothing to switch to. The other
+12 — `RankCard`, `BarBoard`'s level note, `ClubRecords`' run note, `FormCard`'s
+two, `PlayerDetail`'s stats note, `SeasonIndex`'s standings note, and both
+`page-intro` lines on `Season` and `OpponentDetail` — were already one line
+under 20 words and are untouched.
+
+**Heights, `npm run shots` on `mid-season` at 375px, before this phase → after:**
+
+| Page | Before | After |
+| --- | --- | --- |
+| Home | 2113px | 2113px |
+| Matchday — latest | 1857px | 1861px |
+| Matchday — clean sheet, debut goal, red card, dropout | 2378px | 2382px |
+| Matchday — walkover, no team sheet | 1261px | 1270px |
+| Season | 3429px | 3379px |
+| Season — all seasons | 3366px | 3316px |
+| Players — leaderboards | 2997px | 2991px |
+| Player detail — a regular | 3083px | 3059px |
+| Player detail — one appearance, scored on debut | 2467px | 2444px |
+| Records | 4943px | 4831px |
+
+Nine of ten routes move; four routes — `Players → Squad`, `Player detail —
+never played`, `Opponent detail`, and `Home` — carry none of the 16 label
+conversions or the three trimmed paragraphs and are pixel-identical, as
+expected. Records drops the most (-112px, both of its trimmed paragraphs live
+there) and Season drops next (-50px on both its routes, from the "Most
+involved"/"Season at a glance"/"Charts" conversions each shedding a hairline
+and a line of padding that `.label.ruled` used to spend). The three Matchday
+routes gain 4-9px from `MatchdayNav`'s "Jump to a matchday" moving onto
+`.block`, the one conversion on that page with no paragraph nearby to offset
+it — recorded rather than hidden, the same way Phase 10 recorded Home and
+Player detail getting taller for a named reason rather than picking a number
+that flattered the phase.
+
+**Verified rather than assumed:** all 50 unit tests pass unchanged, since no
+`lib/` derivation moved; `npm run build` is clean; `check:layout` reports the
+same 17 known failures against the expected-failure list and nothing new,
+across both fixtures at all six widths. `grep` for `label ruled` and
+`className="label"` across `src/` turns up only field captions, column
+headers, admin/write-side call sites, and the six repeated-card headings named
+above — no section head still carries the old treatment.
+
 ---
 
 ## Phase 13 — Sub-navigation

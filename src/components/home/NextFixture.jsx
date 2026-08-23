@@ -16,7 +16,7 @@ export default function NextFixture({ next, teams }) {
       <div className="home-widget-head">
         <div>
           <span className="label">Upcoming</span>
-          <h2>Next fixture</h2>
+          <h2>{next ? <>{next.opponent} <VenueBadge venue={next.venue} /></> : 'Next fixture'}</h2>
         </div>
       </div>
       {next ? (

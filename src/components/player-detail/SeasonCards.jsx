@@ -2,7 +2,7 @@ export default function SeasonCards({ seasons, bestSeason }) {
   if (seasons.length === 0) return null;
   return (
     <div className="section">
-      <h3 className="label ruled">Season by season</h3>
+      <h3 className="block board">Season by season</h3>
       <div className="season-cards">
         {seasons.map((s) => (
           <div key={s.season} className={`sheet season-card${bestSeason && s.season === bestSeason.season ? ' best' : ''}`}>

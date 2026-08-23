@@ -347,11 +347,13 @@ names what kind of thing follows; a heading names the thing. If both would say
 Spend it sparingly. A page with six blocks on it is the eyebrow problem again in
 a louder font.
 
-`.label` — the single label style, and the only uppercase in the site.
-`--t-micro`, weight 600, tracking `0.08em`, uppercase, `--ink-soft`. Column
-headers and section eyebrows. `.label.ruled` adds the hairline that closes off
-a heading. On a dark ground it takes `--on-board-soft` — one `.board .label`
-rule, where it used to take a list of all five dark sections by name.
+`.label` — the single label style, and, alongside `.block`, one of the two
+uppercase treatments in the site. `--t-micro`, weight 600, tracking `0.08em`,
+uppercase, `--ink-soft`. Column headers and field captions — a section's own
+head is `.block`'s job now, not `.label`'s. `.label.ruled` adds the hairline
+that closes off a heading. On a dark ground it takes `--on-board-soft` — one
+`.board .label` rule, where it used to take a list of all five dark sections
+by name.
 
 `table.data th`, `.field > span` and `dl.compare dt` are in the same rule
 rather than carrying the class, since they are labels by virtue of being what

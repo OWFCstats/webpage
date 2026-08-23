@@ -6,7 +6,7 @@ export default function FormCard({ form, scoringRun, sinceGoal, favouriteOpponen
   const scoredIn = form.filter((f) => f.app.goals > 0).length;
   return (
     <div className="sheet">
-      <h3 className="label ruled">Last {form.length} played</h3>
+      <h3 className="block verdigris">Last {form.length} played</h3>
       <div className="form-games">
         {form.map(({ app, match }) => (
           <Link key={app.id} to={`/matchday/${match.id}`} className="fg" title={`${formatDate(match.date)} vs ${match.opponent}`}>

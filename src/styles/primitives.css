@@ -102,9 +102,9 @@
 }
 
 /* ---- the one label style ----
-   Column headers and section eyebrows. This is the only uppercase in the
-   site: twelve near-identical tiny-caps styles between 0.62rem and 0.75rem
-   used to do this job, and 0.75rem is the floor. */
+   Column headers and field captions. This is the only uppercase in the site
+   apart from .block below: twelve near-identical tiny-caps styles between
+   0.62rem and 0.75rem used to do this job, and 0.75rem is the floor. */
 .label,
 table.data th,
 .field > span,
@@ -133,6 +133,37 @@ dl.compare dt {
 /* On a dark ground the label takes the board's own secondary ink. Scoped to
    the primitive rather than spread across the pages that use a board. */
 .board .label { color: var(--on-board-soft); }
+
+/* ---- the block ----
+   The school's own brand device: bold text on a solid field of colour, in
+   place of the tiny uppercase eyebrow it replaces. Four variants, one field
+   each. Only .board carries light text — gold, verdigris and burnt are none
+   of them dark enough to hold --on-board and still clear 3:1, so they take
+   --board's own ink instead.
+
+   Padding stays tight — a chip, not a banner — because .block swaps in for
+   .label.ruled at most of its call sites, and a heavier box would grow every
+   page it lands on rather than the phase that shrinks them. */
+.block {
+  display: inline-block;
+  font-family: var(--font-text);
+  font-size: var(--t-micro);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1.35;
+  text-transform: uppercase;
+  padding: 0.15rem 0.55rem;
+  border-radius: var(--r);
+  margin-bottom: var(--s2);
+}
+
+.block.board { background: var(--board); color: var(--on-board); }
+
+.block.gold { background: var(--gold); color: var(--board); }
+
+.block.verdigris { background: var(--verdigris); color: var(--board); }
+
+.block.burnt { background: var(--burnt); color: var(--board); }
 
 /* A tile is a sheet sized to one figure, so it keeps the surface and swaps
    the padding for something square. */

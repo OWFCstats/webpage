@@ -82,7 +82,7 @@ export default function Season() {
           <SeasonSummary summary={summary} homeAway={homeAway} />
 
           <div className="flat-block">
-            <div className="label ruled">Most involved</div>
+            <div className="block verdigris">Most involved</div>
             <BarBoard rows={totals} statKey="appearances" limit={4} bare />
           </div>
 
