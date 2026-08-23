@@ -183,7 +183,7 @@
   margin-left: 0.3rem;
 }
 
-.squad-pill em.card-mark { color: var(--tangerine-deep); opacity: 1; }
+.squad-pill em.card-mark { color: var(--verdigris-deep); opacity: 1; }
 
 .squad-pill.scored em.card-mark, .squad-pill.motm em.card-mark { color: inherit; }
 

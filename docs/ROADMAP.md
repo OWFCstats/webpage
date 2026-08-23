@@ -521,6 +521,67 @@ anywhere; every surface repainted and swept at six widths; the board is green
 everywhere it was near-black; `npm run build` clean; `check:layout`'s contrast
 assertion passes on both grounds.
 
+### Built — what landed, and what it found
+
+All of the above. Six CSS files changed rather than five, because the metal
+ramps are a token-layer addition of their own and weren't in the five files
+that named a deleted token: `tokens.css` for the ground, ink, identity,
+accent, metal and series values; `primitives.css` for `.tag`, `.board .tag`
+and `.tag.orange`; `pages/home.css` for the fixture countdown chip and the
+goals-against bar; `pages/matchday.css` for the squad pill's card mark;
+`admin.css` for `.admin-bar`; and `components/plate.css`, which moved its
+three earned tiers onto stop 2 of the new `--bronze-2`/`--silver-2`/`--gold-2`
+ramps in place of the flat values it used to read. `package.json` and
+`main.jsx` did the font swap: `@fontsource-variable/fraunces` out,
+`@fontsource/libre-caslon-display` in — one weight, family name `Libre Caslon
+Display` exactly, no other JS or component change, because every display-face
+rule already reads the font through `--font-display` rather than naming it.
+
+**The one-job rule placed every rule in those five files without a judgement
+call, as the phase predicted.** Six of the seven — the default `.tag`, `.board
+.tag`, the fixture countdown chip, the goals-against bar, the squad pill's
+card mark and the admin bar — move off sky/tangerine onto `--verdigris` /
+`--verdigris-deep`. The seventh, `.tag.orange`, is the one competition-tag
+site and became `--burnt`, the one job that colour is rationed to.
+
+**The chart series note undersold its own diff.** The roadmap text framed this
+as "a swap of two values" — `--series-4` and `--series-5` trading places — but
+`DESIGN.md`'s own table had already retuned all five: `--series-2` moves off
+the deleted `--sky-deep` blue (`#2f6f8f`) onto `--verdigris-deep` green
+(`#3f6b5c`), and `--series-1`/`--series-3` shift by a point or two of hex to
+sit with the new palette. Assists and clean sheets — both `--series-2` — read
+as green now, not blue; nothing else about `lib/tokens.js`'s by-name mapping
+needed to change, so the fix was still one file.
+
+**Verified rather than assumed:** `grep` for `#[0-9a-fA-F]` across `src/`
+matches nothing outside `tokens.css` (the badge SVGs carry their own artwork
+hex, which is not a CSS token and out of scope here); `grep` for `--sky`,
+`--tangerine`, `--bronze` alone, `--silver` alone and `--gold-tier` across
+`src/` returns nothing; `npm run build` is clean and pulls the Caslon woff/
+woff2 files instead of Fraunces's; all 50 unit tests still pass unchanged,
+since no `lib/` derivation moved; `check:layout` reports the same 17 known
+failures against the expected-failure list and nothing new — including its
+icon-contrast assertion, which now measures 674 icons against `--board` at
+`#16281f` and `--paper` at `#f1f3ef` rather than the old near-black and cream,
+and still only reports the bitmap crest as unmeasurable. `npm run shots`
+repainted all six widths on both fixtures; Home, Matchday, Records, Season and
+Players were read back at 375px to confirm the board reads as green leather
+rather than UI chrome, gold sits on it as identity rather than decoration, and
+Libre Caslon Display renders distinctly from the Fraunces it replaced.
+
+**One thing this phase didn't touch, on purpose.** Sixteen rules across nine
+files still pair `var(--font-display)` with `font-weight: 600` and most also
+add `letter-spacing: -0.015em` — a pattern written for a variable face that
+had a 600 weight to give. Libre Caslon Display ships one weight, so those
+rules now ask for a weight the face doesn't have; `npm run shots`' renders
+show the single weight the face ships, not a synthesised bold, so nothing
+looks broken — the declaration is just inert. The repetition itself is the
+parked item this was already filed against ("a figure recipe in the type
+layer," in Parked, below), not new work Phase 11 introduced, and touching
+nine files to strip a now-inert declaration was judged out of the "five
+files plus tokens.css" scope this phase set for itself. Recorded here so
+that parked item's owner knows the face is live first.
+
 ---
 
 ## Phase 12 — The label device, and cutting the prose
