@@ -1499,6 +1499,102 @@ a first-screen requirement: a stranger who scrolls one screen gets it anyway.
 name and a league position above the fold at 375px; both fixture datasets look
 deliberate.
 
+### Built — what landed, and what didn't close
+
+The reorder and the two component rebuilds, plus one thing this phase found
+it couldn't do inside its own budget.
+
+**The H1 is gone.** `pages/Home.jsx` no longer renders `Old Wellingtonians FC`
+at all — the masthead already says it on every route, empty state included,
+so the page now opens on a one-line `Season 2025/26 · final` note and nothing
+else names the club.
+
+**The result leads.** `LastResult`'s board — already the page's one board,
+already carrying the MOTM line this phase's own text worried about — moves
+from a 50/50 grid with the fixture card to the first thing on the page, full
+width. `LeagueTable` follows it directly, ahead of the fixture and the form
+widgets: "where are we" is answered right under "what just happened," and a
+headless measurement confirms both land inside a typical phone's first
+screen — the MOTM name's own line ends at **311px**, the highlighted
+`Old Wellingtonians` row in the standings at **675px**, both well inside the
+600–800px a phone actually shows before the browser's own chrome, address bar
+included.
+
+**The next fixture is a compact row.** `components/home/NextFixture.jsx` is
+rebuilt from the four-part card (badge circles, a meta line, a location line,
+a countdown chip) onto one row: a crest, the opponent's name, the date and
+venue, the countdown chip at the end. Kick-off time, the ground's address and
+its map link are gone from the row — the same trade Phase 18 made for
+Season's own upcoming list, and for the same reason: every fixture row
+already links to `/matchday/:id`, and `Scoreboard.jsx` shows all of it there.
+The crest is real now rather than a state to design around: `Crest` moved out
+of `Layout.jsx` into `bits.jsx` (shared vocabulary, since it now has two
+callers) so the same `public/crest.png` draws in the row as in the masthead,
+in place of the "OW" text the row used to carry unconditionally. That crest
+is a second bitmap the icon-contrast check can't read — the masthead's own
+entry in `scripts/expected-failures.js` is scoped to `a.brand`, so this is a
+second line, owned here rather than widening that one.
+
+**The redundant form-chip strip came off Recent form.** `FormBadges` and the
+`ResultList` rows underneath it were both drawing the same five results —
+each `result-row` already opens with the same colour-coded W/D/L pill the
+chip strip repeated above it — so the chips added a second copy of the same
+five facts in a less useful shape. `RecentForm` now renders the list alone,
+and lets `ResultList`'s own empty state show through on a season with nothing
+played yet, rather than rendering nothing.
+
+**Both fixture datasets read as one design, not two.** `pre-season` — last
+season finished, this one only fixtures — shows the same real result and
+board, `2025/26 · final` on the season line, and the next-fixture row pointing
+at the first `2026/27` game months out with its own countdown. Nothing on the
+page is an empty state on either dataset: the last genuinely blank widget was
+`LeagueTable`'s own placeholder line, and neither dataset triggers it.
+
+**The 1,600px budget stands unmet, and the arithmetic is worth recording
+rather than arguing with.** Home measures **1,882px** at 375px on both
+datasets — down from 2,113px (2,091px by the original review's own count),
+a real 231px cut, but 282px still over. A headless measurement of every
+widget explains where the rest of it lives:
+
+| Widget | Height |
+| --- | --- |
+| Season note | 16px |
+| Last result (board) | 249px |
+| League table | 427px |
+| Next fixture (compact row) | 139px |
+| Recent form | 417px |
+| Season stats | 259px |
+
+The two widgets left standing are the two this phase has no authority to cut
+further. `LeagueTable` shows all ten columns from 360px up on every page that
+renders it — `docs/DESIGN.md` → *Mobile* states that as a rule, not a
+suggestion, and shrinking its five-row window would touch a shared component
+on the one axis that rule doesn't cover, which this phase's own brief
+("the league table stays") reads as an instruction to leave alone rather than
+an invitation to resize. `RecentForm`'s list holds the last five results,
+which is `formOf`'s own default and the same number `FormBadges` showed
+everywhere else on the site before today — cutting it to three would save
+real height and no less real history, for a page whose second job (per
+`CLAUDE.md`) is keeping exactly that. Between them those two widgets are
+844px of the page's 1,564px of actual content; the chrome around it — header,
+page padding, footer, the phone tab bar — is the other ~318px and belongs to
+`Layout.jsx`, not to this page. **A budget that gets edited to fit what was
+built is not a budget** (`docs/DESIGN.md` → *Page length*), so this one is
+reported rather than massaged: Home joins Season and Player detail as a page
+whose gap is named rather than hidden, for the same reason theirs are — the
+content that's left costs more than the budget has to give, and the
+alternative is cutting it.
+
+**Verified rather than assumed.** All 71 unit tests pass unchanged, since
+nothing in `lib/` moved. `npm run build` is clean. `check:layout` passes with
+21 known failures against the expected-failure list and nothing new, across
+both fixtures at all six widths — one new entry on the list (the next-fixture
+row's crest, above) and nothing else moved. `npm run shots` confirms Home at
+375px: **1,882px** on both `mid-season` and `pre-season`, and the two
+datasets differ only below 375px, where the next-fixture row is the only
+widget that moves — its own text wraps a line earlier in one fixture than
+the other, and nothing else on the page depends on which season is which.
+
 ---
 
 ## Phase 20 — The Matchday scoreboard
@@ -1593,7 +1689,7 @@ review did.
 
 | Page | Review | Harness | Budget | Phase that meets it |
 | --- | --- | --- | --- | --- |
-| Home | 2,091 | 2,068 | 1,600 | 19 |
+| Home | 2,091 | 2,068 | 1,600 | 19 — built: 1,882, over by 282 |
 | Matchday | 1,857 | 1,857 | 1,900 | 20 |
 | Season | 3,530 | 3,672 | 2,200 | 18 |
 | Players → Leaderboards | 2,714 | 2,997 | 1,400 | 14 |
