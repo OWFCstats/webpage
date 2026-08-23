@@ -65,11 +65,9 @@ export function playerTotals(players, matches, appearances) {
  * the names that are.
  *
  * `limit` is a hard cap, ties included, so a board can't grow to fifty names in
- * September when half the squad is level on one goal. `alsoLevel` counts who
- * the cap left out at that same mark, because a cut that lands inside a tie
- * makes the last name shown read as the last name there is. `sharedLead` is the
- * true number at the top, capped or not — the lead board needs it to know
- * whether there is a leader to name at all.
+ * September when half the squad is level on one goal. `sharedLead` is the true
+ * number at the top, capped or not — the lead board needs it to know whether
+ * there is a leader to name at all.
  *
  * `total` is how many players are on the board at all (zeroes excluded), and
  * `next` is the first one the cap left out — its own rank, already resolved
@@ -86,7 +84,6 @@ export function statLeaders(rows, statKey, limit = 6) {
     return { ...row, rank: place };
   });
   const ranked = placed.slice(0, limit);
-  const last = ranked[ranked.length - 1];
   return {
     value: placed[0]?.[statKey] ?? 0,
     total: placed.length,
@@ -94,7 +91,6 @@ export function statLeaders(rows, statKey, limit = 6) {
     leaders: ranked.filter((r) => r.rank === 1),
     chasers: ranked.filter((r) => r.rank > 1),
     sharedLead: placed.filter((r) => r.rank === 1).length,
-    alsoLevel: last ? placed.slice(limit).filter((r) => r[statKey] === last[statKey]).length : 0,
     next: placed[limit] ?? null,
   };
 }

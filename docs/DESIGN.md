@@ -87,10 +87,13 @@ Three decisions about what a page shows, before any decision about how it looks.
 > **Phase 16.** Records runs on the sub-navigation mechanism now too:
 > `/records` (Badges), `/records/honours` and `/records/all-time` are real
 > addresses, and the five sections that used to stack on one 4,841px page are
-> three sub-pages, none over 2,000px. Season is the last section still flat —
-> its Charts move to their own address in Phase 18, when the content is rebuilt
-> to fill it. The mechanism itself landed in Phase 13, on Players; the result
-> row and the season rule below landed in Phase 10.
+> three sub-pages, none over 2,000px. The mechanism itself landed in Phase 13,
+> on Players; the result row and the season rule below landed in Phase 10.
+>
+> **Phase 18.** Season splits too: `/season` (results and standings) and
+> `/season/charts` are real addresses, both under the same 2,200px budget.
+> Every section on the site now gains depth through a real sub-page rather
+> than a toggle squeezed into a corner of one.
 
 ### Sections do not grow; they gain depth
 
@@ -407,9 +410,9 @@ this case is special.
 For occasions and honours: the matchday scoreboard, a player's hero, the
 honours board, the last result on Home — plus one per leaderboard card, since
 Phase 14 gave every stat its own leader row rather than promoting a single one.
-`components/LeaderBoards.jsx` renders those now; `components/BarBoard.jsx`
-kept only Season's plain bar list, which is why it no longer exports a board of
-its own. See *Leaderboards and the squad* below for the card format.
+`components/LeaderBoards.jsx` renders those now, on every page that shows one —
+Season included, since Phase 18. See *Leaderboards and the squad* below for
+the card format.
 
 `--board` ground, `--on-board` text, display face, gold accents, 1px `--gold`
 bottom border. No radius above 4px. Sparingly — if half the page is board, none
@@ -766,9 +769,10 @@ for it is the footer line, not 2,700px of bar charts. Six capped cards show ever
 board *and* fit a phone: Players → Leaderboards measured 2,992px before this
 phase and 1,370px after, against a 1,400px budget.
 
-**The bars are gone**, from Players and Records. Season's "Most involved"
-board still has one — `components/BarBoard.jsx` kept its bar-list export for
-that one caller — until Phase 18 gives Season the same treatment.
+**The bars are gone entirely.** Season's "Most involved" was the one caller
+left drawing one, and Phase 18 moved it onto `LeaderBoards` too — one
+`appearances` card, same format as everywhere else. `components/BarBoard.jsx`
+and its CSS are deleted rather than kept for a caller that no longer exists.
 
 ### Ties
 
@@ -982,7 +986,7 @@ constraint, so it lives here.
 | --- | --- |
 | Home | 1,600 |
 | Matchday | 1,900 |
-| Season | 2,200 |
+| Season → any sub-page | 2,200 |
 | Players → Leaderboards | 1,400 |
 | Records → any sub-page | 2,000 |
 | Player detail | 2,400 |
@@ -993,12 +997,19 @@ Records is a reference document and earns length, which is why it splits into
 sub-pages rather than shrinking. Home doesn't. The opponent page is the same kind
 of document as a Records sub-page and takes the same number. `npm run shots`
 reports the real numbers — page by page, at every supported width, into
-`shots/heights.json` — and the roadmap records where each page started. Four of
+`shots/heights.json` — and the roadmap records where each page started. Five of
 these rows are inside their budgets now: Matchday, Players → Leaderboards
-(Phase 14), Records' three sub-pages (Phase 16), and the opponent page, which is
-only inside because half of what it should say isn't there yet. Home, Season
-and Player detail are still over, and `check:layout` prints the gap on every run
-without failing on it: the phase that owns each page closes its own, and a check
+(Phase 14), Records' three sub-pages (Phase 16), Season → Charts (Phase 18, at
+1,909px), and the opponent page, which is only inside because half of what it
+should say isn't there yet. Home, Season's own results view and Player detail
+are still over — Season came down from 3,379px to 3,248px in Phase 18 (Charts
+leaving for its own address and the bars leaving "Most involved" account for
+most of that) but a season of 16 played games costs 1,286px on the shared result row
+before the league table, the summary or a single fixture is counted, and that
+arithmetic doesn't close under 2,200px without cutting games off the page a
+season is supposed to keep — see `docs/ROADMAP.md`, Phase 18. `check:layout`
+prints the gap on every run without failing on it: the phase that owns each page
+closes its own where it can, and a check
 that went red for eleven phases would stop being read.
 
 **"No cap" is not "unmeasured".** The roster is 3,078px as a list and 4,150px as

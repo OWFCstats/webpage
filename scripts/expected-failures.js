@@ -17,40 +17,19 @@
 // Fields: invariant (required), route / dataset / match (optional filters —
 // `match` is a substring of the element's path or of its text), owner, why.
 //
-// Three of the four entries here are a table that hides a column at a width it
-// was never measured at, each against the phase that rebuilds that table. The
-// fourth is the crest, whose ink a bitmap can't be read for. Phase 10's three
+// One of the two entries here is a table that hides a column at a width it
+// was never measured at, against the phase that rebuilds that table. The
+// other is the crest, whose ink a bitmap can't be read for. Phase 10's three
 // bugs used to be deliberately absent so the run stayed red until they were
 // fixed; they are fixed, so the run is green and anything new in it is a
 // regression.
 //
-// Records' season index was the fourth table and came off this list in Phase
-// 16: the sub-page split rebuilt it as rows, so there is no wrap left to
-// scroll. Two of the three that remain are Season's fixtures table, which
-// Phase 18 restructures the same way.
+// Records' season index and Season's fixtures table were the other two
+// tables here, and both came off this list the same way — Phase 16 and
+// Phase 18 respectively rebuilt each onto the Phase 10 result row, so
+// there's no wrap left to scroll. One remains, on the opponent page.
 
 export const EXPECTED = [
-  {
-    invariant: 'table-wrap-scrolls',
-    route: 'season',
-    match: 'flat-block',
-    owner: 'Phase 18',
-    why:
-      'Season\'s upcoming-fixtures table is a few pixels too wide at 320px — 7px '
-      + 'on one platform\'s font metrics, 4px on CI\'s — and fits everywhere else. '
-      + 'Found by this check rather than by the review, and it is the fixture '
-      + 'list, which Phase 18 restructures onto the result row. If this entry '
-      + 'ever goes stale, check whether the table actually changed before '
-      + 'crediting a fix: a 4px overflow is close enough to the noise floor that '
-      + 'a font change could close it on its own.',
-  },
-  {
-    invariant: 'table-wrap-scrolls',
-    route: 'season-all',
-    match: 'flat-block',
-    owner: 'Phase 18',
-    why: 'The same fixtures table as Season, reached through "All seasons".',
-  },
   {
     invariant: 'table-wrap-scrolls',
     route: 'opponent',

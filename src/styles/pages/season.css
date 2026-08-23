@@ -14,8 +14,9 @@
 }
 
 /* ---- season page: table and results lead the main column, one sheet
-   carries the at-a-glance summary, most-involved bars and the charts
-   toggle ---- */
+   carries the at-a-glance summary and the "most involved" leaderboard card.
+   Charts are a sub-page of their own now (Phase 18) and run full width,
+   outside this grid entirely. ---- */
 .season-layout {
   display: grid;
   gap: var(--s6);

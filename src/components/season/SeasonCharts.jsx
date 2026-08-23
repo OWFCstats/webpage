@@ -15,7 +15,6 @@ import {
 import { useData } from '../../context/DataContext';
 import { useIsNarrow } from '../../lib/useIsNarrow';
 import { formatDate } from '../../lib/format';
-import { currentSeasonOf } from '../../lib/matches';
 import {
   lastDefinedIndex,
   seasonPointsComparison,
@@ -121,7 +120,7 @@ function findings(race, trend) {
   return out;
 }
 
-export default function SeasonCharts({ season, activeSeason }) {
+export default function SeasonCharts({ season }) {
   const { players, matches, appearances } = useData();
   const narrow = useIsNarrow();
   const c = chartColours();
@@ -132,8 +131,7 @@ export default function SeasonCharts({ season, activeSeason }) {
   );
 
   const charts = useMemo(() => {
-    const pool =
-      season === 'all' ? matches : matches.filter((m) => m.season === activeSeason);
+    const pool = matches.filter((m) => m.season === season);
     const race = topScorerRace(players, pool, appearances);
     const trend = seasonTrend(pool);
     return {
@@ -146,13 +144,9 @@ export default function SeasonCharts({ season, activeSeason }) {
       ),
       text: findings(race, trend),
     };
-  }, [season, activeSeason, players, matches, appearances]);
+  }, [season, players, matches, appearances]);
 
   const { race, trend, comparison, raceOffsets, text } = charts;
-  // The season "Points accumulated" highlights when its own picker is set to
-  // "all" — the current season overall, not just the latest one with a
-  // league row, so a league fixture entered for next season can't blank it.
-  const currentSeason = currentSeasonOf(matches);
 
   // 0.75rem is the floor everywhere, charts included — a 10px axis tick was
   // the smallest type on the site. Tabular figures land in charts.css: an SVG
@@ -273,7 +267,7 @@ export default function SeasonCharts({ season, activeSeason }) {
                 unlabelled context — the finding sentence already names the one
                 that matters, and every season keeps its column in "Show data". */}
             {[...comparison.seasons].reverse().map((s) => {
-              const isFocused = s === (season === 'all' ? currentSeason : activeSeason);
+              const isFocused = s === season;
               return (
                 <Line
                   key={s}

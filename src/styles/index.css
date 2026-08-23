@@ -16,7 +16,6 @@
 @import './primitives.css';
 
 @import './components/picker.css';
-@import './components/bar-board.css';
 @import './components/leaderboards.css';
 @import './components/charts.css';
 @import './components/result-list.css';

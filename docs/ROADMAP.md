@@ -1382,6 +1382,98 @@ a good pair and they stay together.
 column width; the redundant toggle is gone; the picker offers seasons only; the
 Season entries come off `scripts/expected-failures.js`.
 
+### Built — what landed, and what didn't close
+
+Two real addresses on Phase 13's mechanism: `/season` and `/season/charts`,
+both rendering `pages/Season.jsx` with a `view` prop — the same one-file-
+many-routes shape Players and Records already use. The season picker and the
+segmented control are common to both; only the content beneath them differs.
+
+**Upcoming fixtures moved onto the Phase 10 row**, off the table `check:layout`
+found hiding 4–7px at 320px. `components/season/UpcomingFixtures.jsx` is now
+four lines of markup around `ResultList`, and it carries less than the table
+did on purpose: kickoff time and the ground's address and map link are gone
+from the list, because every fixture row already links to `/matchday/:id`,
+and `Scoreboard.jsx` has shown that same information in full for an unplayed
+match since Phase 10. A season overview repeating a match page's own logistics
+for every fixture in it was showing the same fact twice; the row keeps the
+opponent, the venue letter and the date, and a tap answers the rest. Both of
+the table's entries — `season` and `season-all` — come off
+`scripts/expected-failures.js` in this commit, because there is no table left
+to overflow.
+
+**Charts are a real sub-page, not a toggle at the bottom of the aside.**
+`components/season/ChartsPanel.jsx` — the `useState('results'/'charts')` pair
+of buttons — is deleted; `SeasonCharts` is lazy-imported directly in
+`pages/Season.jsx` and rendered full width when `view === 'charts'`, same
+`Suspense`/`Spinner` guard as before so Recharts still ships in its own
+~7KB chunk (`SeasonCharts-*.js`) that a visitor to the results view never
+downloads. `SeasonCharts` itself lost its `season === 'all'` branches along
+with the picker option that fed them — it takes one resolved season now,
+not two params that meant the same thing once "all" was gone.
+
+**"Most involved" is a `LeaderBoards` card, not a bar list.** One call —
+`<LeaderBoards rows={totals} stats={['appearances']} limit={4} />` — in the
+aside, the same component and the same rank/leader/footer shape Players and
+Records have run since Phase 14. `components/BarBoard.jsx` and
+`styles/components/bar-board.css` are deleted rather than kept for a caller
+that no longer exists: Season was the one component still drawing a bar and
+the one place `--bar-accent` and `.bar-name`'s ellipsis were still live. That
+ellipsis was a real, unflagged instance of the clipped-name bug Phase 14 had
+already fixed everywhere else — it never tripped `check:layout` because
+nothing in either fixture squad has a name long enough to hit it at four
+rows, not because the bug wasn't there. `lib/players.js`'s `statLeaders` lost
+the `alsoLevel` field it only ever computed for `BarBoard`'s hedge sentence;
+nothing else read it.
+
+**"All seasons" is gone from the picker, and the address it used to produce
+still goes somewhere.** `SeasonSelect`'s `allowAll` is `false` here, same as
+Players since Phase 14. `/season?season=all` — a link somebody may already
+have shared — redirects to `/records/all-time` rather than silently falling
+back to the latest season: the board it used to show *is* Records' now, and
+landing on the latest season instead would have answered a different
+question without saying so.
+
+**Measured, not assumed — a headless run against `dev:fixture` at 375px, both
+datasets, cross-checked against `check:layout`'s own reported figure:**
+
+| Route | Before | mid-season | pre-season | Budget |
+| --- | --- | --- | --- | --- |
+| Season | 3,379px | 3,248px | 1,799px | 2,200 |
+| Season — all seasons (removed) | 3,316px | — | — | — |
+| Season → Charts | — (behind a toggle) | 1,909px | 1,433px | 2,200 |
+
+**Charts closes its budget; the results view doesn't, and the arithmetic is
+worth writing down rather than arguing with.** Season came down 131px —
+Charts leaving for its own address and the bars leaving cost most of that —
+but the league table (483px, the full division) and the results list alone
+account for 1,769px of the mid-season page before the season summary, the
+"most involved" card or a single upcoming fixture is counted. Sixteen played
+games at the shared row's 75px (a 44px touch target plus the date/competition
+line Phase 10 gave this exact caller) is 1,200px of that on its own. Cutting
+games off the list would close the gap — and would be the one change this
+plan explicitly rules out: `CLAUDE.md` calls the club's history the second
+job of this whole site, and a season page that hides its own games to hit a
+number is the failure mode the budget exists to prevent, not serve. **A
+budget that gets edited to fit what was built is not a budget** (`DESIGN.md`
+→ *Page length*), so this one stands unmet rather than the page being made to
+lie about it: `check:layout` reports Season's results view at 3,248px against
+2,200 and does not fail the run for it, the same standing exception Home and
+Player detail already carry. The pre-season route — next season's four
+fixtures, nothing played — fits at 1,799px, which is the harness confirming
+the length is the season's, not the page's own chrome.
+
+**Verified rather than assumed:** all 71 unit tests pass, one of them
+touched — `alsoLevel` was never under test, so `statLeaders`' own suite is
+unchanged. `npm run build` is clean and `SeasonCharts` still lands in its own
+chunk. `check:layout` passes with 20 known failures against the
+expected-failure list and nothing new, across both fixtures at all six
+widths — down from 22 by exactly the two entries this phase closed. A
+headless run confirms what a screenshot can't: `/season/charts` carries
+`aria-current="page"` on the Charts tab and `/season` on Season's, the season
+picker's choice survives the tab switch in the address bar, and
+`/season?season=all` lands on `/records/all-time` rather than on a season.
+
 ---
 
 ## Phase 19 — Home
