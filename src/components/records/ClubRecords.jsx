@@ -14,7 +14,7 @@ function Record({ label, headline, span, matches = [], foot, empty }) {
         <>
           <div className="record-headline">{headline}</div>
           {span && <div className="muted record-span">{span}</div>}
-          <ResultList matches={matches} />
+          <ResultList matches={matches} showMeta />
           {foot && <p className="muted card-foot">{foot}</p>}
         </>
       ) : (

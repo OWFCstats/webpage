@@ -15,6 +15,7 @@ import {
 import { useData } from '../../context/DataContext';
 import { useIsNarrow } from '../../lib/useIsNarrow';
 import { formatDate } from '../../lib/format';
+import { currentSeasonOf } from '../../lib/matches';
 import {
   lastDefinedIndex,
   seasonPointsComparison,
@@ -148,7 +149,10 @@ export default function SeasonCharts({ season, activeSeason }) {
   }, [season, activeSeason, players, matches, appearances]);
 
   const { race, trend, comparison, raceOffsets, text } = charts;
-  const currentSeason = comparison.seasons[0];
+  // The season "Points accumulated" highlights when its own picker is set to
+  // "all" — the current season overall, not just the latest one with a
+  // league row, so a league fixture entered for next season can't blank it.
+  const currentSeason = currentSeasonOf(matches);
 
   // 0.75rem is the floor everywhere, charts included — a 10px axis tick was
   // the smallest type on the site. Tabular figures land in charts.css: an SVG

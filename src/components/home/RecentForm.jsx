@@ -1,6 +1,5 @@
-import { Link } from 'react-router-dom';
-import { FormBadges, VenueBadge } from '../bits';
-import { resultOf } from '../../lib/matches';
+import { FormBadges } from '../bits';
+import ResultList from '../ResultList';
 import { token } from '../../lib/tokens';
 
 /** Cumulative-points sparkline. Two points is a line segment, not a trend, so
@@ -41,21 +40,7 @@ export default function RecentForm({ form, trend }) {
       <div className="home-form-body">
         <div className="home-form-main">
           <FormBadges matches={form} />
-          {form.length > 0 && (
-            <ul className="home-form-list">
-              {form.map((m) => (
-                <li key={m.id}>
-                  <Link to={`/matchday/${m.id}`}>
-                    vs {m.opponent} <VenueBadge venue={m.venue} />
-                  </Link>
-                  <strong>
-                    {m.goals_for}–{m.goals_against}{' '}
-                    <span className={`result-pill ${resultOf(m)}`}>{resultOf(m)}</span>
-                  </strong>
-                </li>
-              ))}
-            </ul>
-          )}
+          {form.length > 0 && <ResultList matches={form} />}
         </div>
         {trend.length >= 3 && (
           <div className="home-form-trend">

@@ -4,7 +4,7 @@
 // (withdrew <24h before kick-off) are excluded from every stat and counted
 // separately.
 
-import { isPlayed, isCleanSheet, seasonsOf } from './matches';
+import { currentSeasonOf, isPlayed, isCleanSheet } from './matches';
 
 /**
  * Per-player aggregate over the given matches (already season-filtered by the
@@ -199,7 +199,7 @@ export function playerProfile(player, players, matches, appearances) {
     const rank = value > 0 ? rows.filter((r) => r[key] > value).length + 1 : null;
     return { value, rank, of: rows.length };
   };
-  const currentSeason = seasonsOf(matches)[0];
+  const currentSeason = currentSeasonOf(matches);
   const seasonPool = currentSeason
     ? playerTotals(players, matches.filter((m) => m.season === currentSeason), appearances)
         .filter((r) => r.appearances > 0)

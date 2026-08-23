@@ -19,6 +19,19 @@ export function seasonsOf(matches) {
   return [...new Set(matches.map((m) => m.season))].sort().reverse();
 }
 
+/**
+ * The current season: the most recent one with a played result, not just an
+ * entered row. A fixture for next season is a card, not a context switch —
+ * without this, entering one blanks every "current season" figure on Home
+ * before a ball is kicked. `seasonsOf` itself stays row-based for pickers,
+ * which should list a season the moment someone's entered fixtures for it.
+ * Falls back to the most recent season with any row when nothing has been
+ * played yet — there's nothing truer to show a brand new club.
+ */
+export function currentSeasonOf(matches) {
+  return playedMatches(matches)[0]?.season ?? seasonsOf(matches)[0] ?? null;
+}
+
 /** URL-safe slug for an opponent name, e.g. "St. George's OB" -> "st-george-s-ob". */
 export function slugify(name) {
   return name

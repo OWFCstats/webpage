@@ -66,4 +66,18 @@ export const EXPECTED = [
       + 'the opponent page and its 2,000px budget; the meetings table on the same '
       + 'page is Phase 10\'s and is not on this list.',
   },
+  {
+    invariant: 'icon-unmeasurable',
+    match: 'a.brand',
+    owner: 'Phase 10',
+    why:
+      'The club uploaded the real public/crest.png mid-Phase 10, straight to '
+      + 'this branch, and the masthead now renders it on every route instead of '
+      + 'the OW monogram fallback. A bitmap\'s own ink can\'t be read for '
+      + 'contrast — the same limitation motm.svg carries into Phase 15 — so '
+      + 'this reports as unmeasurable rather than a pass or a fail. No phase '
+      + 'owns verifying the crest visually; if that ever matters it needs '
+      + 'vector art, not a wider exemption here. Found kicking off Phase 10, '
+      + 'not by the review — the crest didn\'t exist when the review ran.',
+  },
 ];

@@ -88,14 +88,6 @@
   .grid.player-cards { grid-template-columns: 1fr; }
 }
 
-table.data.firsts td { vertical-align: top; }
-
-table.data.firsts td:first-child { white-space: nowrap; }
-
-table.data.firsts td:nth-child(2) { white-space: nowrap; color: var(--ink-soft); }
-
-table.data.firsts tbody tr:hover { background: transparent; }
-
 .card-foot { font-size: var(--t-small); margin: var(--s3) 0 0; }
 
 /* ---- personal form ---- */
@@ -119,9 +111,9 @@ table.data.firsts tbody tr:hover { background: transparent; }
   font-size: var(--t-small);
   color: var(--ink-soft);
   margin-top: 0.3rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  /* A two-line name beats half a name (DESIGN.md → Mobile): "Old
+     Cheltonians" needs 82px and the tile gives it 74px. */
+  overflow-wrap: break-word;
 }
 
 .fg-mine {

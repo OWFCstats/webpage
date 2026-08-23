@@ -1,24 +1,65 @@
-/* Row layout for a list of results. Replaces a table wherever one would
-   side-scroll on a phone. */
+/* The result row: the one grid every scoreline on the site reads from, at
+   every width. Replaces a match written as running text, which wraps
+   mid-name and puts the club's own name in every row of a season
+   (DESIGN.md → Structure). */
 
-/* ---- result list (row layout for results tables on narrow screens) ---- */
 .result-list {
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
+.result-list li {
+  border-bottom: 1px solid var(--rule);
+}
+
+.result-list li:last-child { border-bottom: none; }
+
+/* Games with a goal or an assist, so the eye lands on the good days — the
+   list-row equivalent of table.data tbody tr.scored-row. */
+.result-list li.scored { background: color-mix(in srgb, var(--gold) 8%, transparent); }
+
+.result-list li.scored:hover { background: color-mix(in srgb, var(--gold) 14%, transparent); }
+
 .result-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
   align-items: center;
   gap: var(--s3);
   min-height: 44px;
   padding: 0.55rem 0;
-  border-bottom: 1px solid var(--rule);
 }
 
-.result-list li:last-child .result-row { border-bottom: none; }
+/* Where the opponent is already named by the caller ("Earlier against X") —
+   the same three remaining columns, without the empty gap the name left. */
+.result-row.no-opponent { grid-template-columns: auto auto auto; }
 
-.result-row .who { min-width: 0; }
+.result-pill.upcoming { background: var(--sheet); color: var(--ink-soft); }
 
-.result-row .who strong { display: block; font-size: var(--t-body); }
+.result-opponent {
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+.result-score {
+  font-family: var(--font-data);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.result-meta {
+  display: block;
+  font-size: var(--t-small);
+  padding: 0 0 var(--s2);
+}
+
+/* Compact variant: a handful of prior meetings inside another card's own
+   row, not a full-height list. */
+.result-inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 0.8rem;
+}
+
+.result-chip { font-weight: 600; }

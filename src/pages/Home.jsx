@@ -7,6 +7,7 @@ import NextFixture from '../components/home/NextFixture';
 import RecentForm from '../components/home/RecentForm';
 import SeasonStats from '../components/home/SeasonStats';
 import {
+  currentSeasonOf,
   fixtures,
   formOf,
   isPlayed,
@@ -21,13 +22,16 @@ export default function Home() {
   const { players, matches, appearances, teams, loading, error } = useData();
 
   const view = useMemo(() => {
-    const currentSeason = seasonsOf(matches)[0];
+    const currentSeason = currentSeasonOf(matches);
     const seasonMatches = currentSeason
       ? matches.filter((m) => m.season === currentSeason)
       : [];
     const lastMatch = latestResult(seasonMatches);
     return {
       currentSeason,
+      // True once a newer season has a row (even just a fixture) — the label
+      // says "final" so the summary below it doesn't read as live.
+      seasonIsFinal: currentSeason != null && seasonsOf(matches)[0] !== currentSeason,
       summary: seasonSummary(seasonMatches),
       form: formOf(seasonMatches),
       next: fixtures(matches)[0],
@@ -51,14 +55,18 @@ export default function Home() {
   }
 
   const {
-    currentSeason, summary, form, next, trend, lastMatch, lastCtx, cleanSheets,
+    currentSeason, seasonIsFinal, summary, form, next, trend, lastMatch, lastCtx, cleanSheets,
   } = view;
 
   return (
     <div className="home">
       <div className="home-head">
         <h1>Old Wellingtonians FC</h1>
-        {currentSeason && <span className="label">Season {currentSeason}</span>}
+        {currentSeason && (
+          <span className="label">
+            Season {currentSeason}{seasonIsFinal ? ' · final' : ''}
+          </span>
+        )}
       </div>
 
       <div className="home-grid">

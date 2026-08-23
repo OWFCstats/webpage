@@ -160,8 +160,6 @@
 
 .boot-line { margin: var(--s3) 0 0; padding-top: var(--s3); border-top: 1px solid var(--rule); font-size: var(--t-small); }
 
-.prior-meeting { margin-right: 0.8rem; font-weight: 600; }
-
 .squad-pills { display: flex; flex-wrap: wrap; gap: var(--s1); }
 
 .squad-pill {

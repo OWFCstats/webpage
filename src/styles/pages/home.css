@@ -148,33 +148,7 @@ a.fixture-team:hover { color: var(--gold-deep); }
 
 .home-form-main { flex: 1; min-width: 0; }
 
-.home-form-list {
-  list-style: none;
-  margin: var(--s3) 0 0;
-  padding: 0;
-  font-size: var(--t-small);
-}
-
-.home-form-list li {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.7rem;
-  padding: 0.35rem 0;
-  border-bottom: 1px solid var(--rule);
-}
-
-.home-form-list li:last-child { border-bottom: none; }
-
-.home-form-list a { font-weight: 600; min-width: 0; }
-
-.home-form-list a:hover { color: var(--gold-deep); }
-
-.home-form-list strong {
-  white-space: nowrap;
-  font-family: var(--font-data);
-  font-variant-numeric: tabular-nums;
-}
+.home-form-main .result-list { margin-top: var(--s3); }
 
 .home-form-trend { flex: none; }
 

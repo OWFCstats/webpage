@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
-import { VenueBadge } from '../bits';
-import { opponentSlug, resultOf } from '../../lib/matches';
+import ResultList from '../ResultList';
+import { opponentSlug } from '../../lib/matches';
 
 const nf1 = (v) => (Math.round(v * 10) / 10).toFixed(1);
 
@@ -25,14 +25,7 @@ export default function ComparisonCard({ match, avgFor, avgAgainst, priorMeeting
               Earlier against{' '}
               <Link to={`/opponents/${opponentSlug(teams, match)}`}>{match.opponent}</Link>
             </dt>
-            <dd>
-              {priorMeetings.map((m) => (
-                <Link key={m.id} to={`/matchday/${m.id}`} className="prior-meeting">
-                  <span className={`result-pill ${resultOf(m)}`}>{resultOf(m)}</span>{' '}
-                  {m.goals_for}–{m.goals_against} <VenueBadge venue={m.venue} />
-                </Link>
-              ))}
-            </dd>
+            <dd><ResultList matches={priorMeetings} inline /></dd>
           </div>
         )}
       </dl>

@@ -83,8 +83,9 @@ case.
 
 Three decisions about what a page shows, before any decision about how it looks.
 
-> **Phases 10 and 13.** Sub-pages land in 13; the result row and the season rule
-> land in 10. Today Records, Season and Players are each one long page.
+> **Phase 13.** Sub-pages land in 13. Today Records, Season and Players are
+> each one long page. The result row and the season rule below are built —
+> they landed in Phase 10.
 
 ### Sections do not grow; they gain depth
 
@@ -120,8 +121,10 @@ everything above a single season — badges, honours, club records.
 
 Opponent, our score always first, venue as a letter, W/D/L as a chip, all on one
 `grid-template-columns` shared by every row. This is a primitive, not a page
-style: four places render a scoreline and all four use it. Written as prose it
-wraps mid-name and puts our own club's name in every row of the season.
+style, built as `components/ResultList.jsx`: six places render a scoreline and
+all six read from it, plus a compact inline variant for the one that sits
+inside another card's own row rather than a list of its own. Written as prose
+it wraps mid-name and puts our own club's name in every row of the season.
 
 ### The current season is the most recent season with a result
 
@@ -628,9 +631,9 @@ badge that can only be looked at, and this club's distribution is WhatsApp.
 > named for the slug its page will use: four career badges, four trophies, the
 > MOTM star and the hat-trick. The numbers below are measured against those files
 > — the earlier ones were taken in a session whose artwork was never committed.
-> The eleventh drawing, `public/crest.png`, has not arrived, which is why the
-> masthead still renders its `OW` monogram fallback. `docs/ROADMAP.md` → *The
-> artwork* holds the full table and the two defects Phase 15 has to fix.
+> The eleventh drawing, `public/crest.png`, arrived mid-Phase 10 — the masthead
+> renders it now instead of its `OW` monogram fallback. `docs/ROADMAP.md` →
+> *The artwork* holds the full table and the two defects Phase 15 has to fix.
 >
 > `npm run check:layout` cannot yet hold this. Its icon rule reads `fill` off the
 > root `<svg>`, which is one colour for the five nav icons and the sparklines it
@@ -815,18 +818,16 @@ The design target, not a fallback. Every change gets checked at 375px first.
   Condensed figures buy the room; where they aren't enough, restructure into rows
   (the result row under *Structure* is the pattern), don't hide columns.
 
-  One trap for whoever reads this before Phase 10 lands: the component called
-  `ResultList` today renders the sentence, not the row. The pattern is what
-  Phase 10 rebuilds inside it, not what is in there now.
-
   This rule was in the doc and the site still broke it, which is worth recording
   because the failure was in the *check*, not the rule. Three phases asserted "no
   table side-scrolls **outside** a `.table-wrap`" — a weaker claim that a wrapped
   table passes by definition, since the wrap's whole job is to scroll. Measured
-  inside the wrap, Records' season index hid **319px** at 375px and 374px at
-  320px, taking Position and Top scorer with it, and the sticky first column made
-  it look like a complete table. Player detail's Firsts & bests hid 122px and cut
-  text mid-word.
+  inside the wrap, Records' season index still hides **319px** at 375px and
+  374px at 320px, taking Position and Top scorer with it, and the sticky first
+  column makes it look like a complete table — that one is Phase 16's, which
+  rebuilds the table this phase would only have restructured twice. Player
+  detail's Firsts & bests hid 122px and cut text mid-word; Phase 10 fixed it by
+  moving off a table onto `dl.compare` rather than restyling one.
 
   So the assertion is: **no `.table-wrap` has `scrollWidth > clientWidth` at any
   supported width**, and no leaf element does either — that second one is the
