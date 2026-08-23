@@ -94,6 +94,12 @@ Three decisions about what a page shows, before any decision about how it looks.
 > `/season/charts` are real addresses, both under the same 2,200px budget.
 > Every section on the site now gains depth through a real sub-page rather
 > than a toggle squeezed into a corner of one.
+>
+> **Phase 22.** Players gains its third sub-page, `/players/data` — every
+> player, every stat, the columns the old "Full table" toggle held before
+> Phase 17 deleted it. It stays behind a fourth address of its own,
+> `?stat=`, one per stat group, for the same reason the squad's `?layout=`
+> does: a group the harness never visits is a name column it never checks.
 
 ### Sections do not grow; they gain depth
 
@@ -1027,6 +1033,7 @@ constraint, so it lives here.
 | Player detail | 2,400 |
 | Opponent detail | 2,000 |
 | Players → Squad | no cap — it's a roster, and every name belongs on it |
+| Players → Data centre | no cap — it's the reference table, and every player's row belongs on it |
 
 Records is a reference document and earns length, which is why it splits into
 sub-pages rather than shrinking. Home doesn't. The opponent page is the same kind

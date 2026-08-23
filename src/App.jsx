@@ -52,6 +52,7 @@ export default function App() {
                 <Route path="season/charts" element={<Season view="charts" />} />
                 <Route path="players" element={<PlayersHub view="leaders" />} />
                 <Route path="players/squad" element={<PlayersHub view="squad" />} />
+                <Route path="players/data" element={<PlayersHub view="data" />} />
                 <Route path="players/:playerId" element={<PlayerDetail />} />
                 <Route path="opponents/:name" element={<OpponentDetail />} />
                 <Route path="records" element={<Records view="badges" />} />

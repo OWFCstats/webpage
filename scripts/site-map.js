@@ -61,6 +61,39 @@ export const ROUTES = [
     name: 'Players — squad, cards',
     budget: 'Players → Squad',
   },
+  // One route per stat group: each swaps in a different set of columns beside
+  // the same name column, and the name column is the one at risk of hiding a
+  // letter — Phase 9's own rule for why a view needs its own address.
+  {
+    id: 'players-data',
+    route: '/players/data',
+    name: 'Players — data centre, playing time',
+    budget: 'Players → Data centre',
+  },
+  {
+    id: 'players-data-attacking',
+    route: '/players/data?stat=attacking',
+    name: 'Players — data centre, attacking',
+    budget: 'Players → Data centre',
+  },
+  {
+    id: 'players-data-discipline',
+    route: '/players/data?stat=discipline',
+    name: 'Players — data centre, discipline',
+    budget: 'Players → Data centre',
+  },
+  {
+    id: 'players-data-honours',
+    route: '/players/data?stat=honours',
+    name: 'Players — data centre, team & honours',
+    budget: 'Players → Data centre',
+  },
+  {
+    id: 'players-data-rates',
+    route: '/players/data?stat=rates',
+    name: 'Players — data centre, per appearance',
+    budget: 'Players → Data centre',
+  },
   {
     id: 'player-regular',
     route: `/players/${player('Owen Gibbons')}`,

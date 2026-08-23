@@ -1,0 +1,26 @@
+/* The data centre — components/players-hub/DataCentre.jsx. Every player,
+   every stat, five groups at a time rather than one wide table: see the
+   component's own comment for why thirteen columns can't share a phone with
+   a name.
+
+   table.data's default cell rule is nowrap, which is right for a short
+   season string (SeasonTable) but wrong for a name — "Dom Bonham-Lloyd" would
+   force the whole table wider rather than wrap, the exact clipped-name bug
+   check:layout exists to catch. This is the one table on the site whose first
+   column is a name rather than a short label, so it's the one that needs the
+   override. */
+.dc-table table.data td:first-child,
+.dc-table table.data th:first-child {
+  white-space: normal;
+}
+
+/* Condensed at the width the league table also condenses at, and for the
+   same reason: three stat columns plus a wrapping name need the padding back
+   that the sheet spends around the table. */
+@media (max-width: 480px) {
+  .dc-table table.data th,
+  .dc-table table.data td { padding: 0.5rem 0.3rem; }
+
+  .dc-table table.data th:first-child,
+  .dc-table table.data td:first-child { padding-left: 0; }
+}

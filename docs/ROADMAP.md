@@ -1832,6 +1832,87 @@ implied.
 **Done means** filters that compose; the table doesn't side-scroll on a phone or
 the whole idea is wrong for mobile and it says so; the footnote exists.
 
+### Built — what landed, and what it found
+
+`/players/data` — a fourth address for the sub-nav's three, `PlayersHub` with
+`view="data"` rendering the new `components/players-hub/DataCentre.jsx`.
+`SortableTable` is reused rather than reinvented, exactly as Phase 17 left it
+for this phase to find: the columns it held before the "Full table" toggle
+was deleted — starts, MOTM, clean sheets, cards, dropouts, the per-game
+rates — are back, at a real address, thirteen stat columns over the same
+`playerTotals` rows the leaderboard and the squad already read. Nothing in
+`lib/` changed: everything the table shows was already derived.
+
+**One wide table is the idea that's wrong for mobile, and it says so by not
+existing.** Thirteen stat columns beside a name has no width to give on a
+320px phone — the league table needs 303px for ten single- and double-digit
+numbers and a club name short enough to wrap; a player's name is longer
+("Dom Bonham-Lloyd") and there are more columns here, not fewer, so the same
+trade doesn't close. The plan's own "filterable and sortable" never promised
+every column visible at once — only that every stat answers to both — so the
+fix is five small tables, not one wide one: `STAT_GROUPS` in `DataCentre.jsx`
+splits the thirteen into Playing time (apps, starts, dropouts), Attacking
+(goals, assists, G+A), Discipline (yellows, reds), Team & honours (MOTM,
+clean sheets), and Per appearance (the three rates), two or three columns
+each — the same budget the squad list already gives its own figures beside a
+name. A `<select>` switches the group rather than a `.seg`: five tabs at
+`.seg`'s own padding would overflow a 320px phone before a single column did,
+where a native select costs one compact control regardless of how many
+options it holds.
+
+**The group is a real address, `?stat=`, for the same reason the squad's
+`?layout=` is.** Every group renders the same name column, which is the one
+column at risk of hiding a letter, so an unmeasured group is exactly where
+Phase 9's rule says a clipped name hides. Five routes are on the harness
+(`players-data` plus one per non-default group in `scripts/site-map.js`),
+not one, and all five were red on the first pass — see below.
+
+**The per-appearance headers found the one column set that didn't fit.**
+`Goals/app` / `Assists/app` / `G+A/app` beside a wrapping name hid 42px at
+320px and 2px at 360px — `table.data th` doesn't wrap, so three nine-to-
+eleven-character headers cost more than the group's own numbers ever would.
+Shortened to `G/app` / `A/app` / `G+A/app`, the same abbreviation the squad
+list already uses for goals and assists, and the group clears every width
+with nothing hidden. The other four groups' headers (`Apps`, `Starts`,
+`Yellows`, `Clean sheets`, and the rest) were never the problem — only the
+rate group's habit of repeating "/app" three times was.
+
+**The name column needed one override, not a redesign.** `table.data td` is
+nowrap by default, which is right for `SeasonTable`'s season string and wrong
+for a name — the exact clipped-name bug `check:layout` exists to catch.
+`.dc-table table.data td:first-child { white-space: normal }` in
+`styles/components/data-centre.css` is the one rule this table needed that no
+other `table.data` caller does, because this is the one table on the site
+whose first column is a name rather than a short label. Padding condenses
+below 480px the same way the league table's does, for the same reason: a few
+columns and a wrapping name need the room back that the sheet spends around
+the table.
+
+**Filters compose because they're independent, not because either is
+clever.** The search box is local state, same as the squad's; the stat group
+is the URL param. Switching group never clears the search box, and searching
+never resets the group — verified with a headless run: filtering to one name
+and then switching from Playing time to Per appearance left the same one row
+on screen and the same text in the box. Position was considered and dropped
+before it was built: every player in the real 2025/26 fixture carries
+`position: null`, so a filter over a column nobody has ever filled in is
+decoration, not a filter (`CLAUDE.md`'s own line for what doesn't belong).
+
+**The footnote is the one `DESIGN.md` already argued for.** "Figures are per
+appearance, not per 90 — the club doesn't record minutes played," under the
+table on every group, so the assumption is written down once rather than
+carried in every column head.
+
+**Measured, not assumed.** All five routes pass `check:layout` at every width
+on both fixtures, nothing added to the expected-failure list — the full
+suite still reports the same 25 known failures it did before this phase, all
+pre-existing. `npm run shots` on `mid-season` at 375px: 2,603px, the same
+figure across all five groups since the row count and the name column, not
+the stat columns, set the page's length. `pre-season` — no games played yet
+— renders the same empty state every other view does, at 900px, well before
+the table would ever mount. All 71 existing unit tests pass unchanged, since
+nothing in `lib/` moved; `npm run build` is clean.
+
 ---
 
 ## Page budgets
@@ -1858,6 +1939,7 @@ review did.
 | Records → any sub-page | 4,823 (one page) | 5,071 (one page) | 2,000 | 16 — met: 1,667 / 961 / 1,880 |
 | Player detail | 2,941 | 2,940 | 2,400 | 21 |
 | Opponent detail | not measured | 1,196 | 2,000 | 21 |
+| Players → Data centre | didn't exist | 2,603 | no cap — it's the reference table | 22 — built: 2,603, same across all five stat groups |
 
 Records earns length as a reference document, which is why it splits rather than
 shrinks. Home does not.

@@ -3,18 +3,20 @@ import { Link, NavLink, Navigate, useSearchParams } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import { ErrorNote, SeasonSelect, Spinner } from '../components/bits';
 import LeaderBoards from '../components/LeaderBoards';
+import DataCentre from '../components/players-hub/DataCentre';
 import Squad from '../components/players-hub/Squad';
 import { squadBadges } from '../lib/awards';
 import { plural } from '../lib/format';
 import { isPlayed, seasonsOf } from '../lib/matches';
 import { playerTotals } from '../lib/players';
 
-// Two real sub-pages, and the leaderboard is the default: the board is why a
-// player opens this section at all, and the roster is one tap away on
-// /players/squad.
+// Three real sub-pages, and the leaderboard is the default: the board is why
+// a player opens this section at all, the roster is one tap away on
+// /players/squad, and the full stats table is one more on /players/data.
 const VIEWS = [
   { to: '/players', end: true, label: 'Leaderboards' },
   { to: '/players/squad', end: false, label: 'Squad' },
+  { to: '/players/data', end: false, label: 'Data centre' },
 ];
 
 export default function PlayersHub({ view }) {
@@ -88,12 +90,14 @@ export default function PlayersHub({ view }) {
   const scope = activeSeason;
 
   // The season carries across to whichever sub-page the control switches to;
-  // `view` never belongs in it, since the two views are now paths, not a param,
-  // and neither does `layout` — it belongs to the roster, and Leaderboards has
-  // no use for a param it can't answer to.
+  // `view` never belongs in it, since the three views are now paths, not a
+  // param, and neither does `layout` or `stat` — they belong to the roster and
+  // the data centre respectively, and the other two views have no use for a
+  // param they can't answer to.
   const carry = new URLSearchParams(params);
   carry.delete('view');
   carry.delete('layout');
+  carry.delete('stat');
   const search = carry.toString();
 
   return (
@@ -129,6 +133,8 @@ export default function PlayersHub({ view }) {
         <p className="muted page-intro">
           {view === 'leaders'
             ? `Where every name stands ${scope ? `in ${scope}` : 'across every season'}, after ${plural(pool.played, 'game', 'games')}.`
+            : view === 'data'
+            ? `Every stat for ${plural(pool.rows.length, 'player', 'players')} ${scope ? `picked in ${scope}` : 'on record'}.`
             : `${plural(pool.rows.length, 'player', 'players')} ${scope ? `picked in ${scope}` : 'on record'}, most games first.`}{' '}
           Every name links through to a page of their own.
         </p>
@@ -149,6 +155,13 @@ export default function PlayersHub({ view }) {
             <Link className="more" to="/records/all-time">Records → All-time</Link>
           </p>
         </>
+      ) : view === 'data' ? (
+        <DataCentre
+          rows={pool.rows}
+          scope={scope}
+          stat={params.get('stat')}
+          onStat={(next) => go({ stat: next === 'playing' ? null : next })}
+        />
       ) : (
         <Squad
           rows={pool.rows}

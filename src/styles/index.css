@@ -23,6 +23,7 @@
 @import './components/badge.css';
 @import './components/league-table.css';
 @import './components/squad.css';
+@import './components/data-centre.css';
 
 @import './pages/home.css';
 @import './pages/matchday.css';
