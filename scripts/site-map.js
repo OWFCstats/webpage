@@ -67,7 +67,21 @@ export const ROUTES = [
     budget: 'Player detail',
   },
   { id: 'opponent', route: '/opponents/old-stoics', name: 'Opponent detail', budget: 'Opponent detail' },
-  { id: 'records', route: '/records', name: 'Records', budget: 'Records → any sub-page' },
+  // One route per Records sub-page: the 2,000px budget is per sub-page, so a
+  // single /records measurement would say nothing about the two behind it.
+  { id: 'records', route: '/records', name: 'Records — badges', budget: 'Records → any sub-page' },
+  {
+    id: 'records-honours',
+    route: '/records/honours',
+    name: 'Records — honours',
+    budget: 'Records → any sub-page',
+  },
+  {
+    id: 'records-all-time',
+    route: '/records/all-time',
+    name: 'Records — all-time',
+    budget: 'Records → any sub-page',
+  },
   // One route per badge class: the three render different pages, and the
   // drawings on them are what the icon invariant is measuring from Phase 15 on.
   {

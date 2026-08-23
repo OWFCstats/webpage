@@ -84,13 +84,13 @@ case.
 
 Three decisions about what a page shows, before any decision about how it looks.
 
-> **Phase 13.** The sub-navigation mechanism landed in 13, and Players is the
-> first section running on it — `/players` and `/players/squad` are real
-> addresses now. Season and Records are still each one long page: Season's
-> Charts move to their own address in Phase 18, when the content is rebuilt
-> to fill it, and Records splits in Phase 16, once Phase 14 and 15 have built
-> what its three sub-pages show. The result row and the season rule below are
-> built — they landed in Phase 10.
+> **Phase 16.** Records runs on the sub-navigation mechanism now too:
+> `/records` (Badges), `/records/honours` and `/records/all-time` are real
+> addresses, and the five sections that used to stack on one 4,841px page are
+> three sub-pages, none over 2,000px. Season is the last section still flat —
+> its Charts move to their own address in Phase 18, when the content is rebuilt
+> to fill it. The mechanism itself landed in Phase 13, on Players; the result
+> row and the season rule below landed in Phase 10.
 
 ### Sections do not grow; they gain depth
 
@@ -115,7 +115,10 @@ things.
 **Who owns what**, since three sections used to overlap: Home is the landing
 page and answers "what's happening". Season owns one season's detail. **Players
 is this season's leaderboards; Records is all time.** Records also owns
-everything above a single season — badges, honours, club records.
+everything above a single season — badges, honours, club records — and its three
+sub-pages are that split made visible: **Badges** is the signature and the way
+into a badge's own page, **Honours** is who won what season by season, and
+**All-time** is every season's numbers together.
 
 ### A result is a row, not a sentence
 
@@ -130,6 +133,25 @@ style, built as `components/ResultList.jsx`: six places render a scoreline and
 all six read from it, plus a compact inline variant for the one that sits
 inside another card's own row rather than a list of its own. Written as prose
 it wraps mid-name and puts our own club's name in every row of the season.
+
+### A list of records is a ledger
+
+The same idea as the result row, for rows that aren't matches: one grid shared
+by every row in the list, hairlines between them, and the figures in a column
+down the right so they can be read against each other. Two lists on Records are
+this — the club records (`components/records/ClubRecords.jsx`, on `dl.compare`
+with the mark beside the record's name and the result row beneath it) and the
+season index (`components/records/SeasonIndex.jsx`, one season a row with its
+W-D-L and its goals under a head of labels).
+
+Both replaced something that wasn't. Club records were six sheets sized to their
+own contents, which put six scorelines in six different places; the index was a
+ten-column table hiding 319px of itself. **Reach for a ledger when a table would
+need more than about four columns on a phone**, and cut the columns that a
+neighbouring section already answers before restructuring the ones that are
+left. Past a phone the rows stop stretching rather than spreading a scoreline a
+thousand pixels from the name it belongs to; the hairlines still run the full
+width, because they are what makes it a ledger.
 
 ### The current season is the most recent season with a result
 
@@ -594,6 +616,12 @@ are exactly the honours board's rows, so the board and the badges cannot drift.
 | Playmaker | figure striking a ball | most assists — derived |
 | The Dependable | cap | most appearances — derived |
 
+**The board marks the voted award with a hairline, not a caption.** Player of
+the Season's row is ruled in gold and the other three are not; that is the whole
+device. The line of prose under the board explaining it was longer than the four
+rows above it, so Phase 16 cut it — the one surface the review had found nothing
+wrong with still didn't need a paragraph.
+
 They do not tier and they do not stack into a bigger version: **winning two
 Golden Boots is the same trophy held twice**, shown as a year list. A "3× Golden
 Boot" tier would imply the third is worth more than the first, and it isn't. So
@@ -852,12 +880,15 @@ The design target, not a fallback. Every change gets checked at 375px first.
   because the failure was in the *check*, not the rule. Three phases asserted "no
   table side-scrolls **outside** a `.table-wrap`" — a weaker claim that a wrapped
   table passes by definition, since the wrap's whole job is to scroll. Measured
-  inside the wrap, Records' season index still hides **319px** at 375px and
-  374px at 320px, taking Position and Top scorer with it, and the sticky first
-  column makes it look like a complete table — that one is Phase 16's, which
-  rebuilds the table this phase would only have restructured twice. Player
-  detail's Firsts & bests hid 122px and cut text mid-word; Phase 10 fixed it by
-  moving off a table onto `dl.compare` rather than restyling one.
+  inside the wrap, Records' season index hid **319px** at 375px and 374px at
+  320px, taking Position and Top scorer with it, and the sticky first column
+  made it look like a complete table. Phase 16 fixed it the way this rule says
+  to — the index is a ledger of rows now, and two of the ten columns are gone
+  rather than moved: Top scorer repeated the honours board directly above it,
+  and Position was blank on every row, so it is a footnote until standings are
+  entered. Player detail's Firsts & bests hid 122px and cut text mid-word;
+  Phase 10 fixed it by moving off a table onto `dl.compare` rather than
+  restyling one.
 
   So the assertion is: **no `.table-wrap` has `scrollWidth > clientWidth` at any
   supported width**, and no leaf element does either — that second one is the
@@ -928,10 +959,13 @@ Records is a reference document and earns length, which is why it splits into
 sub-pages rather than shrinking. Home doesn't. The opponent page is the same kind
 of document as a Records sub-page and takes the same number. `npm run shots`
 reports the real numbers — page by page, at every supported width, into
-`shots/heights.json` — and the roadmap records where each page started. Every
-one of them is over budget today except Matchday, and `check:layout` prints the
-gap on every run without failing on it: the phase that owns each page closes its
-own, and a check that went red for eleven phases would stop being read.
+`shots/heights.json` — and the roadmap records where each page started. Four of
+these rows are inside their budgets now: Matchday, Players → Leaderboards
+(Phase 14), Records' three sub-pages (Phase 16), and the opponent page, which is
+only inside because half of what it should say isn't there yet. Home, Season
+and Player detail are still over, and `check:layout` prints the gap on every run
+without failing on it: the phase that owns each page closes its own, and a check
+that went red for eleven phases would stop being read.
 
 Matchday is the exception and it is a thin one: 1,857 against 1,900. Phase 20
 *adds* to that page — labels on fourteen stepper chips, a key for the squad pills

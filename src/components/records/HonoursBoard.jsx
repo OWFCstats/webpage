@@ -29,6 +29,11 @@ export function Award({ award }) {
  * boxed. One block per season, newest first, with the awards running down it
  * and the names in gold at the right-hand edge.
  *
+ * No caption under it: the gold hairline under the voted award is what marks
+ * the one name the players chose from the three the arithmetic did, and a line
+ * of prose explaining that was longer than the four rows above it
+ * (docs/DESIGN.md → *Badges and awards*).
+ *
  * Not a matrix. Four awards plus a season is five columns of names, and no
  * condensed face fits that on a 375px phone — so the season heads its block
  * instead of holding a column. On a wide screen the year moves into a left
@@ -62,7 +67,6 @@ export default function HonoursBoard({ seasons }) {
           </dl>
         </section>
       ))}
-      <p className="muted card-foot">Player of the Season is voted, not worked out — the other three are.</p>
     </div>
   );
 }

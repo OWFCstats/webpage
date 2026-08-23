@@ -118,8 +118,11 @@ export default function PlayersHub({ view }) {
       ) : view === 'leaders' ? (
         <>
           <LeaderBoards rows={pool.rows} />
+          {/* One line, because Leaderboards has 30px of its 1,400px budget
+              spare and a second line of footer costs 22 of them. */}
           <p className="muted card-foot">
-            Career totals, honours and badges are on <Link className="more" to="/records">Records →</Link>
+            Every season together on{' '}
+            <Link className="more" to="/records/all-time">Records → All-time</Link>
           </p>
         </>
       ) : (

@@ -47,6 +47,39 @@ test('club records read off the fixture', () => {
   assert.ok(records.longestUnbeaten.from < records.longestUnbeaten.to);
 });
 
+test('the two runs coincide only when they hold the same games', () => {
+  // The fixture's unbeaten run is three games and its winning run is two of
+  // them, so the records list prints both rows.
+  assert.equal(clubRecords(mid.matches).runsCoincide, false);
+
+  // A club that has only ever won holds one run twice over, which is the state
+  // the real 2025/26 season was in — and two rows naming the same two matches
+  // read as a bug rather than as a young club's record.
+  const wins = [
+    { id: 'a', date: '2025-09-06', opponent: 'Old Stoics', venue: 'H', goals_for: 2, goals_against: 0, competition: 'League' },
+    { id: 'b', date: '2025-09-13', opponent: 'Old Salopians', venue: 'A', goals_for: 3, goals_against: 1, competition: 'League' },
+  ];
+  const both = clubRecords(wins);
+  assert.equal(both.longestUnbeaten.count, 2);
+  assert.equal(both.longestWinning.count, 2);
+  assert.equal(both.runsCoincide, true);
+
+  // One loss at the end leaves the unbeaten run longer than the winning one.
+  const mixed = clubRecords([
+    ...wins,
+    { id: 'c', date: '2025-09-20', opponent: 'Old Cheltonians', venue: 'H', goals_for: 1, goals_against: 1, competition: 'League' },
+  ]);
+  assert.equal(mixed.longestUnbeaten.count, 3);
+  assert.equal(mixed.longestWinning.count, 2);
+  assert.equal(mixed.runsCoincide, false);
+});
+
+test('a club with no result has no runs to coincide', () => {
+  const empty = clubRecords([]);
+  assert.equal(empty.longestWinning, null);
+  assert.equal(empty.runsCoincide, false, 'both rows are named, not merged into one');
+});
+
 test('an unplayed fixture sets no record', () => {
   // pre-season adds four fixtures and no results, so every mark is unmoved.
   const before = clubRecords(mid.matches);
