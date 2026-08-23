@@ -1,0 +1,157 @@
+/* The leaderboard grid: one card per stat, capped at five names —
+   components/LeaderBoards.jsx. Phase 14 replaces the six stacked bar boards
+   that used to live here (still in bar-board.css, which is now Season's
+   "Most involved" board alone) with this card format instead.
+
+   Ties read for free: a rank column instead of a bar means a level score
+   doesn't need a sentence to explain it, so no board here ends on a hedge.
+
+   Every measurement in this file is set tight on purpose: six of these stack
+   on a 375px phone, and the page they're on has a 1,400px budget for the
+   whole thing, chrome included. */
+
+/* Two up on a phone, more as the screen widens. A card that only holds a
+   monogram, a rank column and five names doesn't need a bar board's full
+   width, and the 1,400px budget only closes if six of them stop stacking
+   one to a row. */
+.grid.boards {
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--s2);
+  /* Each sizes to its own content — a card with fewer names stays short. */
+  align-items: start;
+}
+
+/* The leader's row bleeds to the card's edges, so its own padding replaces
+   the sheet's — see docs/DESIGN.md, "a board used as a band inside a sheet
+   squares its corners". */
+.lb-card {
+  padding: 0;
+  overflow: hidden;
+}
+
+.lb-card h3 {
+  margin: 0;
+  padding: var(--s2) var(--s4) 6px;
+  font-size: var(--t-body);
+}
+
+.lb-card > .muted {
+  margin: 0 var(--s4) var(--s3);
+}
+
+.lb-lead {
+  border-radius: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  padding: var(--s2) var(--s4);
+}
+
+.lb-avatar {
+  width: 32px;
+  height: 32px;
+  background: color-mix(in srgb, var(--gold) 28%, transparent);
+  color: var(--gold-leaf);
+  font-family: var(--font-data);
+  font-weight: 700;
+  font-size: var(--t-micro);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+
+.lb-who {
+  flex: 1;
+  min-width: 0;
+}
+
+/* A name wraps rather than clips, same rule as everywhere else on the site —
+   a card two names wide has no room to spare, but half a name is worse than
+   a two-line one. */
+.lb-names {
+  min-width: 0;
+}
+
+.lb-names a {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--t-body);
+}
+
+.lb-names a:hover { color: var(--gold); }
+
+/* A crowd at the top is a fact about the season, not a name to pick out of
+   it — set smaller than a single leader's name so it reads as a count. */
+.lb-lead.shared .lb-names { font-size: var(--t-small); }
+
+.lb-names .unclaimed { color: var(--on-board-soft); }
+
+.lb-sub {
+  display: block;
+  color: var(--on-board-soft);
+  font-size: var(--t-micro);
+  margin-top: 0.1rem;
+}
+
+.lb-tally {
+  flex: none;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--t-subtitle);
+  color: var(--gold-leaf);
+  font-variant-numeric: tabular-nums;
+}
+
+.lb-list {
+  list-style: none;
+  margin: 0;
+  padding: 0 var(--s4);
+}
+
+.lb-row {
+  display: grid;
+  grid-template-columns: 16px 1fr auto;
+  align-items: center;
+  gap: var(--s2);
+  padding: 0.3rem 0;
+}
+
+.lb-row + .lb-row { border-top: 1px solid var(--rule); }
+
+.lb-rank {
+  font-family: var(--font-data);
+  font-weight: 700;
+  font-size: var(--t-micro);
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+.lb-name {
+  font-weight: 600;
+  font-size: var(--t-small);
+  min-width: 0;
+}
+
+.lb-name:hover { color: var(--gold-deep); }
+
+.lb-value {
+  font-family: var(--font-data);
+  font-weight: 700;
+  font-size: var(--t-small);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+.lb-card .card-foot {
+  margin: 0;
+  padding: 6px var(--s4) var(--s2);
+}
+
+@media (max-width: 700px) {
+  .lb-lead { padding: 6px var(--s3); }
+  .lb-list { padding: 0 var(--s3); }
+  .lb-card h3 { padding: 4px var(--s3) 2px; }
+  .lb-card .card-foot { padding: 4px var(--s3) 6px; }
+}

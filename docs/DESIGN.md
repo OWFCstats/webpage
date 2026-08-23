@@ -380,15 +380,12 @@ this case is special.
 
 ### Board — green, gilded
 
-For occasions and honours, and there are five of them: the matchday scoreboard,
-a player's hero, the honours board, the leaderboard leader, the last result on
-Home. All five render — the leaderboard leader is `LeadBoard` in
-`components/BarBoard.jsx`, and it heads the Players page. See *Leaderboards and
-the squad* below for which stat earns it.
-
-That file goes in Phase 14 and the leader row is rebuilt with the cards. The
-occasion survives the component; this paragraph gets updated in that commit
-rather than left describing a file that isn't there.
+For occasions and honours: the matchday scoreboard, a player's hero, the
+honours board, the last result on Home — plus one per leaderboard card, since
+Phase 14 gave every stat its own leader row rather than promoting a single one.
+`components/LeaderBoards.jsx` renders those now; `components/BarBoard.jsx`
+kept only Season's plain bar list, which is why it no longer exports a board of
+its own. See *Leaderboards and the squad* below for the card format.
 
 `--board` ground, `--on-board` text, display face, gold accents, 1px `--gold`
 bottom border. No radius above 4px. Sparingly — if half the page is board, none
@@ -663,46 +660,61 @@ Two views behind one nav entry, plus a third for the numbers. **Players is this
 season; Records is all time** — the same components, different scope, so the two
 can't drift.
 
-> **Phases 14 and 17.** The card format below replaces the six stacked bar
-> boards that are live today. Phase 14 comes before Records is split, because
-> Records renders this component and can be neither built nor measured without
-> it.
+> **Phase 14.** The card format below landed, on both pages — Players and
+> Records each run the whole set of six now, and Players' season picker lost
+> "All time" the same commit. Phase 17 still owns the squad view below.
 
 ### The boards
 
-A grid of cards, one per stat. Each card: a heading with the stat's icon, then
-**the top five**, then a footer.
+A grid of cards, one per stat, two up on a phone and more as the screen widens
+— `components/LeaderBoards.jsx`. Each card: a heading, then **the top five**,
+then a footer.
 
-- **The leader takes the board's own dark row** and the display face. One name
-  gets the occasion; the rest are a list.
-- **Initials where a photo would go.** There are no photographs and there won't
-  be for a while, so the placeholder is designed rather than left as a hole.
-- **The heading links to the full list.** Five names on the page, everyone a tap
-  away.
-- **The footer answers "where am I".** `You're 18th of 47 · 2 apps`. That is the
-  question the old design answered by making a player scan six boards of six
-  names for their own.
+- **The leader takes the card's own dark row** and the display face, with an
+  initials monogram where a photo would go. One name gets the occasion; the
+  rest are a plain ranked list — a card two names wide has no room to give
+  every row its own avatar as well as a name and a value.
+- **A name wraps rather than clips**, the same rule as everywhere else on the
+  site. A card this narrow means some names run to a second line; that costs a
+  little height, and it's still the right trade against half a name.
+- **The footer names the boundary the cap left out** — `6th of 48 · 9 apps` is
+  the rank, the field size and the value right after the five shown, not a
+  personal "your rank": nothing on this card knows who's reading it. It
+  replaces the old "…and N more level on X" hedge with a fact instead of an
+  apology, and it's the same line whether the cut lands inside a tie or not.
+- **No per-game rate line, and no stat icon.** Both were considered — the old
+  hero board carried a "1.07 goals per game" caption, and DESIGN's own draft of
+  this section imagined an icon in the heading — but a card in a two-up grid on
+  a 1,400px budget doesn't have the height to spare on either, and neither is
+  load-bearing information. The icon returns once Phase 15's badge artwork
+  gives a stat something to point at; a plain text heading isn't a placeholder
+  for it.
+- **The heading doesn't link anywhere yet.** "Everyone a tap away" wants a full
+  ranked list to send the tap to, and the nearest thing today is the squad
+  roster, sorted by apps rather than by the stat in question. Phase 22's data
+  centre is the real destination; wiring the link to a page that answers a
+  different question would be worse than no link.
 
-**Both pages run the whole list of six.** `LEADERBOARD_STATS` in
-`components/LeaderBoards.jsx` is already the one shared list — goals, assists,
-goals + assists, appearances, MOTM, clean sheets. Records shows three of them
-today; that was a workaround for the page being 4,823px long, and splitting it
-fixes the cause rather than the symptom.
+**Both pages run the whole list of six now.** `LEADERBOARD_STATS` in
+`components/LeaderBoards.jsx` is the one shared list — goals, assists, goals +
+assists, appearances, MOTM, clean sheets. Records used to show three, as a
+workaround for the page being 4,823px long; the card format fixed the cause, so
+it now runs all six the same as Players.
 
-**Players carries no all-time scope.** Its season picker offers "All time"
-today, which with Records → All-time on the same component is one board reached
-two ways — the duplication this split exists to remove. Season's picker loses
-its "All seasons" option for the same reason. One question, one address.
+**Players carries no all-time scope.** Its season picker no longer offers "All
+time" — that board is Records', reached once rather than from both sections on
+the same component.
 
-**This reverses an earlier rule and the reversal is deliberate.** The previous
+**This reverses an earlier rule and the reversal was deliberate.** The previous
 system put every board on the page at once, on the grounds that "a leaderboard
 you have to click for can't show you where your name isn't". True, and the fix
 for it is the footer line, not 2,700px of bar charts. Six capped cards show every
-board *and* fit a phone.
+board *and* fit a phone: Players → Leaderboards measured 2,992px before this
+phase and 1,370px after, against a 1,400px budget.
 
-**The bars are gone.** A bar next to a number tells you nothing the number
-didn't, and it cost every row a second line — which is most of why the page was
-2,714px tall.
+**The bars are gone**, from Players and Records. Season's "Most involved"
+board still has one — `components/BarBoard.jsx` kept its bar-list export for
+that one caller — until Phase 18 gives Season the same treatment.
 
 ### Ties
 
@@ -712,10 +724,12 @@ A **rank column** handles this natively — 1, 1, 3 — which is why the card fo
 gets it for free. The old format had no rank column, so it needed a sentence to
 explain each tie, and five of the six boards ended on "…and N more level on X".
 With fourteen games and a rotating squad, ties are the normal case: a format that
-needs a footnote for the normal case is the wrong format.
+needs a footnote for the normal case is the wrong format. Clean sheets is the
+proof — a team achievement (see `docs/ROADMAP.md`, Phase 15) routinely ties a
+dozen players at once, and the card just names the count and moves on.
 
-Where the cut lands inside a tie, the footer says so, once, in the line that is
-already there.
+Where the cut lands inside a tie, the footer says so in the same line it
+always prints, since the rank it names already accounts for it.
 
 ### The squad
 
