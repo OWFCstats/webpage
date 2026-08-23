@@ -749,6 +749,58 @@ Players address has to survive or resolve, not be dropped on the floor.
 the old query-param views both redirect; `App.jsx`'s shim list is extended
 rather than replaced; the bottom bar still has exactly five entries.
 
+### Built — what landed, and what it found
+
+The mechanism, applied to the one section whose content was already in its
+final shape for it: **Players**. `/players` (Leaderboards, default) and
+`/players/squad` are real routes in `App.jsx` now, both rendering
+`PlayersHub` with a `view` prop rather than a `?view=` query param — the same
+one-file-many-routes shape `Matchday` already uses for `/matchday` and
+`/matchday/:matchId`. The segmented control at the top of the page is real
+navigation: `NavLink`s to the two addresses, carrying the current `?season=`
+across the switch, rather than buttons calling `setSearchParams`.
+`primitives.css`'s `.seg` rules gained an `a` selector alongside `button` —
+the control had only ever driven in-page state before, so it had never
+needed to style a link.
+
+**Season and Records are not split here, on purpose.** Both are named in the
+map above, but neither's content is in a shape a route can just pick up
+today. Season's Charts are a `useState` toggle inside `ChartsPanel`, squeezed
+into the aside at a third of the page's width — Phase 18 is what rebuilds
+that as a full-width sub-page and deletes the toggle, and doing the routing
+now would mean building the same page twice. Records is one page with five
+sections that map onto its eventual three tabs by more than a 1:1 split —
+Phase 16's own text says it splits Records into sub-pages once Phase 14 and
+15 have built what those tabs show, for the same reason `expected-failures.js`
+already gives for not fixing the season-index table early: restructuring
+content now and again once its replacement lands is the same work twice.
+Phase 13 is the mechanism, not a mandate to move content before the phase
+that owns it is ready.
+
+**The shim covers the query string, not just the path.** `/players?view=squad`
+— including with a `?season=` alongside it — redirects to `/players/squad`
+with every other param intact; `PlayersHub` checks for it itself rather than
+`App.jsx` routing around it, since the same file already owns both addresses.
+`Records.jsx`'s own `/players?season=all` link needed no change: it never
+carried `view=`, so it already lands on the new default route correctly.
+`?view=leaders` — never a real address anyone would have shared, since it's
+the default spelled out — is left alone rather than added to the shim; it
+renders the right page either way; and this is only ever the harmless
+default-value, not a second view.
+
+**Verified rather than assumed:** all 50 unit tests pass unchanged, since
+nothing in `lib/` moved; `npm run build` is clean; `check:layout` reports the
+same 17 known failures against the expected-failure list and nothing new,
+across both fixtures at all six widths — including `players-squad`, now
+measured at its real address (`scripts/site-map.js` pointed it at
+`/players?view=squad` before this phase). A headless run against
+`dev:fixture` confirms the parts a screenshot can't: `/players?view=squad&
+season=2025%2F26` redirects to `/players/squad?season=2025%2F26`, the Squad
+tab renders `aria-current="page"` there and the Leaderboards tab doesn't,
+and the reverse holds at `/players`. The header's own `Players` link — never
+`end`-matched — stays highlighted on both addresses, unchanged from how it
+already behaved on `/players/:playerId`.
+
 ---
 
 ## Phase 14 — Leaderboards

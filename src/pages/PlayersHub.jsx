@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, NavLink, Navigate, useSearchParams } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import { ErrorNote, SeasonSelect, Spinner } from '../components/bits';
 import LeaderBoards from '../components/LeaderBoards';
@@ -8,19 +8,28 @@ import { plural } from '../lib/format';
 import { isPlayed, seasonsOf } from '../lib/matches';
 import { playerTotals } from '../lib/players';
 
-// Two views, one nav entry, and the leaderboard lands first: the board is why a
-// player opens this page at all, and the roster is one tap behind it.
+// Two real sub-pages, and the leaderboard is the default: the board is why a
+// player opens this section at all, and the roster is one tap away on
+// /players/squad.
 const VIEWS = [
-  { key: 'leaders', label: 'Leaderboards' },
-  { key: 'squad', label: 'Squad' },
+  { to: '/players', end: true, label: 'Leaderboards' },
+  { to: '/players/squad', end: false, label: 'Squad' },
 ];
 
-export default function PlayersHub() {
+export default function PlayersHub({ view }) {
   const { players, matches, appearances, loading, error } = useData();
   const [params, setParams] = useSearchParams();
 
+  // /players?view=squad was the address before the two views had paths of
+  // their own; a link still carrying it lands on the real one.
+  if (view === 'leaders' && params.get('view') === 'squad') {
+    const carry = new URLSearchParams(params);
+    carry.delete('view');
+    const qs = carry.toString();
+    return <Navigate to={`/players/squad${qs ? `?${qs}` : ''}`} replace />;
+  }
+
   const seasons = seasonsOf(matches);
-  const view = params.get('view') === 'squad' ? 'squad' : 'leaders';
   // 'latest' rather than a season string: the matches arrive after the first
   // render, so the default can't be resolved in a useState initialiser. The
   // Season page resolves its own the same way.
@@ -57,6 +66,12 @@ export default function PlayersHub() {
 
   const scope = season === 'all' ? null : activeSeason;
 
+  // The season carries across to whichever sub-page the control switches to;
+  // `view` never belongs in it, since the two views are now paths, not a param.
+  const carry = new URLSearchParams(params);
+  carry.delete('view');
+  const search = carry.toString();
+
   return (
     <div>
       <div className="section-head">
@@ -69,20 +84,18 @@ export default function PlayersHub() {
         />
       </div>
 
-      <div className="seg" role="tablist" aria-label="Players view">
+      <nav className="seg" aria-label="Players view">
         {VIEWS.map((v) => (
-          <button
-            key={v.key}
-            type="button"
-            role="tab"
-            aria-selected={view === v.key}
-            className={view === v.key ? 'active' : undefined}
-            onClick={() => go({ view: v.key === 'leaders' ? null : v.key })}
+          <NavLink
+            key={v.to}
+            to={{ pathname: v.to, search }}
+            end={v.end}
+            className={({ isActive }) => (isActive ? 'active' : undefined)}
           >
             {v.label}
-          </button>
+          </NavLink>
         ))}
-      </div>
+      </nav>
 
       {/* No intro line before the first result: "after 0 games" is a worse way
           of saying what the empty state below says properly. */}
