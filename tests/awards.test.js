@@ -3,7 +3,9 @@
 // The rules worth pinning are the ones a later phase could quietly break: ties
 // stay whole, a dropout is not an appearance, a walkover credits nobody, a
 // record nobody holds is null rather than zero — and, from Phase 15, that the
-// ladder in DESIGN.md is the ladder the code hands out.
+// ladder in DESIGN.md is the ladder the code hands out. Phase 17 adds the two
+// the squad cards read: fifty shelves in one pass have to agree with the one
+// the player page asks for, and a card shows only what somebody holds.
 
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
@@ -17,8 +19,10 @@ import {
   badgeDetail,
   clubBadges,
   clubRecords,
+  heldBadges,
   playerBadges,
   seasonRecords,
+  squadBadges,
 } from '../src/lib/awards.js';
 import { playerTotals } from '../src/lib/players.js';
 
@@ -251,4 +255,43 @@ test('a season with nothing played hands out no badges', () => {
     board.career.map((b) => b.holders),
     played.career.map((b) => b.holders),
   );
+});
+
+test('every shelf in one pass is the shelf the player page asks for', () => {
+  // The squad cards need one per name and playerBadges walks the whole
+  // appearance log per call. Cheaper is only worth having if it agrees.
+  const all = squadBadges(mid.players, mid.matches, mid.appearances, mid.season_awards);
+  assert.equal(all.size, mid.players.length, 'everyone gets a shelf, played or not');
+  for (const player of mid.players) {
+    assert.deepEqual(
+      all.get(player.id),
+      playerBadges(player, mid.players, mid.matches, mid.appearances, mid.season_awards),
+      player.name,
+    );
+  }
+});
+
+test('a card shows what somebody holds, in the board\'s order, with its mark', () => {
+  const all = squadBadges(mid.players, mid.matches, mid.appearances, mid.season_awards);
+  const held = heldBadges(all.get(named('Owen Gibbons').id));
+  const order = BADGES.map((b) => b.key);
+  assert.deepEqual(
+    held.map((b) => b.key),
+    held.map((b) => b.key).slice().sort((a, b) => order.indexOf(a) - order.indexOf(b)),
+    'the shelf reads in the order the badge board shows them',
+  );
+  assert.ok(held.every((b) => METALS.includes(b.metal)), 'an unheld badge never reaches a card');
+  assert.equal(held.find((b) => b.key === 'appearances').mark, 'silver');
+  assert.equal(held.find((b) => b.key === 'hat-trick').mark, '×1');
+  // Only Class 1 tiers, so the other two arrive gold whoever holds them.
+  assert.equal(held.find((b) => b.key === 'hat-trick').metal, 'gold');
+});
+
+test('a player who was picked and never played has an empty shelf', () => {
+  const all = squadBadges(mid.players, mid.matches, mid.appearances, mid.season_awards);
+  assert.deepEqual(heldBadges(all.get(named('Alex Hannon').id)), []);
+  // A trophy year list is the mark, not a count, and it only reaches a card
+  // once it has a year in it.
+  const boot = heldBadges(all.get(named('Tom Simeon').id)).find((b) => b.key === 'golden-boot');
+  assert.equal(boot.mark, '2025/26');
 });

@@ -370,10 +370,7 @@ function trophySeasons(players, matches, appearances, seasonAwards) {
  * empty until they aren't — the page decides how to show a nought, but it
  * can't be told one isn't there.
  */
-export function playerBadges(player, players, matches, appearances, seasonAwards = []) {
-  const row = badgeRows(players, matches, appearances).find((r) => r.player.id === player.id);
-  if (!row) return { career: [], events: [], trophies: [] };
-  const won = trophySeasons(players, matches, appearances, seasonAwards);
+function shelf(row, won) {
   return {
     career: CAREER_BADGES.map((family) => careerBadge(row, family)),
     events: EVENT_BADGES.map((family) => ({ ...family, count: row[family.stat] })),
@@ -381,10 +378,56 @@ export function playerBadges(player, players, matches, appearances, seasonAwards
       ...family,
       seasons: won
         .get(family.key)
-        .filter((win) => win.players.some((p) => p.id === player.id))
+        .filter((win) => win.players.some((p) => p.id === row.player.id))
         .map((win) => win.season),
     })),
   };
+}
+
+/** One player's shelf — the player page's own call. */
+export function playerBadges(player, players, matches, appearances, seasonAwards = []) {
+  const row = badgeRows(players, matches, appearances).find((r) => r.player.id === player.id);
+  if (!row) return { career: [], events: [], trophies: [] };
+  return shelf(row, trophySeasons(players, matches, appearances, seasonAwards));
+}
+
+/**
+ * Every player's shelf at once, keyed by id. The squad cards need one per name
+ * on a single screen, and `playerBadges` walks the whole appearance log per
+ * call — a pass over the season for every player in it. One pass, same shelves.
+ */
+export function squadBadges(players, matches, appearances, seasonAwards = []) {
+  const won = trophySeasons(players, matches, appearances, seasonAwards);
+  return new Map(
+    badgeRows(players, matches, appearances).map((row) => [row.player.id, shelf(row, won)]),
+  );
+}
+
+/**
+ * The badges a player actually holds, in the board's own order, each carrying
+ * the metal it is drawn in and the mark that says how it was earned — the tier
+ * for a career badge, the count for a stackable, the seasons for a trophy. Only
+ * Class 1 tiers, so the other two arrive gold whoever holds them. The mark is
+ * how a row of drawings says out loud what it is: a squad tile prints none of
+ * them, and names all of them in the row's own label.
+ *
+ * Held only, unlike the shelf on a player's own page: that page argues a badge
+ * you can't see is not an incentive, and it is right, but a squad's worth of
+ * cards each carrying four silhouettes is a couple of hundred grey drawings and
+ * reads as absence. A card says what somebody has; the page it links to says
+ * what is next.
+ */
+export function heldBadges(badges) {
+  if (!badges) return [];
+  return [
+    ...badges.career.filter((b) => b.metal).map((b) => ({ ...b, mark: b.metal })),
+    ...badges.events
+      .filter((b) => b.count > 0)
+      .map((b) => ({ ...b, metal: 'gold', mark: `×${b.count}` })),
+    ...badges.trophies
+      .filter((b) => b.seasons.length > 0)
+      .map((b) => ({ ...b, metal: 'gold', mark: b.seasons.join(', ') })),
+  ];
 }
 
 /** Rows holding at least `threshold` of a stat, most first, then by name. */

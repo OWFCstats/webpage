@@ -1,0 +1,189 @@
+/* The squad — components/players-hub/Squad.jsx. One roster, two views: a team
+   sheet and a wall of tiles.
+
+   The head and every row share one column template, which is the whole point:
+   the old list labelled its three tallies row by row, so "MOTM" made every row
+   a different shape and nothing lined up down the page. Labels belong at the
+   top of a column, once — and the cards obey the same rule, which is why a tile
+   puts APPS above 14 rather than beside it.
+
+   Both views draw the same three figures off one definition in the component.
+   There is no second set of headings for the tiles: at 12px, uppercase, with
+   the label style's own tracking, "ASSISTS" wants 57px and a tile on a 375px
+   phone gives a figure 47px. Spelling them out only for the cards would have
+   cost the shared shape to say nothing new. */
+
+.squad-head,
+.player-row {
+  display: grid;
+  /* Apps takes the widest figure column — its head is a word where the other
+     two are a letter, and a phone has no room to give all three the same. */
+  grid-template-columns: 32px minmax(0, 1fr) 2.2rem 1.6rem 1.6rem;
+  align-items: center;
+  gap: var(--s2);
+}
+
+.squad-head {
+  padding-bottom: var(--s2);
+  border-bottom: 1px solid var(--rule-firm);
+}
+
+/* The heads sit over the figures only: the monogram and the name say what they
+   are without being told. */
+.squad-head .label {
+  text-align: right;
+}
+
+.squad-head .label:first-child {
+  grid-column: 3;
+}
+
+.player-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.player-row {
+  /* 44px of touch target, bought with the row's own padding. */
+  min-height: 44px;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.player-list li:last-child .player-row { border-bottom: none; }
+
+.player-row .avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--sheet);
+  color: var(--ink-soft);
+  display: grid;
+  place-items: center;
+  font-family: var(--font-data);
+  font-weight: 700;
+  font-size: var(--t-micro);
+  flex: none;
+}
+
+/* A name wraps rather than clips. Below about 360px the widest names run out
+   of column — and half a name is worse than a two-line one on the page where
+   people come to find their own. At 375px nothing wraps. */
+.player-row .who,
+.squad-card .who {
+  font-size: var(--t-body);
+  font-weight: 600;
+  line-height: 1.25;
+  overflow-wrap: break-word;
+}
+
+.player-row:hover .who { color: var(--gold-deep); }
+
+.player-row .fig {
+  font-family: var(--font-data);
+  font-weight: 700;
+  font-size: var(--t-body);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+/* A zero is true and it isn't the point. Secondary ink, not the faint one —
+   this is a figure someone earned a row for, not a placeholder. */
+.player-row .fig.nil,
+.squad-card .v.nil { color: var(--ink-soft); }
+
+/* Search on the left, the layout toggle at the far end, both views carrying the
+   same control in the same place so switching doesn't move it. The box grows
+   into whatever the toggle leaves — and below about 340px of room there isn't
+   enough for both, so it wraps rather than squeezing the placeholder out. */
+.squad-controls input {
+  flex: 1 1 10rem;
+  min-width: 0;
+}
+
+.squad-controls .seg { margin-left: auto; }
+
+/* ---- the tiles ----
+   Two up on every phone, and the 130px is measured rather than chosen: at the
+   leaderboard grid's own 150px the narrowest phone drops to one tile a row and
+   the page goes from 4,150px to 7,350px, which is longer than the Records page
+   this roadmap exists to fix. 130 keeps two side by side in the 288px a 320px
+   phone leaves, and still gives 375px the same two.
+
+   Fifty of these is a long page, and the roster is the one page in the site with
+   no height budget — every name belongs on it, and a tile that shows the badges
+   is the reason to scroll it. */
+.grid.squad-cards {
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: var(--s2);
+  /* Each sizes to its own content: a shelf of one badge stays short. */
+  align-items: start;
+}
+
+.squad-card {
+  display: grid;
+  gap: var(--s2);
+  align-content: start;
+  /* A sheet's own --s5 leaves 102px of a 150px tile. The tile pays its own
+     padding, the same trade .lb-card makes. */
+  padding: var(--s3);
+  color: inherit;
+  text-decoration: none;
+}
+
+.squad-card:hover { border-color: var(--rule-firm); }
+
+.squad-card:hover .who { color: var(--gold-deep); }
+
+/* The figures as a three-column strip with the heads above them — the list's
+   own arrangement, turned on its side to fit a tile. */
+.squad-card-figs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--s1);
+}
+
+.squad-card .v {
+  display: block;
+  font-family: var(--font-data);
+  font-weight: 700;
+  font-size: var(--t-body);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+}
+
+/* The shelf. A tighter gap than a badge row elsewhere, because four drawings
+   across is the difference between one row of shelf and two. */
+.squad-card-badges { gap: var(--s1); }
+
+/* One slot per drawing, medallion or not. A bronze career badge wears no disc —
+   the disc is for a light metal that needs a ground (DESIGN → Badge) — and in a
+   row of six that reads as badges of two sizes rather than of two metals. The
+   inset is the disc's own arithmetic, so the two footprints stay equal if it
+   ever changes. */
+.squad-card-badges .badge-icon:not(.medal) {
+  padding: calc(var(--badge-size) * 0.2);
+  border: 1px solid transparent;
+}
+
+.squad-card-badges.none {
+  font-size: var(--t-micro);
+  color: var(--ink-soft);
+}
+
+/* The narrowest phones: the monogram stands in for a photo we don't have, so it
+   is the one thing in the row that isn't data — and the 40px it costs is the
+   difference between a name on one line and a name over three. One breakpoint,
+   the same one the league table uses, for the same reason. The tiles never carry
+   one, so there is nothing here for them. */
+@media (max-width: 359px) {
+  .squad-head,
+  .player-row {
+    grid-template-columns: minmax(0, 1fr) 2.2rem 1.6rem 1.6rem;
+  }
+
+  .squad-head .label:first-child { grid-column: 2; }
+
+  .player-row .avatar { display: none; }
+}

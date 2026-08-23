@@ -1254,6 +1254,108 @@ The cleanest thing on the site, spoiled by truncation.
 **Done means** no name is behind a tap; the monogram still drops below 360px per
 `DESIGN.md`; both views share one row-shape definition.
 
+### Built — what landed, and what it found
+
+`components/players-hub/SquadList.jsx` is `Squad.jsx`, because it renders a list
+or a wall of tiles and a name that says only one of those would be actively
+misleading. Two addresses on one component: `/players/squad` is the team sheet
+and `/players/squad?layout=cards` is the tiles, and both are on the harness.
+Measured at 375px on the mid-season fixture:
+
+| View | Before | After | Budget |
+| --- | --- | --- | --- |
+| Squad — list | 1,255px (12 of 49 names) | 3,078px (49 of 49) | no cap — it's a roster |
+| Squad — cards | — | 4,150px | no cap — it's a roster |
+
+**Every name, and the page got 1,823px longer for it.** 47 in the club's real
+season and 49 on the fixture, which carries two matches the season doesn't. That
+is the trade the phase was for: the old page fitted a phone by showing a quarter
+of the squad, and the budget table has said "no cap — it's a roster" since it was
+written. Three affordances became one — the search box stays, "Full table" and
+"Show all N players" are gone — and nothing else was cut to pay for the length,
+because there is nothing on a roster to cut but names.
+
+**The layout is a param and not component state, and it earned that twice
+over.** Once because a view nobody can link to is a view `npm run shots` can't
+open: the tiles are the only surface on the site outside Records that draws badge
+art, and an unmeasured view is where a clipped name hides. And once immediately —
+at the leaderboard grid's own 150px measure the tiles dropped to **one a row at
+320px and the page ran to 7,350px**, longer than the Records page this half of
+the roadmap exists to fix. The measure came down to 130px, which keeps two side
+by side in the 288px a 320px phone leaves, and that route reads 4,490px. Nothing
+on a screenshot would have said so, because nobody would have taken one.
+
+**A tile is not a squashed list row, and three things fell out of trying to make
+it one.** The monogram went: it costs 40px of a 141px measure and put nearly
+every name on two lines, and a stand-in for a photo we don't have is not worth
+folding a name in half — the list keeps it, including its 359px drop. The tiles
+got no long-form column heads: `APPS` is 33.5px at 12px with the label style's
+tracking and `ASSISTS` is 57px against a 47px figure column, so both views read
+the same three labels off one `FIGURES` list, which is what "one row-shape
+definition" turned out to mean in practice. And the badges are drawn at **21px,
+where 22 would have cost half the squad a shelf row**: a medallion's footprint is
+the drawing plus 0.4 of it plus its rim, so four across is 137.6px against the
+141.5px a tile has, and at 22 it is 143.2px and three go across.
+
+**A shelf on a tile shows only what somebody holds.** The player page shows all
+four career badges held or not, and is right to — a badge you can't see is not an
+incentive. Fifty tiles doing the same is two hundred grey drawings, which reads
+as absence rather than ambition. An unmedalled bronze badge takes the medallion's
+own inset as transparent padding, so a row of six reads as six badges of two
+metals rather than of two sizes. The one player in the fixture picked and never
+played gets *"Nothing on the shelf yet"*, which is the empty state working.
+
+**Badges are career-wide where the figures are the season's**, and one line under
+the grid says so. It is not a compromise: a career badge has no season, and
+silver appearances beside one game is the most useful thing a tile can say about
+a player who has been at the club for years and turned out once this time.
+
+**`lib/awards.js` gained `squadBadges` and `heldBadges`.** `playerBadges` walks
+the whole appearance log per call, so the tiles asking it 49 times was 49 passes
+to answer one question; `squadBadges` is one pass and returns the same shelves,
+which a test asserts player by player rather than by spot-check. `heldBadges` is
+the held-only, board-ordered list a tile draws, and it decides the metal — the
+component never picks one.
+
+**The one bug this phase found was not in the squad view.** `/players?view=squad`
+— Phase 13's own redirect shim, and the only address it exists for — has been
+blanking the page since it was written. The `<Navigate>` returned *before* the
+`useMemo` below it, React Router renders the new address through the same
+component, and the second render threw *"Rendered more hooks than during the
+previous render"*, taking the whole document with it. On `main`, that address
+leaves `location.hash` at `#/players/squad` and no `<main>` element at all.
+
+**And the reason nobody noticed is the more useful half.** Phase 13 verified this
+address with a headless run and reported it working, correctly: the redirect
+*does* fire, so the hash it asserted was right. What it asserted was the address
+and not the content, and behind a correct address the page was blank. `shots` and
+`check:layout` would have caught it in a line, and neither visits a redirect shim
+because `site-map.js` lists destinations. So: **a route assertion that reads
+`location` and not the DOM can pass on a page that renders nothing** — worth
+knowing before the next phase writes a shim, and the reason this phase's own
+headless run counts rows and reads text rather than URLs.
+
+The guard now sits with the loading and error returns, after every hook, and the
+address renders the roster with the season still on it.
+
+**Measured, not assumed.** `check:layout` passes with 22 known failures and
+nothing new — up one from 21, and it is the new route rendering the same
+unmeasurable crest, the same arithmetic Phase 16's two routes added. 71 unit
+tests pass, three of them new. `npm run build` is clean. A headless run confirms
+the toggle writes the address and the address sets the view, `aria-selected`
+follows it, an unknown `?layout=` falls back to the list, a `?layout=` on
+Leaderboards is inert rather than a crash, a search that matches nobody keeps the
+box it was typed into, and the expected-failure list is untouched: no entry on it
+belongs to this page.
+
+**`SortableTable` survives the "Full table" deletion**, which is worth stating
+because the thirteen columns it held — starts, MOTM, clean sheets, cards,
+dropouts and the per-game rates — are not on the site anywhere now. Three admin
+pages still render the component, and Phase 22's data centre is where those
+columns come back at a real address. That is the one qualification on "nothing
+was dropped": a toggle inside a sheet was the wrong home for them, and the gap
+between here and Phase 22 is the cost of saying so.
+
 ---
 
 ## Phase 18 — Season
@@ -1403,7 +1505,7 @@ review did.
 | Matchday | 1,857 | 1,857 | 1,900 | 20 |
 | Season | 3,530 | 3,672 | 2,200 | 18 |
 | Players → Leaderboards | 2,714 | 2,997 | 1,400 | 14 |
-| Players → Squad | 1,254 | 1,254 | no cap — it's a roster | 17 |
+| Players → Squad | 1,254 | 1,254 | no cap — it's a roster | 17 — built: 3,078 list / 4,150 cards, every name |
 | Records → any sub-page | 4,823 (one page) | 5,071 (one page) | 2,000 | 16 — met: 1,667 / 961 / 1,880 |
 | Player detail | 2,941 | 2,940 | 2,400 | 21 |
 | Opponent detail | not measured | 1,196 | 2,000 | 21 |

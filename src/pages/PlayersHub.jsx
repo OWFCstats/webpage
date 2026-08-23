@@ -3,7 +3,8 @@ import { Link, NavLink, Navigate, useSearchParams } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import { ErrorNote, SeasonSelect, Spinner } from '../components/bits';
 import LeaderBoards from '../components/LeaderBoards';
-import SquadList from '../components/players-hub/SquadList';
+import Squad from '../components/players-hub/Squad';
+import { squadBadges } from '../lib/awards';
 import { plural } from '../lib/format';
 import { isPlayed, seasonsOf } from '../lib/matches';
 import { playerTotals } from '../lib/players';
@@ -17,17 +18,8 @@ const VIEWS = [
 ];
 
 export default function PlayersHub({ view }) {
-  const { players, matches, appearances, loading, error } = useData();
+  const { players, matches, appearances, seasonAwards, loading, error } = useData();
   const [params, setParams] = useSearchParams();
-
-  // /players?view=squad was the address before the two views had paths of
-  // their own; a link still carrying it lands on the real one.
-  if (view === 'leaders' && params.get('view') === 'squad') {
-    const carry = new URLSearchParams(params);
-    carry.delete('view');
-    const qs = carry.toString();
-    return <Navigate to={`/players/squad${qs ? `?${qs}` : ''}`} replace />;
-  }
 
   const seasons = seasonsOf(matches);
   // 'latest' rather than a season string: the matches arrive after the first
@@ -36,6 +28,10 @@ export default function PlayersHub({ view }) {
   const asked = params.get('season') ?? 'latest';
   const season = seasons.includes(asked) ? asked : 'latest';
   const activeSeason = season === 'latest' ? seasons[0] : season;
+
+  // The roster's two layouts are one address apart, so the cards can be linked
+  // to and — the reason it isn't just component state — measured by the harness.
+  const layout = params.get('layout') === 'cards' ? 'cards' : 'list';
 
   const pool = useMemo(() => {
     if (loading) return { rows: [], played: 0 };
@@ -49,6 +45,31 @@ export default function PlayersHub({ view }) {
       played: inScope.filter(isPlayed).length,
     };
   }, [loading, season, activeSeason, players, matches, appearances]);
+
+  // The badges the cards draw. Career-wide and therefore season-independent,
+  // and only the squad view has anywhere to put them — a leaderboard that never
+  // renders one shouldn't pay a pass over the appearance log for it.
+  const badges = useMemo(
+    () => (loading || view !== 'squad'
+      ? null
+      : squadBadges(players, matches, appearances, seasonAwards)),
+    [loading, view, players, matches, appearances, seasonAwards],
+  );
+
+  // /players?view=squad was the address before the two views had paths of
+  // their own; a link still carrying it lands on the real one.
+  //
+  // After the hooks, and it has to be: React Router renders the new address
+  // through this same component, so a redirect that returned before the two
+  // useMemos above made the second render throw "Rendered more hooks than
+  // during the previous render" and took the whole page down with it. The shim
+  // has been crashing since it was written, on the one address it exists for.
+  if (view === 'leaders' && params.get('view') === 'squad') {
+    const legacy = new URLSearchParams(params);
+    legacy.delete('view');
+    const qs = legacy.toString();
+    return <Navigate to={`/players/squad${qs ? `?${qs}` : ''}`} replace />;
+  }
 
   if (loading) return <Spinner />;
   if (error) return <ErrorNote message={error} />;
@@ -67,9 +88,12 @@ export default function PlayersHub({ view }) {
   const scope = activeSeason;
 
   // The season carries across to whichever sub-page the control switches to;
-  // `view` never belongs in it, since the two views are now paths, not a param.
+  // `view` never belongs in it, since the two views are now paths, not a param,
+  // and neither does `layout` — it belongs to the roster, and Leaderboards has
+  // no use for a param it can't answer to.
   const carry = new URLSearchParams(params);
   carry.delete('view');
+  carry.delete('layout');
   const search = carry.toString();
 
   return (
@@ -126,8 +150,11 @@ export default function PlayersHub({ view }) {
           </p>
         </>
       ) : (
-        <SquadList
+        <Squad
           rows={pool.rows}
+          badges={badges}
+          layout={layout}
+          onLayout={(next) => go({ layout: next === 'list' ? null : next })}
           scope={scope}
           emptyText={`Nobody was picked ${scope ? `in ${scope}` : 'yet'}.`}
         />

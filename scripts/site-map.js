@@ -46,6 +46,15 @@ export const ROUTES = [
   { id: 'season-all', route: '/season?season=all', name: 'Season — all seasons', budget: 'Season', charts: true },
   { id: 'players', route: '/players', name: 'Players — leaderboards', budget: 'Players → Leaderboards' },
   { id: 'players-squad', route: '/players/squad', name: 'Players — squad', budget: 'Players → Squad' },
+  // The roster's two layouts are one address apart precisely so both get
+  // measured: the tiles carry badge drawings the list has no column for, and an
+  // unmeasured view is where a clipped name hides.
+  {
+    id: 'players-squad-cards',
+    route: '/players/squad?layout=cards',
+    name: 'Players — squad, cards',
+    budget: 'Players → Squad',
+  },
   {
     id: 'player-regular',
     route: `/players/${player('Owen Gibbons')}`,
