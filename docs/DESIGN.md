@@ -61,9 +61,10 @@ that are about *what a page says*, and the system below now covers them too.
 | 24 badge plates of which 19 said "Nobody yet", with unearned silver identical to unearned gold | Three classes of badge; only one is tiered | 15 |
 
 `.card` is gone. Fifty call sites are `.sheet` and five are `.board`, and the
-judgement that split them is the rule under *Surfaces* below. The plate is the
-third, and it is built: twenty-four of them on Records, a player's own shelf
-under their hero, and nothing else in the site is one.
+judgement that split them is the rule under *Surfaces* below. **There is no
+third surface.** The plate was one — a box every badge was cut from — and
+Phase 15 replaced it with a drawing in a metal that needs no box at all, which
+is what lets the same badge sit in a hero band, in a card and in a list.
 
 One invariant is worth keeping, because it is what stops a fourth surface
 arriving by accident: **no class whose name contains `card` draws a surface.**
@@ -247,9 +248,10 @@ warm metal so it cannot be mistaken for gold.
 
 **Only the four career badges read the ramps.** Season trophies and the two
 events are single gold and do not tier, so sixteen recolours exist, not forty.
-Only Phase 15 builds those recolours; until then `plate.css` reads stop 2 of
-each ramp, which is what the flat `--bronze`, `--silver` and `--gold-tier`
-values it replaced held.
+A drawing takes a *slice* of the ramp rather than the whole of it, and which
+slice is decided by the ground: stops 1–2 on paper, stops 3–4 on a board or a
+medallion. `lib/badge-art.js` does the mapping and `lib/tokens.js` reads the
+stops, so the hexes stay here and nothing writes a metal down in JS.
 
 Bronze is deliberately coppery rather than dark brown. Bronze and gold are
 adjacent hues, and separating them by lightness fails the moment either sits on
@@ -442,45 +444,49 @@ in the site draws a surface by hand any more. `.home-stat-tile` is the one
 exception and it is permanent: it uses `--sheet`, the recessed ground, because
 it sits *inside* a surface.
 
-### Plate — replaced by the badge icon
-
-> **Phase 15.** The plate is live today; the icon system replaces it.
+### Badge — an icon in a metal
 
 The plate — a rectangle with two clipped corners, one shape for every badge —
 did its job as a system and failed as a signature. Twenty-four of them, nineteen
 saying "Nobody yet", with unearned silver and unearned gold identical because the
-tier was carried by a word rather than by the metal.
+tier was carried by a word rather than by the metal. It is gone, and it left no
+fourth surface behind.
 
-What replaces it is not a fourth surface. A badge is now **an icon in a metal**,
-drawn per badge, and it needs no box: it sits directly on whatever is behind it.
-That is what lets a badge appear inline under a player's name, in a leaderboard
-row and on a board, which a boxed plate never could.
+A badge is **an icon in a metal**, drawn per badge, and it needs no box: it sits
+directly on whatever is behind it. That is what lets a badge appear inline under
+a player's name, in a leaderboard row and on a board, which a boxed plate never
+could.
 
 Three things about a metal as paint rather than as a border, all measured
 rather than judged by eye:
 
 - **The band depends on the ground.** A metal is a ramp (see *Metals*), and an
   icon's own tones map onto a slice of it. Mapping onto the whole ramp bleaches
-  large light shapes: measured on the committed files, the trophy cup puts 11% of
-  its own footprint above 3:1 against paper and the cap 0%. Icons on the ground
-  sit low on the ramp; icons on a board sit high.
-- **Bronze goes on the ground; the light metals go on a board.** Bronze is a
-  dark metal — on green the football measures 0% of its footprint above 3:1, and
-  so do the target and the playmaker figure. The light metals have the mirror
-  problem on a light page. So career badges live on the ground and season
-  trophies live on the board, which is where the pages put them anyway.
+  large light shapes: the shirt is 89% gold fill, and stretched to the top of a
+  ramp it is a pale shape on pale paper. Icons on the ground take stops 1–2;
+  icons on a board take stops 3–4.
+- **Bronze goes on the ground; the light metals go on a medallion.** Bronze is a
+  dark metal and reads on paper. Silver, gold and diamond don't, so they take
+  the disc — which is also where every trophy and every event badge sits when
+  the page around it is light.
 - **A ramp cannot recolour a silhouette.** The pipeline reads a drawing's own
   tonal range and maps it onto a slice of the metal. Three of the ten have no
   range to read: assists spans 0.00–0.03 in luminance, goals 0.03–0.03,
-  playmaker 0.00–0.00. For those the metal is a flat stop, not a mapped band.
-  Appearances (0.00–0.60) and clean sheets (0.00–0.56) are the two career badges
-  with enough span for a ramp to do anything.
+  playmaker 0.00–0.00. Those take one flat stop — the band's inner one, which
+  is the stop that reads as the metal rather than as its shadow or its
+  highlight. Appearances (0.00–0.60) and clean sheets (0.00–0.56) are the two
+  career badges with enough span for a ramp to do anything.
 
-A dark medallion behind a light metal fixes the light-on-light case and makes a
-badge read as an actual medal. **It is no longer parked** — it arrived in the
-brief with the artwork, and the measurements say it is not optional: a gold cup
-on a light page is 11% whatever the band does, because a cup is mostly highlight.
-Phase 15 builds it.
+**The medallion is built.** A dark disc with a gold hairline rim, behind a light
+metal, and it is not decoration: a gold cup on a light page puts 11% of its own
+ink above 3:1 whatever the band does, because a cup is mostly highlight. The
+disc gives it a ground to read against and makes a badge read as an actual
+medal. Career badges sit on the ground in bronze and on a medallion above it;
+trophies and events are on one wherever the page is light.
+
+**An unearned badge is a silhouette**, in the ground's own soft ink — present,
+named, and visibly not yours. Not a faded metal: dimming a metal costs the
+contrast that makes it legible, and a badge you can't see is not an incentive.
 
 ### Rules and radius
 
@@ -519,9 +525,8 @@ Where the scale stops, and why it isn't everywhere yet:
 **This is the signature.** It's the mechanic the whole site exists for, so it
 gets the boldness and everything else stays quiet.
 
-> **Phase 15.** The three classes below replace the plate ladder that is live
-> today. `lib/awards.js` is the single source for the numbers; if it and this
-> table ever disagree, this table is wrong.
+`lib/awards.js` is the single source for the numbers, and a test asserts the
+table below against it: if the two ever disagree, this table is wrong.
 
 ### Why the old ladder failed
 
@@ -593,8 +598,9 @@ They do not tier and they do not stack into a bigger version: **winning two
 Golden Boots is the same trophy held twice**, shown as a year list. A "3× Golden
 Boot" tier would imply the third is worth more than the first, and it isn't. So
 there is no bronze Player of the Season and no diamond boot: a trophy is gold.
-The cup, the boot and the cap arrive gold in the file; the playmaker figure
-arrives as a black silhouette and is recoloured once, to gold, and never again.
+The cup and the cap arrive gold in the file; the boot's plinth and the playmaker
+figure are black, so those two are gilded once and never again — see *The icons*
+below.
 
 Three rulings inside that table:
 
@@ -615,36 +621,54 @@ badge that can only be looked at, and this club's distribution is WhatsApp.
 
 ### The icons
 
-> **The artwork is here.** Ten drawings in `src/assets/badges/`, one per badge,
-> named for the slug its page will use: four career badges, four trophies, the
-> MOTM star and the hat-trick. The numbers below are measured against those files
-> — the earlier ones were taken in a session whose artwork was never committed.
-> The eleventh drawing, `public/crest.png`, arrived mid-Phase 10 — the masthead
-> renders it now instead of its `OW` monogram fallback. `docs/ROADMAP.md` →
-> *The artwork* holds the full table and the two defects Phase 15 has to fix.
->
-> `npm run check:layout` cannot yet hold this. Its icon rule reads `fill` off the
-> root `<svg>`, which is one colour for the five nav icons and the sparklines it
-> was written against and meaningless for a drawing carrying colour on up to
-> thirty-six child paths — on these files it reads the initial value, black. Phase 15
-> extends it to composite the rendered footprint. Until then the figures here are
-> taken by hand, the same way.
+Ten drawings in `src/assets/badges/`, one per badge, each named for the slug its
+page uses — so a badge's key, its filename and its address are one string. They
+are inlined rather than served as images, because the metal is paint: a tier
+recolours the fills, and an `<img>` has no fills to reach.
 
 The club's own drawings, recoloured by the ramp rather than hand-tinted: read
 each drawing's tonal range, map it onto a slice of the metal. That keeps the
 relationships the artwork already has — a glove's palm stays lighter than its
 back — and means a redrawn icon re-colours without anyone picking hexes.
 
-Two failure modes are worth writing down because both were shipped once:
+**Only what isn't gold in the file gets gilded.** Six of the ten never tier.
+Three of them — the cup, the cap and the redrawn star — arrive gold and are left
+exactly as the club drew them. The other three take one pass through the gold
+ramp and never another: the playmaker figure (a black silhouette, 0% of its ink
+above 3:1 on a board), the hat-trick footballs (black and white, 63%), and the
+Golden Boot, whose plinth is five black fills that vanish on a dark ground
+(57%). The boot is a correction to this section — it was listed as arriving
+gold, and a third of it doesn't.
+
+Three failure modes are worth writing down because all three were shipped once:
 
 - **Do not normalise an icon to the full ramp.** Some drawings are deliberately
   near-monochrome. Stretching two shades of black across dark-to-white turned an
   arrow and a figure almost white and they vanished on the ground. Scale the
   span to the source's own contrast instead — and where there is no span at all,
   as with the target, the football and the playmaker figure, take one stop flat
-  rather than inventing a range. See *Plate* above for the measurements.
+  rather than inventing a range. See *Badge* above for the measurements.
 - **Trophies never render below 20px.** A plinth plus an object below that merges
-  into a blob. Career badges and the star hold at 16.
+  into a blob. Career badges and the star hold at 16. `BadgeIcon` clamps to the
+  floor rather than trusting the call site, and the floor rides on the element
+  as `data-floor` so `check:layout` measures what was actually drawn — the way
+  in the clamp can't close is a flex or grid context squeezing a badge after
+  the fact.
+- **A drawing is not a vector by default.** The MOTM star arrived as 471 KB of
+  embedded bitmap — a 1241×1179 raster for something that renders into about
+  2,300 pixels at its floor. It is paths now, at 748 bytes, and a test fails any
+  drawing over 25 KB or carrying an `<image>`.
+
+**`npm run check:layout` holds all of this.** Its icon rule used to read `fill`
+off the root `<svg>` — one colour for the five nav icons it was written against,
+and meaningless for a drawing carrying colour on up to thirty-six child paths,
+where it read the initial value, black. It now bakes each icon's computed paint
+into a copy, renders it at 64px, composites it over the ground it actually sits
+on and scores **the share of its own ink clearing 3:1**, failing anything under
+a majority. That is the measurement `ROADMAP.md` → *The artwork* tabulates. A
+chart is not an icon and is excluded by name: Recharts draws a whole plot into
+one `<svg>` whose gridlines are deliberately faint, and *Chart series* above is
+the rule that governs those.
 
 ### Live progress — removed
 
@@ -686,9 +710,10 @@ then a footer.
   hero board carried a "1.07 goals per game" caption, and DESIGN's own draft of
   this section imagined an icon in the heading — but a card in a two-up grid on
   a 1,400px budget doesn't have the height to spare on either, and neither is
-  load-bearing information. The icon returns once Phase 15's badge artwork
-  gives a stat something to point at; a plain text heading isn't a placeholder
-  for it.
+  load-bearing information. The badge drawings landed in Phase 15 and four of
+  them are a stat's own icon, so the option is real now — and the height
+  argument hasn't changed, so the heading stays plain text rather than becoming
+  a placeholder for one.
 - **The heading doesn't link anywhere yet.** "Everyone a tap away" wants a full
   ranked list to send the tap to, and the nearest thing today is the squad
   roster, sorted by apps rather than by the stat in question. Phase 22's data
@@ -806,7 +831,7 @@ the data table carry series identity there instead.
 Restrained. Motion marks a change the user caused, and nothing else.
 
 - The existing page transition stays (`page-in`, 0.25s).
-- Bar and plate fills animate their width/opacity on first paint, 0.4s ease.
+- Bar fills and badges animate their width/opacity on first paint, 0.4s ease.
 - Hover changes colour or border, never size or position.
 - No scroll-triggered reveals, no parallax, no ambient movement.
 - Everything above sits behind `prefers-reduced-motion` — already handled
@@ -933,9 +958,10 @@ styles/
   admin.css         the write side, loaded last
 ```
 
-One file under `components/` is a surface rather than a component style, and
-that is deliberate: `plate.css` holds the third surface because keeping it with
-its component is what stops it spreading. See *Plate* above.
+`badge.css` is the one file under `components/` that used to be a surface —
+`plate.css`, the third box — and isn't one any more: what it holds now is size,
+spacing and the medallion, because a badge sits on the ground rather than in a
+box of its own. See *Badge* above.
 
 These layers are ordered by how broadly a rule applies, not by who owns the
 component — which is the opposite of how `src/components/` is arranged, and

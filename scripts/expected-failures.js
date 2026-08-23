@@ -17,11 +17,12 @@
 // Fields: invariant (required), route / dataset / match (optional filters —
 // `match` is a substring of the element's path or of its text), owner, why.
 //
-// Everything on this list today is a table that hides a column at a width it
-// was never measured at. What is deliberately *not* on it is the three bugs
-// Phase 10 owns: player detail's Firsts & bests, the clipped opponent names in
-// "Last 6 played", and the opponent page's meetings table. Those fail the run,
-// which is the point — this check is red on main until Phase 10 lands.
+// Four of the five entries here are a table that hides a column at a width it
+// was never measured at, each against the phase that rebuilds that table. The
+// fifth is the crest, whose ink a bitmap can't be read for. Phase 10's three
+// bugs used to be deliberately absent so the run stayed red until they were
+// fixed; they are fixed, so the run is green and anything new in it is a
+// regression.
 
 export const EXPECTED = [
   {
@@ -74,10 +75,11 @@ export const EXPECTED = [
       'The club uploaded the real public/crest.png mid-Phase 10, straight to '
       + 'this branch, and the masthead now renders it on every route instead of '
       + 'the OW monogram fallback. A bitmap\'s own ink can\'t be read for '
-      + 'contrast — the same limitation motm.svg carries into Phase 15 — so '
-      + 'this reports as unmeasurable rather than a pass or a fail. No phase '
-      + 'owns verifying the crest visually; if that ever matters it needs '
-      + 'vector art, not a wider exemption here. Found kicking off Phase 10, '
-      + 'not by the review — the crest didn\'t exist when the review ran.',
+      + 'contrast, so this reports as unmeasurable rather than a pass or a '
+      + 'fail — and it is now the only one: Phase 15 redrew motm.svg, the other '
+      + 'raster in the repository, as paths. No phase owns verifying the crest '
+      + 'visually; if that ever matters it needs vector art, not a wider '
+      + 'exemption here. Found kicking off Phase 10, not by the review — the '
+      + 'crest didn\'t exist when the review ran.',
   },
 ];

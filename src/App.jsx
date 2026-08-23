@@ -9,6 +9,7 @@ import Matchday from './pages/Matchday';
 import Season from './pages/Season';
 import PlayersHub from './pages/PlayersHub';
 import Records from './pages/Records';
+import BadgeDetail from './pages/BadgeDetail';
 import PlayerDetail from './pages/PlayerDetail';
 import OpponentDetail from './pages/OpponentDetail';
 
@@ -53,6 +54,7 @@ export default function App() {
                 <Route path="players/:playerId" element={<PlayerDetail />} />
                 <Route path="opponents/:name" element={<OpponentDetail />} />
                 <Route path="records" element={<Records />} />
+                <Route path="records/badges/:badgeKey" element={<BadgeDetail />} />
 
                 {/* Old addresses keep working — bookmarks and chat links land
                     on the page that absorbed them. */}

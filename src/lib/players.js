@@ -1,6 +1,6 @@
 // Player-level aggregates: career totals, season breakdowns and the full
-// player-page profile. Badges are not here — a plate is an award, so the
-// ladder and the tiers live in awards.js. Appearance rows flagged `dropout`
+// player-page profile. Badges are not here — a badge is an award, so the
+// three classes and the tiers live in awards.js. Appearance rows flagged `dropout`
 // (withdrew <24h before kick-off) are excluded from every stat and counted
 // separately.
 

@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import { ErrorNote, Spinner } from '../components/bits';
-import PlateShelf from '../components/Plate';
+import BadgeShelf from '../components/player-detail/BadgeShelf';
 import FirstsTable from '../components/player-detail/FirstsTable';
 import FormCard from '../components/player-detail/FormCard';
 import MatchLog from '../components/player-detail/MatchLog';
@@ -13,14 +13,14 @@ import RankCard from '../components/player-detail/RankCard';
 import SeasonCards from '../components/player-detail/SeasonCards';
 import SeasonTable from '../components/player-detail/SeasonTable';
 import StatGrid from '../components/player-detail/StatGrid';
-import { playerPlates } from '../lib/awards';
+import { playerBadges } from '../lib/awards';
 import { plural } from '../lib/format';
 import { seasonsOf } from '../lib/matches';
 import { playerProfile } from '../lib/players';
 
 export default function PlayerDetail() {
   const { playerId } = useParams();
-  const { players, matches, appearances, teams, loading, error } = useData();
+  const { players, matches, appearances, teams, seasonAwards, loading, error } = useData();
   const [params, setParams] = useSearchParams();
   const view = params.get('view') === 'stats' ? 'stats' : 'overview';
 
@@ -29,9 +29,9 @@ export default function PlayerDetail() {
     () => (player ? playerProfile(player, players, matches, appearances) : null),
     [player, players, matches, appearances],
   );
-  const plates = useMemo(
-    () => (player ? playerPlates(player, players, matches, appearances) : []),
-    [player, players, matches, appearances],
+  const badges = useMemo(
+    () => (player ? playerBadges(player, players, matches, appearances, seasonAwards) : null),
+    [player, players, matches, appearances, seasonAwards],
   );
 
   if (loading) return <Spinner />;
@@ -53,13 +53,13 @@ export default function PlayerDetail() {
 
   return (
     <div>
-      <PlayerHero player={player} career={career} seasonsActive={seasonsActive} />
+      <PlayerHero player={player} career={career} seasonsActive={seasonsActive} badges={badges} />
 
-      {/* Plates first, above the view selector and above the stats: what a
+      {/* Badges first, above the view selector and above the stats: what a
           player has won and what's next is why they opened their own page. */}
       <div className="section">
         <h3 className="block gold">Badges</h3>
-        <PlateShelf plates={plates} />
+        <BadgeShelf badges={badges} />
       </div>
 
       {played && (

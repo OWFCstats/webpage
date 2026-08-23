@@ -1,14 +1,25 @@
-// lib/awards.js — club records, season honours and the badge ladder.
+// lib/awards.js — club records, season honours and the three badge classes.
 //
-// Phase 15 rewrites the ladder into three classes, so what is worth pinning
-// here is the behaviour that has to survive that rewrite rather than the
-// current thresholds: ties stay whole, a dropout is not an appearance, a
-// walkover credits nobody, and a record nobody holds is null rather than zero.
+// The rules worth pinning are the ones a later phase could quietly break: ties
+// stay whole, a dropout is not an appearance, a walkover credits nobody, a
+// record nobody holds is null rather than zero — and, from Phase 15, that the
+// ladder in DESIGN.md is the ladder the code hands out.
 
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { DATASETS } from '../fixtures/datasets.js';
-import { clubPlates, clubRecords, playerPlates, seasonRecords } from '../src/lib/awards.js';
+import {
+  BADGES,
+  CAREER_BADGES,
+  EVENT_BADGES,
+  METALS,
+  SEASON_AWARDS,
+  badgeDetail,
+  clubBadges,
+  clubRecords,
+  playerBadges,
+  seasonRecords,
+} from '../src/lib/awards.js';
 import { playerTotals } from '../src/lib/players.js';
 
 const mid = DATASETS['mid-season'].data;
@@ -44,14 +55,20 @@ test('an unplayed fixture sets no record', () => {
   assert.equal(after.highestScoring.date, before.highestScoring.date);
 });
 
-test('the season honours keep a tie whole', () => {
+test('the season honours are the four trophies, and a tie stays whole', () => {
   const [season] = seasonRecords(mid.players, mid.matches, mid.appearances, mid.season_awards);
-  const motm = season.awards.find((a) => a.key === 'motm');
-  assert.deepEqual(motm.leaders.map((p) => p.name), ['Owen Gibbons', 'Will Line']);
-  assert.equal(motm.value, 2);
-  const boot = season.awards.find((a) => a.key === 'goals');
+  assert.deepEqual(
+    season.awards.map((a) => a.key),
+    ['player-of-the-season', 'golden-boot', 'playmaker', 'the-dependable'],
+    'Most MOTM is a Class 2 event now, and Assist King is called Playmaker',
+  );
+  const boot = season.awards.find((a) => a.key === 'golden-boot');
   assert.deepEqual(boot.leaders.map((p) => p.name), ['Tom Simeon']);
   assert.equal(boot.value, 7);
+  // Two players level on appearances would both be The Dependable; on this
+  // fixture the tie is in the MOTM count, which the star badge carries.
+  const dependable = season.awards.find((a) => a.key === 'the-dependable');
+  assert.equal(dependable.value, 14);
 });
 
 test('the voted award comes from the row, with no mark', () => {
@@ -92,40 +109,113 @@ test('a dropout is not an appearance and a walkover credits nobody', () => {
   assert.equal(most, 14);
 });
 
-test('a plate shelf leads with the best metal held and then what is closest', () => {
-  const shelf = playerPlates(named('Owen Gibbons'), mid.players, mid.matches, mid.appearances);
-  const earned = shelf.filter((p) => p.earned);
-  const chasing = shelf.filter((p) => !p.earned);
-  assert.ok(earned.length > 0);
-  assert.equal(shelf.slice(0, earned.length).every((p) => p.earned), true, 'earned plates lead');
-  assert.ok(chasing.length <= 3, 'the shelf shows at most three to chase');
-  // Three goals in one game is a hat-trick, and the plate says when it fell.
-  const hatTrick = earned.find((p) => p.key === 'hatTricks-1');
-  assert.ok(hatTrick, 'a hat-trick went uncounted');
-  assert.match(hatTrick.note, /\d{4}$/);
-  for (const plate of chasing) assert.match(plate.note, /\d+ to go/);
+test('the ladder in the docs is the ladder the code hands out', () => {
+  // DESIGN.md → Badges and awards, and ROADMAP.md → Phase 15 carry this table.
+  // If the two ever disagree the doc is wrong, so it is asserted here.
+  assert.deepEqual(
+    CAREER_BADGES.map((b) => [b.key, ...b.tiers]),
+    [
+      ['appearances', 1, 10, 25, 50],
+      ['goals', 1, 5, 15, 30],
+      ['assists', 1, 4, 12, 25],
+      ['clean-sheets', 1, 5, 12, 25],
+    ],
+  );
+  assert.deepEqual(METALS, ['bronze', 'silver', 'gold', 'diamond']);
+  assert.deepEqual(EVENT_BADGES.map((b) => b.key), ['motm', 'hat-trick']);
+  assert.equal(BADGES.length, 10, 'four career badges, two events, four trophies');
+  assert.equal(BADGES.filter((b) => b.class === 'career').length, 4);
+  assert.ok(!BADGES.some((b) => b.key === 'brace'), 'there is no brace');
+  assert.ok(
+    SEASON_AWARDS.every((a) => a.class === 'trophy'),
+    'the honours board rows and the trophy badges are the same four objects',
+  );
 });
 
-test('a player with one appearance still has a shelf to chase', () => {
-  const shelf = playerPlates(named('Gus Hill'), mid.players, mid.matches, mid.appearances);
-  assert.equal(shelf.filter((p) => p.earned).length, 0);
-  assert.equal(shelf.length, 3);
-  assert.ok(shelf.every((p) => p.progress > 0 && p.progress < 1));
+test('bronze is one, so everyone who has been picked holds something', () => {
+  const board = clubBadges(mid.players, mid.matches, mid.appearances, mid.season_awards);
+  const totals = playerTotals(mid.players, mid.matches, mid.appearances);
+  const picked = totals.filter((r) => r.appearances > 0).length;
+  const appearances = board.career.find((b) => b.key === 'appearances');
+  assert.equal(appearances.tiers[0].holders, picked, 'a debut is a badge');
+  assert.equal(appearances.top, 'silver', 'the board wears the best metal anyone holds');
+  // Clean sheets stays and stays hard: it is the one badge the club may hold
+  // none of, and an empty rung keeps its place rather than being trimmed.
+  const clean = board.career.find((b) => b.key === 'clean-sheets');
+  assert.equal(clean.tiers.length, 4);
+  assert.equal(clean.tiers[1].holders, 0);
 });
 
-test('a player who has never played gets plates rather than nothing', () => {
-  const shelf = playerPlates(named('Alex Hannon'), mid.players, mid.matches, mid.appearances);
-  assert.equal(shelf.length, 3);
-  assert.ok(shelf.every((p) => !p.earned));
+test('a shelf is all four career badges, held or not', () => {
+  const shelf = playerBadges(named('Owen Gibbons'), mid.players, mid.matches, mid.appearances, mid.season_awards);
+  assert.deepEqual(shelf.career.map((b) => b.key), CAREER_BADGES.map((b) => b.key));
+  const apps = shelf.career.find((b) => b.key === 'appearances');
+  assert.equal(apps.metal, 'silver');
+  assert.match(apps.since, /\d{4}$/, 'an earned badge says when it fell');
+  assert.deepEqual(apps.next, { metal: 'gold', threshold: 25, need: 15 });
+  // Three goals in one game is a hat-trick, and it stacks rather than tiering.
+  assert.equal(shelf.events.find((b) => b.key === 'hat-trick').count, 1);
+  assert.equal(shelf.trophies.every((t) => Array.isArray(t.seasons)), true);
 });
 
-test('the club board names every plate, held or not', () => {
-  const board = clubPlates(mid.players, mid.matches, mid.appearances);
-  assert.equal(board.length, 24, 'eight families of three rungs');
-  assert.deepEqual([...new Set(board.map((p) => p.tier))], ['bronze', 'silver', 'gold']);
-  const unheld = board.filter((p) => !p.earned);
-  assert.ok(unheld.length > 0);
-  assert.ok(unheld.every((p) => p.note === 'Nobody yet'), 'an unheld plate still gets named');
-  // A plate held by more than one says so rather than picking one of them.
-  assert.ok(board.some((p) => /\+\d+$/.test(p.note)));
+test('a player who has never played still has four badges to chase', () => {
+  const shelf = playerBadges(named('Alex Hannon'), mid.players, mid.matches, mid.appearances, mid.season_awards);
+  assert.equal(shelf.career.length, 4);
+  assert.ok(shelf.career.every((b) => b.metal === null));
+  assert.deepEqual(
+    shelf.career.map((b) => b.next.need),
+    [1, 1, 1, 1],
+    'every ladder starts one away',
+  );
+  assert.ok(shelf.events.every((b) => b.count === 0));
+});
+
+test('the winner of a season trophy holds the badge for that year', () => {
+  const shelf = playerBadges(named('Tom Simeon'), mid.players, mid.matches, mid.appearances, mid.season_awards);
+  const boot = shelf.trophies.find((t) => t.key === 'golden-boot');
+  assert.deepEqual(boot.seasons, ['2025/26']);
+  const voted = playerBadges(named('Hugh Grindon'), mid.players, mid.matches, mid.appearances, mid.season_awards);
+  assert.deepEqual(voted.trophies.find((t) => t.key === 'player-of-the-season').seasons, ['2025/26']);
+});
+
+test('a badge page lists every tier, its holders and who is closest', () => {
+  const page = badgeDetail('appearances', mid.players, mid.matches, mid.appearances, mid.season_awards);
+  assert.deepEqual(page.tiers.map((t) => t.metal), METALS);
+  assert.ok(page.tiers[0].count > page.tiers[1].count);
+  assert.equal(page.tiers[2].count, 0, 'a tier nobody has reached is still named');
+  assert.ok(page.chasing.length > 0);
+  assert.ok(
+    page.chasing.every((row) => row.need > 0 && row.count > 0),
+    'a name that has never been picked is not chasing anything yet',
+  );
+  const needs = page.chasing.map((row) => row.need);
+  assert.deepEqual(needs, [...needs].sort((a, b) => a - b), 'closest first');
+});
+
+test('an event page counts, a trophy page lists years', () => {
+  const event = badgeDetail('hat-trick', mid.players, mid.matches, mid.appearances, mid.season_awards);
+  assert.equal(event.awarded, 1);
+  assert.deepEqual(event.holders.map((h) => [h.player.name, h.count]), [['Owen Gibbons', 1]]);
+  const trophy = badgeDetail('golden-boot', mid.players, mid.matches, mid.appearances, mid.season_awards);
+  assert.deepEqual(trophy.wins.map((w) => w.season), ['2025/26']);
+  assert.deepEqual(trophy.roll.map((r) => [r.player.name, r.seasons.length]), [['Tom Simeon', 1]]);
+  assert.equal(badgeDetail('nothing-like-this', mid.players, mid.matches, mid.appearances), null);
+});
+
+test('a season with nothing played hands out no badges', () => {
+  // pre-season is next season's fixtures on top of the same history, so what
+  // has to hold is that the new season wins nothing while the old one keeps
+  // everything: entering fixtures must never move a badge.
+  const board = clubBadges(pre.players, pre.matches, pre.appearances, pre.season_awards);
+  for (const trophy of board.trophies) {
+    assert.ok(
+      !trophy.wins.some((win) => win.season === '2026/27'),
+      `${trophy.label} invented a winner from a column of zeroes`,
+    );
+  }
+  const played = clubBadges(mid.players, mid.matches, mid.appearances, mid.season_awards);
+  assert.deepEqual(
+    board.career.map((b) => b.holders),
+    played.career.map((b) => b.holders),
+  );
 });

@@ -8,8 +8,8 @@ import { seasonsOf } from '../../lib/matches';
 
 /**
  * Player of the Season — the one award on the honours board no formula
- * produces. Golden Boot, Assist King, The Dependable and Most MOTM all come
- * off the appearance rows; this one is voted, so somebody has to type it.
+ * produces. The Golden Boot, the Playmaker and The Dependable all come off the
+ * appearance rows; this one is voted, so somebody has to type it.
  *
  * One block per season with a single save at the bottom, because it's entered
  * once a year on a phone at the end-of-season dinner, not week by week.

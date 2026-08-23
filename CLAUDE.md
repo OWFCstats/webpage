@@ -106,10 +106,13 @@ site ships imports them, and the fixture stub reaches the app through one alias
 in `vite.config.js` rather than a flag anybody has to remember to unset.
 
 `src/assets/badges/` is inside `src/` for the opposite reason: the four career
-badges are recoloured per tier, which means their fills have to be reachable, so
-they are inlined rather than served as images. A file there is named for the
-badge's own slug and nothing else goes in it. `public/` stays for what the
-browser fetches whole — today that is only the crest.
+badges are recoloured per tier and three more are gilded once, which means their
+fills have to be reachable, so they are inlined rather than served as images —
+`components/BadgeIcon.jsx` is the only thing that reads them and `lib/badge-art.js`
+does the recolouring. A file there is named for the badge's own slug, which is
+also its key in `lib/awards.js` and its address under `/records/badges/`, and
+nothing else goes in it. `public/` stays for what the browser fetches whole —
+today that is only the crest.
 
 **Everything is derived, nothing is stored twice.** Player totals, records,
 form, badges, points, goal difference — all computed from `players`, `matches`,
@@ -132,7 +135,7 @@ any further.
 
 **`components/` is shared vocabulary at the top level, one directory per page
 below it.** `components/matchday/Scoreboard.jsx` is Matchday's; `bits.jsx`,
-`Plate.jsx` and `LeagueTable.jsx` are everyone's. The line is what renders it:
+`BadgeIcon.jsx` and `LeagueTable.jsx` are everyone's. The line is what renders it:
 two or more pages puts a component at the top level, one page puts it in that
 page's directory, named after the page file (`player-detail/`, `add-result/`).
 A component that gains a second page moves up — that's what happened to
@@ -152,10 +155,10 @@ down in JS.
   `npm run check:layout` and `npm run shots`. A table that side-scrolls is a bug
   *including inside a `.table-wrap`*: that loophole is how two tables shipped
   hiding a third of themselves, and the check now asserts the rule as
-  `DESIGN.md` states it rather than the weaker version that passed. It is red on
-  `main` until Phase 10 — every failure names the phase that owns it, and
-  anything not on `scripts/expected-failures.js` is a regression. Pages have
-  height budgets; see *Mobile* in `docs/DESIGN.md`.
+  `DESIGN.md` states it rather than the weaker version that passed. It is green
+  on `main` — every known failure names the phase that owns it on
+  `scripts/expected-failures.js`, and anything not on that list is a regression.
+  Pages have height budgets; see *Mobile* in `docs/DESIGN.md`.
 - **Comments explain why, not what.** The existing ones are the house style:
   short, specific, and about the decision rather than the mechanics. Keep that.
 - **No new page-specific CSS class without checking the primitives first.**
