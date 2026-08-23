@@ -70,8 +70,8 @@
 }
 
 .board .tag {
-  background: color-mix(in srgb, var(--sky) 22%, transparent);
-  color: var(--sky);
+  background: color-mix(in srgb, var(--verdigris) 22%, transparent);
+  color: var(--verdigris);
 }
 
 @media (max-width: 700px) {
@@ -225,13 +225,13 @@ dl.compare dt {
   font-weight: 600;
   padding: 0.12rem 0.5rem;
   border-radius: var(--r-pill);
-  background: color-mix(in srgb, var(--sky) 30%, transparent);
-  color: var(--sky-deep);
+  background: color-mix(in srgb, var(--verdigris) 30%, transparent);
+  color: var(--verdigris-deep);
 }
 
 .tag.orange {
-  background: color-mix(in srgb, var(--tangerine) 16%, transparent);
-  color: var(--tangerine-deep);
+  background: color-mix(in srgb, var(--burnt) 16%, transparent);
+  color: var(--burnt);
 }
 
 /* Plain type rather than a chip: these sit next to the coloured W/D/L pills,

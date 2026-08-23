@@ -130,8 +130,8 @@ a.fixture-team:hover { color: var(--gold-deep); }
   margin-top: var(--s3);
   padding: 0.25rem 0.65rem;
   border-radius: var(--r-pill);
-  background: color-mix(in srgb, var(--sky) 34%, transparent);
-  color: var(--sky-deep);
+  background: color-mix(in srgb, var(--verdigris) 34%, transparent);
+  color: var(--verdigris-deep);
   font-size: var(--t-micro);
   font-weight: 700;
 }
@@ -265,7 +265,7 @@ a.fixture-team:hover { color: var(--gold-deep); }
 
 .home-bar-fill.gf { background: var(--gold); }
 
-.home-bar-fill.ga { background: var(--sky-deep); }
+.home-bar-fill.ga { background: var(--verdigris-deep); }
 
 .home-bar-value {
   width: 26px;

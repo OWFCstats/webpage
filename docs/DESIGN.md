@@ -152,11 +152,6 @@ Two things follow from that, because a token can't be written down twice:
 
 ### Ground and ink
 
-> **Decided, lands in Phase 11.** `tokens.css` still carries the previous
-> values until then, so a component written against the table below will look
-> wrong on `main`. The old values are kept in the roadmap, not here. The token
-> *names* below are unchanged and stay that way — only values move.
-
 ```
 --paper        #f1f3ef   page background. Cool off-white, pulled from the brand mint
 --sheet        #e6e9e2   recessed and inset areas, table stripes
@@ -233,13 +228,6 @@ with the rest.
 
 Badge tiers. See *Badges* below.
 
-> **The ramps land in Phase 11, with the rest of the token layer.** `tokens.css`
-> carries three flat values today — `--bronze`, `--silver`, `--gold-tier` — which
-> is what `plate.css` reads. Only Phase 15 needs the full ramps, but they are
-> tokens, so they arrive with the tokens rather than riding in on a component;
-> the live plates move onto stop 2 of each and keep working until the icons
-> replace them.
-
 A metal is a four-stop ramp, not a single value, because a flat fill does not
 read as metal. Darkest to lightest:
 
@@ -255,6 +243,9 @@ warm metal so it cannot be mistaken for gold.
 
 **Only the four career badges read the ramps.** Season trophies and the two
 events are single gold and do not tier, so sixteen recolours exist, not forty.
+Only Phase 15 builds those recolours; until then `plate.css` reads stop 2 of
+each ramp, which is what the flat `--bronze`, `--silver` and `--gold-tier`
+values it replaced held.
 
 Bronze is deliberately coppery rather than dark brown. Bronze and gold are
 adjacent hues, and separating them by lightness fails the moment either sits on
@@ -264,11 +255,6 @@ a ground that isn't white — so they are separated by hue instead.
 engraved marks; every word on a badge is `--ink` or `--ink-soft`.
 
 ### Chart series
-
-> **The order below lands in Phase 11.** `tokens.css` has `--series-4` and
-> `--series-5` the other way round today. It is a swap of two values and no JS
-> changes: `lib/tokens.js` maps appearances to `--series-4` by name, so the stat
-> stops wearing plum by the token underneath it changing.
 
 Fixed order, assigned in sequence, never cycled. Ordered so the two warm darks
 aren't adjacent.
@@ -280,15 +266,14 @@ aren't adjacent.
 ```
 
 All clear 4.5:1 on the ground, so a series colour can label its own line directly
-and skip the legend. Plum drops to last: it was carrying appearances, which is
-the club's most-looked-at stat, in a colour with no basis in anything.
+and skip the legend. Plum moved from `--series-4` to `--series-5`: it was
+carrying appearances, the club's most-looked-at stat, in a colour with no basis
+in anything. `lib/tokens.js` maps appearances to `--series-4` by name, so the
+swap needed no JS change — only the token underneath it moved.
 
 ## Type
 
 Two families, three roles.
-
-> **The display face changes in Phase 11.** Everything else in this section is
-> live.
 
 ```css
 --font-display: 'Libre Caslon Display', Georgia, serif;

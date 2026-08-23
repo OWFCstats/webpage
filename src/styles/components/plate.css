@@ -39,19 +39,21 @@
    grey line, and the metal is the point. */
 .plate.earned { --plate-edge-w: 2px; }
 
+/* Stop 2 of each ramp, not stop 1: these are the flat fills the metal ramps
+   replaced, and Phase 15's icons are what actually reads the full four. */
 .plate.earned.bronze {
-  --plate-edge: var(--bronze);
-  --plate-fill: color-mix(in srgb, var(--bronze) 12%, var(--paper));
+  --plate-edge: var(--bronze-2);
+  --plate-fill: color-mix(in srgb, var(--bronze-2) 12%, var(--paper));
 }
 
 .plate.earned.silver {
-  --plate-edge: var(--silver);
-  --plate-fill: color-mix(in srgb, var(--silver) 16%, var(--paper));
+  --plate-edge: var(--silver-2);
+  --plate-fill: color-mix(in srgb, var(--silver-2) 16%, var(--paper));
 }
 
 .plate.earned.gold {
-  --plate-edge: var(--gold-tier);
-  --plate-fill: color-mix(in srgb, var(--gold-tier) 15%, var(--paper));
+  --plate-edge: var(--gold-2);
+  --plate-fill: color-mix(in srgb, var(--gold-2) 15%, var(--paper));
 }
 
 .plate-face {

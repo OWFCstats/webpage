@@ -8,10 +8,10 @@
 
 :root {
   /* ---- ground and ink ---- */
-  --paper: #faf8f4;
-  --sheet: #f1eee6;
-  --board: #1a1c19;
-  --board-soft: #262a25;
+  --paper: #f1f3ef;
+  --sheet: #e6e9e2;
+  --board: #16281f;
+  --board-soft: #1d3227;
 
   --ink: #20221f;
   --ink-soft: #6a6a63;
@@ -20,32 +20,44 @@
   --on-board-soft: #96958c;
 
   /* ---- identity: the kit ---- */
-  --gold: #c8952a;
-  --gold-leaf: #e8c14f;
-  --gold-deep: #8f6a14;
+  --gold: #c9992b;
+  --gold-leaf: #e6c65f;
+  --gold-deep: #8c6716;
 
-  /* ---- accents: the school's blue and orange ---- */
-  --sky: #8fc4dd;
-  --sky-deep: #2f6f8f;
-  --tangerine: #e07a2f;
-  --tangerine-deep: #a8501a;
+  /* ---- accents: the school's other two colours, aged, one job each ---- */
+  --verdigris: #8fb3a6;
+  --verdigris-deep: #3f6b5c;
+  --burnt: #bf6a22;
 
   /* ---- results ---- */
   --win: #2f7d4f;
   --draw: #8a8b83;
   --loss: #b3392f;
 
-  /* ---- metals: badge tiers ---- */
-  --bronze: #a8703f;
-  --silver: #9ca3aa;
-  --gold-tier: #c8952a;
+  /* ---- metals: badge tiers, darkest to lightest ---- */
+  --bronze-1: #6b3a1a;
+  --bronze-2: #a9612c;
+  --bronze-3: #d18f57;
+  --bronze-4: #f0c8a0;
+  --silver-1: #3d4449;
+  --silver-2: #79838a;
+  --silver-3: #a9b2b9;
+  --silver-4: #d4dbdf;
+  --gold-1: #4d3606;
+  --gold-2: #a87d18;
+  --gold-3: #dcb143;
+  --gold-4: #f9ecb8;
+  --diamond-1: #24505f;
+  --diamond-2: #528799;
+  --diamond-3: #8ec2d3;
+  --diamond-4: #c8e7f1;
 
   /* ---- chart series: fixed order, assigned in sequence, never cycled ---- */
-  --series-1: #8f6a14;
-  --series-2: #2f6f8f;
-  --series-3: #a8501a;
-  --series-4: #4a3f7a;
-  --series-5: #2f6b46;
+  --series-1: #8c6716;
+  --series-2: #3f6b5c;
+  --series-3: #a2551a;
+  --series-4: #2f6b46;
+  --series-5: #4a3f7a;
 
   /* ---- rules and radius ---- */
   --rule: #e2ded2;
@@ -69,7 +81,7 @@
   /* ---- type ----
      Fontsource ships the variable faces under their own family names, so both
      spellings are listed: the '* Variable' name is what actually loads. */
-  --font-display: 'Fraunces Variable', Fraunces, Georgia, serif;
+  --font-display: 'Libre Caslon Display', Georgia, serif;
   --font-text: 'Archivo Variable', Archivo, system-ui, -apple-system, sans-serif;
   --font-data: 'Archivo Narrow', 'Archivo Variable', Archivo, system-ui, sans-serif;
 
