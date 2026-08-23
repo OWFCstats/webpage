@@ -42,8 +42,14 @@ export const ROUTES = [
     name: 'Matchday — walkover, no team sheet',
     budget: 'Matchday',
   },
-  { id: 'season', route: '/season', name: 'Season', budget: 'Season', charts: true },
-  { id: 'season-all', route: '/season?season=all', name: 'Season — all seasons', budget: 'Season', charts: true },
+  { id: 'season', route: '/season', name: 'Season', budget: 'Season → any sub-page' },
+  {
+    id: 'season-charts',
+    route: '/season/charts',
+    name: 'Season — charts',
+    budget: 'Season → any sub-page',
+    charts: true,
+  },
   { id: 'players', route: '/players', name: 'Players — leaderboards', budget: 'Players → Leaderboards' },
   { id: 'players-squad', route: '/players/squad', name: 'Players — squad', budget: 'Players → Squad' },
   // The roster's two layouts are one address apart precisely so both get

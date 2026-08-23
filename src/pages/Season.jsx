@@ -1,10 +1,9 @@
-import { useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { lazy, Suspense } from 'react';
+import { Link, Navigate, NavLink, useSearchParams } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import { ErrorNote, SeasonSelect, Spinner } from '../components/bits';
-import BarBoard from '../components/BarBoard';
+import LeaderBoards from '../components/LeaderBoards';
 import LeagueTable from '../components/LeagueTable';
-import ChartsPanel from '../components/season/ChartsPanel';
 import ResultsTable from '../components/season/ResultsTable';
 import SeasonSummary from '../components/season/SeasonSummary';
 import UpcomingFixtures from '../components/season/UpcomingFixtures';
@@ -18,27 +17,43 @@ import {
 } from '../lib/matches';
 import { playerTotals } from '../lib/players';
 
-export default function Season() {
-  const { players, matches, appearances, teams, loading, error } = useData();
+// Charts pull in Recharts (~400kB); they stay in their own chunk and load
+// only when someone opens /season/charts.
+const SeasonCharts = lazy(() => import('../components/season/SeasonCharts'));
+
+const VIEWS = [
+  { to: '/season', end: true, label: 'Season' },
+  { to: '/season/charts', end: false, label: 'Charts' },
+];
+
+export default function Season({ view }) {
+  const { players, matches, appearances, loading, error } = useData();
   const seasons = seasonsOf(matches);
-  // Records links a season across as ?season=; the picker takes over from
-  // there. Anything unrecognised — an old link, a hand-typed year — falls back
-  // to the latest rather than rendering an empty season.
-  const [params] = useSearchParams();
-  const [picked, setSeason] = useState(() => params.get('season') ?? 'latest');
-  const season = picked === 'all' || seasons.includes(picked) ? picked : 'latest';
+  // Records' season index links a season across as ?season=; the picker
+  // takes over from there. Anything unrecognised — an old link, a hand-typed
+  // year — falls back to the latest rather than rendering an empty season.
+  const [params, setParams] = useSearchParams();
+  const asked = params.get('season') ?? 'latest';
+
+  // "All seasons" used to be a picker option here; that board is Records'
+  // now (docs/DESIGN.md → Structure), reached once rather than from both
+  // sections on the same component. A link built against the old option
+  // still lands somewhere useful.
+  if (asked === 'all') return <Navigate to="/records/all-time" replace />;
+
+  const season = seasons.includes(asked) ? asked : 'latest';
+  const activeSeason = season === 'latest' ? seasons[0] : season;
 
   if (loading) return <Spinner />;
   if (error) return <ErrorNote message={error} />;
 
-  const activeSeason = season === 'latest' ? seasons[0] : season;
-  const pool = season === 'all' ? matches : matches.filter((m) => m.season === activeSeason);
+  const pool = matches.filter((m) => m.season === activeSeason);
   const summary = seasonSummary(pool);
   const results = playedMatches(pool);
   const upcoming = fixtures(pool);
   const homeAway = venueSummary(pool);
   const totals = playerTotals(players, pool, appearances);
-  const isLatestSeason = season !== 'all' && activeSeason === seasons[0];
+  const isLatestSeason = activeSeason === seasons[0];
 
   // Games played plus whichever of "started"/"ended" is knowable from the
   // matches on record. Where the club finished is a standings question, and
@@ -47,48 +62,76 @@ export default function Season() {
   if (results.length > 0) {
     const oldest = results[results.length - 1];
     const newest = results[0];
-    if (season === 'all') periodLabel = `since ${monthYear(oldest.date)}`;
-    else if (isLatestSeason) periodLabel = `started ${monthYear(oldest.date)}`;
-    else periodLabel = `ended ${monthYear(newest.date)}`;
+    periodLabel = isLatestSeason
+      ? `started ${monthYear(oldest.date)}`
+      : `ended ${monthYear(newest.date)}`;
   }
+
+  // The season carries across to whichever sub-page the control switches to.
+  const search = params.toString();
 
   return (
     <div>
       <div className="section-head">
-        <h1>{season === 'all' ? 'All seasons' : `Season ${activeSeason ?? ''}`}</h1>
+        <h1>Season {activeSeason ?? ''}</h1>
         <SeasonSelect
           seasons={seasons}
-          value={season === 'latest' ? (seasons[0] ?? 'all') : season}
-          onChange={setSeason}
+          value={season === 'latest' ? (seasons[0] ?? '') : season}
+          allowAll={false}
+          onChange={(next) => {
+            const nextParams = new URLSearchParams(params);
+            if (next === seasons[0]) nextParams.delete('season');
+            else nextParams.set('season', next);
+            setParams(nextParams);
+          }}
         />
       </div>
+
+      <nav className="seg" aria-label="Season view">
+        {VIEWS.map((v) => (
+          <NavLink
+            key={v.to}
+            to={{ pathname: v.to, search }}
+            end={v.end}
+            className={({ isActive }) => (isActive ? 'active' : undefined)}
+          >
+            {v.label}
+          </NavLink>
+        ))}
+      </nav>
+
       <p className="muted page-intro">
         {summary.played} played{periodLabel ? ` · ${periodLabel}` : ''}
       </p>
 
-      <div className="season-layout">
-        <div className="season-main">
-          {/* The whole division, not the window Home shows. "All seasons" has
-              no standings of its own, so it falls back to the latest — which
-              is why the widget still names the season it's showing. */}
-          <LeagueTable season={season === 'all' ? seasons[0] : activeSeason} full showSeasonLink={false} />
+      {view === 'season' ? (
+        <div className="season-layout">
+          <div className="season-main">
+            {/* The whole division, not the window Home shows. */}
+            <LeagueTable season={activeSeason} full showSeasonLink={false} />
 
-          <ResultsTable results={results} />
+            <ResultsTable results={results} />
 
-          <UpcomingFixtures upcoming={upcoming} teams={teams} />
-        </div>
-
-        <aside className="sheet season-aside">
-          <SeasonSummary summary={summary} homeAway={homeAway} />
-
-          <div className="flat-block">
-            <div className="block verdigris">Most involved</div>
-            <BarBoard rows={totals} statKey="appearances" limit={4} bare />
+            <UpcomingFixtures upcoming={upcoming} />
           </div>
 
-          <ChartsPanel season={season} activeSeason={activeSeason} />
-        </aside>
-      </div>
+          <aside className="sheet season-aside">
+            <SeasonSummary summary={summary} homeAway={homeAway} />
+
+            <div className="section">
+              <LeaderBoards rows={totals} stats={['appearances']} limit={4} />
+              <p className="muted card-foot">
+                Every season together on{' '}
+                <Link className="more" to="/records/all-time">Records → All-time</Link>
+              </p>
+            </div>
+          </aside>
+        </div>
+      ) : (
+        <Suspense fallback={<Spinner />}>
+          <SeasonCharts season={activeSeason} />
+        </Suspense>
+      )}
     </div>
   );
 }

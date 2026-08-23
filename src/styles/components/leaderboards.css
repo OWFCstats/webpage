@@ -1,7 +1,7 @@
 /* The leaderboard grid: one card per stat, capped at five names —
-   components/LeaderBoards.jsx. Phase 14 replaces the six stacked bar boards
-   that used to live here (still in bar-board.css, which is now Season's
-   "Most involved" board alone) with this card format instead.
+   components/LeaderBoards.jsx. Phase 14 replaced the six stacked bar boards
+   this grid used to hold with this card format; Phase 18 moved Season's
+   "Most involved" board onto it too, and bar-board.css is gone.
 
    Ties read for free: a rank column instead of a bar means a level score
    doesn't need a sentence to explain it, so no board here ends on a hedge.
