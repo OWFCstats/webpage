@@ -10,6 +10,7 @@ import { test } from 'node:test';
 import { DATASETS } from '../fixtures/datasets.js';
 import {
   CLUB_NAME,
+  currentSeasonOf,
   currentStreak,
   fixtures,
   isCleanSheet,
@@ -60,6 +61,16 @@ test('the newest season with a row is not always the newest with a result', () =
   const [newestRow] = seasonsOf(pre.matches);
   assert.equal(newestRow, '2026/27');
   assert.equal(latestResult(pre.matches).season, '2025/26');
+});
+
+test('currentSeasonOf follows the result, not the fixture entered on top of it', () => {
+  assert.equal(currentSeasonOf(pre.matches), '2025/26');
+  assert.equal(currentSeasonOf(mid.matches), '2025/26');
+  assert.equal(currentSeasonOf([]), null);
+  // Nothing played anywhere yet — no result to prefer, so it falls back to
+  // the newest row rather than returning null on a brand new club.
+  const onlyFixtures = pre.matches.filter((m) => !isPlayed(m));
+  assert.equal(currentSeasonOf(onlyFixtures), seasonsOf(onlyFixtures)[0]);
 });
 
 test('results run newest first, fixtures soonest first', () => {

@@ -16,8 +16,10 @@ appearances — plus a set of decisions recorded in `DESIGN.md`.
 
 **The badge artwork has landed** — ten drawings in `src/assets/badges/`, ahead of
 Phase 10. It was the only dependency in this plan that code couldn't unblock, and
-with it here phases 14 → 15 → 16 run in that order. The crest is the one file
-still outstanding. See *The artwork* below for what arrived and what it settles.
+with it here phases 14 → 15 → 16 run in that order. **The crest has landed
+too** — `public/crest.png`, uploaded by the club mid-Phase 10 — so all eleven
+files this plan named are now in the repository. See *The artwork* below for
+what arrived and what it settles.
 
 ---
 
@@ -143,10 +145,14 @@ a drawing and it no longer needs one.
 
 **Still eleven drawings, and a different eleven.** The list this section carried
 before named a brace and forgot the hat-trick, so the count came out right by
-cancelling two errors. The eleventh is `public/crest.png`, which **did not
-arrive** — the masthead keeps rendering its `OW` monogram fallback
-(`components/Layout.jsx`) and Phase 19's fixture row keeps its empty circle until
-it does. Nothing else waits on it.
+cancelling two errors. The eleventh was `public/crest.png`, the one file this
+plan couldn't unblock by writing code — **it arrived mid-Phase 10**, uploaded
+by the club straight to this branch, and the masthead (`components/Layout.jsx`)
+already renders it in place of the `OW` monogram fallback. Nothing was owed to
+it in code: the `<img>` was always there, `onError` was always the fallback
+path, and the file just had to exist. Phase 19's fixture row still owes it a
+proper thumbnail rather than the empty circle it was designed around — see
+Phase 19 below.
 
 ### What the drawings measure
 
@@ -387,6 +393,64 @@ later is waste, and Phase 9's expected-failure list names it until then.
 **Done means** `check:layout` passes against its expected-failure list; the
 pre-season fixture renders a Home page with no empty states; every scoreline row
 on the site comes from one component; nothing computes its own current season.
+
+### Built — what landed, and what it found
+
+All of the above. `lib/matches.js` gained `currentSeasonOf`, the four call
+sites moved onto it, and `ResultList.jsx` was rebuilt rather than reused — it
+no longer needs `matchHomeAway` at all, because "our score first" is just
+`goals_for`–`goals_against`; the sentence bug was in choosing to print a home
+team and an away team, not in the arithmetic. It grew three props beyond the
+row itself: `showOpponent` for a card that has already named the opponent,
+`showMeta` for a date and competition line, and `inline` for a handful of
+scorelines sitting inside another card's own row.
+
+**`inline` is the one addition this plan didn't foresee, and it exists to
+protect Phase 20's arithmetic.** `matchday/ComparisonCard.jsx`'s "earlier
+against" list is three prior meetings inside a `dl.compare` value — the full
+44px row (correct, and now a real touch target where the old inline links
+never were one) cost Matchday 63px, which put the one page already inside its
+budget over it, on the exact route Phase 20's room-to-add sums against. The
+fix keeps the shared chip/score/venue markup without the row's height, so
+Matchday measures 1,857px unchanged. Phase 20 still opens this file; it
+inherits a card that already reads as one grammar rather than a bespoke one.
+
+**Firsts & bests didn't move onto the row — it moved onto `dl.compare`.**
+Debut / first goal / best game / best season are label-and-sentence pairs, not
+scorelines, and the row's grid has no opponent-shaped hole for a sentence to
+sit in. `dl.compare` already stacks a `dt` over a `dd` at any width with a
+hairline between pairs — the exact shape a table forces into columns — so
+this reused it rather than inventing a fourth pattern for one card.
+
+**The crest arrived.** Partway through this phase the club uploaded the real
+`public/crest.png` straight to this branch — three commits, a false start
+(`public/c`, deleted), then the file. Nothing in `src/` needed to change: the
+`<img>` and its `onError` fallback were always there, waiting for the file to
+exist. What did need attention is that every route now renders a bitmap the
+layout check had never seen render anywhere, and a bitmap's ink can't be read
+for contrast — the same limitation Phase 15 already knows `motm.svg` carries.
+That's on `scripts/expected-failures.js` now, owned by this phase since no
+other phase claims it; `ROADMAP.md` and `DESIGN.md`'s "did not arrive" lines
+are corrected in this commit rather than left describing a masthead that no
+longer matches the site.
+
+**Every measured claim in this phase's own text holds.** `currentSeasonOf`
+returns `2025/26` on the pre-season fixture, matching `latestResult`, not the
+`2026/27` `seasonsOf` returns; Home on that fixture renders zero `.empty`
+states and carries the label `Season 2025/26 · final`; Matchday's default
+route is unchanged at 1,857px. `check:layout` passes — 17 known failures
+against the list (the three inherited from Phase 9, minus the two this phase
+closes, plus the crest) — and all 50 unit tests pass, including a new one
+that exercises `currentSeasonOf` directly rather than only the primitives
+underneath it.
+
+Two things Phase 10 leaves for later, on purpose: several pages measure taller
+than they did — Home +45px, Player detail +143px — because a 44px touch
+target and a second meta line cost more than the table cells they replaced.
+Every page but Matchday was already over its budget before this phase; the
+arithmetic belongs to the phase that owns each page (14, 16, 18, 19, 21), not
+to this one, and `check:layout` reports the gap without failing on it for
+exactly that reason.
 
 ---
 
@@ -737,9 +801,9 @@ Season entries come off `scripts/expected-failures.js`.
 - **The league table stays**, because "where are we" is why people open the
   site. Season leads with something else.
 - **The next fixture is a compact row**, not a 280px card carrying eight words
-  with a black circle where a crest should be. That circle is the missing
-  `public/crest.png`, which did not land with the badge artwork — so the row is
-  designed for both states and ships in the empty one until the file arrives.
+  with a black circle where a crest should be. `public/crest.png` has since
+  arrived (see *The artwork*) — the circle becomes a real crest thumbnail, not
+  a state this phase still has to design around.
 - **The pre-season state is a real design**, not four stacked empty states —
   Phase 10 makes that possible and this phase makes it look intentional.
 
@@ -878,9 +942,6 @@ Named so they don't get lost, and not built yet.
 - **A figure recipe in the type layer** — the display face at 600 weight with
   `-0.015em` and tabular figures is written out in twelve rules. One decision in
   `DESIGN.md`'s *Type* section, not a component question.
-- **The crest** — `public/crest.png`, the one drawing of the eleven that has not
-  arrived. The masthead and Phase 19's fixture row are both designed for its
-  absence, so this is a file to chase rather than work to schedule.
 
 ---
 

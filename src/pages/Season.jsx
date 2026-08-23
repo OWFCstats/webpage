@@ -8,7 +8,6 @@ import ChartsPanel from '../components/season/ChartsPanel';
 import ResultsTable from '../components/season/ResultsTable';
 import SeasonSummary from '../components/season/SeasonSummary';
 import UpcomingFixtures from '../components/season/UpcomingFixtures';
-import { useIsNarrow } from '../lib/useIsNarrow';
 import { monthYear } from '../lib/format';
 import {
   fixtures,
@@ -28,7 +27,6 @@ export default function Season() {
   const [params] = useSearchParams();
   const [picked, setSeason] = useState(() => params.get('season') ?? 'latest');
   const season = picked === 'all' || seasons.includes(picked) ? picked : 'latest';
-  const narrow = useIsNarrow();
 
   if (loading) return <Spinner />;
   if (error) return <ErrorNote message={error} />;
@@ -75,7 +73,7 @@ export default function Season() {
               is why the widget still names the season it's showing. */}
           <LeagueTable season={season === 'all' ? seasons[0] : activeSeason} full showSeasonLink={false} />
 
-          <ResultsTable results={results} narrow={narrow} />
+          <ResultsTable results={results} />
 
           <UpcomingFixtures upcoming={upcoming} teams={teams} />
         </div>

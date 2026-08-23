@@ -12,12 +12,12 @@ import Scoreboard from '../components/matchday/Scoreboard';
 import SquadPills from '../components/matchday/SquadPills';
 import WorthNoting from '../components/matchday/WorthNoting';
 import {
+  currentSeasonOf,
   fixtures,
   formOf,
   isPlayed,
   latestResult,
   matchContext,
-  seasonsOf,
 } from '../lib/matches';
 
 export default function Matchday() {
@@ -26,8 +26,7 @@ export default function Matchday() {
   const { session } = useAuth();
 
   const view = useMemo(() => {
-    const seasons = seasonsOf(matches);
-    const currentSeason = seasons[0] ?? null;
+    const currentSeason = currentSeasonOf(matches);
 
     // With no id in the URL, land on the most recent PLAYED match in the
     // current season. A season that hasn't kicked off yet has none — that's

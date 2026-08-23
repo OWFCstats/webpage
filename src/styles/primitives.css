@@ -308,8 +308,6 @@ table.data tbody tr:hover {
 
 table.data td.num, table.data th.num { text-align: right; }
 
-table.data td.score-cell, table.data th.score-cell { text-align: center; }
-
 table.data a { font-weight: 600; }
 
 table.data a:hover { color: var(--gold-deep); }

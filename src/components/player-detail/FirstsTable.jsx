@@ -21,64 +21,60 @@ export default function FirstsTable({ firsts }) {
   return (
     <div className="sheet">
       <h3 className="label ruled">Firsts &amp; bests</h3>
-      <div className="table-wrap">
-        <table className="data firsts">
-          <tbody>
-            <tr>
-              <td><strong>Debut</strong></td>
-              <td>{formatDate(debut.match.date)}</td>
-              <td>
-                <Link to={`/matchday/${debut.match.id}`}>vs {matchTitle(debut.match)}</Link>{' '}
-                <span className="muted">— {scoreline(debut.match)}</span>
-              </td>
-            </tr>
-            <tr>
-              <td><strong>First goal</strong></td>
-              <td>{firstGoal ? formatDate(firstGoal.match.date) : '—'}</td>
-              <td>
-                {firstGoal ? (
-                  <>
-                    <Link to={`/matchday/${firstGoal.match.id}`}>vs {matchTitle(firstGoal.match)}</Link>{' '}
-                    <span className="muted">— appearance {firstGoal.appearanceNo}, {scoreline(firstGoal.match)}</span>
-                  </>
-                ) : (
-                  <span className="muted">Yet to score</span>
-                )}
-              </td>
-            </tr>
-            <tr>
-              <td><strong>Best game</strong></td>
-              <td>{bestGame ? formatDate(bestGame.match.date) : '—'}</td>
-              <td>
-                {bestGame ? (
-                  <>
-                    <Link to={`/matchday/${bestGame.match.id}`}>vs {matchTitle(bestGame.match)}</Link>{' '}
-                    <span className="muted">— {contribution(bestGame.app)}, {scoreline(bestGame.match)}</span>
-                    {bestGame.app.motm && <> <span className="tag">MOTM</span></>}
-                  </>
-                ) : (
-                  <span className="muted">No goals or assists yet</span>
-                )}
-              </td>
-            </tr>
-            <tr>
-              <td><strong>Best season</strong></td>
-              <td>{bestSeason ? bestSeason.season : '—'}</td>
-              <td>
-                {bestSeason ? (
-                  <span className="muted">
-                    {plural(bestSeason.appearances, 'app', 'apps')} ·{' '}
-                    {plural(bestSeason.goals, 'goal', 'goals')} ·{' '}
-                    {plural(bestSeason.assists, 'assist', 'assists')}
-                  </span>
-                ) : (
-                  <span className="muted">—</span>
-                )}
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <dl className="compare">
+        <div>
+          <dt>Debut</dt>
+          <dd>
+            {formatDate(debut.match.date)} ·{' '}
+            <Link to={`/matchday/${debut.match.id}`}>vs {matchTitle(debut.match)}</Link>{' '}
+            <span className="muted">— {scoreline(debut.match)}</span>
+          </dd>
+        </div>
+        <div>
+          <dt>First goal</dt>
+          <dd>
+            {firstGoal ? (
+              <>
+                {formatDate(firstGoal.match.date)} ·{' '}
+                <Link to={`/matchday/${firstGoal.match.id}`}>vs {matchTitle(firstGoal.match)}</Link>{' '}
+                <span className="muted">— appearance {firstGoal.appearanceNo}, {scoreline(firstGoal.match)}</span>
+              </>
+            ) : (
+              <span className="muted">Yet to score</span>
+            )}
+          </dd>
+        </div>
+        <div>
+          <dt>Best game</dt>
+          <dd>
+            {bestGame ? (
+              <>
+                {formatDate(bestGame.match.date)} ·{' '}
+                <Link to={`/matchday/${bestGame.match.id}`}>vs {matchTitle(bestGame.match)}</Link>{' '}
+                <span className="muted">— {contribution(bestGame.app)}, {scoreline(bestGame.match)}</span>
+                {bestGame.app.motm && <> <span className="tag">MOTM</span></>}
+              </>
+            ) : (
+              <span className="muted">No goals or assists yet</span>
+            )}
+          </dd>
+        </div>
+        <div>
+          <dt>Best season</dt>
+          <dd>
+            {bestSeason ? (
+              <span className="muted">
+                {bestSeason.season} ·{' '}
+                {plural(bestSeason.appearances, 'app', 'apps')} ·{' '}
+                {plural(bestSeason.goals, 'goal', 'goals')} ·{' '}
+                {plural(bestSeason.assists, 'assist', 'assists')}
+              </span>
+            ) : (
+              <span className="muted">—</span>
+            )}
+          </dd>
+        </div>
+      </dl>
     </div>
   );
 }

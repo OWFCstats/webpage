@@ -54,7 +54,7 @@ export default function OpponentDetail() {
 
       <HeadToHeadTable overall={overall} home={home} away={away} />
 
-      <MeetingsTable team={team} meetings={meetings} />
+      <MeetingsTable meetings={meetings} />
     </div>
   );
 }
