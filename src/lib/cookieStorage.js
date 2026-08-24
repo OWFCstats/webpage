@@ -29,6 +29,28 @@ function clearCookie(name) {
   setCookie(name, '', 0);
 }
 
+// Splits on the encoded byte size, not the raw character count: a JSON
+// payload dense with punctuation can encode to several times its own length,
+// and a cookie's real cap applies to what's actually written on the wire.
+function chunksOf(value, limit) {
+  const chunks = [];
+  let start = 0;
+  while (start < value.length) {
+    let end = start;
+    let size = 0;
+    while (end < value.length) {
+      const charSize = encodeURIComponent(value[end]).length;
+      if (size + charSize > limit) break;
+      size += charSize;
+      end++;
+    }
+    // A single character can't fit — take it anyway rather than loop forever.
+    chunks.push(value.slice(start, end > start ? end : start + 1));
+    start = Math.max(end, start + 1);
+  }
+  return chunks;
+}
+
 export const cookieStorage = {
   getItem(key) {
     const single = getCookie(key);
@@ -45,13 +67,13 @@ export const cookieStorage = {
   setItem(key, value) {
     this.removeItem(key);
     const maxAge = 60 * 60 * 24 * 365;
-    if (value.length <= CHUNK_SIZE) {
+    if (encodeURIComponent(value).length <= CHUNK_SIZE) {
       setCookie(key, value, maxAge);
       return;
     }
-    for (let i = 0; i * CHUNK_SIZE < value.length && i < MAX_CHUNKS; i++) {
-      setCookie(`${key}.${i}`, value.slice(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE), maxAge);
-    }
+    chunksOf(value, CHUNK_SIZE)
+      .slice(0, MAX_CHUNKS)
+      .forEach((chunk, i) => setCookie(`${key}.${i}`, chunk, maxAge));
   },
 
   removeItem(key) {

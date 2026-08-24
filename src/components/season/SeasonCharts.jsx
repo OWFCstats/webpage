@@ -100,7 +100,7 @@ function TooltipBox({ active, payload, label, labelKey, unit }) {
 }
 
 /** The season's finding sentences, written from the data rather than the axes. */
-function findings(race, trend) {
+function findings(race, trend, comparison, season) {
   const out = {};
   if (race.players.length >= 2 && race.players[0].goals === race.players[1].goals) {
     out.boot = `${race.players[0].name} and ${race.players[1].name} level on ${race.players[0].goals}.`;
@@ -109,9 +109,13 @@ function findings(race, trend) {
     const gap = race.players[1] ? lead.goals - race.players[1].goals : lead.goals;
     out.boot = `${lead.name} leads on ${lead.goals}, ${gap} clear.`;
   }
+  // League matches only, matching what the "Points accumulated" chart plots —
+  // a cup or friendly win doesn't move a league table.
+  const lastLeagueIdx = lastDefinedIndex(comparison.points, season);
+  if (lastLeagueIdx >= 0) {
+    out.points = `${comparison.points[lastLeagueIdx][season]} points from ${lastLeagueIdx + 1} played.`;
+  }
   if (trend.length > 0) {
-    const last = trend[trend.length - 1];
-    out.points = `${last.points} points from ${trend.length} played.`;
     const heavy = trend.filter((d) => d.goalsAgainst >= 4).length;
     out.goals = heavy > 0
       ? `Conceded four or more in ${heavy} of ${trend.length}.`
@@ -134,15 +138,16 @@ export default function SeasonCharts({ season }) {
     const pool = matches.filter((m) => m.season === season);
     const race = topScorerRace(players, pool, appearances);
     const trend = seasonTrend(pool);
+    const comparison = seasonPointsComparison(matches);
     return {
       race,
       trend,
-      comparison: seasonPointsComparison(matches),
+      comparison,
       raceOffsets: staggerOffsets(
         race.players.map((p) => ({ id: p.id, bucket: p.goals })),
         15,
       ),
-      text: findings(race, trend),
+      text: findings(race, trend, comparison, season),
     };
   }, [season, players, matches, appearances]);
 

@@ -18,13 +18,9 @@
 
 import season2526 from './2025-26.json' with { type: 'json' };
 import { fixtureId } from './uuid.js';
+import { slugify as slug } from '../src/lib/matches.js';
 
 const CLUB = 'Old Wellingtonians';
-
-/** Mirrors slugify() in src/lib/matches.js — teams.slug has to match it. */
-function slug(name) {
-  return name.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-}
 
 function team(name, extra = {}) {
   return {

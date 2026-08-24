@@ -50,9 +50,9 @@ Two datasets:
 - **`mid-season`** — results behind, two fixtures ahead. The state the site was
   designed against.
 - **`pre-season`** — 2025/26 finished, 2026/27 fixtures entered, nothing played
-  in them. Today this blanks four of five sections on Home, because the current
-  season is derived as the most recent season with any *row*. Phase 10 fixes
-  that; this dataset is how it gets checked.
+  in them. The current season is derived as the most recent season with a
+  *result*, not a row (Phase 10), so this dataset still renders 2025/26 rather
+  than going blank — this is how that stays checked.
 
 Each dataset carries its own `now`, and the harness pins the browser clock to
 it — the fixture countdown reads the clock, and a measurement that changes with

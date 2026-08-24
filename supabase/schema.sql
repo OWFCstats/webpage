@@ -95,13 +95,13 @@ create table if not exists public.league_rows (
   -- The published position, where the league's own order matters more than
   -- the arithmetic (tie-breaks vary; points deductions don't show up in a
   -- W/D/L line at all). Null means "rank this row on points, then GD".
-  position      integer,
-  played        integer not null default 0,
-  won           integer not null default 0,
-  drawn         integer not null default 0,
-  lost          integer not null default 0,
-  goals_for     integer not null default 0,
-  goals_against integer not null default 0,
+  position      integer check (position is null or position >= 1),
+  played        integer not null default 0 check (played >= 0),
+  won           integer not null default 0 check (won >= 0),
+  drawn         integer not null default 0 check (drawn >= 0),
+  lost          integer not null default 0 check (lost >= 0),
+  goals_for     integer not null default 0 check (goals_for >= 0),
+  goals_against integer not null default 0 check (goals_against >= 0),
   -- Set explicitly on every save by the admin page; no trigger.
   updated_at    timestamptz not null default now()
 );
@@ -134,6 +134,11 @@ create index if not exists matches_opponent_team_id_idx on public.matches (oppon
 -- club and must collide on insert rather than fork a second row.
 create unique index if not exists teams_name_lower_idx on public.teams (lower(name));
 create unique index if not exists teams_slug_idx        on public.teams (slug);
+
+-- At most one row can be "us" — venueTeam() (src/lib/matches.js) just takes
+-- the first is_club row it finds, so a second one would silently take over
+-- every home fixture's pitch.
+create unique index if not exists teams_one_club_idx on public.teams (is_club) where is_club;
 
 -- One row per club per season: re-entering the table upserts onto this pair
 -- rather than forking a second row for a club already in it.

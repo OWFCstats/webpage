@@ -106,17 +106,15 @@ function SeasonEditor({ season, existing, teams }) {
   }
 
   /** Swap a row with its neighbour, positions included — dragging a club up
-   *  the table shouldn't leave its typed position behind. */
+   *  the table shouldn't leave its typed position behind. Each row already
+   *  carries its own `position` field, so swapping the rows is enough; the
+   *  position must not be swapped separately or it ends up on the wrong club. */
   function move(index, delta) {
     const to = index + delta;
     if (to < 0 || to >= rows.length) return;
     setRows((prev) => {
       const next = prev.slice();
-      const a = { ...next[index] };
-      const b = { ...next[to] };
-      [a.position, b.position] = [b.position, a.position];
-      next[index] = b;
-      next[to] = a;
+      [next[index], next[to]] = [next[to], next[index]];
       return next;
     });
     setSaved(false);
