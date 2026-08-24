@@ -28,6 +28,7 @@ const blankRow = () => ({
   lost: 0,
   goals_for: 0,
   goals_against: 0,
+  walkover_losses: 0,
 });
 
 export default function LeagueAdmin() {
@@ -83,6 +84,7 @@ function SeasonEditor({ season, existing, teams }) {
           lost: r.lost,
           goals_for: r.goals_for,
           goals_against: r.goals_against,
+          walkover_losses: r.walkover_losses ?? 0,
         }))
       : [blankRow()],
   );
@@ -148,6 +150,7 @@ function SeasonEditor({ season, existing, teams }) {
       lost: Number(r.lost) || 0,
       goals_for: Number(r.goals_for) || 0,
       goals_against: Number(r.goals_against) || 0,
+      walkover_losses: Number(r.walkover_losses) || 0,
       updated_at: now,
     }));
     // Rows dropped from the grid are deleted, so relegating a club out of the
@@ -210,7 +213,9 @@ function SeasonEditor({ season, existing, teams }) {
       <p className="muted section">
         Leave a position blank and the club is ranked on points, then goal
         difference, then goals scored. Type one — or use the arrows — wherever
-        the league’s own order differs, after a tie-break or a points deduction.
+        the league’s own order differs, after a tie-break. Walkover losses
+        (WO) are counted separately and already cost 3 points each in the
+        total shown here — no need to fold them into a position override.
       </p>
 
       {duplicate && (

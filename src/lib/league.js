@@ -7,9 +7,9 @@
  * every other stat on this site follows.
  *
  * Order: an explicit `position` wins, because a league applies its own
- * tie-breaks and hands out points deductions that no W/D/L line can show. Rows
- * without one fall in behind on points, then goal difference, then goals
- * scored, then name — so a table entered without positions still ranks itself.
+ * tie-breaks that no W/D/L line can show. Rows without one fall in behind on
+ * points, then goal difference, then goals scored, then name — so a table
+ * entered without positions still ranks itself.
  *
  * Returns the division label and the most recent edit alongside the rows, both
  * of which the widget shows and neither of which is worth a second pass.
@@ -27,7 +27,11 @@ export function leagueStandings(leagueRows, teams, season) {
         // foreign key makes this all but impossible, but the table still
         // renders if it happens.
         name: team?.name ?? 'Unknown club',
-        points: r.won * 3 + r.drawn,
+        // A walkover loss costs 3 points on top of the loss itself (see
+        // matchPoints in lib/matches.js) — walkover_losses is how many of a
+        // club's losses this season were walkovers, for any club in the
+        // table, not just us.
+        points: r.won * 3 + r.drawn - (r.walkover_losses ?? 0) * 3,
         goalDifference: r.goals_for - r.goals_against,
         isUs: team?.is_club === true,
       };

@@ -11,9 +11,10 @@ const STATS = [
 
 /**
  * The division as one grid: a row per club, typed on a phone with one save at
- * the bottom. Points and goal difference are shown but never sent — both come
- * off W/D/L and the goals (see leagueStandings), so there's nothing to keep in
- * step and two fewer boxes to fill in.
+ * the bottom. Points and goal difference are shown but never sent — both are
+ * worked out from W/D/L, the goals and WO (see leagueStandings), so there's
+ * nothing to keep in step. WO is how many of a club's losses were walkovers —
+ * each one costs 3 points on top of the loss itself, for any club, not just us.
  */
 export default function LeagueGrid({ rows, clubs, taken, onUpdate, onMove, onRemove }) {
   return (
@@ -23,13 +24,15 @@ export default function LeagueGrid({ rows, clubs, taken, onUpdate, onMove, onRem
         <span className="label">Club</span>
         {STATS.map((s) => <span key={s.key} className="label num">{s.label}</span>)}
         <span className="label num">GD</span>
+        <span className="label num">WO</span>
         <span className="label num">Pts</span>
         <span />
       </div>
 
       {rows.map((row, i) => {
         const gd = (Number(row.goals_for) || 0) - (Number(row.goals_against) || 0);
-        const pts = (Number(row.won) || 0) * 3 + (Number(row.drawn) || 0);
+        const walkoverLosses = Number(row.walkover_losses) || 0;
+        const pts = (Number(row.won) || 0) * 3 + (Number(row.drawn) || 0) - walkoverLosses * 3;
         return (
           <div className="league-grid league-row" key={i}>
             <input
@@ -71,6 +74,19 @@ export default function LeagueGrid({ rows, clubs, taken, onUpdate, onMove, onRem
               </label>
             ))}
             <span className="num lg-derived">{gd > 0 ? `+${gd}` : gd}<em className="label">GD</em></span>
+            <label className="lg-stat" key="walkover_losses">
+              <span className="label">WO</span>
+              <input
+                type="number"
+                min="0"
+                inputMode="numeric"
+                className="num"
+                value={row.walkover_losses}
+                onChange={(e) => onUpdate(i, { walkover_losses: e.target.value })}
+                aria-label={`Row ${i + 1} walkover losses`}
+                title="Losses that were walkovers — each costs 3 points on top of the loss"
+              />
+            </label>
             <span className="num lg-derived lg-pts">{pts}<em className="label">Pts</em></span>
             <span className="lg-actions">
               <button type="button" className="secondary small" aria-label={`Move row ${i + 1} up`}
