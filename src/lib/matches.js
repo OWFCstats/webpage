@@ -254,9 +254,8 @@ export function matchContext(match, players, matches, appearances) {
 
   const priorSummary = seasonSummary(before);
   const margin = isPlayed(match) ? match.goals_for - match.goals_against : null;
-  const bestMargin = Math.max(
-    ...upTo.filter(isPlayed).map((m) => m.goals_for - m.goals_against),
-  );
+  const playedMargins = upTo.filter(isPlayed).map((m) => m.goals_for - m.goals_against);
+  const bestMargin = playedMargins.length > 0 ? Math.max(...playedMargins) : null;
   const priorMeetings = before.filter(
     (m) => m.opponent.toLowerCase() === match.opponent.toLowerCase(),
   );
