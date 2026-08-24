@@ -73,10 +73,11 @@
 /* ---- admin league table ---- */
 
 /* The published table, typed in as one grid: position, club, the six columns
-   that get read off the league's own table, then the two derived from them. */
+   that get read off the league's own table, walkover losses (WO), then GD and
+   Pts, both derived from everything typed before them. */
 .league-grid {
   display: grid;
-  grid-template-columns: 56px minmax(170px, 320px) repeat(6, 58px) 54px 54px 108px;
+  grid-template-columns: 56px minmax(170px, 320px) repeat(6, 58px) 54px 58px 54px 108px;
   justify-content: start;
   gap: 0.45rem;
   align-items: center;

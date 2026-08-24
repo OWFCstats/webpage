@@ -102,6 +102,10 @@ create table if not exists public.league_rows (
   lost          integer not null default 0 check (lost >= 0),
   goals_for     integer not null default 0 check (goals_for >= 0),
   goals_against integer not null default 0 check (goals_against >= 0),
+  -- Walkover losses charged this season, for whichever club conceded them --
+  -- each one costs 3 points on top of the loss itself (see leagueStandings in
+  -- src/lib/league.js), which a W/D/L line alone can't show.
+  walkover_losses integer not null default 0 check (walkover_losses >= 0),
   -- Set explicitly on every save by the admin page; no trigger.
   updated_at    timestamptz not null default now()
 );
