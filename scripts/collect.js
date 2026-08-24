@@ -97,8 +97,16 @@ export async function collector() {
   // the season chips) are deliberate horizontal scrollers and hold no table,
   // so they fall outside this by construction — a stepper is a control, and
   // scrolling one is not a hidden column.
+  //
+  // `.wide-reference-table` is the one deliberate exception that does hold a
+  // table: the data centre's own fbref-style sheet, built for a reader who
+  // wants every stat and a scrollbar rather than five separate ones. See
+  // docs/DESIGN.md → Mobile. Nothing else carries this class — a second
+  // caller would need its own argument for why it also gets to opt out, not a
+  // widened selector here.
   for (const el of visible) {
     if (!clips(el) || styleOf(el).overflowX === 'hidden' || styleOf(el).overflowX === 'clip') continue;
+    if (el.classList.contains('wide-reference-table')) continue;
     const holdsTable = el.querySelector('table') !== null;
     if (!holdsTable && !el.classList.contains('table-wrap')) continue;
     const hidden = el.scrollWidth - el.clientWidth;

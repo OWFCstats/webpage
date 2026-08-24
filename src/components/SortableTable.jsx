@@ -3,15 +3,20 @@ import { useMemo, useState } from 'react';
 /**
  * Sortable, filterable data table.
  *
- * columns: [{ key, label, num?, sortValue?(row), render?(row), filterValue?(row) }]
+ * columns: [{ key, label, num?, className?, sortValue?(row), render?(row), filterValue?(row) }]
  *  - num: right-align and sort numerically (descending first)
+ *  - className: extra class on this column's th/td — a divider between
+ *    groups of columns, say, without a new column shape to support it
  *  - sortValue: value used for ordering (defaults to row[key])
  *  - render: cell content (defaults to row[key])
  *  - filterValue: string matched against the search box (defaults to row[key])
  * initialSort: { key, dir } — dir is 'asc' | 'desc'
  * filterable: show a text search box above the table
+ * wrapClassName: extra class on the scrolling .table-wrap, for the one caller
+ *   (the data centre) that's a deliberate exception to "a table never hides a
+ *   column" — see docs/DESIGN.md → Mobile.
  */
-export default function SortableTable({ columns, rows, rowKey, initialSort, filterable = false, emptyText = 'Nothing here yet.', onRowClick }) {
+export default function SortableTable({ columns, rows, rowKey, initialSort, filterable = false, emptyText = 'Nothing here yet.', onRowClick, wrapClassName }) {
   const [sort, setSort] = useState(initialSort ?? null);
   const [query, setQuery] = useState('');
 
@@ -76,14 +81,14 @@ export default function SortableTable({ columns, rows, rowKey, initialSort, filt
           />
         </div>
       )}
-      <div className="table-wrap">
+      <div className={wrapClassName ? `table-wrap ${wrapClassName}` : 'table-wrap'}>
         <table className="data">
           <thead>
             <tr>
               {columns.map((col) => (
                 <th
                   key={col.key}
-                  className={`sortable${col.num ? ' num' : ''}`}
+                  className={[col.className, 'sortable', col.num && 'num'].filter(Boolean).join(' ')}
                   onClick={() => toggleSort(col)}
                 >
                   {col.label}
@@ -102,7 +107,7 @@ export default function SortableTable({ columns, rows, rowKey, initialSort, filt
                 style={onRowClick ? { cursor: 'pointer' } : undefined}
               >
                 {columns.map((col) => (
-                  <td key={col.key} className={col.num ? 'num' : undefined}>
+                  <td key={col.key} className={[col.className, col.num && 'num'].filter(Boolean).join(' ') || undefined}>
                     {col.render ? col.render(row) : row[col.key]}
                   </td>
                 ))}

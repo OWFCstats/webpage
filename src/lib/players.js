@@ -4,7 +4,7 @@
 // (withdrew <24h before kick-off) are excluded from every stat and counted
 // separately.
 
-import { currentSeasonOf, isPlayed, isCleanSheet } from './matches';
+import { currentSeasonOf, isPlayed, isCleanSheet, seasonsOf } from './matches';
 
 /**
  * Per-player aggregate over the given matches (already season-filtered by the
@@ -93,6 +93,30 @@ export function statLeaders(rows, statKey, limit = 6) {
     sharedLead: placed.filter((r) => r.rank === 1).length,
     next: placed[limit] ?? null,
   };
+}
+
+/**
+ * One player-totals pool per season the club has any row for, newest first —
+ * what the leaderboard's archive reads, one call instead of a filter-and-
+ * aggregate per season at the call site. `current` flags the one season
+ * `currentSeasonOf` picks, so a caller doesn't have to run that derivation a
+ * second time to know which pool is the one to show open by default.
+ */
+export function seasonPools(players, matches, appearances) {
+  const current = currentSeasonOf(matches);
+  return seasonsOf(matches).map((season) => {
+    const inSeason = matches.filter((m) => m.season === season);
+    return {
+      season,
+      current: season === current,
+      // A player is in the pool once they were picked, not once they scored:
+      // a late withdrawal is part of a squad's record too.
+      rows: playerTotals(players, inSeason, appearances).filter(
+        (r) => r.appearances > 0 || r.dropouts > 0,
+      ),
+      played: inSeason.filter(isPlayed).length,
+    };
+  });
 }
 
 /** Per-season breakdown for a single player, newest season first. */

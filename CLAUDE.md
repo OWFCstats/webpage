@@ -35,7 +35,7 @@ one of these, that's a sign it doesn't belong yet.
 | **Home** | What's happening now, led by the last result with its MOTM named on the same surface. League position, form, next fixture. | — |
 | **Matchday** | One match at a time: scoreboard, squad, report, and the archive stepper across the season. | — |
 | **Season** | One season as a whole. | Season · Charts |
-| **Players** | **This season.** The leaderboards, the squad, and the numbers. Individual player pages hang off it. | Leaderboards · Squad · Data centre |
+| **Players** | The leaderboards, the squad, and the numbers. Individual player pages hang off it. | Leaderboards · Squad · Data centre |
 | **Records** | **All time**, and anything above a single season. | Badges · Honours · All-time |
 
 **A section may have sub-pages; the nav still has five entries.** Depth goes
@@ -45,7 +45,15 @@ the section — not into a sixth tab and not into a dropdown on the bottom bar. 
 
 The Players/Records split is the one to keep straight, because they used to
 render the same leaderboard component with a season selector and therefore said
-the same thing twice: **Players is scoped to a season, Records is all-time.**
+the same thing twice. It no longer splits the same way on every sub-page:
+**Players → Leaderboards is scoped to a season** — the current one, open in
+full, with every earlier season collapsed into a thin banner beneath it, so a
+name's current standing is still the first thing on the page. **Players →
+Squad and → Data centre are the club's whole history by default**, because a
+name or a stat should be findable regardless of which season it happened in —
+both take an optional year filter for the reader who wants one season only.
+**Records stays the one place that combines every season into a single
+all-time board**, so a career total is never the same board shown twice.
 
 Admin sits behind a login and is lazy-loaded, so a public visitor never
 downloads it.

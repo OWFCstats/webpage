@@ -3,12 +3,13 @@ import { Link, NavLink, Navigate, useSearchParams } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import { ErrorNote, SeasonSelect, Spinner } from '../components/bits';
 import LeaderBoards from '../components/LeaderBoards';
+import SeasonBoards from '../components/players-hub/SeasonBoards';
 import DataCentre from '../components/players-hub/DataCentre';
 import Squad from '../components/players-hub/Squad';
 import { squadBadges } from '../lib/awards';
 import { plural } from '../lib/format';
 import { isPlayed, seasonsOf } from '../lib/matches';
-import { playerTotals } from '../lib/players';
+import { playerTotals, seasonPools } from '../lib/players';
 
 // Three real sub-pages, and the leaderboard is the default: the board is why
 // a player opens this section at all, the roster is one tap away on
@@ -24,20 +25,22 @@ export default function PlayersHub({ view }) {
   const [params, setParams] = useSearchParams();
 
   const seasons = seasonsOf(matches);
-  // 'latest' rather than a season string: the matches arrive after the first
-  // render, so the default can't be resolved in a useState initialiser. The
-  // Season page resolves its own the same way.
-  const asked = params.get('season') ?? 'latest';
-  const season = seasons.includes(asked) ? asked : 'latest';
-  const activeSeason = season === 'latest' ? seasons[0] : season;
+
+  // Squad and the data centre are the club's whole history by default — a
+  // name or a stat should be findable regardless of which season it happened
+  // in — narrowed to one season only when a visitor asks for it. Leaderboards
+  // reads every season itself (see below) and has no use for this param.
+  const askedSeason = params.get('season');
+  const scopeSeason = askedSeason && seasons.includes(askedSeason) ? askedSeason : 'all';
+  const scope = scopeSeason === 'all' ? null : scopeSeason;
 
   // The roster's two layouts are one address apart, so the cards can be linked
   // to and — the reason it isn't just component state — measured by the harness.
   const layout = params.get('layout') === 'cards' ? 'cards' : 'list';
 
-  const pool = useMemo(() => {
-    if (loading) return { rows: [], played: 0 };
-    const inScope = matches.filter((m) => m.season === activeSeason);
+  const scopePool = useMemo(() => {
+    if (loading || view === 'leaders') return { rows: [], played: 0 };
+    const inScope = scope ? matches.filter((m) => m.season === scope) : matches;
     return {
       // A player is in the pool once they were picked, not once they scored:
       // a late withdrawal is part of a squad's record too.
@@ -46,7 +49,16 @@ export default function PlayersHub({ view }) {
       ),
       played: inScope.filter(isPlayed).length,
     };
-  }, [loading, season, activeSeason, players, matches, appearances]);
+  }, [loading, view, scope, players, matches, appearances]);
+
+  // Leaderboards: one pool per season the club has ever recorded a row for,
+  // current flagged — the current one renders open, every other one is the
+  // collapsible archive `SeasonBoards` draws underneath it.
+  const seasonBoards = useMemo(
+    () => (loading || view !== 'leaders' ? [] : seasonPools(players, matches, appearances)),
+    [loading, view, players, matches, appearances],
+  );
+  const currentBoard = seasonBoards.find((b) => b.current) ?? null;
 
   // The badges the cards draw. Career-wide and therefore season-independent,
   // and only the squad view has anywhere to put them — a leaderboard that never
@@ -86,32 +98,43 @@ export default function PlayersHub({ view }) {
     }
     setParams(next);
   };
+  const clearScope = () => go({ season: null });
 
-  const scope = activeSeason;
-
-  // The season carries across to whichever sub-page the control switches to;
-  // `view` never belongs in it, since the three views are now paths, not a
-  // param, and neither does `layout` or `stat` — they belong to the roster and
-  // the data centre respectively, and the other two views have no use for a
-  // param they can't answer to.
+  // `season` carries across to whichever sub-page the control switches to, so
+  // a year picked on the data centre is still picked on the squad; `layout`
+  // belongs to the roster alone. `stat` is a leftover from the data centre's
+  // old stat-group switcher and answers to nothing any more, so a link that
+  // still carries it drops it rather than pass it on.
   const carry = new URLSearchParams(params);
   carry.delete('view');
   carry.delete('layout');
   carry.delete('stat');
   const search = carry.toString();
 
+  // Whether the club has ever recorded a result at all — the one case that
+  // still earns the page's single empty state. A current season with nothing
+  // played yet, but history behind it, is not this: the archive still has
+  // something to show, so the leaderboard branch below handles that itself.
+  const everPlayed = view === 'leaders'
+    ? seasonBoards.some((b) => b.played > 0)
+    : scopePool.played > 0;
+
   return (
     <div>
       <div className="section-head">
         <h1>Players</h1>
-        {/* No "All time" option here — that board is Records', reached once
-            rather than from both sections on the same component. */}
-        <SeasonSelect
-          seasons={seasons}
-          value={season === 'latest' ? (seasons[0] ?? '') : season}
-          allowAll={false}
-          onChange={(next) => go({ season: next === seasons[0] ? null : next })}
-        />
+        {/* Leaderboards has no season control of its own — every season is on
+            the page, current open and the rest collapsed below it. No "All
+            time" option either way: that combined board is Records'. */}
+        {view !== 'leaders' && (
+          <SeasonSelect
+            seasons={seasons}
+            value={scopeSeason}
+            allowAll
+            allLabel="All time"
+            onChange={(next) => go({ season: next === 'all' ? null : next })}
+          />
+        )}
       </div>
 
       <nav className="seg" aria-label="Players view">
@@ -127,50 +150,63 @@ export default function PlayersHub({ view }) {
         ))}
       </nav>
 
-      {/* No intro line before the first result: "after 0 games" is a worse way
-          of saying what the empty state below says properly. */}
-      {pool.played > 0 && (
-        <p className="muted page-intro">
-          {view === 'leaders'
-            ? `Where every name stands ${scope ? `in ${scope}` : 'across every season'}, after ${plural(pool.played, 'game', 'games')}.`
-            : view === 'data'
-            ? `Every stat for ${plural(pool.rows.length, 'player', 'players')} ${scope ? `picked in ${scope}` : 'on record'}.`
-            : `${plural(pool.rows.length, 'player', 'players')} ${scope ? `picked in ${scope}` : 'on record'}, most games first.`}{' '}
-          Every name links through to a page of their own.
-        </p>
-      )}
-
-      {pool.played === 0 ? (
+      {!everPlayed ? (
         <div className="empty sheet">
           No games played {scope ? `in ${scope}` : 'yet'} — every board here fills in from the
           first result. <Link className="more" to="/season">Fixtures →</Link>
         </div>
       ) : view === 'leaders' ? (
         <>
-          <LeaderBoards rows={pool.rows} />
-          {/* One line, because Leaderboards has 30px of its 1,400px budget
-              spare and a second line of footer costs 22 of them. */}
+          {/* everPlayed guarantees seasonBoards is non-empty, so there is
+              always a current board here — either from a played game this
+              season or, per currentSeasonOf's own fallback, the most recent
+              season with a row at all. */}
+          {currentBoard.played > 0 ? (
+            <>
+              <p className="muted page-intro">
+                Where every name stands in {currentBoard.season}, after{' '}
+                {plural(currentBoard.played, 'game', 'games')}. Every name links through to a page
+                of their own.
+              </p>
+              <LeaderBoards rows={currentBoard.rows} />
+            </>
+          ) : (
+            // No games played yet this season, but there's history below: the
+            // site's own rule against a fixture-only season blanking the page,
+            // applied to a board rather than to Home's summary tiles.
+            <p className="muted page-intro">
+              No games played in {currentBoard.season} yet — every board here fills in from the
+              first result.
+            </p>
+          )}
+          <SeasonBoards boards={seasonBoards} />
           <p className="muted card-foot">
             Every season together on{' '}
             <Link className="more" to="/records/all-time">Records → All-time</Link>
           </p>
         </>
-      ) : view === 'data' ? (
-        <DataCentre
-          rows={pool.rows}
-          scope={scope}
-          stat={params.get('stat')}
-          onStat={(next) => go({ stat: next === 'playing' ? null : next })}
-        />
       ) : (
-        <Squad
-          rows={pool.rows}
-          badges={badges}
-          layout={layout}
-          onLayout={(next) => go({ layout: next === 'list' ? null : next })}
-          scope={scope}
-          emptyText={`Nobody was picked ${scope ? `in ${scope}` : 'yet'}.`}
-        />
+        <>
+          <p className="muted page-intro">
+            {view === 'data'
+              ? `Every stat for ${plural(scopePool.rows.length, 'player', 'players')} ${scope ? `picked in ${scope}` : 'the club has ever picked'}.`
+              : `${plural(scopePool.rows.length, 'player', 'players')} ${scope ? `picked in ${scope}` : 'the club has ever picked'}, most games first.`}{' '}
+            Every name links through to a page of their own.
+          </p>
+          {view === 'data' ? (
+            <DataCentre rows={scopePool.rows} scope={scope} onSearchAllTime={clearScope} />
+          ) : (
+            <Squad
+              rows={scopePool.rows}
+              badges={badges}
+              layout={layout}
+              onLayout={(next) => go({ layout: next === 'list' ? null : next })}
+              scope={scope}
+              onSearchAllTime={clearScope}
+              emptyText={`Nobody was picked ${scope ? `in ${scope}` : 'yet'}.`}
+            />
+          )}
+        </>
       )}
     </div>
   );

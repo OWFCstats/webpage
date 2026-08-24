@@ -4,7 +4,7 @@
 
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { statLeaders } from '../src/lib/players.js';
+import { seasonPools, statLeaders } from '../src/lib/players.js';
 
 const row = (id, goals) => ({ player: { id, name: id }, goals });
 
@@ -35,4 +35,32 @@ test('next is null once the board holds everyone with a total', () => {
   const rows = [row('a', 5), row('b', 3)];
   const { next } = statLeaders(rows, 'goals', 5);
   assert.equal(next, null);
+});
+
+test('seasonPools returns one pool per season, newest first, current flagged', () => {
+  const players = [{ id: 'p1', name: 'Alice' }, { id: 'p2', name: 'Bob' }];
+  const matches = [
+    { id: 'm1', season: '2024/25', goals_for: 2, goals_against: 1 },
+    { id: 'm2', season: '2025/26', goals_for: 1, goals_against: 1 },
+    { id: 'm3', season: '2026/27', goals_for: null, goals_against: null }, // fixture, not yet played
+  ];
+  const appearances = [
+    { player_id: 'p1', match_id: 'm1', goals: 1, assists: 0, yellows: 0, reds: 0, motm: false, started: true },
+    { player_id: 'p1', match_id: 'm2', goals: 0, assists: 1, yellows: 0, reds: 0, motm: false, started: true },
+  ];
+
+  const pools = seasonPools(players, matches, appearances);
+
+  assert.deepEqual(pools.map((p) => p.season), ['2026/27', '2025/26', '2024/25']);
+  // 2026/27 has a fixture but no result, so it isn't the current season —
+  // currentSeasonOf skips straight to the most recent one with a played game.
+  assert.deepEqual(pools.map((p) => p.current), [false, true, false]);
+
+  const played2025 = pools.find((p) => p.season === '2025/26');
+  assert.equal(played2025.played, 1);
+  assert.equal(played2025.rows.find((r) => r.player.id === 'p1').assists, 1);
+
+  const unplayed = pools.find((p) => p.season === '2026/27');
+  assert.equal(unplayed.played, 0);
+  assert.deepEqual(unplayed.rows, []);
 });

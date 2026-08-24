@@ -31,6 +31,12 @@ const LAYOUTS = [
   { id: 'cards', label: 'Cards' },
 ];
 
+/** How many names show before "Show all" is needed. The roster is the whole
+ *  club's history by default now, not one season's ~50, so an all-time list
+ *  needs a default short enough to open on — top 20 by appearances, the same
+ *  order the list is already sorted in. */
+const CAP = 20;
+
 /** A zero is the quietest thing in the row: it's true, and it isn't the point. */
 function Figure({ value, className }) {
   return <span className={`${className}${value === 0 ? ' nil' : ''}`}>{value}</span>;
@@ -62,10 +68,11 @@ function SquadRow({ row }) {
  * is the whole reason this view exists — the badges are the site's argument for
  * turning up, and without it they are invisible unless you open a profile.
  *
- * The badges are career-wide where the figures are the season's, because a
- * career badge has no season. Silver appearances beside one game says "this is
- * someone who has been here for years and played once this time", which is the
- * more useful sentence.
+ * The badges are always career-wide; the figures are too, by default, now that
+ * the roster opens on the club's whole history. A season filter narrows just
+ * the figures — silver appearances beside one game says "this is someone who
+ * has been here for years and played once this time" — which is why the card-
+ * foot note below only shows up in that case.
  *
  * No monogram: the tile's picture is the shelf. A monogram beside the name
  * costs 40px of a 141px measure and puts nearly every name on two lines, and a
@@ -114,18 +121,21 @@ function SquadCard({ row, badges }) {
 }
 
 /**
- * The squad, every name of it. Two views over one roster: the team sheet, and
- * the tiles that put the badges on the page.
+ * The squad: every player the club has ever picked, by default — not one
+ * season's roster. Two views over the same rows: the team sheet, and the
+ * tiles that put the badges on the page.
  *
- * **Nobody is behind a tap.** This is the page a player opens to find their own
- * name, and the version this replaced showed the first twelve with a "Show all"
- * count under them, so a player with three appearances had to ask to exist. One
- * affordance for narrowing the list, the search box, and that is all: a page
- * with three ways to see more of itself has told you it is hiding something.
+ * **Nobody is behind more than one tap.** A season's worth of names fits a
+ * phone; the club's whole history doesn't, so the list opens on the top 20 by
+ * appearances — the order it's already sorted in — with one "Show all"
+ * beneath it. A search always searches every name regardless of the cap: this
+ * is the page a player opens to find their own, and a result hidden behind
+ * "Show all" would be worse than no cap at all.
  *
- * `scope` names the season the rows were filtered to, so a search that finds
- * nobody can say where it looked — the trap otherwise is a player who only
- * appears in an earlier season reading as a player who was never here.
+ * `scope` names the one season the rows were filtered to, or null for the
+ * all-time default — so a search that finds nobody can say where it looked,
+ * and offer to widen the search rather than send the reader to another page
+ * that shows the same roster.
  */
 export default function Squad({
   rows,
@@ -133,12 +143,14 @@ export default function Squad({
   layout = 'list',
   onLayout,
   scope = null,
+  onSearchAllTime,
   emptyText = 'No appearances recorded yet.',
 }) {
   const [query, setQuery] = useState('');
+  const [showAll, setShowAll] = useState(false);
 
   const q = query.trim().toLowerCase();
-  const listed = rows
+  const sorted = rows
     .filter((r) => !q || r.player.name.toLowerCase().includes(q))
     .sort(
       (a, b) =>
@@ -146,12 +158,22 @@ export default function Squad({
         b.goalInvolvements - a.goalInvolvements ||
         a.player.name.localeCompare(b.player.name),
     );
+  const capped = !q && !showAll && sorted.length > CAP;
+  const listed = capped ? sorted.slice(0, CAP) : sorted;
 
   // Nobody picked and nobody matched are two states, and only one of them wants
   // a search box: an empty squad has nothing to narrow, where a search that
   // found nobody needs the box it was typed into back. So this one returns early
   // and the other keeps the controls.
   if (rows.length === 0) return <div className="empty sheet">{emptyText}</div>;
+
+  const showAllButton = capped && (
+    <div className="squad-more-row">
+      <button type="button" className="more squad-more" onClick={() => setShowAll(true)}>
+        Show all {sorted.length} players →
+      </button>
+    </div>
+  );
 
   return (
     <div>
@@ -182,11 +204,10 @@ export default function Squad({
       {listed.length === 0 ? (
         <div className="empty sheet">
           {scope ? `Nobody in ${scope} matches “${query.trim()}”.` : `Nobody matches “${query.trim()}”.`}{' '}
-          {scope && (
-            <>
-              Every squad the club has ever picked is on{' '}
-              <Link className="more" to="/records/all-time">Records → All-time</Link>
-            </>
+          {scope && onSearchAllTime && (
+            <button type="button" className="more" onClick={onSearchAllTime}>
+              Search all time →
+            </button>
           )}
         </div>
       ) : layout === 'cards' ? (
@@ -196,7 +217,8 @@ export default function Squad({
               <SquadCard key={r.player.id} row={r} badges={badges?.get(r.player.id) ?? null} />
             ))}
           </div>
-          <p className="muted card-foot">Badges are career-wide; the figures are this season's.</p>
+          {showAllButton}
+          {scope && <p className="muted card-foot">Badges are career-wide; the figures are {scope}'s.</p>}
         </>
       ) : (
         <div className="sheet">
@@ -210,6 +232,7 @@ export default function Squad({
               <SquadRow key={r.player.id} row={r} />
             ))}
           </ul>
+          {showAllButton}
         </div>
       )}
     </div>

@@ -93,6 +93,31 @@
 .player-row .fig.nil,
 .squad-card .v.nil { color: var(--ink-soft); }
 
+/* The all-time roster's own cap: top 20 by appearances, one row asking for the
+   rest rather than the three affordances Phase 17 cut. Bottom-anchored so it
+   reads as the list's own next row, not a separate control. */
+.squad-more-row {
+  display: flex;
+  justify-content: center;
+  padding: var(--s2) 0;
+  border-top: 1px solid var(--rule);
+}
+
+.squad-more {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 var(--s2);
+  background: none;
+  border: none;
+  font-size: var(--t-small);
+  font-weight: 600;
+  color: var(--gold-deep);
+  cursor: pointer;
+}
+
+.squad-more:hover { text-decoration: underline; }
+
 /* Search on the left, the layout toggle at the far end, both views carrying the
    same control in the same place so switching doesn't move it. The box grows
    into whatever the toggle leaves — and below about 340px of room there isn't
