@@ -1,26 +1,101 @@
-/* The data centre — components/players-hub/DataCentre.jsx. Every player,
-   every stat, five groups at a time rather than one wide table: see the
-   component's own comment for why thirteen columns can't share a phone with
-   a name.
+/* The data centre — components/players-hub/DataCentre.jsx. One wide table,
+   every player and every stat in it, rather than the five small ones this
+   used to be split into. That split existed to keep the table inside a
+   phone's width; this page is the one deliberate exception to that rule
+   instead (see docs/DESIGN.md → Mobile and scripts/collect.js's
+   `wide-reference-table` carve-out) — a data-nerd's reference table earns the
+   horizontal scroll a leaderboard or a squad tile never would. The name
+   column still sticks below 700px (primitives.css's own `.table-wrap` rule),
+   so a reader always knows which row they're looking at while the rest of the
+   table scrolls past underneath it.
 
-   table.data's default cell rule is nowrap, which is right for a short
-   season string (SeasonTable) but wrong for a name — "Dom Bonham-Lloyd" would
-   force the whole table wider rather than wrap, the exact clipped-name bug
-   check:layout exists to catch. This is the one table on the site whose first
-   column is a name rather than a short label, so it's the one that needs the
-   override. */
-.dc-table table.data td:first-child,
-.dc-table table.data th:first-child {
-  white-space: normal;
+   Every other table on the site overrides table.data's default nowrap on its
+   first column, because a name forced onto one line is what makes a
+   constrained table clip or grow past its budget. This table has no width
+   budget to protect — scrolling is the point — so the name stays on its
+   default single line rather than wrapping to two for every row and nearly
+   doubling the table's height for no reason: forcing "Dom Bonham-Lloyd" onto
+   one line here costs a few pixels of extra scroll, not a clipped word. */
+
+/* The divider between the counted columns and the calculated ones (G+A
+   onward) — a border rather than a fourth column shape, on both the head and
+   the body so it reads as one rule down the table rather than a stray cell
+   edge. */
+.dc-table table.data th.dc-calc,
+.dc-table table.data td.dc-calc {
+  border-left: 1px solid var(--rule-firm);
 }
 
 /* Condensed at the width the league table also condenses at, and for the
-   same reason: three stat columns plus a wrapping name need the padding back
-   that the sheet spends around the table. */
+   same reason: fewer pixels of padding per column is fewer pixels of
+   horizontal scroll to reach the last one. */
 @media (max-width: 480px) {
   .dc-table table.data th,
   .dc-table table.data td { padding: 0.5rem 0.3rem; }
 
   .dc-table table.data th:first-child,
   .dc-table table.data td:first-child { padding-left: 0; }
+}
+
+/* Search grows, the column picker pins to the far end — the same split
+   squad.css uses for its own search-and-toggle row. */
+.dc-controls input {
+  flex: 1 1 10rem;
+  min-width: 0;
+}
+
+.dc-controls .col-picker { margin-left: auto; }
+
+/* ---- the column picker ----
+   A native <details> rather than a custom popover: it needs no JS beyond the
+   checkboxes themselves, closes on an outside click for free, and costs one
+   compact control in the search row regardless of how many columns it holds
+   — the same reasoning the data centre's old stat-group <select> used. */
+.col-picker {
+  position: relative;
+}
+
+.col-picker summary {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 var(--s2);
+  font-size: var(--t-small);
+  font-weight: 600;
+  color: var(--ink-soft);
+  border: 1px solid var(--rule-firm);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  list-style: none;
+}
+
+.col-picker summary::-webkit-details-marker { display: none; }
+
+.col-picker[open] summary { color: var(--ink); border-color: var(--gold-deep); }
+
+/* Anchored to its own right edge and capped well under the narrowest phone,
+   so opening it never pushes the page wider — the bug this fixed pushed 8px
+   past the edge at 375px with an unconstrained width. */
+.col-picker-panel {
+  position: absolute;
+  right: 0;
+  z-index: 2;
+  margin-top: var(--s1);
+  padding: var(--s2);
+  background: var(--paper);
+  border: 1px solid var(--rule-firm);
+  border-radius: var(--r);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--board) 18%, transparent);
+  display: grid;
+  gap: var(--s1);
+  width: max-content;
+  max-width: min(220px, calc(100vw - (var(--s4) * 2)));
+}
+
+.col-picker-panel label {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  font-size: var(--t-small);
+  white-space: nowrap;
 }

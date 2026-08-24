@@ -97,9 +97,12 @@ Three decisions about what a page shows, before any decision about how it looks.
 >
 > **Phase 22.** Players gains its third sub-page, `/players/data` — every
 > player, every stat, the columns the old "Full table" toggle held before
-> Phase 17 deleted it. It stays behind a fourth address of its own,
+> Phase 17 deleted it. It stayed behind a fourth address of its own,
 > `?stat=`, one per stat group, for the same reason the squad's `?layout=`
 > does: a group the harness never visits is a name column it never checks.
+> **A later pass replaced the five groups with one wide table** — see *The
+> boards* and *Mobile* — so `?stat=` and the address it lived behind are both
+> gone; only `/players/data` and its `?season=` filter remain.
 
 ### Sections do not grow; they gain depth
 
@@ -748,14 +751,22 @@ what you get.
 
 ## Leaderboards and the squad
 
-Two views behind one nav entry, plus a third for the numbers. **Players is this
-season; Records is all time** — the same components, different scope, so the two
-can't drift.
+Three sub-pages, three different relationships to a season. **Leaderboards
+opens on the current season** and keeps every earlier one on the page, folded
+into a collapsible archive underneath it. **Squad and the data centre are the
+club's whole history by default**, filterable to one season for the reader
+who wants it. **Records stays the one all-time board**, built from the same
+card component as Leaderboards so the two can't drift on what a stat means,
+even though they now disagree about scope by design.
 
 > **Phase 14.** The card format below landed, on both pages — Players and
 > Records each run the whole set of six now, and Players' season picker lost
 > "All time" the same commit. **Phase 17** built the squad view below: every
-> name on the page, and the tiles that put the badges on it.
+> name on the page, and the tiles that put the badges on it. **A later pass**
+> replaced Players' single-season picker with the current-season-plus-archive
+> shape described here, made Squad and the data centre all-time by default,
+> cut the per-card footer, and rebuilt the data centre as one wide table — see
+> `docs/ROADMAP.md`'s most recent phase for the reasoning.
 
 ### The boards
 
@@ -770,11 +781,16 @@ then a footer.
 - **A name wraps rather than clips**, the same rule as everywhere else on the
   site. A card this narrow means some names run to a second line; that costs a
   little height, and it's still the right trade against half a name.
-- **The footer names the boundary the cap left out** — `6th of 48 · 9 apps` is
-  the rank, the field size and the value right after the five shown, not a
-  personal "your rank": nothing on this card knows who's reading it. It
-  replaces the old "…and N more level on X" hedge with a fact instead of an
-  apology, and it's the same line whether the cut lands inside a tie or not.
+- **No footer.** An earlier version named the boundary the cap left out —
+  `6th of 48 · 9 apps`, the rank, the field size and the value right after the
+  five shown — as a fact rather than a personal "your rank": nothing on the
+  card knows who's reading it. It read as exactly that to the players it was
+  written for: a line of jargon at the foot of every card with nothing behind
+  it worth parsing at a glance, so it's cut rather than reworded. A tie still
+  needs no footnote — the rank column shows 1, 1, 3 on its own — and a reader
+  who wants "where do I place beyond the top five" has the data centre's
+  sortable table for it now, which answers the question with a real rank
+  rather than a caption.
 - **No per-game rate line, and no stat icon.** Both were considered — the old
   hero board carried a "1.07 goals per game" caption, and DESIGN's own draft of
   this section imagined an icon in the heading — but a card in a two-up grid on
@@ -795,16 +811,55 @@ assists, appearances, MOTM, clean sheets. Records used to show three, as a
 workaround for the page being 4,823px long; the card format fixed the cause, so
 it now runs all six the same as Players.
 
-**Players carries no all-time scope.** Its season picker no longer offers "All
-time" — that board is Records', reached once rather than from both sections on
-the same component.
+**Leaderboards carries no all-time scope.** There's no picker offering "All
+time" on this sub-page at all any more — not a season selector and not a
+combined board — because that board is Records', reached once rather than
+from both sections on the same component. (Squad and the data centre carry a
+different, unrelated all-time default of their own — see *The season
+archive* below and *The squad* — which is about the roster's own scope, not
+about a second combined leaderboard.)
 
 **This reverses an earlier rule and the reversal was deliberate.** The previous
 system put every board on the page at once, on the grounds that "a leaderboard
 you have to click for can't show you where your name isn't". True, and the fix
-for it is the footer line, not 2,700px of bar charts. Six capped cards show every
-board *and* fit a phone: Players → Leaderboards measured 2,992px before this
-phase and 1,370px after, against a 1,400px budget.
+is a rank column plus a cap, not 2,700px of bar charts: six capped cards show
+every board *and* fit a phone — Players → Leaderboards measured 2,992px before
+this phase and 1,370px after, against a 1,400px budget. A per-card footer
+naming exactly where the cut fell shipped alongside this and was cut again
+later — see *The boards* above — once it turned out to read as jargon rather
+than as an answer; a reader who wants their own place beyond the top five now
+has the data centre's sortable table for it, not a caption.
+
+### The season archive
+
+`components/players-hub/SeasonBoards.jsx`. Leaderboards used to carry a season
+picker, the same `<select>` every other sub-page had — pick a year, see that
+year's six boards, nothing else on the page. That's gone: **the current
+season's boards render open, in full, and every earlier season is a thin
+banner underneath**, closed until it's tapped. `<details>`/`<summary>` rather
+than a hand-rolled disclosure, because the browser's own keyboard and screen
+reader behaviour for "collapsed, expandable" is free, and a chevron drawn from
+two CSS borders costs nothing to rotate on `[open]`.
+
+**This is the shape "keep condensed as the seasons pile up" asks for.** A
+picker hides everything behind one choice; a page with six boards a season
+stacked flat would grow by a full grid every year. A banner is one line
+whether it's open or shut, so ten years of history costs ten rows closed and
+whatever the reader actually opens.
+
+**The current season is `lib/players.js`'s `currentSeasonOf`, not the most
+recent row.** The same rule Home and Matchday already follow: a fixture
+entered for next season is a card, not a context switch, so it doesn't
+silently become "current" and blank the boards above a real season's worth of
+results. If nothing has been played in the current season yet, the boards
+say so in one line and the archive still renders underneath it — the site's
+own rule against a fixture-only season erasing the page, applied to a board
+rather than to Home's summary tiles.
+
+**Every board in the archive is the same `LeaderBoards` component**, one
+instance per season, not a second shape built to be collapsible. Opening a
+past season costs nothing to get right, because it's markup the harness
+already measures at the top of the page.
 
 **The bars are gone entirely.** Season's "Most involved" was the one caller
 left drawing one, and Phase 18 moved it onto `LeaderBoards` too — one
@@ -835,11 +890,23 @@ and that sharing is the point — labels belong at the top of a column, once.
 Three figures, not four: a fourth column leaves a 375px phone no room for a name.
 Apps leads them, because turning up is the thing this club is trying to reward.
 
-**Every name is on the page.** All 47 of the club's real 2025/26 squad, not the
-first 12 with a "Show all" button — this is the page people open to find
-themselves, and a player with three appearances should not have to tap to exist.
-One affordance for narrowing, the search box, and that's it; "Full table" and
-"Show all 47" are both gone.
+**The roster is the club's whole history by default, not one season's.** A
+name should be findable regardless of which season it happened in, so this
+page no longer reads the season a visitor picked on Leaderboards — it opens
+on every player the club has ever picked, career totals attached, with an
+optional year filter (the same `SeasonSelect` every other sub-page uses,
+"All time" as its own option) for the reader who wants one season only.
+
+**That's also why the cap came back — once, and for a different reason than
+before.** All 47 of one season fits a phone; the whole club across every
+season the site has on record does not, and only gets longer. The list opens
+on the **top 20 by appearances** — the order it's already sorted in — with
+one "Show all N players" beneath it, the one affordance Phase 17 argued a
+roster shouldn't need. **A search is never capped**, regardless: this is the
+page people open to find themselves, and a name hidden behind "Show all"
+would be worse than no cap at all. So there are still only two affordances on
+the page, not three — the search box, and the one "Show all" a visitor only
+sees if they haven't already searched or asked for it.
 
 **Two views, list or cards, and one row shape.** `FIGURES` in
 `components/players-hub/Squad.jsx` is the single definition of what a squad row
@@ -859,10 +926,11 @@ that. So:
   A tile says what somebody has; the page it links to says what is next. A
   player picked but never played holds nothing, and that tile says so.
 - **No count and no year list** beside a drawing. Those are what a shelf is for.
-- **Career-wide badges beside season figures**, because a career badge has no
-  season. Silver appearances next to one game says "this is someone who has been
-  here for years and played once this time", which is the more useful sentence,
-  and one line under the grid says which is which.
+- **Career-wide badges, and — by default — career-wide figures too**, now that
+  the roster defaults to all-time. A season filter narrows the figures without
+  touching the badges, since a career badge has no season; the note under the
+  grid only appears in that case, naming which is which, because there's
+  nothing to explain when both are already the same scope.
 - **No monogram.** It costs 40px of a 141px measure and puts nearly every name
   on two lines. A stand-in for a photo we don't have is not worth folding a name
   in half; the list is where it earns its place.
@@ -874,8 +942,11 @@ that. So:
 **The two layouts are one address apart** — `/players/squad` and
 `/players/squad?layout=cards` — not component state. A view nobody can link to
 is also a view the harness can't measure, and an unmeasured view is where a
-clipped name hides. The param is the roster's own and does not carry across to
-Leaderboards, which has nothing to do with it.
+clipped name hides. `layout` is the roster's own and does not carry across to
+Leaderboards or the data centre. `season` is the opposite: it's the one thing
+this page shares with the data centre, so filtering to a year on either sub-
+page keeps that year when the segmented control switches to the other —
+Leaderboards has no use for it and drops it.
 
 A zero takes `--ink-soft` — it's true, and it isn't the point. A name wraps
 rather than clips: half a name is worse than a two-line one on the page where
@@ -1008,10 +1079,24 @@ The design target, not a fallback. Every change gets checked at 375px first.
   same breakpoint to drop its monogram, which is not a column — a stand-in for a
   photo is the one thing in that row that isn't data.
 - Admin data entry is a phone-first flow — it's used on a Saturday night at a
-  pub table. Sticky save, big inputs, one record per block. This is also why the
-  data centre reports per-appearance rates and not per-90: minutes would be
-  eleven to sixteen numbers typed per match on a phone, and entry burden is what
-  kills a volunteer-run stats site.
+  pub table. Sticky save, big inputs, one record per block. This is also why
+  the data centre's rates are really per-appearance figures rather than
+  actual per-90-minutes ones: minutes would be eleven to sixteen numbers typed
+  per match on a phone, and entry burden is what kills a volunteer-run stats
+  site. They're labelled "/90" anyway, on request, for the reader who wants
+  the familiar fbref shorthand — the table's own footnote says once that this
+  assumes a full 90 minutes every time out, rather than leaving every "/90"
+  header to imply data the club has never recorded.
+- **The data centre's own table is the one deliberate exception to "a table
+  never side-scrolls".** Every other rule on this page is about a table that
+  has to fit a phone; this one page is built for the opposite reader — a data
+  nerd who wants every stat at once and a horizontal scrollbar rather than
+  five separate small tables. It carries its own marker class,
+  `wide-reference-table`, which `scripts/collect.js`'s "no table hides a
+  column" invariant explicitly skips — see the script's own comment. The name
+  column still sticks below 700px, the same rule every `.table-wrap` gets, so
+  a reader never loses track of which row they're scrolling. A second table
+  reaching for this exception needs its own argument, not a widened selector.
 
 ### Page length
 
@@ -1032,7 +1117,7 @@ constraint, so it lives here.
 | Records → any sub-page | 2,000 |
 | Player detail | 2,400 |
 | Opponent detail | 2,000 |
-| Players → Squad | no cap — it's a roster, and every name belongs on it |
+| Players → Squad | no cap on "Show all" — it's a roster, and every name belongs on it once asked for; the default view opens on the top 20 |
 | Players → Data centre | no cap — it's the reference table, and every player's row belongs on it |
 
 Records is a reference document and earns length, which is why it splits into
@@ -1149,8 +1234,10 @@ growing past ~80 lines means something in it should have been a primitive.
 - **No sixth section.** Depth goes into a sub-page of one of the five, per
   *Structure*. A section is expensive to add and expensive to rename — `App.jsx`
   already carries seven redirect shims.
-- **No per-90 stats.** They need minutes, which nobody is going to type. See
-  *Mobile*.
+- **No real per-90 stats.** They need minutes, which nobody is going to type.
+  The data centre labels its rate columns "/90" anyway, on request — that's a
+  label choice for a familiar shorthand, not new data collection, and the
+  table's footnote says so. See *Mobile*.
 - **No stored aggregates.** Still true and still the load-bearing rule:
   everything is derived. The two exceptions are league standings and the voted
   Player of the Season, and there is not a third.

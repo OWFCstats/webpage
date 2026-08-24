@@ -1987,6 +1987,120 @@ each, once Home ships.
 
 ---
 
+## Phase 24 — Players, the second pass
+
+A club request rather than a review finding: three changes to how the
+section's own sub-pages scope themselves to a season, plus a rebuild of the
+data centre from five small tables into the one wide reference table Phase 22
+argued against building.
+
+**Leaderboards keeps a season picker in spirit, not in the control.** The
+`<select>` this page shared with Squad and the data centre is gone; the
+current season's six boards render open, and every earlier season is a thin
+`<details>` banner underneath, closed until it's tapped — "keep it condensed
+as the seasons pile up," which a picker already did by hiding everything
+behind one choice, and a stacked grid of boards per season never would have.
+See *The season archive* in `DESIGN.md`.
+
+**Squad and the data centre flip from this-season to all-time.** Both used to
+read whatever season the shared picker was on, same as Leaderboards; both now
+default to the club's whole history, with an optional `?season=` filter for
+one year only. The reasoning is the reverse of Leaderboards': a name or a
+stat should be findable regardless of when it happened, where Leaderboards is
+specifically about the thing that's live right now. `CLAUDE.md`'s "Players is
+scoped to a season, Records is all-time" line no longer holds for all three
+sub-pages at once and is corrected to say which is which.
+
+**The squad's own cap comes back, for a different reason than the one Phase
+17 removed it for.** One season's ~50 names fits a phone with room to spare;
+the whole club across every season on record doesn't, and only grows. The
+list opens on the top 20 by appearances with one "Show all N players" beneath
+it — the same one-affordance rule Phase 17 argued for, applied to a bigger
+roster. A search is never capped, regardless of scope.
+
+**The data centre's five small tables become one.** Phase 22 built five
+groups of two or three columns each because a name plus thirteen stat columns
+has no width to share with a 320px phone, and split the difference by
+hiding most of the table behind a `<select>`. That trade is reversed here: the
+club wants every stat visible and sortable in one table, `starts` retired as a
+column that never told anyone anything (every player who's picked starts),
+and the rate columns relabelled "/90" for the fbref reader who expects that
+shorthand even though they're really per-appearance figures — the club has
+never recorded minutes, and the table's own footnote says so once. That table
+cannot fit a phone's width and isn't trying to: it's the one deliberate
+exception to "a table never side-scrolls" the whole rest of the site holds
+to, carrying its own `wide-reference-table` marker class that
+`scripts/collect.js`'s own invariant explicitly skips. The name column still
+sticks below 700px, same as every other table on the site. A "Columns"
+picker (a native `<details>` full of checkboxes) lets a reader narrow the
+table to fewer columns than are on it, for whoever doesn't want the whole
+width open at once — filtering the table down rather than filtering it by
+group, which is what the club asked for in place of the old switcher.
+
+**The per-card footer is cut, not reworded.** `6th of 48 · 9 apps` under
+every leaderboard card named the rank right after the cut, correctly, and
+read as jargon to the players it was written for regardless. See *The
+boards* in `DESIGN.md` for what replaces the question it was answering.
+
+**Done means** `npm test` and `npm run check:layout` both pass; Leaderboards
+stays under its 1,400px budget with the archive present and collapsed; the
+squad and data centre routes measure at their all-time default and at a
+season filter; the data centre's wide table carries no unexpected
+`table-wrap-scrolls` finding outside its own marker class; `CLAUDE.md` and
+`DESIGN.md` describe the new scoping rather than the old one.
+
+### Built — what landed, and what it found
+
+All of the above. `lib/players.js` gained `seasonPools` — one player-totals
+pool per season, current one flagged by `currentSeasonOf` rather than by
+`seasonsOf`'s row-based ordering, so a fixture-only next season never
+displaces a completed one as "current" here either (`CLAUDE.md`'s own rule,
+already load-bearing on Home and Matchday). `components/players-hub/
+SeasonBoards.jsx` is the archive, reusing `LeaderBoards` once per season
+rather than inventing a second collapsible shape. `LeaderBoards.jsx` lost its
+per-card footer and the `next`/`total`/`noun` plumbing that only existed to
+print it.
+
+**The wide table's first attempt was quietly two-and-a-half times taller than
+it needed to be, and the fixture caught it before a screenshot would have
+had to.** Every other table on the site overrides `white-space: nowrap` to
+`normal` on its name column, because a name forced onto one line is what
+makes a *width-constrained* table clip or grow past budget. The data centre
+carried that same override forward from the five-group design by habit — and
+with thirteen columns competing for room, the browser's own table layout
+gave the (now wrappable) name column barely enough width for "Hugh Grindon,"
+wrapping nearly every row to two lines and measuring **3,300px** against the
+old five-group design's 2,603px for the same 49 rows. This table has no width
+to protect — scrolling past 375px is the entire point of building it — so the
+fix was to drop the override and let the name sit on its natural single line
+like every other column. **2,584px**, slightly under the old figure, for the
+same rows plus nine more visible columns.
+
+**The squad and data centre routes needed their own site-map entries, not
+just new content at the old addresses.** `players-data`'s four stat-group
+siblings (`?stat=attacking` etc.) are gone — there's one table now, so
+nothing left for that param to switch between — replaced by one route
+proving the all-time default and one proving the `?season=` filter, and the
+squad gained the equivalent filtered route it never needed before this
+phase. `PlayersHub.jsx` still strips a stray `?stat=` from any link still
+carrying one rather than erroring on it.
+
+**Measured, not assumed.** `npm run shots` on `mid-season` at 375px: Players →
+Leaderboards is **1,296px** with no archive to show (the fixture has one real
+season); on `pre-season`, where 2026/27's two fixtures are entered and
+nothing's been played in them yet, it's **1,358px** with the current-season
+board replaced by a one-line "no games played" note and 2025/26 sitting in
+the archive as a single closed banner — both under the 1,400px budget.
+Squad and the data centre are unchanged in height between the all-time
+default and the one-season filter on either fixture, because neither fixture
+has a second season with anyone in it yet; the filtered routes exist so that
+stops being true unmeasured the day a real second season is. All 73 unit
+tests pass (four new, for `seasonPools`), `npm run build` is clean, and
+`check:layout` passes with the same 23 known failures it did before this
+phase and nothing new.
+
+---
+
 ## Page budgets
 
 **`DESIGN.md`'s *Page length* table is the authority for the budget numbers** —
@@ -2006,12 +2120,12 @@ review did.
 | Home | 2,091 | 2,068 | 1,600 | 19 — built: 1,882, over by 282 |
 | Matchday | 1,857 | 1,857 | 1,900 | 20 |
 | Season | 3,530 | 3,672 | 2,200 | 18 |
-| Players → Leaderboards | 2,714 | 2,997 | 1,400 | 14 |
-| Players → Squad | 1,254 | 1,254 | no cap — it's a roster | 17 — built: 3,078 list / 4,150 cards, every name |
+| Players → Leaderboards | 2,714 | 2,997 | 1,400 | 14 — built: 1,370; **24**: 1,296 (no archive) / 1,358 (one closed banner), still under 1,400 |
+| Players → Squad | 1,254 | 1,254 | no cap — it's a roster | 17 — built: 3,078 list / 4,150 cards, every name; **24**: scope flipped to all-time and the default view capped at 20 — see that phase |
 | Records → any sub-page | 4,823 (one page) | 5,071 (one page) | 2,000 | 16 — met: 1,667 / 961 / 1,880 |
 | Player detail | 2,941 | 2,940 | 2,400 | 21 |
 | Opponent detail | not measured | 1,196 | 2,000 | 21 |
-| Players → Data centre | didn't exist | 2,603 | no cap — it's the reference table | 22 — built: 2,603, same across all five stat groups |
+| Players → Data centre | didn't exist | 2,603 | no cap — it's the reference table | 22 — built: 2,603, same across all five stat groups; **24**: rebuilt as one wide table, 2,584, deliberately exempt from the no-side-scroll rule |
 
 Records earns length as a reference document, which is why it splits rather than
 shrinks. Home does not.

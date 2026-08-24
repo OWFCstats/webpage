@@ -61,37 +61,28 @@ export const ROUTES = [
     name: 'Players — squad, cards',
     budget: 'Players → Squad',
   },
-  // One route per stat group: each swaps in a different set of columns beside
-  // the same name column, and the name column is the one at risk of hiding a
-  // letter — Phase 9's own rule for why a view needs its own address.
+  // The all-time default is the one every other squad route measures; this
+  // one exercises the season filter instead, so the "top 20 of the whole
+  // club" cap and the single-season case don't quietly diverge unmeasured.
+  {
+    id: 'players-squad-season',
+    route: `/players/squad?season=${encodeURIComponent('2025/26')}`,
+    name: 'Players — squad, filtered to one season',
+    budget: 'Players → Squad',
+  },
+  // One wide table now, not five groups behind a switcher, so one route
+  // covers it — the name column is still the one at risk of hiding a letter,
+  // and it's exercised at every width like every other route here.
   {
     id: 'players-data',
     route: '/players/data',
-    name: 'Players — data centre, playing time',
+    name: 'Players — data centre',
     budget: 'Players → Data centre',
   },
   {
-    id: 'players-data-attacking',
-    route: '/players/data?stat=attacking',
-    name: 'Players — data centre, attacking',
-    budget: 'Players → Data centre',
-  },
-  {
-    id: 'players-data-discipline',
-    route: '/players/data?stat=discipline',
-    name: 'Players — data centre, discipline',
-    budget: 'Players → Data centre',
-  },
-  {
-    id: 'players-data-honours',
-    route: '/players/data?stat=honours',
-    name: 'Players — data centre, team & honours',
-    budget: 'Players → Data centre',
-  },
-  {
-    id: 'players-data-rates',
-    route: '/players/data?stat=rates',
-    name: 'Players — data centre, per appearance',
+    id: 'players-data-season',
+    route: `/players/data?season=${encodeURIComponent('2025/26')}`,
+    name: 'Players — data centre, filtered to one season',
     budget: 'Players → Data centre',
   },
   {

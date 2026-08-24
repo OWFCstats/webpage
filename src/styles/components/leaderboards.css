@@ -103,10 +103,12 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* Bottom padding is the list's own: there's no footer row left to spend it
+   on, so the last name has to carry the card's own breathing room. */
 .lb-list {
   list-style: none;
   margin: 0;
-  padding: 0 var(--s4);
+  padding: 0 var(--s4) var(--s3);
 }
 
 .lb-row {
@@ -144,14 +146,65 @@
   color: var(--ink);
 }
 
-.lb-card .card-foot {
-  margin: 0;
-  padding: 6px var(--s4) var(--s2);
-}
-
 @media (max-width: 700px) {
   .lb-lead { padding: 6px var(--s3); }
-  .lb-list { padding: 0 var(--s3); }
+  .lb-list { padding: 0 var(--s3) var(--s2); }
   .lb-card h3 { padding: 4px var(--s3) 2px; }
-  .lb-card .card-foot { padding: 4px var(--s3) 6px; }
+}
+
+/* ---- the season archive — components/players-hub/SeasonBoards.jsx ----
+   A thin banner per past season rather than a season picker: the current
+   board is always open, and every earlier one is a native <details>, closed
+   by default, so the page grows by one row per year instead of by a whole
+   grid of cards. */
+.season-archive {
+  margin-top: var(--s4);
+  border-top: 1px solid var(--rule-firm);
+}
+
+.season-archive-entry {
+  border-bottom: 1px solid var(--rule);
+}
+
+.season-archive-entry summary {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  min-height: 44px;
+  padding: var(--s2) 0;
+  cursor: pointer;
+  list-style: none;
+}
+
+.season-archive-entry summary::-webkit-details-marker { display: none; }
+
+.season-archive-name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--t-body);
+}
+
+.season-archive-meta {
+  margin-left: auto;
+}
+
+/* A chevron drawn from two borders rather than an icon font or another SVG
+   import — cheap, and it rotates on :open with nothing more than a
+   transform. */
+.season-archive-arrow {
+  width: 7px;
+  height: 7px;
+  flex: none;
+  border-right: 2px solid var(--ink-soft);
+  border-bottom: 2px solid var(--ink-soft);
+  transform: rotate(-45deg);
+  transition: transform 0.15s ease;
+}
+
+.season-archive-entry[open] .season-archive-arrow {
+  transform: rotate(45deg);
+}
+
+.season-archive-panel {
+  padding-bottom: var(--s4);
 }
