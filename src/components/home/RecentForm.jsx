@@ -10,15 +10,19 @@ const ROW_BORDER = 1;
 
 /** Cumulative-points sparkline. Two points is a line segment, not a trend, so
  *  it draws nothing below three games rather than implying a shape. Scaled
- *  from a real zero rather than from its own min, with gridlines and value
- *  labels — a bare line has no scale to read it against. */
+ *  from the real range of the data — including below zero, since a walkover
+ *  loss in a league game costs a 3-point deduction (`matchPoints`) rather
+ *  than the routine 0 a loss otherwise would — with gridlines and value
+ *  labels, since a bare line has no scale to read it against. */
 function Sparkline({ values, stroke, height }) {
   if (values.length < 3) return null;
-  const max = Math.max(...values, 1);
-  const mid = Math.round(max / 2);
+  const min = Math.min(0, ...values);
+  const max = Math.max(1, ...values);
+  const span = max - min;
+  const mid = Math.round((min + max) / 2);
   const step = 100 / (values.length - 1);
   const points = values
-    .map((v, i) => `${(i * step).toFixed(2)},${(100 - (v / max) * 100).toFixed(2)}`)
+    .map((v, i) => `${(i * step).toFixed(2)},${(100 - ((v - min) / span) * 100).toFixed(2)}`)
     .join(' ');
   return (
     <div className="home-spark-chart" style={{ '--matched-height': `${height}px` }}>
@@ -39,7 +43,7 @@ function Sparkline({ values, stroke, height }) {
       </svg>
       <span className="spark-axis-label spark-axis-max">{max}</span>
       <span className="spark-axis-label spark-axis-mid">{mid}</span>
-      <span className="spark-axis-label spark-axis-zero">0</span>
+      <span className="spark-axis-label spark-axis-min">{min}</span>
     </div>
   );
 }

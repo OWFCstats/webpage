@@ -114,11 +114,13 @@ a.fixture-row:hover .fixture-row-body strong { color: var(--gold-deep); }
 /* Reserves a gutter for the axis labels, which are plain text siblings of the
    svg rather than text inside it — the svg stretches non-uniformly
    (preserveAspectRatio="none") to fit whatever height the chart's row count
-   gives it, and stretched text reads worse than text that never scales. */
+   gives it, and stretched text reads worse than text that never scales. A
+   little right padding too, so the line's own endpoint doesn't sit flush
+   against the card's edge the way it did with none at all. */
 /* Only matches the list's own height once they sit side by side (below);
    stacked on a phone, a chart that tall just costs page length for nothing
    the layout needs. */
-.home-spark-chart { position: relative; padding-left: 1.5rem; height: 96px; }
+.home-spark-chart { position: relative; padding: 0 0.75rem 0 1.5rem; height: 96px; }
 
 .home-spark { display: block; width: 100%; height: 100%; }
 
@@ -143,7 +145,7 @@ a.fixture-row:hover .fixture-row-body strong { color: var(--gold-deep); }
 
 .spark-axis-mid { top: 50%; transform: translateY(-50%); }
 
-.spark-axis-zero { bottom: 0; }
+.spark-axis-min { bottom: 0; }
 
 .home-spark-foot {
   display: flex;
@@ -158,14 +160,19 @@ a.fixture-row:hover .fixture-row-body strong { color: var(--gold-deep); }
 @media (min-width: 760px) {
   .home-form-body { flex-direction: row; align-items: flex-start; gap: var(--s5); }
 
-  /* Same top offset as .home-form-main .result-list, so the chart and the
-     list start on the same line instead of the chart floating at whatever
-     height its own padding happened to leave it. */
-  .home-form-trend { width: 230px; margin-top: var(--s3); }
+  /* The list doesn't want the card's leftover width — a result row is pill,
+     name, score, venue, and stretching it past what that content needs just
+     opens a gap between the name and the score that follow it. Capped, not
+     flexed, so the chart gets the room instead: a trend line reads as a
+     trend line only with width to draw across, not a 230px sliver next to
+     an oversized list. Same top offset as .home-form-main .result-list, so
+     the chart and the list start on the same line. */
+  .home-form-main { flex: 0 1 420px; }
 
-  /* Side by side now, so the chart takes the list's own measured height
-     (set inline, per instance, from the number of rows actually rendered)
-     instead of the phone's fixed 96px. */
+  .home-form-trend { flex: 1; min-width: 280px; margin-top: var(--s3); width: auto; }
+
+  /* Takes the list's own measured height (set inline, per instance, from the
+     number of rows actually rendered) instead of the phone's fixed 96px. */
   .home-spark-chart { height: var(--matched-height, 220px); }
 }
 

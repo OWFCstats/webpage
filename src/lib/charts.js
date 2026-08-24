@@ -1,7 +1,7 @@
 // Data shaping for the season and career charts. Nothing here draws — it
 // only turns matches and appearances into the point series Recharts wants.
 
-import { playedMatches, resultOf, seasonsOf } from './matches';
+import { matchPoints, playedMatches, resultOf, seasonsOf } from './matches';
 import { playerTotals } from './players';
 
 /**
@@ -50,7 +50,8 @@ export function stableColourSlots(players, matches, appearances) {
 }
 
 /**
- * Match-by-match season trend (oldest first): cumulative points (W=3 D=1),
+ * Match-by-match season trend (oldest first): cumulative points (W=3, D=1,
+ * L=0, or -3 for a walkover loss in a league game — see `matchPoints`),
  * goals for/against per game, and running goal difference. `matchday` is the
  * 1-based game number within the supplied set, so separate seasons can be
  * overlaid on a common x-axis.
@@ -63,7 +64,7 @@ export function seasonTrend(matches) {
     .reverse()
     .map((m, i) => {
       const r = resultOf(m);
-      cumPoints += r === 'W' ? 3 : r === 'D' ? 1 : 0;
+      cumPoints += matchPoints(m);
       const gd = m.goals_for - m.goals_against;
       cumGD += gd;
       return {

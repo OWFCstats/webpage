@@ -15,6 +15,23 @@ export function resultOf(match) {
   return 'D';
 }
 
+/**
+ * League points for one match: 3/1/0 for win/draw/loss, except a walkover
+ * loss in a league fixture — clubs impose a 3-point deduction for failing to
+ * fulfil a fixture, on top of not winning it, so that game costs more than
+ * an ordinary loss. The league table is typed in by hand and already
+ * reflects this; this is what lets the season trend agree with it instead of
+ * drawing the walkover as a routine 0. Scoped to league games only — a cup
+ * or friendly walkover has no standings to be deducted from.
+ */
+export function matchPoints(match) {
+  const result = resultOf(match);
+  if (result === 'L' && match.walkover && match.competition?.trim().toLowerCase() === 'league') {
+    return -3;
+  }
+  return result === 'W' ? 3 : result === 'D' ? 1 : 0;
+}
+
 export function seasonsOf(matches) {
   return [...new Set(matches.map((m) => m.season))].sort().reverse();
 }
