@@ -32,6 +32,15 @@ export function currentSeasonOf(matches) {
   return playedMatches(matches)[0]?.season ?? seasonsOf(matches)[0] ?? null;
 }
 
+/** Opponent monogram off the club name rather than a person's name, so
+ *  "Old King's Scholars" has to skip the word that's only punctuation. Shared
+ *  by the Matchday scoreboard and Home's last-result card — both draw a badge
+ *  for whichever side isn't us. */
+export function opponentInitials(name) {
+  const words = name.split(' ').filter((w) => /[a-z0-9]/i.test(w));
+  return words.map((w) => w[0]).slice(0, 2).join('').toUpperCase() || '?';
+}
+
 /** URL-safe slug for an opponent name, e.g. "St. George's OB" -> "st-george-s-ob". */
 export function slugify(name) {
   return name
