@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { lazy, Suspense, useMemo } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import { ErrorNote, Spinner } from '../components/bits';
@@ -7,7 +7,6 @@ import FirstsTable from '../components/player-detail/FirstsTable';
 import FormCard from '../components/player-detail/FormCard';
 import MatchLog from '../components/player-detail/MatchLog';
 import MatesCard from '../components/player-detail/MatesCard';
-import PlayerCareerChart from '../components/player-detail/PlayerCareerChart';
 import PlayerHero from '../components/player-detail/PlayerHero';
 import RankCard from '../components/player-detail/RankCard';
 import SeasonTable from '../components/player-detail/SeasonTable';
@@ -16,6 +15,11 @@ import { playerBadges } from '../lib/awards';
 import { plural } from '../lib/format';
 import { seasonsOf } from '../lib/matches';
 import { playerProfile } from '../lib/players';
+
+// Pulls in Recharts (~400kB) — Season → Charts already keeps that out of the
+// main bundle by loading it on demand, and this is the site's only other
+// Recharts import, gated behind the Stats sub-view rather than the default one.
+const PlayerCareerChart = lazy(() => import('../components/player-detail/PlayerCareerChart'));
 
 export default function PlayerDetail() {
   const { playerId } = useParams();
@@ -141,7 +145,9 @@ export default function PlayerDetail() {
           </div>
 
           <div className="section">
-            <PlayerCareerChart arc={arc} career={career} />
+            <Suspense fallback={<Spinner />}>
+              <PlayerCareerChart arc={arc} career={career} />
+            </Suspense>
           </div>
 
           <SeasonTable seasons={seasons} />
