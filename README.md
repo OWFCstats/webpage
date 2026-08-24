@@ -38,9 +38,9 @@ npm run check:layout   # the mobile invariants, as assertions
 npm run shots          # every route × width to shots/, with page heights
 ```
 
-`check:layout` is deliberately red on `main` until Phase 10: it names each bug it
-fails on and the phase that owns it. See `fixtures/README.md` and
-`docs/ROADMAP.md`.
+`check:layout` passes on `main`. Its only known failures are the club crest,
+which is a bitmap and can't be measured for icon contrast — see
+`scripts/expected-failures.js`, `fixtures/README.md` and `docs/ROADMAP.md`.
 
 ## Deploy (GitHub Pages)
 
