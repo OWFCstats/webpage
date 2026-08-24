@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useMemo } from 'react';
 import { Link, Navigate, NavLink, useSearchParams } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import { ErrorNote, SeasonSelect, Spinner } from '../components/bits';
@@ -44,15 +44,21 @@ export default function Season({ view }) {
   const season = seasons.includes(asked) ? asked : 'latest';
   const activeSeason = season === 'latest' ? seasons[0] : season;
 
+  const { pool, summary, results, upcoming, homeAway, totals } = useMemo(() => {
+    const pool = matches.filter((m) => m.season === activeSeason);
+    return {
+      pool,
+      summary: seasonSummary(pool),
+      results: playedMatches(pool),
+      upcoming: fixtures(pool),
+      homeAway: venueSummary(pool),
+      totals: playerTotals(players, pool, appearances),
+    };
+  }, [matches, activeSeason, players, appearances]);
+
   if (loading) return <Spinner />;
   if (error) return <ErrorNote message={error} />;
 
-  const pool = matches.filter((m) => m.season === activeSeason);
-  const summary = seasonSummary(pool);
-  const results = playedMatches(pool);
-  const upcoming = fixtures(pool);
-  const homeAway = venueSummary(pool);
-  const totals = playerTotals(players, pool, appearances);
   const isLatestSeason = activeSeason === seasons[0];
 
   // Games played plus whichever of "started"/"ended" is knowable from the

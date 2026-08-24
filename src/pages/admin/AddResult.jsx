@@ -47,14 +47,15 @@ export default function AddResult() {
 
   // Last game's squad, for the one-tap default: an amateur side turns out
   // largely the same people each week.
-  const lastSquadIds = useMemo(() => {
+  const { lastMatch, lastSquadIds } = useMemo(() => {
     const last = latestResult(matches);
-    if (!last) return new Set();
-    return new Set(
-      appearances.filter((a) => a.match_id === last.id && !a.dropout).map((a) => a.player_id),
-    );
+    const ids = last
+      ? new Set(
+          appearances.filter((a) => a.match_id === last.id && !a.dropout).map((a) => a.player_id),
+        )
+      : new Set();
+    return { lastMatch: last, lastSquadIds: ids };
   }, [matches, appearances]);
-  const lastMatch = latestResult(matches);
   const recentSeasons = seasonsOf(matches).slice(0, 3);
   const defaultSeason = recentSeasons[0] ?? '';
 
