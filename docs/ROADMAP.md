@@ -1915,6 +1915,78 @@ nothing in `lib/` moved; `npm run build` is clean.
 
 ---
 
+## Phase 23 — Home, the cosmetic pass
+
+The first of a page-by-page cosmetic review — small layout and type fixes,
+not new sections, done one page at a time against real screenshots before
+anything is built. Home found two.
+
+**The last result card only ever puts "us" first, top-left, at every
+width.** `components/home/LastResult.jsx` reads fine as a sentence but not as
+a scoreboard: on a phone the team names and score sit flush against the left
+edge instead of using the box they're in; on desktop the same left-hugging
+block leaves roughly half the card blank.
+
+- Position follows venue, not the club — home side left (desktop) / top
+  (phone), away side right / bottom, always. `match.venue` already carries
+  this; nothing new to store.
+- Position no longer marks which side is us, so a badge does instead — the
+  same gold-for-us / board-soft-for-them pair `components/matchday/
+  Scoreboard.jsx`'s `.sb-row .badge` already draws for exactly this job,
+  reused rather than invented.
+- Scorers get a "Goals" label to match the "MOTM" line beside them, rather
+  than sitting unlabelled.
+- The footer — goals, MOTM, "Report & squad" — centres under the score
+  instead of hugging the left edge, which is most of what read as "awkward."
+
+**One open question this settles before it's built, not after.** Attaching
+the score to a side by position implies reading it home-first, away-second
+(`1–4` when we're away, not `4–1`) — every other scoreline on the site
+(`ResultList`, Season, player pages) reads goals-for–goals-against, ours
+first. Phase 20 moved Matchday's own scoreboard away from a floating,
+unattached score for the same reason this phase is drawn toward one; the
+difference is that Home's card carries no per-row subtext (squad count,
+pitch address) competing for the same line the way `Scoreboard.jsx`'s rows
+do, so a centred score reads unambiguously here in a way it didn't there.
+Worth the club confirming the score-order change explicitly before
+`resultOf`/`matchContext` callers change — easy to get right on purpose,
+easy to ship wrong by accident.
+
+**The momentum block's chart has no axis and no scale.** `RecentForm.jsx`'s
+sparkline draws a bare line with nothing to read it against, which a
+screenshot made obvious in a way the component never owned up to on its own.
+It also plots the full season's cumulative points while the list above it
+shows only the last five games — one card, two different claims. Fix, the
+second of three options put to the club and the one picked:
+
+- Keep the side-by-side shape — list left, chart right — rather than
+  restacking the card.
+- Give the chart column the list's own top offset and the list's own
+  rendered height (five 44px result rows plus their borders), not a fixed
+  guess, so list and chart start and end on the same line. Today's
+  `.home-form-trend { padding-top: var(--s5) }` is exactly the offset that
+  currently breaks this.
+- Real gridlines and value labels (0 / midpoint / max) and a filled area
+  under the line — `lib/charts.js`'s `seasonTrend` already returns everything
+  needed to draw this; nothing new to compute.
+- A small secondary button, "Charts," beside it, linking to
+  `/season/charts` — the door to the fuller chart set already on that page,
+  not a new chart of its own.
+
+**Done means** home/away ordering, the badge, the "Goals" label and the
+centred footer land in `LastResult.jsx` and `home.css`, at every width
+`check:layout` covers; the momentum chart and list measure equal height in a
+headless run, not just by eye in one screenshot; `npm test`, `npm run
+check:layout` and `npm run build` all still pass; and Home's height is
+reported rather than massaged — Phase 19 already left it 282px over its
+1,600px budget, this phase adds a badge, a label line and a button, so the
+honest outcome is either "still 282px, net zero" or a slightly larger number
+written down plainly, the same way Phases 19 and 20 wrote theirs down.
+Matchday, Season, Players and Records follow the same review, one phase
+each, once Home ships.
+
+---
+
 ## Page budgets
 
 **`DESIGN.md`'s *Page length* table is the authority for the budget numbers** —
