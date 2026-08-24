@@ -18,6 +18,7 @@ import {
   latestResult,
   matchContext,
   matchHomeAway,
+  matchPoints,
   opponentMatches,
   opponentSlug,
   playedMatches,
@@ -112,6 +113,30 @@ test('home and away follow the venue, and an unrecorded one puts us at home', ()
   const away = matchHomeAway({ venue: 'A', opponent: 'Old Stoics', goals_for: 4, goals_against: 1 });
   assert.deepEqual(away, { homeTeam: 'Old Stoics', awayTeam: CLUB_NAME, homeGoals: 1, awayGoals: 4 });
   assert.equal(matchHomeAway({ venue: null, opponent: 'X', goals_for: 1, goals_against: 0 }).homeTeam, CLUB_NAME);
+});
+
+test('points are 3/1/0, except a walkover loss in a league game costs 3', () => {
+  const win = { goals_for: 3, goals_against: 0, competition: 'League' };
+  const draw = { goals_for: 1, goals_against: 1, competition: 'League' };
+  const loss = { goals_for: 0, goals_against: 1, competition: 'League' };
+  assert.equal(matchPoints(win), 3);
+  assert.equal(matchPoints(draw), 1);
+  assert.equal(matchPoints(loss), 0);
+
+  const leagueWalkoverLoss = { goals_for: 0, goals_against: 3, competition: 'League', walkover: true };
+  assert.equal(matchPoints(leagueWalkoverLoss), -3);
+
+  // Case/whitespace-insensitive, same as seasonPointsComparison's own check.
+  assert.equal(matchPoints({ ...leagueWalkoverLoss, competition: ' league ' }), -3);
+
+  // Only a loss is deducted — a walkover we won is still a plain win.
+  const leagueWalkoverWin = { goals_for: 3, goals_against: 0, competition: 'League', walkover: true };
+  assert.equal(matchPoints(leagueWalkoverWin), 3);
+
+  // Only league games carry the deduction — a cup or friendly walkover loss
+  // has no standings to be deducted from.
+  const cupWalkoverLoss = { goals_for: 0, goals_against: 3, competition: 'Cup', walkover: true };
+  assert.equal(matchPoints(cupWalkoverLoss), 0);
 });
 
 test('the venue team is ours at home, theirs away, nobody otherwise', () => {
