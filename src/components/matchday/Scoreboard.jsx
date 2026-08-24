@@ -1,14 +1,7 @@
 import { Link } from 'react-router-dom';
 import { VenueBadge } from '../bits';
 import { formatDate, formatKickoff } from '../../lib/format';
-import { isPlayed, opponentSlug, resultOf } from '../../lib/matches';
-
-/** Opponent monograms come off the club name rather than a person's name, so
- *  "Old King's Scholars" has to skip the word that's only punctuation. */
-function opponentInitials(name) {
-  const words = name.split(' ').filter((w) => /[a-z0-9]/i.test(w));
-  return words.map((w) => w[0]).slice(0, 2).join('').toUpperCase() || '?';
-}
+import { isPlayed, opponentInitials, opponentSlug, resultOf } from '../../lib/matches';
 
 /**
  * The page's one dark occasion: each row carries its own score, so the number

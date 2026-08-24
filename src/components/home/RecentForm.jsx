@@ -1,33 +1,51 @@
+import { Link } from 'react-router-dom';
 import ResultList from '../ResultList';
 import { token } from '../../lib/tokens';
 
+/* Match ResultList's own row height (44px, plus the 1px border between rows)
+   so the chart lines up with the list beside it rather than guessing a
+   height that only happens to fit five rows. */
+const ROW_HEIGHT = 44;
+const ROW_BORDER = 1;
+
 /** Cumulative-points sparkline. Two points is a line segment, not a trend, so
- *  it draws nothing below three games rather than implying a shape. */
-function Sparkline({ values, stroke }) {
+ *  it draws nothing below three games rather than implying a shape. Scaled
+ *  from a real zero rather than from its own min, with gridlines and value
+ *  labels — a bare line has no scale to read it against. */
+function Sparkline({ values, stroke, height }) {
   if (values.length < 3) return null;
-  const max = Math.max(...values);
-  const min = Math.min(...values);
-  const span = max - min || 1;
+  const max = Math.max(...values, 1);
+  const mid = Math.round(max / 2);
   const step = 100 / (values.length - 1);
   const points = values
-    .map((v, i) => `${(i * step).toFixed(2)},${(26 - ((v - min) / span) * 22).toFixed(2)}`)
+    .map((v, i) => `${(i * step).toFixed(2)},${(100 - (v / max) * 100).toFixed(2)}`)
     .join(' ');
   return (
-    <svg className="home-spark" viewBox="0 0 100 28" preserveAspectRatio="none" aria-hidden="true">
-      <polyline
-        points={points}
-        fill="none"
-        stroke={stroke}
-        strokeWidth="1.6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        vectorEffect="non-scaling-stroke"
-      />
-    </svg>
+    <div className="home-spark-chart" style={{ '--matched-height': `${height}px` }}>
+      <svg className="home-spark" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+        <line x1="0" y1="100" x2="100" y2="100" className="spark-grid" />
+        <line x1="0" y1="50" x2="100" y2="50" className="spark-grid" />
+        <line x1="0" y1="0" x2="100" y2="0" className="spark-grid strong" />
+        <polygon className="spark-area" fill={stroke} points={`0,100 ${points} 100,100`} />
+        <polyline
+          points={points}
+          fill="none"
+          stroke={stroke}
+          strokeWidth="1.6"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          vectorEffect="non-scaling-stroke"
+        />
+      </svg>
+      <span className="spark-axis-label spark-axis-max">{max}</span>
+      <span className="spark-axis-label spark-axis-mid">{mid}</span>
+      <span className="spark-axis-label spark-axis-zero">0</span>
+    </div>
   );
 }
 
 export default function RecentForm({ form, trend }) {
+  const chartHeight = form.length * ROW_HEIGHT + Math.max(0, form.length - 1) * ROW_BORDER;
   return (
     <section className="sheet home-widget home-form">
       <div className="home-widget-head">
@@ -45,8 +63,11 @@ export default function RecentForm({ form, trend }) {
         </div>
         {trend.length >= 3 && (
           <div className="home-form-trend">
-            <Sparkline values={trend.map((t) => t.points)} stroke={token('--series-2')} />
-            <p className="muted home-spark-note">Points accumulated across the season</p>
+            <Sparkline values={trend.map((t) => t.points)} stroke={token('--series-2')} height={chartHeight} />
+            <div className="home-spark-foot">
+              <p className="muted home-spark-note">Points accumulated across the season</p>
+              <Link className="btn secondary" to="/season/charts">Charts</Link>
+            </div>
           </div>
         )}
       </div>

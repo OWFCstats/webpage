@@ -111,21 +111,62 @@ a.fixture-row:hover .fixture-row-body strong { color: var(--gold-deep); }
 
 .home-form-trend { flex: none; }
 
-.home-spark {
-  display: block;
-  width: 100%;
-  height: 40px;
-  margin-top: var(--s3);
+/* Reserves a gutter for the axis labels, which are plain text siblings of the
+   svg rather than text inside it — the svg stretches non-uniformly
+   (preserveAspectRatio="none") to fit whatever height the chart's row count
+   gives it, and stretched text reads worse than text that never scales. */
+/* Only matches the list's own height once they sit side by side (below);
+   stacked on a phone, a chart that tall just costs page length for nothing
+   the layout needs. */
+.home-spark-chart { position: relative; padding-left: 1.5rem; height: 96px; }
+
+.home-spark { display: block; width: 100%; height: 100%; }
+
+.spark-grid { stroke: var(--rule); stroke-width: 1; vector-effect: non-scaling-stroke; }
+
+.spark-grid.strong { stroke: var(--rule-firm); }
+
+.spark-area { opacity: 0.1; }
+
+.spark-axis-label {
+  position: absolute;
+  left: 0;
+  width: 1.3rem;
+  text-align: right;
+  font-family: var(--font-data);
+  font-size: var(--t-micro);
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
 }
 
-.home-spark-note { margin: 0.25rem 0 0; }
+.spark-axis-max { top: 0; }
+
+.spark-axis-mid { top: 50%; transform: translateY(-50%); }
+
+.spark-axis-zero { bottom: 0; }
+
+.home-spark-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s2);
+  margin-top: 0.4rem;
+}
+
+.home-spark-note { margin: 0; }
 
 @media (min-width: 760px) {
   .home-form-body { flex-direction: row; align-items: flex-start; gap: var(--s5); }
 
-  .home-form-trend { width: 220px; padding-top: var(--s5); }
+  /* Same top offset as .home-form-main .result-list, so the chart and the
+     list start on the same line instead of the chart floating at whatever
+     height its own padding happened to leave it. */
+  .home-form-trend { width: 230px; margin-top: var(--s3); }
 
-  .home-form-trend .home-spark { margin-top: 0; }
+  /* Side by side now, so the chart takes the list's own measured height
+     (set inline, per instance, from the number of rows actually rendered)
+     instead of the phone's fixed 96px. */
+  .home-spark-chart { height: var(--matched-height, 220px); }
 }
 
 /* ---- last result widget ---- */
@@ -134,11 +175,47 @@ a.fixture-row:hover .fixture-row-body strong { color: var(--gold-deep); }
    scoreboard treatment on Matchday, not a second copy of it. */
 .home-result .home-widget-note { color: var(--on-board-soft); }
 
+/* Home and away sides always sit left/right (stacked top/bottom on a phone)
+   by venue, same shape both ways — the row just switches from a column to a
+   row, so there's one layout to keep in sync, not two. Which side is "us" is
+   the badge's job, not position's, since position now belongs to venue. */
+.hr-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s2);
+  margin: var(--s4) 0;
+}
+
+.hr-side { display: flex; align-items: center; gap: var(--s2); }
+
+.hr-badge {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--t-small);
+}
+
+.hr-badge.us { background: var(--gold); color: var(--board); }
+
+.hr-badge.them { background: var(--board-soft); color: var(--on-board-soft); }
+
+.hr-team {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--t-subtitle);
+  color: var(--on-board);
+}
+
 .hr-score {
   display: flex;
   align-items: center;
   gap: var(--s2);
-  margin: var(--s3) 0 var(--s2);
 }
 
 .hr-score-value {
@@ -148,6 +225,25 @@ a.fixture-row:hover .fixture-row-body strong { color: var(--gold-deep); }
   letter-spacing: -0.015em;
   color: var(--on-board);
   font-variant-numeric: tabular-nums;
+}
+
+@media (min-width: 760px) {
+  .hr-hero { flex-direction: row; gap: var(--s4); }
+
+  .hr-side { flex: 1; }
+
+  .hr-hero > .hr-side:first-child { justify-content: flex-end; }
+
+  .hr-hero > .hr-side:last-child { justify-content: flex-start; }
+}
+
+/* The goals/MOTM lines and the CTA centre under the score rather than
+   hugging the left edge, which is what the hero row above centres on too. */
+.hr-footer {
+  text-align: center;
+  margin-top: var(--s2);
+  padding-top: var(--s3);
+  border-top: 1px solid color-mix(in srgb, var(--on-board) 14%, transparent);
 }
 
 .hr-line {
