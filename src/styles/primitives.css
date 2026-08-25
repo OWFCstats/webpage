@@ -499,18 +499,6 @@ button.small {
   margin-bottom: var(--s5);
 }
 
-.form-badge.fixture {
-  background: none;
-  border: 1.5px dashed var(--rule-firm);
-}
-
-.form-badge.current {
-  outline: 2px solid var(--board);
-  outline-offset: 2px;
-}
-
-.form-next .next-up .fixture-location { display: block; margin-top: 0.15rem; }
-
 /* ---- chips + segmented control ---- */
 .chip-row {
   display: flex;

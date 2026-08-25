@@ -23,6 +23,7 @@ import {
   opponentSlug,
   playedMatches,
   resultOf,
+  seasonLadder,
   seasonSummary,
   seasonsOf,
   slugify,
@@ -177,4 +178,65 @@ test('match context survives a walkover, which has no team sheet at all', () => 
   assert.deepEqual(ctx.scorers, []);
   assert.deepEqual(ctx.motm, []);
   assert.equal(ctx.margin, 3);
+});
+
+test('the ladder runs newest first, with the goal difference each game left behind', () => {
+  const ladder = seasonLadder(mid.matches, '2025/26');
+  const played = playedMatches(mid.matches.filter((m) => m.season === '2025/26'));
+  const ahead = fixtures(mid.matches.filter((m) => m.season === '2025/26'));
+
+  assert.equal(ladder.length, played.length + ahead.length, 'every match in the season is a rung');
+  assert.ok(
+    ladder.every((r, i) => i === 0 || ladder[i - 1].match.date >= r.match.date),
+    'one direction through time, fixtures included',
+  );
+
+  // The fixtures are the front of the ladder and carry nothing: a difference
+  // is a thing a game leaves behind, and these haven't been played.
+  const front = ladder.slice(0, ahead.length);
+  assert.deepEqual(front.map((r) => r.gd), front.map(() => null));
+  assert.deepEqual(
+    front.map((r) => r.match.date),
+    ['2026-04-11', '2026-03-28'],
+    'the furthest fixture is the top rung',
+  );
+
+  // The last rung is the first game of the season, so its running figure is
+  // just that game's own, and the first rung is the season's total.
+  const oldest = ladder.at(-1);
+  assert.equal(oldest.gd, oldest.match.goals_for - oldest.match.goals_against);
+  const total = played.reduce((n, m) => n + m.goals_for - m.goals_against, 0);
+  assert.equal(ladder[ahead.length].gd, total);
+
+  // And every step between the two is one game's difference, walked backwards.
+  const results = ladder.slice(ahead.length);
+  for (let i = 0; i < results.length - 1; i += 1) {
+    const { match, gd } = results[i];
+    assert.equal(gd - results[i + 1].gd, match.goals_for - match.goals_against);
+  }
+});
+
+test('a walkover is a rung like any other — awarded goals still count', () => {
+  const ladder = seasonLadder(mid.matches, '2025/26');
+  const walkover = mid.matches.find((m) => m.walkover);
+  const at = ladder.findIndex((r) => r.match.id === walkover.id);
+  assert.notEqual(at, -1, 'the walkover is on the ladder');
+  // 3-0 awarded with no team sheet: the ladder reads the scoreline, not the
+  // appearance rows, so the running figure moves by three like any other 3-0.
+  assert.equal(ladder[at].gd - ladder[at + 1].gd, 3);
+});
+
+test('a season with nothing played is all fixtures and no figures', () => {
+  const ladder = seasonLadder(pre.matches, '2026/27');
+  assert.equal(ladder.length, 4);
+  assert.ok(ladder.every((r) => r.gd === null), 'nothing has been played, so nothing carries a difference');
+  assert.deepEqual(
+    ladder.map((r) => r.match.date),
+    ['2026-10-03', '2026-09-26', '2026-09-12', '2026-09-05'],
+  );
+});
+
+test('a season nobody has entered is an empty ladder, not a crash', () => {
+  assert.deepEqual(seasonLadder(mid.matches, '2099/00'), []);
+  assert.deepEqual(seasonLadder([], null), []);
 });

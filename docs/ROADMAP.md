@@ -49,6 +49,7 @@ page-by-page review against the club's real 2025/26 season.
 | 22 | The data centre | `/players/data` — every player, every stat, the one deliberate side-scroll |
 | 23 | Home, the cosmetic pass | The last result positions by venue with a badge marking which side is us; the momentum chart gained gridlines, value labels, an area fill and the list's own height, plus a "Charts" button |
 | 24 | Players, the second pass | `seasonPools`, the closed archive banner, five small tables became one wide reference table |
+| 25 | Matchday: the season ladder | `seasonLadder` + `SeasonLadder.jsx`: the stepper, jump strip, form chips and next-fixture card became one object, every game a rung with its running goal difference; the budget moved to 2,300 |
 
 **The detail behind any closed phase is in its commit** — `git log --grep="Phase
 20"` finds it, and forty-five commits name their phase. That is what makes
@@ -61,60 +62,6 @@ nothing is stored twice**, and **a component that gains a second page moves up t
 ---
 
 ## Now
-
-### Phase 25 — Matchday: the season ladder
-
-The stepper, the form strip and the next-fixture card become one object: the
-whole season as a ladder, newest first, with the match being read highlighted in
-it. Approved design: `docs/mocks/matchday-final.html` (Phone and Web).
-
-**Files**
-
-- `src/lib/matches.js` — add `seasonLadder`
-- `src/components/matchday/SeasonLadder.jsx` — new
-- delete `src/components/matchday/MatchdayNav.jsx`, `src/components/matchday/FormAndNext.jsx`
-- `src/pages/Matchday.jsx`, `src/styles/pages/matchday.css`
-- `tests/matches.test.js`, `docs/DESIGN.md` (*Structure*)
-
-**Do**
-
-1. `seasonLadder(matches, season)` → one row per match, newest first:
-   `{ match, gd }`, where `gd` is the cumulative goal difference **after** that
-   game. Walk the played games oldest-first accumulating `goals_for -
-   goals_against`, then reverse. Unplayed fixtures sort to the front with
-   `gd: null`. Built on the existing `isPlayed` / `resultOf` / `playedMatches`;
-   nothing new stored, nothing new in the schema.
-2. `SeasonLadder.jsx` renders a rung per row on one shared
-   `grid-template-columns`: date, opponent + venue mark, score, running `gd`,
-   W/D/L chip. The current match's rung takes the gold wash, a gold rule top and
-   bottom, and `aria-current="page"`. A fixture row drops `gd` and the chip and
-   shows its kick-off time; the soonest one carries a `Next` block.
-3. Names: `teams.short_name` below 900px, full `opponent` above it — one
-   `.full` / `.short` pair switched in CSS, no JS. `short_name` is nullable;
-   fall back to `opponent`.
-4. Below 400px the venue mark comes off the rung — the scoreboard above already
-   carries it. One breakpoint, the same `max-width: 359px`-style single exception
-   the league table already owns; a name clipped mid-word is the bug `DESIGN.md`
-   names, and a short name is a column the schema already has.
-5. `Matchday.jsx` drops `<MatchdayNav>` and `<FormAndNext>`. The ladder is the
-   page's spine: fixtures, the current rung, the match panel, then the older
-   rungs.
-6. `formOf` stays in `lib/matches.js` — Home still uses it. Only Matchday's use
-   of it goes.
-7. **Decide the budget question in this phase, not at the end.** The flat
-   measures 2,522px at 375px against a 1,900px budget, and this ladder is ~700px
-   of it. Pick one, write it down here and in `DESIGN.md`: the ladder opens on
-   the eight most recent games with the rest behind one control; or the budget
-   moves to ~2,300px because the page now carries the archive as well as the
-   match. Do not build the whole page and then negotiate.
-
-**Done means** `/matchday` has no stepper, no jump strip, no form chips and no
-next-fixture card; `npm test` covers `seasonLadder` against a season containing a
-walkover and against one with unplayed fixtures ahead; `npm run check:layout` is
-clean at all six widths with no new `scripts/expected-failures.js` entry; the
-`npm run shots` height is written into the budget table below.
-
----
 
 ### Phase 26 — Matchday: the match panel
 
@@ -255,8 +202,12 @@ and that arithmetic does not close by trimming.
 1. The season's results become a ladder: one ~40px rung per game instead of an
    ~80px result row, which is roughly 640px back with every game still on the
    page.
-2. **Reuse `SeasonLadder.jsx` from Phase 25, do not write a second one.** That
-   reuse is the test of whether Phase 25 built a component or a page section; if
+2. **Reuse `SeasonLadder.jsx` from Phase 25, do not write a second one.** It
+   takes `rungs`, `season`, `teams`, an optional `currentId` and optional
+   `children` (the panel that opens under the current rung); Season passes
+   neither of the last two and gets one unbroken ladder. It is in
+   `components/matchday/` and moves up to `components/` on that second caller,
+   with `styles/components/season-ladder.css` already where it needs to be. If
    it needs more than new props, fix it there and note it.
 
 **Done means** `/season` under 2,200px at 375px with all sixteen games on it, or
@@ -285,9 +236,9 @@ view. *Now* is `npm run shots` on the `mid-season` fixture at 375px.
 | Page | Now | Budget | Owner |
 | --- | --- | --- | --- |
 | Home | 2,047 | 1,600 | **unowned** — 447 over; Phase 23's badge, label and button cost 165px of it |
-| Matchday — latest | 1,812 | 1,900 | 25–28 |
-| Matchday — clean sheet (13 named, a report) | 2,328 | 1,900 | 25–28 — **already 428 over before the rebuild starts** |
-| Matchday — walkover (no team sheet) | 1,226 | 1,900 | within |
+| Matchday — latest | 2,218 | 2,300 | met (25) — 1,812 before the ladder, against the old 1,900 |
+| Matchday — clean sheet (13 named, a report) | 2,734 | 2,300 | 26–27 — 434 over; the report clamp is the big lever |
+| Matchday — walkover (no team sheet) | 1,633 | 2,300 | within |
 | Season | 3,224 | 2,200 | 29 |
 | Season → charts | 1,909 | 2,200 | met (18) |
 | Players → Leaderboards | 1,296 | 1,400 | met (14, 24) |
@@ -305,14 +256,20 @@ are most of the page and neither shrinks without breaking a rule.
 
 ## Decisions
 
-**Open — blocking a phase.**
+**Nothing open.**
 
-1. **Matchday's budget** (Phase 25, step 7). The flat is 2,522px against 1,900,
-   on an eight-man squad — a thirteen-man one is longer, and that route is
-   already 428px over today. Either the ladder opens on eight games with the
-   rest behind a control, or the budget moves to ~2,300px because the page now
-   carries the archive as well as the match.
 **Settled, and worth knowing before you touch a scoreline.**
+
+1. **Matchday's budget moves to 2,300px; the ladder does not collapse**
+   (Phase 25, step 7). Decided before the ladder was built. The full argument is
+   in `DESIGN.md` → *Page length*, because the budget table is the authority for
+   the number; the short version is that 1,900 was set for a page that was one
+   match plus a stepper, the page now carries the season's archive as well, and
+   1,900 + ~730px of rungs − ~330px of stepper, strip, form and fixture card is
+   ~2,300. Opening on eight games with the rest behind a control was rejected: it
+   rebuilds the compressed index the ladder replaces, contradicts the approved
+   flat, and would break Phase 29, which needs this component to put *every* game
+   of a season on the page.
 
 2. **Score order.** Phase 23 made Home read home-first (`1–4` when we are away), with a badge marking which side is us.
    Every other scoreline on the site reads goals-for–goals-against, ours first.

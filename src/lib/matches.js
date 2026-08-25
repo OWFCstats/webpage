@@ -88,17 +88,29 @@ export function opponentMatches(matches, teams, slug) {
 }
 
 /**
- * Route slug for a match's opponent: the team's own slug when
- * `opponent_team_id` resolves, otherwise (a pre-migration row, or a failed
- * backfill) a slug of the free-text `opponent` so the link still resolves.
- * Also accepts opponent-shaped objects without an id (e.g. favouriteOpponent)
- * and falls back to a name match against `teams`.
+ * The team a match was played against: by `opponent_team_id` where the row has
+ * one, otherwise (a pre-migration row, or a failed backfill) by a
+ * case-insensitive name match. Null when neither resolves — a caller decides
+ * what to do without a team record rather than being handed a guess. Also
+ * accepts opponent-shaped objects carrying no id at all (e.g.
+ * favouriteOpponent), which is why the name branch isn't only a fallback.
+ */
+export function opponentTeam(match, teams) {
+  return (
+    (match.opponent_team_id
+      ? teams.find((t) => t.id === match.opponent_team_id)
+      : teams.find((t) => t.name.toLowerCase() === match.opponent?.toLowerCase()))
+    ?? null
+  );
+}
+
+/**
+ * Route slug for a match's opponent: the team's own slug where the team
+ * resolves, otherwise a slug of the free-text `opponent` so the link still
+ * goes somewhere.
  */
 export function opponentSlug(teams, match) {
-  const team = match.opponent_team_id
-    ? teams.find((t) => t.id === match.opponent_team_id)
-    : teams.find((t) => t.name.toLowerCase() === match.opponent?.toLowerCase());
-  return team ? team.slug : slugify(match.opponent ?? '');
+  return opponentTeam(match, teams)?.slug ?? slugify(match.opponent ?? '');
 }
 
 /** Matches sorted newest-first that have a final score. */
@@ -120,6 +132,40 @@ export function fixtures(matches) {
 /** Last n results, most recent first. */
 export function formOf(matches, n = 5) {
   return playedMatches(matches).slice(0, n);
+}
+
+/**
+ * One season as a ladder: a rung per match, newest first, each played game
+ * carrying the goal difference the season stood at once it had finished. The
+ * running figure is what makes this a season rather than an index of games —
+ * four narrow wins and one heavy defeat read nothing like the reverse, and no
+ * list of scorelines says so on its own.
+ *
+ * Fixtures sit above the results carrying `gd: null`, because the season
+ * hasn't reached them: a difference is a thing a game leaves behind. Nothing
+ * here is stored — it is `goals_for - goals_against` accumulated over the rows
+ * that already exist.
+ */
+export function seasonLadder(matches, season) {
+  const inSeason = matches.filter((m) => m.season === season);
+
+  // Accumulated oldest-first, because a running total can only be built in the
+  // order the games happened, then turned round so the ladder reads newest at
+  // the top like everything else on the site.
+  let gd = 0;
+  const results = playedMatches(inSeason)
+    .reverse()
+    .map((match) => {
+      gd += match.goals_for - match.goals_against;
+      return { match, gd };
+    })
+    .reverse();
+
+  // Furthest-away fixture at the very top, so the whole ladder runs one way
+  // through time rather than turning round at the halfway point.
+  const ahead = fixtures(inSeason).reverse().map((match) => ({ match, gd: null }));
+
+  return [...ahead, ...results];
 }
 
 export function seasonSummary(matches) {
@@ -206,11 +252,7 @@ export function matchHomeAway(match) {
  */
 export function venueTeam(match, teams) {
   if (match.venue === 'H') return teams.find((t) => t.is_club) ?? null;
-  if (match.venue === 'A') {
-    return match.opponent_team_id
-      ? teams.find((t) => t.id === match.opponent_team_id) ?? null
-      : teams.find((t) => t.name.toLowerCase() === match.opponent?.toLowerCase()) ?? null;
-  }
+  if (match.venue === 'A') return opponentTeam(match, teams);
   return null;
 }
 

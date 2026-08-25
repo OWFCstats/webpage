@@ -1,4 +1,5 @@
-/* Matchday: the scoreboard, the archive stepper, and the per-match cards. */
+/* Matchday: the scoreboard and the per-match cards. The season archive is
+   the ladder, and it has its own file under components/. */
 
 .report-body {
   max-width: 720px;
@@ -6,57 +7,6 @@
   line-height: 1.7;
   white-space: pre-wrap;
 }
-
-/* ---- matchday: archive stepper + jump strip ---- */
-.matchday-stepper {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--s3);
-  margin: var(--s4) 0 var(--s3);
-}
-
-.matchday-stepper .nav {
-  flex: none;
-  font-size: var(--t-small);
-  font-weight: 600;
-  color: var(--ink);
-  white-space: nowrap;
-}
-
-.matchday-stepper .nav.disabled {
-  color: var(--ink-faint);
-  pointer-events: none;
-}
-
-.matchday-stepper .count {
-  flex: 1;
-  text-align: center;
-  font-family: var(--font-data);
-  font-size: var(--t-small);
-  font-weight: 600;
-  color: var(--ink-soft);
-}
-
-.jump-strip {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--s1);
-}
-
-.jump-key { margin-top: var(--s2); }
-
-.form-next {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--s4);
-  flex-wrap: wrap;
-}
-
-.form-next .next-up { text-align: right; }
-
-.form-next .next-up strong { display: block; }
 
 /* ---- match centre ----
    Two bands rather than one block, so the padding belongs to sb-top and
@@ -208,6 +158,4 @@
   .sb-row .badge { width: 36px; height: 36px; font-size: var(--t-micro); }
 
   .grid.match-cards { grid-template-columns: 1fr; }
-
-  .form-next .next-up { text-align: left; }
 }

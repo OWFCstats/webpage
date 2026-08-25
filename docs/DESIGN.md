@@ -167,19 +167,22 @@ rows always lay out.
 
 The pitch address left the scoreboard with it. It only ever repeated the
 address already on the opponent's own page (`components/opponent-detail/
-PitchDetails.jsx`) and on the "Next up" fixture card on the same page
-(`components/matchday/FormAndNext.jsx`) — a result that's already in the book
-doesn't need directions to the ground it was played on. Logistics belongs with
-the fixture, not the trophy case.
+PitchDetails.jsx`) and on the "Next up" fixture card that used to sit on the
+same page — a result that's already in the book doesn't need directions to the
+ground it was played on. Logistics belongs with the fixture, not the trophy
+case. That card is gone with Phase 25, and the address it carried now lives
+only on the two pages above.
 
 ### Matchday is a ladder with one match open on it
 
-> **Phases 25–28.** Decided and approved, not built. The flat is
-> `docs/mocks/matchday-final.html` — open it before writing any Matchday
-> component, and read the phases in `docs/ROADMAP.md` for what each one owns.
-> Until Phase 28 lands, the description above of Matchday's own page still
-> holds; the scoreboard itself survives the rebuild, restyled rather than
-> replaced.
+> **Phase 25 has landed; 26–28 have not.** The ladder itself is built —
+> `lib/matches.js`’s `seasonLadder`, `components/matchday/SeasonLadder.jsx`
+> and `styles/components/season-ladder.css`. What is still the old page is the
+> match panel that opens off it: the squad pills, the two cards and the
+> unclamped report. The flat is `docs/mocks/matchday-final.html` — open it
+> before writing any Matchday component, and read the phases in
+> `docs/ROADMAP.md` for what each one owns. The scoreboard survives the
+> rebuild, restyled rather than replaced.
 
 The section owns one match at a time, and the archive across the season. Those
 used to be two objects stacked on one page — a scoreboard on top, a stepper and a
@@ -193,7 +196,25 @@ W/D/L — plus the running goal difference after each game, which is what makes 
 a season rather than an index. Fixtures sit at the top with no score and no
 result. Above 900px the ladder becomes a rail and the match reads beside it: the
 first two-column page on the site, and the one thing a stacked page could never
-do, which is show the whole season while one match is being read.
+do, which is show the whole season while one match is being read. (Until Phase
+28 builds that rail, a rung above 900px simply stops stretching — its columns
+pack to the left so a scoreline never sits a thousand pixels from the name it
+belongs to, while the hairline and the gold wash still run the full width.)
+
+**The ladder is scoped to one season — the season of the match being read.** It
+is that season's archive, so next season's fixtures are not on it, which is the
+one thing the next-fixture card used to do that the top rung does not: between
+seasons it showed a fixture belonging to a season the rest of the page wasn't
+about. Home carries the next fixture across seasons and always did.
+
+**A rung shows the club's own `short_name` below 900px and the full name above
+it** — both rendered, one shown, switched in CSS with no JS and no measuring.
+`short_name` is a column the schema already has, so this is a name the club
+chose rather than a truncation we invent; a club without one keeps its full
+name at every width. Below 400px the venue mark comes off the rung as well, the
+same single narrow-width exception the league table owns: the scoreboard above
+says where this match was played, and every other rung links to a page that
+says it.
 
 The panel is, in order: the result on a board, the man of the match gilded on a
 plate, the team sheet, head to head, the report. On a phone the team sheet comes
@@ -1085,10 +1106,11 @@ The design target, not a fallback. Every change gets checked at 375px first.
 
   It is stated as "a scroller holding a table" rather than as `.table-wrap`, so a
   wrapper introduced later under another name is covered by the rule instead of
-  by somebody remembering to add it. The chip rows — the Matchday stepper, the
-  season chips — are deliberate horizontal scrollers and hold no table, so they
-  fall outside it by construction: a stepper is a control, and scrolling one is
-  not a hidden column.
+  by somebody remembering to add it. The chip rows — `.chip-row`, the segmented
+  control under a section head — are deliberate horizontal scrollers and hold no
+  table, so they fall outside it by construction: a control is not a hidden
+  column. Matchday's own stepper and season chips used to be the example here;
+  Phase 25 replaced both with the ladder, which scrolls nowhere.
 
   Running it found two more than the review did, both at widths nobody had
   measured: Season's upcoming-fixtures table hid a handful of pixels at 320px
@@ -1152,7 +1174,7 @@ constraint, so it lives here.
 | Page | Budget at 375px |
 | --- | --- |
 | Home | 1,600 |
-| Matchday | 1,900 |
+| Matchday | 2,300 |
 | Season → any sub-page | 2,200 |
 | Players → Leaderboards | 1,400 |
 | Records → any sub-page | 2,000 |
@@ -1166,7 +1188,8 @@ sub-pages rather than shrinking. Home doesn't. The opponent page is the same kin
 of document as a Records sub-page and takes the same number. `npm run shots`
 reports the real numbers — page by page, at every supported width, into
 `shots/heights.json` — and the roadmap tracks each page against its budget.
-Seven of these rows are inside now: Matchday's default route, Players →
+Seven of these rows are inside now: Matchday's default route (against the 2,300
+below — see the note after this table), Players →
 Leaderboards (Phase 14, 1,296px), Records' three sub-pages (Phase 16), Season →
 Charts (Phase 18, at 1,909px), the opponent page (still light on content, but
 measured and inside either way), and Player detail, which Phase 21 brought from
@@ -1205,20 +1228,42 @@ running to 7,350px: the grid's measure came down to 130px so the narrowest phone
 keeps two side by side. A page that has earned its length still has to earn it at
 every width.
 
-Matchday was the thin exception, 1,857 against 1,900, before Phase 20 added to
-the page and brought it further under at the same time: a caption on the
-archive stepper naming what its dashed chips are, and a key under the squad
-pills explaining gold and dark. Both are paid for and then some — the pitch
-address left the scoreboard for the fixture and the opponent's own page, and
-attaching each score to its own team row cost less height than the
-three-column grid it replaced. The default route now measures 1,812px.
-**A budget that gets edited to fit what was built is not a budget** — this one
-didn't need editing; it just got smaller.
+**Matchday's number moved from 1,900 to 2,300, and that is the one edit this
+table has taken.** It is worth being precise about why, because the rule
+underneath it — *a budget that gets edited to fit what was built is not a
+budget* — is one this site has kept through eleven phases of pages running over.
 
-That is the *default* route, and it is the thin one. The same page on a match
-with thirteen named and a report is 2,328px, 428px over, which is what the
-budget question in Phase 25 is really about: the rebuild above adds the whole
-season to a page that already misses its budget on its richer routes.
+The rule bites on a page that overran. This is a page whose job changed. The
+1,900 was set for a page that was one match plus a way of stepping between
+matches; since Phase 25 the same page carries the season's whole archive, one
+rung a game, because *Matchday is a ladder with one match open on it* above.
+The arithmetic is the ladder's own: 1,900, plus the ~730px eighteen rungs cost,
+less the ~330px of stepper, jump strip, form chips and next-fixture card they
+replaced, is ~2,300. That was decided before the ladder was built rather than
+after it was measured, which is the difference between re-setting a budget and
+losing one.
+
+The alternative was to open the ladder on the eight most recent games with the
+rest behind a control, and it was rejected on three counts. It re-introduces a
+compressed index of the season, which is the object the ladder exists to
+replace — the jump strip was a row of coloured chips precisely because the page
+couldn't afford the rows. It contradicts the approved flat, which puts every
+game on the page and none behind a control. And it breaks Phase 29, which
+closes Season's much larger gap by reusing this same component to get ~640px
+back *with every game still on the page*; a component whose default hides
+two-thirds of a season can't do that job. A rung is already the cheapest row on
+this site at ~40px, against the ~80px of the shared result row. Collapsing it
+would be shaving. The budget question was about what the page now *is*.
+
+The default route measures 2,218px against the new number, with 82px in hand —
+it was 1,812px against the old one, and Phase 20 had taken it there from 1,857px
+by moving the pitch address off the scoreboard and attaching each score to its
+own team row. The richer routes are still over: the clean-sheet match, thirteen
+named with a report, is 2,734px. That gap belongs to Phases 26 and 27 — the team
+sheet replacing the squad pills, "Worth noting" going, head to head replacing
+the comparison card, and above all the report clamping to ~300 characters, which
+is what stops whoever wrote it up on the Sunday from setting the length of the
+page.
 
 ## CSS structure
 
