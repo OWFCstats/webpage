@@ -1,0 +1,2225 @@
+<title>Matchday, Five Ways</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Display&family=Archivo:wght@400;500;600;700&family=Archivo+Narrow:wght@400;500;600;700&display=swap">
+
+<style>
+/* =========================================================================
+   THE WORKBENCH — the shell around the mocks. Theme-aware, deliberately
+   quiet: it is a table the five flats are laid out on, not a design itself.
+   ========================================================================= */
+:root {
+  --w-bg: #d8dcd5;
+  --w-panel: #eef0eb;
+  --w-panel-2: #e3e7de;
+  --w-ink: #1c211b;
+  --w-ink-soft: #5a615a;
+  --w-rule: #c2c8bf;
+  --w-accent: #16281f;
+  --w-accent-ink: #efeada;
+  --w-gold: #a8801f;
+  --w-shadow: 0 10px 34px rgba(20, 30, 22, 0.16);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --w-bg: #0c1210;
+    --w-panel: #151e18;
+    --w-panel-2: #1b251e;
+    --w-ink: #dde1d7;
+    --w-ink-soft: #8d958b;
+    --w-rule: #2a352d;
+    --w-accent: #e6c65f;
+    --w-accent-ink: #16281f;
+    --w-gold: #e6c65f;
+    --w-shadow: 0 10px 34px rgba(0, 0, 0, 0.5);
+  }
+}
+:root[data-theme="dark"] {
+  --w-bg: #0c1210;
+  --w-panel: #151e18;
+  --w-panel-2: #1b251e;
+  --w-ink: #dde1d7;
+  --w-ink-soft: #8d958b;
+  --w-rule: #2a352d;
+  --w-accent: #e6c65f;
+  --w-accent-ink: #16281f;
+  --w-gold: #e6c65f;
+  --w-shadow: 0 10px 34px rgba(0, 0, 0, 0.5);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--w-bg);
+  color: var(--w-ink);
+  font-family: 'Archivo', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: inherit; }
+
+.wb-bar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--w-panel);
+  border-bottom: 1px solid var(--w-rule);
+}
+
+.wb-top {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 12px 16px 8px;
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+.wb-title {
+  font-family: 'Libre Caslon Display', Georgia, serif;
+  font-size: 17px;
+  letter-spacing: -0.01em;
+}
+
+.wb-sub {
+  font-size: 12px;
+  color: var(--w-ink-soft);
+}
+
+.wb-widths { margin-left: auto; display: flex; gap: 4px; }
+
+.wb-widths button {
+  font: inherit;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 4px 10px;
+  border: 1px solid var(--w-rule);
+  background: transparent;
+  color: var(--w-ink-soft);
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.wb-widths button[aria-pressed="true"] {
+  background: var(--w-accent);
+  border-color: var(--w-accent);
+  color: var(--w-accent-ink);
+}
+
+.wb-tabs {
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.wb-tabs::-webkit-scrollbar { display: none; }
+
+.wb-tabs button {
+  font: inherit;
+  background: none;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  color: var(--w-ink-soft);
+  padding: 8px 14px 9px;
+  cursor: pointer;
+  white-space: nowrap;
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+}
+
+.wb-tabs button b {
+  font-family: 'Archivo Narrow', Archivo, sans-serif;
+  font-variant-numeric: tabular-nums;
+  font-size: 11.5px;
+  font-weight: 700;
+  opacity: 0.55;
+}
+
+.wb-tabs button span { font-size: 13.5px; font-weight: 600; }
+
+.wb-tabs button[aria-selected="true"] {
+  color: var(--w-ink);
+  border-bottom-color: var(--w-gold);
+}
+
+.wb-tabs button[aria-selected="true"] b { opacity: 1; color: var(--w-gold); }
+
+.wb-note {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 14px 16px 4px;
+  display: grid;
+  gap: 4px;
+}
+
+.wb-note p { margin: 0; font-size: 13.5px; line-height: 1.55; max-width: 62ch; }
+
+.wb-note .cut { color: var(--w-ink-soft); font-size: 12.5px; }
+
+.wb-note .cut b { font-weight: 600; color: var(--w-ink); }
+
+.stage {
+  --frame: 390px;
+  display: flex;
+  justify-content: center;
+  padding: 18px 16px 64px;
+}
+
+.stage.wide { --frame: 880px; }
+
+.device {
+  width: min(100%, var(--frame));
+  container-type: inline-size;
+  background: #f1f3ef;
+  border: 1px solid var(--w-rule);
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: var(--w-shadow);
+}
+
+.pane[hidden] { display: none; }
+
+:where(button, a):focus-visible {
+  outline: 2px solid var(--w-gold);
+  outline-offset: 2px;
+}
+
+/* =========================================================================
+   THE CLUB'S OWN SYSTEM — every value below is lifted verbatim from
+   src/styles/tokens.css. Scoped to .mock so the workbench can't leak in.
+   ========================================================================= */
+.mock {
+  --paper: #f1f3ef;
+  --sheet: #e6e9e2;
+  --board: #16281f;
+  --board-soft: #1d3227;
+  --ink: #20221f;
+  --ink-soft: #6a6a63;
+  --ink-faint: #9b9a92;
+  --on-board: #ece9df;
+  --on-board-soft: #96958c;
+  --gold: #c9992b;
+  --gold-leaf: #e6c65f;
+  --gold-deep: #8c6716;
+  --verdigris: #8fb3a6;
+  --verdigris-deep: #3f6b5c;
+  --burnt: #bf6a22;
+  --win: #2f7d4f;
+  --draw: #8a8b83;
+  --loss: #b3392f;
+  --rule: #e2ded2;
+  --rule-firm: #c9c4b4;
+  --fd: 'Libre Caslon Display', Georgia, serif;
+  --ft: 'Archivo', system-ui, -apple-system, sans-serif;
+  --fn: 'Archivo Narrow', 'Archivo', system-ui, sans-serif;
+
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--ft);
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.mock h1, .mock h2, .mock h3 { margin: 0; font-weight: 400; }
+.mock p { margin: 0; }
+.mock ul, .mock ol { margin: 0; padding: 0; list-style: none; }
+.mock a { text-decoration: none; color: inherit; }
+
+/* ---- shared marks ---- */
+.lbl {
+  font-family: var(--ft);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.dk .lbl, .lbl.on-dark { color: var(--on-board-soft); }
+
+.num { font-family: var(--fn); font-variant-numeric: tabular-nums; }
+
+.wdl {
+  display: inline-grid;
+  place-items: center;
+  width: 19px;
+  height: 19px;
+  border-radius: 2px;
+  font-family: var(--fn);
+  font-weight: 700;
+  font-size: 11.5px;
+  line-height: 1;
+  color: #fff;
+  flex: none;
+}
+
+.wdl.W { background: var(--win); }
+.wdl.D { background: var(--draw); }
+.wdl.L { background: var(--loss); }
+
+.blk {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 3px;
+  line-height: 1.45;
+}
+
+.blk.gold { background: var(--gold); color: var(--board); }
+.blk.board { background: var(--board); color: var(--on-board); }
+.blk.verd { background: var(--verdigris); color: var(--board); }
+.blk.burnt { background: var(--burnt); color: #fff; }
+
+.ven {
+  font-family: var(--fn);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ink-soft);
+  border: 1px solid var(--rule-firm);
+  border-radius: 2px;
+  padding: 0 3px;
+}
+
+.dk .ven { color: var(--on-board-soft); border-color: color-mix(in srgb, var(--on-board) 28%, transparent); }
+
+/* ---- site chrome, shared by all five so each mock reads as a real page ---- */
+.chrome {
+  background: var(--board);
+  border-bottom: 2px solid var(--gold);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+}
+
+.crest {
+  width: 30px;
+  height: 30px;
+  flex: none;
+  background: var(--gold);
+  color: var(--board);
+  border-radius: 2px;
+  display: grid;
+  place-items: center;
+  font-family: var(--fd);
+  font-size: 14px;
+}
+
+.chrome-name {
+  font-family: var(--fd);
+  font-size: 15px;
+  color: var(--on-board);
+  line-height: 1.15;
+}
+
+.chrome-sub {
+  display: block;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.chrome-log { margin-left: auto; font-size: 12.5px; color: var(--on-board-soft); }
+
+.tabbar {
+  background: var(--board);
+  border-top: 1px solid color-mix(in srgb, var(--gold) 40%, transparent);
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  padding: 9px 0 11px;
+  margin-top: 24px;
+}
+
+.tabbar a {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  color: var(--on-board-soft);
+  font-size: 10.5px;
+  font-weight: 500;
+}
+
+.tabbar a.on { color: var(--gold-leaf); }
+
+.tabbar svg {
+  width: 19px;
+  height: 19px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* =========================================================================
+   01 — THE TEAM SHEET
+   The squad is the page. The result is a nameplate at the top; the sheet
+   below it is the biggest, most detailed object, and one row of it is gilded.
+   ========================================================================= */
+.mk1 { padding-bottom: 4px; }
+
+.mk1-plate {
+  background: var(--board);
+  border-bottom: 1px solid var(--gold);
+  padding: 14px 16px 12px;
+  display: grid;
+  gap: 6px;
+}
+
+.mk1-plate-head { display: flex; align-items: center; gap: 8px; }
+.mk1-plate-head .lbl { color: var(--on-board-soft); }
+.mk1-plate-head .wdl { margin-left: auto; }
+
+.mk1-line {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+  gap: 12px;
+  padding: 3px 0;
+}
+
+.mk1-line + .mk1-line { border-top: 1px solid color-mix(in srgb, var(--on-board) 13%, transparent); }
+
+.mk1-club {
+  font-family: var(--fd);
+  font-size: 18px;
+  color: var(--on-board);
+  letter-spacing: -0.01em;
+}
+
+.mk1-line.them .mk1-club { color: color-mix(in srgb, var(--on-board) 80%, var(--board)); }
+
+.mk1-num {
+  font-family: var(--fd);
+  font-size: 30px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--gold-leaf);
+}
+
+.mk1-line.them .mk1-num { color: var(--on-board); }
+
+.mk1-plate-foot {
+  font-family: var(--fn);
+  font-size: 12.5px;
+  color: var(--on-board-soft);
+  padding-top: 4px;
+  border-top: 1px solid color-mix(in srgb, var(--on-board) 13%, transparent);
+}
+
+.mk1-body { padding: 0 16px; display: grid; gap: 22px; }
+
+.mk1-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding-top: 20px;
+}
+
+.mk1-head h2 {
+  font-family: var(--fd);
+  font-size: 19px;
+  letter-spacing: -0.01em;
+}
+
+/* The sheet is the page, so it is the only 25px heading on it. */
+.mk1-sheet-wrap .mk1-head h2 { font-size: 26px; letter-spacing: -0.015em; }
+
+.mk1-head .count { margin-left: auto; font-family: var(--fn); font-size: 12.5px; color: var(--ink-soft); }
+
+/* The sheet itself: a ruled ledger, hairlines edge to edge. */
+.mk1-sheet { margin-top: 12px; }
+
+.mk1-cols, .mk1-row {
+  display: grid;
+  grid-template-columns: 1fr 24px 24px 40px;
+  align-items: center;
+  gap: 10px;
+}
+
+.mk1-cols {
+  padding-bottom: 5px;
+  border-bottom: 1px solid var(--rule-firm);
+}
+
+.mk1-cols span:not(:first-child), .mk1-row .fig { text-align: right; }
+
+.mk1-row {
+  padding: 9px 0;
+  border-bottom: 1px solid var(--rule);
+  min-height: 44px;
+}
+
+.mk1-name { font-family: var(--fd); font-size: 17px; letter-spacing: -0.005em; }
+
+.mk1-row .fig { font-family: var(--fn); font-size: 14.5px; font-variant-numeric: tabular-nums; color: var(--ink-soft); }
+.mk1-row .fig.has { color: var(--gold-deep); font-weight: 700; }
+.mk1-row .fig.app { color: var(--ink); }
+
+/* The one gilded row. A nameplate you either have or don't. */
+.mk1-nameplate {
+  background: var(--board);
+  margin: 0 -16px;
+  padding: 12px 16px;
+  display: grid;
+  grid-template-columns: 1fr 24px 24px 40px;
+  align-items: center;
+  gap: 10px;
+  border-top: 1px solid var(--gold);
+  border-bottom: 1px solid var(--gold);
+}
+
+.mk1-nameplate .lbl { color: var(--gold); display: block; margin-bottom: 2px; }
+
+.mk1-nameplate .mk1-name {
+  color: var(--gold-leaf);
+  font-size: 21px;
+  display: block;
+  line-height: 1.15;
+}
+
+.mk1-nameplate .did { font-size: 12.5px; color: var(--on-board-soft); font-family: var(--fn); }
+
+.mk1-nameplate .fig { font-family: var(--fn); font-size: 14.5px; text-align: right; color: var(--on-board-soft); }
+.mk1-nameplate .fig.has { color: var(--gold-leaf); font-weight: 700; }
+
+.mk1-foot {
+  padding-top: 9px;
+  font-family: var(--fn);
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+/* a two-line ledger: where the goals came from */
+.mk1-from { display: grid; gap: 0; }
+
+.mk1-from > div {
+  display: grid;
+  grid-template-columns: 78px 1fr;
+  gap: 12px;
+  padding: 10px 0;
+  border-top: 1px solid var(--rule);
+  align-items: baseline;
+}
+
+.mk1-from strong { font-weight: 500; font-family: var(--fd); font-size: 16px; }
+
+.mk1-boot { display: grid; }
+
+.mk1-boot li {
+  display: grid;
+  grid-template-columns: 18px 1fr auto;
+  gap: 10px;
+  align-items: baseline;
+  padding: 8px 0;
+  border-top: 1px solid var(--rule);
+}
+
+.mk1-boot .rank { font-family: var(--fn); font-size: 12px; color: var(--ink-faint); }
+.mk1-boot .who { font-family: var(--fd); font-size: 16px; }
+.mk1-boot .g { font-family: var(--fn); font-weight: 700; font-size: 15px; color: var(--gold-deep); }
+
+.mk1-note {
+  display: grid;
+  grid-template-columns: 30px 1fr;
+  gap: 12px;
+  align-items: center;
+  border-left: 2px solid var(--gold);
+  padding: 2px 0 2px 12px;
+}
+
+.mk1-note .n { font-family: var(--fd); font-size: 24px; color: var(--gold-deep); text-align: center; }
+.mk1-note p { font-size: 14.5px; line-height: 1.45; }
+.mk1-note p span { color: var(--ink-soft); }
+
+.mk1-report p {
+  font-size: 15.5px;
+  line-height: 1.7;
+  max-width: 62ch;
+  margin-top: 8px;
+}
+
+/* the season, as a strip of results with the current one gilded */
+.mk1-season { display: grid; gap: 10px; }
+
+.mk1-strip { display: flex; flex-wrap: wrap; gap: 3px; }
+
+.mk1-strip a {
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border-radius: 2px;
+  font-family: var(--fn);
+  font-weight: 700;
+  font-size: 12px;
+  color: #fff;
+}
+
+.mk1-strip a.W { background: var(--win); }
+.mk1-strip a.D { background: var(--draw); }
+.mk1-strip a.L { background: var(--loss); }
+.mk1-strip a.fx { border: 1px dashed var(--rule-firm); background: transparent; }
+.mk1-strip a.now { box-shadow: 0 0 0 2px var(--gold); }
+
+.mk1-step { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+.mk1-step > a, .mk1-step > span {
+  border: 1px solid var(--rule-firm);
+  border-radius: 3px;
+  padding: 8px 10px;
+  display: grid;
+  gap: 2px;
+  min-height: 44px;
+  align-content: center;
+}
+
+.mk1-step .lbl { font-size: 10.5px; }
+.mk1-step b { font-family: var(--fd); font-weight: 400; font-size: 15px; }
+.mk1-step .sc { font-family: var(--fn); font-size: 12.5px; color: var(--ink-soft); white-space: nowrap; }
+
+@container (min-width: 640px) {
+  .mk1-plate { padding: 20px 26px 16px; }
+  .mk1-num { font-size: 40px; }
+  .mk1-club { font-size: 22px; }
+  .mk1-body { padding: 0 26px; grid-template-columns: 1.15fr 1fr; gap: 26px 34px; align-items: start; }
+  .mk1-sheet-wrap, .mk1-season { grid-column: 1; }
+  .mk1-body > section:not(.mk1-season) { grid-column: 2; }
+  .mk1-nameplate { margin: 0 -26px 0 -26px; padding: 12px 26px; }
+}
+
+/* =========================================================================
+   02 — THE OCCASION
+   The scoreline as typography: two numerals big enough to be the hero, the
+   man of the match gilded on the same dark ground, and the season as a
+   filmstrip you scroll.
+   ========================================================================= */
+.mk2-hero {
+  background: var(--board);
+  border-bottom: 1px solid var(--gold);
+  padding: 18px 16px 16px;
+}
+
+.mk2-meta-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 14px;
+}
+
+.mk2-side {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 14px;
+}
+
+.mk2-side .who { display: grid; gap: 3px; min-width: 0; }
+
+.mk2-side .club {
+  font-family: var(--fd);
+  font-size: 20px;
+  line-height: 1.1;
+  color: var(--on-board);
+  letter-spacing: -0.015em;
+}
+
+.mk2-side.them .club { color: color-mix(in srgb, var(--on-board) 82%, var(--board)); }
+
+.mk2-side .sub { font-family: var(--fn); font-size: 12px; color: var(--on-board-soft); }
+
+.mk2-goals {
+  font-family: var(--fd);
+  font-size: 74px;
+  line-height: 0.82;
+  font-variant-numeric: tabular-nums;
+  color: var(--gold-leaf);
+}
+
+.mk2-side.them .mk2-goals { color: var(--on-board); }
+
+.mk2-mid {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 12px 0;
+}
+
+.mk2-mid::before, .mk2-mid::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: color-mix(in srgb, var(--gold) 55%, transparent);
+}
+
+.mk2-under {
+  font-family: var(--fn);
+  font-size: 12.5px;
+  color: var(--on-board-soft);
+  line-height: 1.5;
+  padding-top: 4px;
+}
+
+/* the gilded plate: MOTM on the same surface as the result */
+.mk2-motm {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid color-mix(in srgb, var(--on-board) 15%, transparent);
+  display: grid;
+  gap: 3px;
+}
+
+.mk2-motm .name {
+  font-family: var(--fd);
+  font-size: 27px;
+  color: var(--gold-leaf);
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+}
+
+.mk2-motm .did { font-family: var(--fn); font-size: 13px; color: var(--on-board-soft); }
+
+.mk2-scorers {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px;
+  align-items: baseline;
+  font-size: 14px;
+  color: var(--on-board);
+}
+
+.mk2-scorers strong { font-weight: 500; font-family: var(--fd); font-size: 15.5px; }
+
+/* the filmstrip */
+.mk2-film-wrap { border-bottom: 1px solid var(--rule); background: var(--sheet); }
+
+.mk2-film-head { display: flex; align-items: baseline; gap: 10px; padding: 12px 16px 8px; }
+.mk2-film-head .rec { margin-left: auto; font-family: var(--fn); font-size: 12px; color: var(--ink-soft); }
+
+.mk2-film {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 0 16px 14px;
+  scroll-snap-type: x proximity;
+}
+
+.mk2-cell {
+  flex: none;
+  width: 58px;
+  scroll-snap-align: center;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  padding: 6px 5px 0;
+  display: grid;
+  gap: 3px;
+  justify-items: center;
+  overflow: hidden;
+}
+
+.mk2-cell .d { font-family: var(--fn); font-size: 10.5px; color: var(--ink-faint); }
+.mk2-cell .op { font-family: var(--fd); font-size: 13px; }
+.mk2-cell .sc { font-family: var(--fn); font-size: 12.5px; font-weight: 700; }
+.mk2-cell .bar { height: 4px; width: 100%; margin-top: 4px; }
+.mk2-cell.W .bar { background: var(--win); }
+.mk2-cell.D .bar { background: var(--draw); }
+.mk2-cell.L .bar { background: var(--loss); }
+.mk2-cell.fx { border-style: dashed; }
+.mk2-cell.fx .sc { color: var(--ink-faint); }
+
+.mk2-cell.now {
+  border-color: var(--gold);
+  box-shadow: inset 0 0 0 1px var(--gold);
+  background: color-mix(in srgb, var(--gold) 9%, var(--paper));
+}
+
+.mk2-body { padding: 20px 16px 0; display: grid; gap: 24px; }
+
+.mk2-sec { display: grid; gap: 10px; }
+
+.mk2-sec > h3 { font-family: var(--fd); font-size: 20px; letter-spacing: -0.01em; }
+
+/* mirrored comparison: this game against the season it sat in */
+.mk2-cmp { display: grid; gap: 12px; }
+
+.mk2-cmp-row { display: grid; gap: 5px; }
+
+.mk2-cmp-row .top {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-family: var(--fn);
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+
+.mk2-cmp-row .top b { font-family: var(--fd); font-size: 18px; color: var(--ink); font-weight: 400; }
+.mk2-cmp-row .top .avg { margin-left: auto; }
+
+.mk2-track { height: 9px; background: var(--sheet); position: relative; border-radius: 1px; }
+.mk2-track i { position: absolute; inset: 0 auto 0 0; display: block; background: var(--gold-deep); border-radius: 1px; }
+.mk2-track b { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--ink); }
+
+.mk2-cmp-key { font-family: var(--fn); font-size: 12px; color: var(--ink-soft); }
+
+.mk2-h2h { display: grid; }
+
+.mk2-h2h li {
+  display: grid;
+  grid-template-columns: 19px 1fr auto auto;
+  gap: 10px;
+  align-items: center;
+  padding: 9px 0;
+  border-top: 1px solid var(--rule);
+  min-height: 44px;
+}
+
+.mk2-h2h .dt { font-family: var(--fn); font-size: 13px; color: var(--ink-soft); }
+.mk2-h2h .sc { font-family: var(--fn); font-weight: 700; font-size: 15px; }
+.mk2-h2h li.now { background: color-mix(in srgb, var(--gold) 12%, transparent); }
+
+.mk2-squad { display: grid; grid-template-columns: 1fr 1fr; gap: 0 18px; }
+
+.mk2-squad li {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 8px 0;
+  border-top: 1px solid var(--rule);
+  font-family: var(--fd);
+  font-size: 15.5px;
+}
+
+.mk2-squad em {
+  font-style: normal;
+  font-family: var(--fn);
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--gold-deep);
+}
+
+.mk2-squad .star { color: var(--gold); font-size: 12px; }
+
+.mk2-report p { font-size: 15.5px; line-height: 1.7; max-width: 62ch; }
+
+@container (min-width: 640px) {
+  .mk2-hero { padding: 26px 30px 22px; }
+  .mk2-goals { font-size: 104px; }
+  .mk2-side .club { font-size: 25px; }
+  .mk2-body { padding: 24px 30px 0; grid-template-columns: 1fr 1fr; gap: 26px 34px; align-items: start; }
+  .mk2-cmp-sec { grid-column: 1; }
+  .mk2-h2h-sec, .mk2-squad-sec { grid-column: 2; }
+  .mk2-report, .mk2-film-wrap { grid-column: 1 / -1; }
+  .mk2-film, .mk2-film-head { padding-inline: 30px; }
+}
+
+/* =========================================================================
+   03 — THE SEASON SPINE
+   Navigation is the page. Sixteen games on one gilded rule; the match you
+   asked for swells open in place.
+   ========================================================================= */
+.mk3-head { padding: 18px 16px 14px; border-bottom: 1px solid var(--rule); display: grid; gap: 8px; }
+
+.mk3-head h1 { font-family: var(--fd); font-size: 27px; letter-spacing: -0.02em; }
+
+.mk3-ledger { display: flex; flex-wrap: wrap; gap: 4px 14px; font-family: var(--fn); font-size: 13px; color: var(--ink-soft); }
+.mk3-ledger b { color: var(--ink); font-weight: 700; }
+
+.mk3-spine { padding: 8px 16px 0; position: relative; }
+
+/* the rule itself, running the length of the season */
+.mk3-spine::before {
+  content: "";
+  position: absolute;
+  top: 18px;
+  bottom: 34px;
+  left: 26px;
+  width: 1px;
+  background: linear-gradient(var(--rule-firm), var(--gold) 12%, var(--gold) 62%, var(--rule-firm));
+}
+
+.mk3-rung {
+  display: grid;
+  grid-template-columns: 21px 1fr;
+  gap: 14px;
+  position: relative;
+  padding: 6px 0;
+}
+
+.mk3-node { position: relative; height: 44px; display: grid; place-items: center; }
+
+.mk3-node i {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--paper);
+  border: 1px solid var(--rule-firm);
+  display: block;
+}
+
+.mk3-rung.played .mk3-node i { background: var(--rule-firm); border-color: var(--rule-firm); }
+.mk3-rung.fx .mk3-node i { border-style: dashed; }
+
+.mk3-rung.now .mk3-node i {
+  width: 15px;
+  height: 15px;
+  background: var(--gold);
+  border: 3px solid var(--paper);
+  box-shadow: 0 0 0 1px var(--gold);
+}
+
+.mk3-line {
+  display: grid;
+  grid-template-columns: 46px 1fr auto auto;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.mk3-line .dt { font-family: var(--fn); font-size: 12.5px; color: var(--ink-soft); line-height: 1.2; }
+.mk3-line .op { font-family: var(--fd); font-size: 16px; letter-spacing: -0.005em; }
+.mk3-line .sc { font-family: var(--fn); font-weight: 700; font-size: 14.5px; }
+.mk3-line .sc.none { color: var(--ink-faint); font-weight: 400; }
+
+.mk3-rung.fx .mk3-line .op { color: var(--ink-soft); }
+
+/* the rung that swells open */
+.mk3-open {
+  border-left: 2px solid var(--gold);
+  background: linear-gradient(to right, color-mix(in srgb, var(--gold) 7%, var(--paper)), var(--paper) 60%);
+  margin: 4px 0 14px;
+  padding: 0 0 2px;
+}
+
+.mk3-sb { padding: 14px 14px 12px; display: grid; gap: 8px; }
+
+.mk3-sb .top { display: flex; align-items: center; gap: 8px; }
+
+.mk3-sb-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+  gap: 10px;
+  padding: 4px 0;
+}
+
+.mk3-sb-row + .mk3-sb-row { border-top: 1px solid var(--rule); }
+.mk3-sb-row .club { font-family: var(--fd); font-size: 19px; letter-spacing: -0.01em; }
+.mk3-sb-row.them .club { color: var(--ink-soft); }
+.mk3-sb-row .g { font-family: var(--fd); font-size: 30px; line-height: 1; font-variant-numeric: tabular-nums; }
+.mk3-sb .when { font-family: var(--fn); font-size: 12.5px; color: var(--ink-soft); }
+
+.mk3-motm {
+  margin: 2px 14px 0;
+  background: var(--board);
+  border-radius: 3px;
+  padding: 10px 12px;
+  display: grid;
+  gap: 2px;
+}
+
+.mk3-motm .lbl { color: var(--gold); }
+.mk3-motm .name { font-family: var(--fd); font-size: 20px; color: var(--gold-leaf); line-height: 1.15; }
+.mk3-motm .did { font-family: var(--fn); font-size: 12.5px; color: var(--on-board-soft); }
+
+.mk3-inner { padding: 14px 14px 4px; display: grid; gap: 16px; }
+
+.mk3-sub { display: grid; gap: 7px; }
+
+.mk3-sheet { display: grid; }
+
+.mk3-sheet li {
+  display: grid;
+  grid-template-columns: 1fr auto 34px;
+  gap: 10px;
+  align-items: baseline;
+  padding: 7px 0;
+  border-top: 1px solid var(--rule);
+  min-height: 40px;
+  align-content: center;
+}
+
+.mk3-sheet .nm { font-family: var(--fd); font-size: 15.5px; }
+.mk3-sheet .did { font-family: var(--fn); font-size: 11.5px; font-weight: 700; color: var(--gold-deep); }
+.mk3-sheet .ap { font-family: var(--fn); font-size: 12.5px; color: var(--ink-soft); text-align: right; }
+.mk3-sheet li.motm .nm::after { content: " ★"; color: var(--gold); font-size: 12px; }
+
+.mk3-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.mk3-fact {
+  border-top: 1px solid var(--rule-firm);
+  padding-top: 6px;
+  display: grid;
+  gap: 2px;
+}
+
+.mk3-fact b { font-family: var(--fd); font-weight: 400; font-size: 19px; }
+.mk3-fact span { font-family: var(--fn); font-size: 12px; color: var(--ink-soft); }
+
+.mk3-inner p { font-size: 15px; line-height: 1.68; max-width: 62ch; }
+
+.mk3-more {
+  display: block;
+  margin: 8px 0 0 35px;
+  border: 1px solid var(--rule-firm);
+  border-radius: 3px;
+  padding: 11px;
+  text-align: center;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  background: transparent;
+  font-family: var(--ft);
+  width: calc(100% - 35px);
+  cursor: pointer;
+}
+
+@container (min-width: 640px) {
+  .mk3-head, .mk3-spine { padding-inline: 30px; }
+  .mk3-spine::before { left: 40px; }
+  .mk3-inner { grid-template-columns: 1fr 1fr; gap: 18px 26px; align-items: start; }
+  .mk3-inner .mk3-report { grid-column: 1 / -1; }
+}
+
+/* =========================================================================
+   04 — THE REPORT
+   The match as writing. A quiet scoreline, then the story, with the derived
+   facts engraved in the margin instead of stacked in cards.
+   ========================================================================= */
+.mk4-bar {
+  background: var(--board);
+  border-bottom: 1px solid var(--gold);
+  padding: 11px 16px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  align-items: center;
+}
+
+.mk4-bar .line { font-family: var(--fd); font-size: 19px; color: var(--on-board); letter-spacing: -0.01em; }
+.mk4-bar .line b { font-weight: 400; color: var(--gold-leaf); font-variant-numeric: tabular-nums; }
+.mk4-bar .line .v { color: var(--on-board); font-variant-numeric: tabular-nums; }
+.mk4-bar .when { display: block; font-family: var(--fn); font-size: 11.5px; color: var(--on-board-soft); margin-top: 2px; }
+
+.mk4-art { padding: 20px 16px 0; }
+
+.mk4-kicker { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+
+.mk4-art h1 {
+  font-family: var(--fd);
+  font-size: 33px;
+  line-height: 1.06;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+.mk4-stand {
+  font-size: 16.5px;
+  line-height: 1.5;
+  color: var(--ink-soft);
+  margin-top: 10px;
+  max-width: 46ch;
+}
+
+.mk4-byline {
+  font-family: var(--fn);
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  padding: 12px 0;
+  margin-top: 12px;
+  border-top: 1px solid var(--rule-firm);
+  border-bottom: 1px solid var(--rule-firm);
+}
+
+.mk4-prose { padding-top: 18px; display: grid; gap: 14px; }
+
+.mk4-prose p { font-size: 16.5px; line-height: 1.72; max-width: 60ch; }
+
+.mk4-prose p.first::first-letter {
+  font-family: var(--fd);
+  font-size: 56px;
+  line-height: 0.82;
+  float: left;
+  padding: 4px 8px 0 0;
+  color: var(--gold-deep);
+}
+
+/* the margin: engraved plates, not cards */
+.mk4-marg { display: grid; gap: 14px; margin: 4px 0; }
+
+.mk4-plate {
+  border-left: 2px solid var(--gold);
+  padding: 2px 0 2px 13px;
+  display: grid;
+  gap: 3px;
+}
+
+.mk4-plate .val { font-family: var(--fd); font-size: 19px; line-height: 1.25; letter-spacing: -0.01em; }
+.mk4-plate .val b { font-weight: 400; color: var(--gold-deep); }
+.mk4-plate .fine { font-family: var(--fn); font-size: 12.5px; color: var(--ink-soft); line-height: 1.45; }
+
+.mk4-teams { padding: 20px 16px 0; }
+
+.mk4-teams-line {
+  font-family: var(--fn);
+  font-size: 15px;
+  line-height: 1.85;
+  margin-top: 8px;
+}
+
+.mk4-teams-line b { font-weight: 700; }
+.mk4-teams-line em { font-style: normal; color: var(--gold-deep); font-weight: 700; }
+.mk4-teams-line span.sep { color: var(--rule-firm); padding: 0 3px; }
+.mk4-teams-line .star { color: var(--gold); }
+.mk4-teams-line .one { white-space: nowrap; }
+
+.mk4-after {
+  margin: 20px 16px 0;
+  background: var(--board);
+  border-radius: 3px;
+  padding: 13px 14px;
+  display: grid;
+  gap: 9px;
+}
+
+.mk4-after .lbl { color: var(--gold); }
+
+.mk4-after-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+
+.mk4-after-grid div { display: grid; gap: 2px; }
+.mk4-after-grid b { font-family: var(--fd); font-weight: 400; font-size: 21px; color: var(--on-board); }
+.mk4-after-grid span { font-family: var(--fn); font-size: 11.5px; color: var(--on-board-soft); }
+
+.mk4-step { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 18px 16px 0; }
+
+.mk4-step a {
+  border: 1px solid var(--rule-firm);
+  border-radius: 3px;
+  padding: 9px 11px;
+  display: grid;
+  gap: 2px;
+  min-height: 44px;
+  align-content: center;
+}
+
+.mk4-step .lbl { font-size: 10.5px; }
+.mk4-step b { font-family: var(--fd); font-weight: 400; font-size: 15px; }
+.mk4-step .sc { font-family: var(--fn); font-size: 12.5px; color: var(--ink-soft); white-space: nowrap; }
+
+.mk4-all { padding: 14px 16px 0; }
+.mk4-all a { font-size: 14px; font-weight: 600; color: var(--verdigris-deep); }
+
+@container (min-width: 640px) {
+  .mk4-bar { padding: 14px 30px; }
+  .mk4-art { padding: 26px 30px 0; display: grid; grid-template-columns: 1fr 210px; gap: 0 30px; align-items: start; }
+  .mk4-kicker, .mk4-art h1, .mk4-stand, .mk4-byline { grid-column: 1; }
+  .mk4-prose { grid-column: 1; grid-row: 5; }
+  .mk4-marg.top { grid-column: 2; grid-row: 1 / span 4; padding-top: 4px; }
+  .mk4-marg.rest { grid-column: 2; grid-row: 5; }
+  .mk4-art h1 { font-size: 42px; }
+  .mk4-teams, .mk4-step, .mk4-all { padding-inline: 30px; }
+  .mk4-after { margin-inline: 30px; }
+}
+
+/* =========================================================================
+   05 — TALE OF THE TAPE
+   The match as data. The signature is the mirrored league row: we lost to
+   the side below us, and that is the fact the scoreline can't say.
+   ========================================================================= */
+.mk5-bar {
+  background: var(--board);
+  border-bottom: 1px solid var(--gold);
+  padding: 12px 16px;
+  display: grid;
+  gap: 8px;
+}
+
+.mk5-bar .top { display: flex; align-items: center; gap: 8px; }
+
+.mk5-sides { display: grid; gap: 4px; }
+
+.mk5-sr { display: grid; grid-template-columns: 26px 1fr auto; gap: 10px; align-items: center; }
+
+.mk5-sr .mono {
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font-family: var(--fn);
+  font-size: 10.5px;
+  font-weight: 700;
+}
+
+.mk5-sr.us .mono { background: var(--gold); color: var(--board); }
+.mk5-sr.them .mono { background: var(--board-soft); color: var(--on-board-soft); }
+.mk5-sr .club { font-family: var(--fd); font-size: 17px; color: var(--on-board); }
+.mk5-sr.them .club { color: color-mix(in srgb, var(--on-board) 82%, var(--board)); }
+.mk5-sr .g { font-family: var(--fd); font-size: 26px; line-height: 1; font-variant-numeric: tabular-nums; color: var(--on-board); }
+.mk5-sr.us .g { color: var(--gold-leaf); }
+
+.mk5-bar .fine { font-family: var(--fn); font-size: 12px; color: var(--on-board-soft); }
+
+.mk5-body { padding: 18px 16px 0; display: grid; gap: 22px; }
+
+.mk5-sec { display: grid; gap: 10px; }
+.mk5-sec > h3 { font-family: var(--fd); font-size: 20px; letter-spacing: -0.01em; }
+.mk5-sec .cap { font-family: var(--fn); font-size: 12px; color: var(--ink-soft); }
+
+/* the tape */
+.mk5-tape-head {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 8px;
+  align-items: end;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--rule-firm);
+}
+
+.mk5-tape-head .side { font-family: var(--fd); font-size: 14.5px; line-height: 1.15; }
+.mk5-tape-head .side.b { text-align: right; }
+.mk5-tape-head .pos { font-family: var(--fn); font-size: 11.5px; color: var(--ink-soft); display: block; }
+
+.mk5-tape { display: grid; }
+
+.mk5-tr {
+  display: grid;
+  grid-template-columns: 26px 1fr 74px 1fr 26px;
+  gap: 7px;
+  align-items: center;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.mk5-tr .v { font-family: var(--fn); font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.mk5-tr .v.a { text-align: left; color: var(--gold-deep); }
+.mk5-tr .v.b { text-align: right; color: var(--verdigris-deep); }
+.mk5-tr .k { text-align: center; font-family: var(--ft); font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft); }
+
+.mk5-tr .t { height: 8px; background: var(--sheet); display: flex; }
+.mk5-tr .t.a { justify-content: flex-end; }
+.mk5-tr .t i { display: block; height: 100%; }
+.mk5-tr .t.a i { background: var(--gold-deep); }
+.mk5-tr .t.b i { background: var(--verdigris-deep); }
+.mk5-tr.plain .t { background: none; }
+
+.mk5-tape-foot { font-family: var(--fn); font-size: 11.5px; color: var(--ink-soft); padding-top: 8px; }
+
+/* the afternoon in three figures */
+.mk5-three { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+
+.mk5-cell { border-top: 2px solid var(--board); padding-top: 7px; display: grid; gap: 1px; }
+.mk5-cell b { font-family: var(--fd); font-weight: 400; font-size: 27px; line-height: 1; }
+.mk5-cell .k { font-size: 12.5px; font-weight: 600; }
+.mk5-cell .vs { font-family: var(--fn); font-size: 11.5px; color: var(--ink-soft); }
+
+/* the season's goal difference */
+.mk5-spark { background: var(--sheet); border-radius: 3px; padding: 10px 10px 6px; }
+.mk5-spark svg { width: 100%; height: auto; display: block; }
+
+/* who did what */
+.mk5-did { display: grid; }
+
+.mk5-did li {
+  display: grid;
+  grid-template-columns: 1fr 52px 84px 34px;
+  gap: 9px;
+  align-items: center;
+  padding: 8px 0;
+  border-top: 1px solid var(--rule);
+  min-height: 44px;
+}
+
+.mk5-did .nm { font-family: var(--fd); font-size: 15.5px; }
+.mk5-did li.motm { border-top-color: var(--gold); }
+.mk5-did li.motm .nm { font-weight: 400; }
+.mk5-did li.motm .nm::after { content: " MOTM"; font-family: var(--fn); font-size: 10px; font-weight: 700; letter-spacing: 0.06em; color: var(--gold-deep); vertical-align: 2px; }
+
+.mk5-glyph { display: flex; gap: 3px; align-items: center; justify-content: flex-end; }
+.mk5-glyph i { width: 9px; height: 9px; border-radius: 50%; display: block; }
+.mk5-glyph i.g { background: var(--gold-deep); }
+.mk5-glyph i.a { border: 2px solid var(--verdigris-deep); }
+
+.mk5-appbar { height: 7px; background: var(--sheet); }
+.mk5-appbar i { display: block; height: 100%; background: var(--board); }
+.mk5-did .ap { font-family: var(--fn); font-size: 12.5px; color: var(--ink-soft); text-align: right; }
+
+.mk5-key { display: flex; gap: 14px; flex-wrap: wrap; font-family: var(--fn); font-size: 11.5px; color: var(--ink-soft); padding-top: 8px; }
+.mk5-key span { display: flex; align-items: center; gap: 5px; }
+
+.mk5-boot { display: grid; gap: 7px; }
+.mk5-boot li { display: grid; grid-template-columns: 1fr 96px 20px; gap: 9px; align-items: center; }
+.mk5-boot .nm { font-family: var(--fd); font-size: 15px; }
+.mk5-boot .t { height: 8px; background: var(--sheet); }
+.mk5-boot .t i { display: block; height: 100%; background: var(--gold-deep); }
+.mk5-boot .g { font-family: var(--fn); font-weight: 700; font-size: 14px; text-align: right; }
+
+.mk5-report p { font-size: 15.5px; line-height: 1.7; max-width: 62ch; }
+
+.mk5-step { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+.mk5-step a {
+  border: 1px solid var(--rule-firm);
+  border-radius: 3px;
+  padding: 9px 11px;
+  display: grid;
+  gap: 2px;
+  min-height: 44px;
+  align-content: center;
+}
+
+.mk5-step .lbl { font-size: 10.5px; }
+.mk5-step b { font-family: var(--fd); font-weight: 400; font-size: 15px; }
+.mk5-step .sc { font-family: var(--fn); font-size: 12.5px; color: var(--ink-soft); white-space: nowrap; }
+
+@container (min-width: 640px) {
+  .mk5-bar { padding: 16px 30px; }
+  .mk5-body { padding: 22px 30px 0; grid-template-columns: 1fr 1fr; gap: 24px 32px; align-items: start; }
+  .mk5-tape-sec, .mk5-report { grid-column: 1 / -1; }
+  .mk5-tr { grid-template-columns: 34px 1fr 110px 1fr 34px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9.5V20h13V9.5"/><path d="M10 20v-5.5h4V20"/></symbol>
+  <symbol id="i-match" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-season" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="1.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></symbol>
+  <symbol id="i-players" viewBox="0 0 24 24"><circle cx="9" cy="9" r="3"/><path d="M3.5 20c0-3 2.4-5 5.5-5s5.5 2 5.5 5"/><path d="M16 7.2a3 3 0 0 1 0 5.6M17.5 20c0-2.2-.7-3.6-1.9-4.5"/></symbol>
+  <symbol id="i-records" viewBox="0 0 24 24"><path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 5.5H5.5A2.5 2.5 0 0 0 8 10M16 5.5h2.5A2.5 2.5 0 0 1 16 10"/><path d="M12 13v3M9.5 20h5M10.5 20l.4-4h2.2l.4 4"/></symbol>
+</svg>
+
+<div class="wb-bar">
+  <div class="wb-top">
+    <span class="wb-title">Matchday, five ways</span>
+    <span class="wb-sub">Old Wellingtonians FC · 2–3 Old Stoics, 14 March 2026</span>
+    <span class="wb-widths">
+      <button type="button" data-w="phone" aria-pressed="true">Phone</button>
+      <button type="button" data-w="wide" aria-pressed="false">Wide</button>
+    </span>
+  </div>
+  <div class="wb-tabs" role="tablist" aria-label="Design directions">
+    <button type="button" role="tab" aria-selected="true" data-tab="1"><b>01</b><span>Team sheet</span></button>
+    <button type="button" role="tab" aria-selected="false" data-tab="2"><b>02</b><span>The occasion</span></button>
+    <button type="button" role="tab" aria-selected="false" data-tab="3"><b>03</b><span>Season spine</span></button>
+    <button type="button" role="tab" aria-selected="false" data-tab="4"><b>04</b><span>The report</span></button>
+    <button type="button" role="tab" aria-selected="false" data-tab="5"><b>05</b><span>Tale of the tape</span></button>
+  </div>
+</div>
+
+<!-- ===================================================================== -->
+<!-- 01 — THE TEAM SHEET                                                   -->
+<!-- ===================================================================== -->
+<section class="pane" data-pane="1">
+  <div class="wb-note">
+    <p><strong>The squad is the page.</strong> The result is a nameplate at the top, small and final; the team sheet under it is the biggest, most detailed object on the page, with the man of the match cut into it as a gilded row. A player opening this on Sunday morning finds their own name in the first screen and a half.</p>
+    <p class="cut"><b>Cut:</b> the form strip (the season strip already says it), the next-fixture address block, the gold/dark colour legend — the columns are labelled instead.</p>
+  </div>
+  <div class="stage">
+    <div class="device">
+      <div class="mock mk1">
+
+        <header class="chrome">
+          <span class="crest">W</span>
+          <span class="chrome-name">Old Wellingtonians FC<span class="chrome-sub">Club statistics</span></span>
+          <span class="chrome-log">Log in</span>
+        </header>
+
+        <!-- the result: a nameplate, not a hero -->
+        <section class="mk1-plate dk">
+          <div class="mk1-plate-head">
+            <span class="lbl">Matchday 16 · 2025/26</span>
+            <span class="wdl L">L</span>
+          </div>
+          <div class="mk1-line">
+            <span class="mk1-club">Old Wellingtonians</span>
+            <span class="mk1-num">2</span>
+          </div>
+          <div class="mk1-line them">
+            <span class="mk1-club">Old Stoics</span>
+            <span class="mk1-num">3</span>
+          </div>
+          <p class="mk1-plate-foot">Full time · League · Sat 14 Mar, 2:00pm · Big Side</p>
+        </section>
+
+        <div class="mk1-body">
+
+          <div class="mk1-sheet-wrap">
+            <div class="mk1-head">
+              <h2>Team sheet</h2>
+              <span class="count">8 named · all started</span>
+            </div>
+
+            <div class="mk1-sheet">
+              <div class="mk1-cols">
+                <span class="lbl">Player</span>
+                <span class="lbl">G</span>
+                <span class="lbl">A</span>
+                <span class="lbl">App</span>
+              </div>
+
+              <div class="mk1-row">
+                <a class="mk1-name" href="#">Dom Bonham-Lloyd</a>
+                <span class="fig has">1</span>
+                <span class="fig">—</span>
+                <span class="fig app">11</span>
+              </div>
+              <div class="mk1-row">
+                <a class="mk1-name" href="#">Tom Simeon</a>
+                <span class="fig has">1</span>
+                <span class="fig">—</span>
+                <span class="fig app">10</span>
+              </div>
+
+              <!-- the gilded row -->
+              <div class="mk1-nameplate">
+                <span>
+                  <span class="lbl">Man of the match</span>
+                  <a class="mk1-name" href="#">Callum Aungier</a>
+                  <span class="did">Made both goals · eighth appearance</span>
+                </span>
+                <span class="fig">—</span>
+                <span class="fig has">2</span>
+                <span class="fig">8</span>
+              </div>
+
+              <div class="mk1-row">
+                <a class="mk1-name" href="#">Joe Britz</a>
+                <span class="fig">—</span><span class="fig">—</span><span class="fig app">9</span>
+              </div>
+              <div class="mk1-row">
+                <a class="mk1-name" href="#">Richard Byers</a>
+                <span class="fig">—</span><span class="fig">—</span><span class="fig app">8</span>
+              </div>
+              <div class="mk1-row">
+                <a class="mk1-name" href="#">Jacob Kasaska</a>
+                <span class="fig">—</span><span class="fig">—</span><span class="fig app">7</span>
+              </div>
+              <div class="mk1-row">
+                <a class="mk1-name" href="#">Jack Perry</a>
+                <span class="fig">—</span><span class="fig">—</span><span class="fig app">11</span>
+              </div>
+              <div class="mk1-row">
+                <a class="mk1-name" href="#">David Pugh</a>
+                <span class="fig">—</span><span class="fig">—</span><span class="fig app">6</span>
+              </div>
+
+              <p class="mk1-foot"><span>2 goals</span><span>2 assists</span><span>No cards</span><span>No debuts</span></p>
+            </div>
+          </div>
+
+          <section>
+            <div class="mk1-head"><h2>Where the goals came from</h2></div>
+            <div class="mk1-from">
+              <div>
+                <span class="lbl">Scored</span>
+                <span><strong>Dom Bonham-Lloyd</strong>, <strong>Tom Simeon</strong></span>
+              </div>
+              <div>
+                <span class="lbl">Created</span>
+                <span><strong>Callum Aungier</strong> <span class="num" style="color:var(--ink-soft)">×2</span></span>
+              </div>
+            </div>
+          </section>
+
+          <section class="mk1-note">
+            <span class="n">11</span>
+            <p><strong>Dom Bonham-Lloyd and Jack Perry both reach appearance 11</strong><span> — more than anyone else in the squad this season.</span></p>
+          </section>
+
+          <section>
+            <div class="mk1-head"><h2>Golden Boot</h2><span class="count">after 16 games</span></div>
+            <ol class="mk1-boot">
+              <li><span class="rank num">1</span><a class="who" href="#">Tom Simeon</a><span class="g">7</span></li>
+              <li><span class="rank num">2</span><a class="who" href="#">Owen Gibbons</a><span class="g">5</span></li>
+              <li><span class="rank num">3</span><a class="who" href="#">Hugh Grindon</a><span class="g">3</span></li>
+            </ol>
+          </section>
+
+          <section class="mk1-report">
+            <div class="mk1-head"><h2>Match report</h2></div>
+            <p>Two up and comfortable at the break, and then twenty minutes that undid the whole afternoon. Callum Aungier made both goals and deserved better than a scoreline that ends the season against a side we had already beaten twice. Stoics got their third from a corner we had survived twice already.</p>
+          </section>
+
+          <section class="mk1-season">
+            <div class="mk1-head"><h2>The season</h2><span class="count">W5 D3 L8 · 39–43</span></div>
+            <nav class="mk1-strip" aria-label="Jump to a matchday">
+              <a class="L" href="#" title="6 Sep · Wellington IX 1–3">L</a>
+              <a class="L" href="#" title="13 Sep · Old Oundelians 3–6">L</a>
+              <a class="L" href="#" title="20 Sep · Old Cheltonians 1–7">L</a>
+              <a class="W" href="#" title="4 Oct · Old Stoics 5–1">W</a>
+              <a class="W" href="#" title="11 Oct · Old Salopians 4–1">W</a>
+              <a class="L" href="#" title="25 Oct · Old Worthians 2–4">L</a>
+              <a class="L" href="#" title="8 Nov · Old Oundelians 1–2">L</a>
+              <a class="L" href="#" title="22 Nov · Old Malvernians 2–4">L</a>
+              <a class="W" href="#" title="29 Nov · Old Amplefordians 3–0, awarded">W</a>
+              <a class="D" href="#" title="13 Dec · Old Cheltonians 3–3">D</a>
+              <a class="D" href="#" title="17 Jan · Old King's Scholars 2–2">D</a>
+              <a class="L" href="#" title="24 Jan · Old Worthians 3–5">L</a>
+              <a class="W" href="#" title="7 Feb · Wellington IX 2–0">W</a>
+              <a class="D" href="#" title="21 Feb · Old Salopians 1–1">D</a>
+              <a class="W" href="#" title="7 Mar · Old Stoics 4–1">W</a>
+              <a class="L now" href="#" aria-current="page" title="14 Mar · Old Stoics 2–3">L</a>
+              <a class="fx" href="#" title="28 Mar · Old Cheltonians, to play"></a>
+              <a class="fx" href="#" title="11 Apr · Wellington IX, to play"></a>
+            </nav>
+            <div class="mk1-step">
+              <a href="#">
+                <span class="lbl">← Previous</span>
+                <b>Old Stoics</b>
+                <span class="sc">W 4–1 · 7 Mar</span>
+              </a>
+              <a href="#" class="r">
+                <span class="lbl">Next fixture →</span>
+                <b>Old Cheltonians</b>
+                <span class="sc">28 Mar, 2:00pm · H</span>
+              </a>
+            </div>
+          </section>
+
+        </div>
+
+        <nav class="tabbar">
+          <a href="#"><svg><use href="#i-home"/></svg>Home</a>
+          <a href="#" class="on"><svg><use href="#i-match"/></svg>Matchday</a>
+          <a href="#"><svg><use href="#i-season"/></svg>Season</a>
+          <a href="#"><svg><use href="#i-players"/></svg>Players</a>
+          <a href="#"><svg><use href="#i-records"/></svg>Records</a>
+        </nav>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================================== -->
+<!-- 02 — THE OCCASION                                                     -->
+<!-- ===================================================================== -->
+<section class="pane" data-pane="2" hidden>
+  <div class="wb-note">
+    <p><strong>The scoreline as typography.</strong> One board, one screen: two numerals big enough to be the hero, and the man of the match gilded on the same dark ground as the result — the way the last result already works on Home. Under it, the season stops being a row of coloured squares and becomes a filmstrip you scroll, with this game raised out of it.</p>
+    <p class="cut"><b>Cut:</b> the form strip, the next-fixture card, the "how it compares" prose — the comparison is two bars against one scale.</p>
+  </div>
+  <div class="stage">
+    <div class="device">
+      <div class="mock mk2">
+
+        <header class="chrome">
+          <span class="crest">W</span>
+          <span class="chrome-name">Old Wellingtonians FC<span class="chrome-sub">Club statistics</span></span>
+          <span class="chrome-log">Log in</span>
+        </header>
+
+        <section class="mk2-hero dk">
+          <div class="mk2-meta-top">
+            <span class="blk burnt">League</span>
+            <span class="lbl">Matchday 16 of 16 · 2025/26</span>
+          </div>
+
+          <div class="mk2-side us">
+            <span class="who">
+              <span class="club">Old Wellingtonians</span>
+              <span class="sub">8 named · 5th in the division</span>
+            </span>
+            <span class="mk2-goals">2</span>
+          </div>
+
+          <div class="mk2-mid"><span class="lbl">Full time</span></div>
+
+          <div class="mk2-side them">
+            <span class="who">
+              <a class="club" href="#">Old Stoics</a>
+              <span class="sub">6th · beaten twice already this season</span>
+            </span>
+            <span class="mk2-goals">3</span>
+          </div>
+
+          <p class="mk2-under">Saturday 14 March 2026, 2:00pm · Wellington College, Big Side <span class="ven">H</span></p>
+
+          <div class="mk2-scorers">
+            <span class="lbl">Our goals</span>
+            <span><strong>Dom Bonham-Lloyd</strong>, <strong>Tom Simeon</strong></span>
+          </div>
+
+          <div class="mk2-motm">
+            <span class="lbl" style="color:var(--gold)">Man of the match</span>
+            <a class="name" href="#">Callum Aungier</a>
+            <span class="did">Two assists — both goals · his eighth appearance of the season</span>
+          </div>
+        </section>
+
+        <section class="mk2-film-wrap">
+          <div class="mk2-film-head">
+            <span class="lbl">The season, game by game</span>
+            <span class="rec">W5 D3 L8</span>
+          </div>
+          <div class="mk2-film">
+            <a class="mk2-cell L" href="#"><span class="d">6 Sep</span><span class="sc">1–3</span><span class="bar"></span></a>
+            <a class="mk2-cell L" href="#"><span class="d">13 Sep</span><span class="sc">3–6</span><span class="bar"></span></a>
+            <a class="mk2-cell L" href="#"><span class="d">20 Sep</span><span class="sc">1–7</span><span class="bar"></span></a>
+            <a class="mk2-cell W" href="#"><span class="d">4 Oct</span><span class="sc">5–1</span><span class="bar"></span></a>
+            <a class="mk2-cell W" href="#"><span class="d">11 Oct</span><span class="sc">4–1</span><span class="bar"></span></a>
+            <a class="mk2-cell L" href="#"><span class="d">25 Oct</span><span class="sc">2–4</span><span class="bar"></span></a>
+            <a class="mk2-cell L" href="#"><span class="d">8 Nov</span><span class="sc">1–2</span><span class="bar"></span></a>
+            <a class="mk2-cell L" href="#"><span class="d">22 Nov</span><span class="sc">2–4</span><span class="bar"></span></a>
+            <a class="mk2-cell W" href="#"><span class="d">29 Nov</span><span class="sc">3–0</span><span class="bar"></span></a>
+            <a class="mk2-cell D" href="#"><span class="d">13 Dec</span><span class="sc">3–3</span><span class="bar"></span></a>
+            <a class="mk2-cell D" href="#"><span class="d">17 Jan</span><span class="sc">2–2</span><span class="bar"></span></a>
+            <a class="mk2-cell L" href="#"><span class="d">24 Jan</span><span class="sc">3–5</span><span class="bar"></span></a>
+            <a class="mk2-cell W" href="#"><span class="d">7 Feb</span><span class="sc">2–0</span><span class="bar"></span></a>
+            <a class="mk2-cell D" href="#"><span class="d">21 Feb</span><span class="sc">1–1</span><span class="bar"></span></a>
+            <a class="mk2-cell W" href="#"><span class="d">7 Mar</span><span class="sc">4–1</span><span class="bar"></span></a>
+            <a class="mk2-cell L now" href="#" aria-current="page" style="width:86px"><span class="d">14 Mar</span><span class="op">Old Stoics</span><span class="sc">2–3</span><span class="bar"></span></a>
+            <a class="mk2-cell fx" href="#"><span class="d">28 Mar</span><span class="sc">–</span><span class="bar"></span></a>
+            <a class="mk2-cell fx" href="#"><span class="d">11 Apr</span><span class="sc">–</span><span class="bar"></span></a>
+          </div>
+        </section>
+
+        <div class="mk2-body">
+
+          <section class="mk2-sec mk2-cmp-sec">
+            <h3>An ordinary afternoon, or not</h3>
+            <div class="mk2-cmp">
+              <div class="mk2-cmp-row">
+                <span class="top"><b>2</b> scored <span class="avg">season 2.5</span></span>
+                <span class="mk2-track"><i style="width:28.6%"></i><b style="left:35.3%"></b></span>
+              </div>
+              <div class="mk2-cmp-row">
+                <span class="top"><b>3</b> conceded <span class="avg">season 2.7</span></span>
+                <span class="mk2-track"><i style="width:42.9%"></i><b style="left:38.1%"></b></span>
+              </div>
+            </div>
+            <p class="mk2-cmp-key">Bar this game, tick the season before it. One scale to 7.</p>
+          </section>
+
+          <section class="mk2-sec mk2-h2h-sec">
+            <h3>Old Stoics, three times</h3>
+            <ul class="mk2-h2h">
+              <li><span class="wdl W">W</span><span class="dt">4 Oct</span><span class="sc">5–1</span><span class="ven">H</span></li>
+              <li><span class="wdl W">W</span><span class="dt">7 Mar</span><span class="sc">4–1</span><span class="ven">A</span></li>
+              <li class="now"><span class="wdl L">L</span><span class="dt">14 Mar</span><span class="sc">2–3</span><span class="ven">H</span></li>
+            </ul>
+          </section>
+
+          <section class="mk2-sec mk2-squad-sec">
+            <h3>Who played</h3>
+            <ul class="mk2-squad">
+              <li><a href="#">Dom Bonham-Lloyd</a><em>1G</em></li>
+              <li><a href="#">Tom Simeon</a><em>1G</em></li>
+              <li class="motm"><a href="#">Callum Aungier</a><em>2A</em><span class="star">★</span></li>
+              <li><a href="#">Joe Britz</a></li>
+              <li><a href="#">Richard Byers</a></li>
+              <li><a href="#">Jacob Kasaska</a></li>
+              <li><a href="#">Jack Perry</a></li>
+              <li><a href="#">David Pugh</a></li>
+            </ul>
+          </section>
+
+          <section class="mk2-sec mk2-report">
+            <h3>Match report</h3>
+            <p>Two up and comfortable at the break, and then twenty minutes that undid the whole afternoon. Callum Aungier made both goals and deserved better than a scoreline that ends the season against a side we had already beaten twice. Stoics got their third from a corner we had survived twice already.</p>
+          </section>
+
+        </div>
+
+        <nav class="tabbar">
+          <a href="#"><svg><use href="#i-home"/></svg>Home</a>
+          <a href="#" class="on"><svg><use href="#i-match"/></svg>Matchday</a>
+          <a href="#"><svg><use href="#i-season"/></svg>Season</a>
+          <a href="#"><svg><use href="#i-players"/></svg>Players</a>
+          <a href="#"><svg><use href="#i-records"/></svg>Records</a>
+        </nav>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================================== -->
+<!-- 03 — THE SEASON SPINE                                                 -->
+<!-- ===================================================================== -->
+<section class="pane" data-pane="3" hidden>
+  <div class="wb-note">
+    <p><strong>Navigation is the page.</strong> The whole season hangs off one gilded rule, newest first, and the match you asked for swells open in place instead of living above a strip of chips. Stepping back a game is a tap on the rung below; the two fixtures ahead sit at the top on a dashed node, so the archive, the stepper and the next fixture are all one object.</p>
+    <p class="cut"><b>Cut:</b> the stepper, the form strip and the next-fixture card — the spine is all three at once.</p>
+  </div>
+  <div class="stage">
+    <div class="device">
+      <div class="mock mk3">
+
+        <header class="chrome">
+          <span class="crest">W</span>
+          <span class="chrome-name">Old Wellingtonians FC<span class="chrome-sub">Club statistics</span></span>
+          <span class="chrome-log">Log in</span>
+        </header>
+
+        <div class="mk3-head">
+          <span class="lbl">Matchday</span>
+          <h1>2025/26</h1>
+          <p class="mk3-ledger">
+            <span><b>16</b> played</span><span><b>W5</b> D3 <b>L8</b></span><span><b>39</b>–<b>43</b></span><span>5th of 8</span>
+          </p>
+        </div>
+
+        <div class="mk3-spine">
+
+          <div class="mk3-rung fx">
+            <span class="mk3-node"><i></i></span>
+            <a class="mk3-line" href="#">
+              <span class="dt">11 Apr</span>
+              <span class="op">Wellington IX <span class="ven">A</span></span>
+              <span class="sc none">–</span>
+              <span></span>
+            </a>
+          </div>
+
+          <div class="mk3-rung fx">
+            <span class="mk3-node"><i></i></span>
+            <a class="mk3-line" href="#">
+              <span class="dt">28 Mar</span>
+              <span class="op">Old Cheltonians <span class="ven">H</span></span>
+              <span class="sc none">2:00pm</span>
+              <span class="blk verd">Next</span>
+            </a>
+          </div>
+
+          <!-- the rung that swells open -->
+          <div class="mk3-rung now played">
+            <span class="mk3-node"><i></i></span>
+            <div class="mk3-open">
+              <div class="mk3-sb">
+                <div class="top">
+                  <span class="blk burnt">League</span>
+                  <span class="lbl">Game 16 of 16</span>
+                  <span class="wdl L" style="margin-left:auto">L</span>
+                </div>
+                <div class="mk3-sb-row">
+                  <span class="club">Old Wellingtonians</span>
+                  <span class="g">2</span>
+                </div>
+                <div class="mk3-sb-row them">
+                  <a class="club" href="#">Old Stoics</a>
+                  <span class="g">3</span>
+                </div>
+                <p class="when">Full time · Sat 14 Mar 2026, 2:00pm · Big Side <span class="ven">H</span></p>
+              </div>
+
+              <div class="mk3-motm">
+                <span class="lbl">Man of the match</span>
+                <a class="name" href="#">Callum Aungier</a>
+                <span class="did">Two assists — both goals · eighth appearance</span>
+              </div>
+
+              <div class="mk3-inner">
+                <section class="mk3-sub">
+                  <span class="lbl">Team sheet · 8 named</span>
+                  <ul class="mk3-sheet">
+                    <li><a class="nm" href="#">Dom Bonham-Lloyd</a><span class="did">1 goal</span><span class="ap">11th</span></li>
+                    <li><a class="nm" href="#">Tom Simeon</a><span class="did">1 goal</span><span class="ap">10th</span></li>
+                    <li class="motm"><a class="nm" href="#">Callum Aungier</a><span class="did">2 assists</span><span class="ap">8th</span></li>
+                    <li><a class="nm" href="#">Joe Britz</a><span class="did"></span><span class="ap">9th</span></li>
+                    <li><a class="nm" href="#">Richard Byers</a><span class="did"></span><span class="ap">8th</span></li>
+                    <li><a class="nm" href="#">Jacob Kasaska</a><span class="did"></span><span class="ap">7th</span></li>
+                    <li><a class="nm" href="#">Jack Perry</a><span class="did"></span><span class="ap">11th</span></li>
+                    <li><a class="nm" href="#">David Pugh</a><span class="did"></span><span class="ap">6th</span></li>
+                  </ul>
+                </section>
+
+                <section class="mk3-sub">
+                  <span class="lbl">Against the season</span>
+                  <div class="mk3-pair">
+                    <div class="mk3-fact"><b>2 scored</b><span>season averaged 2.5 before it</span></div>
+                    <div class="mk3-fact"><b>3 conceded</b><span>season averaged 2.7 before it</span></div>
+                  </div>
+                  <div class="mk3-fact" style="margin-top:4px"><b>W 5–1 · W 4–1 · L 2–3</b><span>three meetings with Old Stoics this season</span></div>
+
+                </section>
+
+                <section class="mk3-sub mk3-report">
+                  <span class="lbl">Match report</span>
+                  <p>Two up and comfortable at the break, and then twenty minutes that undid the whole afternoon. Callum Aungier made both goals and deserved better than a scoreline that ends the season against a side we had already beaten twice. Stoics got their third from a corner we had survived twice already.</p>
+                </section>
+              </div>
+            </div>
+          </div>
+
+          <div class="mk3-rung played">
+            <span class="mk3-node"><i></i></span>
+            <a class="mk3-line" href="#">
+              <span class="dt">7 Mar</span>
+              <span class="op">Old Stoics <span class="ven">A</span></span>
+              <span class="sc">4–1</span>
+              <span class="wdl W">W</span>
+            </a>
+          </div>
+          <div class="mk3-rung played">
+            <span class="mk3-node"><i></i></span>
+            <a class="mk3-line" href="#">
+              <span class="dt">21 Feb</span>
+              <span class="op">Old Salopians <span class="ven">A</span></span>
+              <span class="sc">1–1</span>
+              <span class="wdl D">D</span>
+            </a>
+          </div>
+          <div class="mk3-rung played">
+            <span class="mk3-node"><i></i></span>
+            <a class="mk3-line" href="#">
+              <span class="dt">7 Feb</span>
+              <span class="op">Wellington IX <span class="ven">H</span></span>
+              <span class="sc">2–0</span>
+              <span class="wdl W">W</span>
+            </a>
+          </div>
+          <div class="mk3-rung played">
+            <span class="mk3-node"><i></i></span>
+            <a class="mk3-line" href="#">
+              <span class="dt">24 Jan</span>
+              <span class="op">Old Worthians <span class="ven">A</span></span>
+              <span class="sc">3–5</span>
+              <span class="wdl L">L</span>
+            </a>
+          </div>
+          <div class="mk3-rung played">
+            <span class="mk3-node"><i></i></span>
+            <a class="mk3-line" href="#">
+              <span class="dt">17 Jan</span>
+              <span class="op">Old King's Scholars <span class="ven">H</span></span>
+              <span class="sc">2–2</span>
+              <span class="wdl D">D</span>
+            </a>
+          </div>
+
+          <button class="mk3-more" type="button">Show the first ten games ↓</button>
+        </div>
+
+        <nav class="tabbar">
+          <a href="#"><svg><use href="#i-home"/></svg>Home</a>
+          <a href="#" class="on"><svg><use href="#i-match"/></svg>Matchday</a>
+          <a href="#"><svg><use href="#i-season"/></svg>Season</a>
+          <a href="#"><svg><use href="#i-players"/></svg>Players</a>
+          <a href="#"><svg><use href="#i-records"/></svg>Records</a>
+        </nav>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================================== -->
+<!-- 04 — THE REPORT                                                       -->
+<!-- ===================================================================== -->
+<section class="pane" data-pane="4" hidden>
+  <div class="wb-note">
+    <p><strong>The match as writing.</strong> A quiet scoreline bar, then a real headline and the story — and every derived fact engraved down the margin instead of stacked in four cards below the fold. It bets that the thing worth reading about a game you played in is the account of it, and that the numbers work better as annotations than as sections.</p>
+    <p class="cut"><b>Cut:</b> the comparison card, the "worth noting" card and the form strip — they are margin plates now. The team sheet becomes a teams line, the way a match report prints one.</p>
+  </div>
+  <div class="stage">
+    <div class="device">
+      <div class="mock mk4">
+
+        <header class="chrome">
+          <span class="crest">W</span>
+          <span class="chrome-name">Old Wellingtonians FC<span class="chrome-sub">Club statistics</span></span>
+          <span class="chrome-log">Log in</span>
+        </header>
+
+        <div class="mk4-bar dk">
+          <span class="line">
+            Old Wellingtonians <b>2</b> — <span class="v">3</span> Old Stoics
+            <span class="when">Full time · League · Sat 14 Mar 2026 · Big Side</span>
+          </span>
+          <span class="wdl L">L</span>
+        </div>
+
+        <article class="mk4-art">
+          <div class="mk4-kicker">
+            <span class="blk verd">Match report</span>
+            <span class="lbl">Game 16 of 16</span>
+          </div>
+          <h1>Twenty minutes undo an afternoon</h1>
+          <p class="mk4-stand">Aungier makes both, and a side we had already beaten twice takes the last game of the season.</p>
+          <p class="mk4-byline">Saturday 14 March 2026 · Big Side</p>
+
+          <!-- the man of the match sits above the story: on this site he is the
+               hook, not a footnote to it -->
+          <aside class="mk4-marg top">
+            <div class="mk4-plate">
+              <span class="lbl">Man of the match</span>
+              <span class="val"><b>Callum Aungier</b></span>
+              <span class="fine">Two assists · his eighth appearance of the season</span>
+            </div>
+            <div class="mk4-plate">
+              <span class="lbl">The goals</span>
+              <span class="val">Bonham-Lloyd, Simeon</span>
+              <span class="fine">Both made by Aungier</span>
+            </div>
+          </aside>
+
+          <div class="mk4-prose">
+            <p class="first">Two up and comfortable at the break, and then twenty minutes that undid the whole afternoon.</p>
+            <p>Callum Aungier made both and did not deserve the scoreline he got for it. Dom Bonham-Lloyd finished the first from six yards; Tom Simeon took the second early enough that a third looked likelier than a comeback.</p>
+            <p>Stoics got their equaliser from a corner we had already survived twice, and the winner from the same corner five minutes later. It ends a season in which we beat them 5–1 and 4–1 and then lost the one they will remember.</p>
+          </div>
+
+          <aside class="mk4-marg rest">
+            <div class="mk4-plate">
+              <span class="lbl">The third meeting</span>
+              <span class="val">W 5–1 · W 4–1 · L 2–3</span>
+              <span class="fine">Old Stoics, 2025/26</span>
+            </div>
+            <div class="mk4-plate">
+              <span class="lbl">The afternoon</span>
+              <span class="val">2 scored, 3 conceded</span>
+              <span class="fine">Against a season averaging 2.5 and 2.7</span>
+            </div>
+            <div class="mk4-plate">
+              <span class="lbl">The squad</span>
+              <span class="val">8 named</span>
+              <span class="fine">All eight started · no cards, no debuts</span>
+            </div>
+          </aside>
+        </article>
+
+        <section class="mk4-teams">
+          <span class="lbl">The side</span>
+          <p class="mk4-teams-line">
+            <span class="one"><b>Bonham-Lloyd</b> <em>1</em></span><span class="sep">·</span>
+            <span class="one"><b>Simeon</b> <em>1</em></span><span class="sep">·</span>
+            <span class="one"><b>Aungier</b> <span class="star">★</span> <em>2A</em></span><span class="sep">·</span>
+            <span class="one">Britz</span><span class="sep">·</span><span class="one">Byers</span><span class="sep">·</span><span class="one">Kasaska</span><span class="sep">·</span><span class="one">Perry</span><span class="sep">·</span><span class="one">Pugh</span>
+          </p>
+        </section>
+
+        <section class="mk4-after dk">
+          <span class="lbl">After sixteen games</span>
+          <div class="mk4-after-grid">
+            <div><b>W5 D3 L8</b><span>played 16</span></div>
+            <div><b>39–43</b><span>goals</span></div>
+            <div><b>5th of 8</b><span>Division 5</span></div>
+          </div>
+          <p style="font-family:var(--fn);font-size:12.5px;color:var(--on-board-soft)">Golden Boot: <span style="color:var(--gold-leaf)">Tom Simeon 7</span> · Owen Gibbons 5 · Hugh Grindon 3</p>
+        </section>
+
+        <nav class="mk4-step">
+          <a href="#">
+            <span class="lbl">← Previous</span>
+            <b>Old Stoics</b>
+            <span class="sc">W 4–1 · 7 Mar</span>
+          </a>
+          <a href="#" class="r">
+            <span class="lbl">Next fixture →</span>
+            <b>Old Cheltonians</b>
+            <span class="sc">28 Mar, 2:00pm · H</span>
+          </a>
+        </nav>
+
+        <p class="mk4-all"><a href="#">Every game this season →</a></p>
+
+        <nav class="tabbar">
+          <a href="#"><svg><use href="#i-home"/></svg>Home</a>
+          <a href="#" class="on"><svg><use href="#i-match"/></svg>Matchday</a>
+          <a href="#"><svg><use href="#i-season"/></svg>Season</a>
+          <a href="#"><svg><use href="#i-players"/></svg>Players</a>
+          <a href="#"><svg><use href="#i-records"/></svg>Records</a>
+        </nav>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================================== -->
+<!-- 05 — TALE OF THE TAPE                                                 -->
+<!-- ===================================================================== -->
+<section class="pane" data-pane="5" hidden>
+  <div class="wb-note">
+    <p><strong>The match as data.</strong> The signature is the tape: our league row against theirs, mirrored out from the middle. We are ahead on five of the seven lines and lost anyway — which is the thing a scoreline on its own can never say. Below it, the season's goal difference as one line, and the team sheet as a chart of who did what and how often they turn up.</p>
+    <p class="cut"><b>Cut:</b> the form strip, the "worth noting" card, the next-fixture address. The head-to-head folds into the tape's own footnote.</p>
+  </div>
+  <div class="stage">
+    <div class="device">
+      <div class="mock mk5">
+
+        <header class="chrome">
+          <span class="crest">W</span>
+          <span class="chrome-name">Old Wellingtonians FC<span class="chrome-sub">Club statistics</span></span>
+          <span class="chrome-log">Log in</span>
+        </header>
+
+        <div class="mk5-bar dk">
+          <div class="top">
+            <span class="blk burnt">League</span>
+            <span class="lbl">Matchday 16 · 2025/26</span>
+            <span class="wdl L" style="margin-left:auto">L</span>
+          </div>
+          <div class="mk5-sides">
+            <div class="mk5-sr us">
+              <span class="mono">OW</span>
+              <span class="club">Old Wellingtonians</span>
+              <span class="g">2</span>
+            </div>
+            <div class="mk5-sr them">
+              <span class="mono">OS</span>
+              <a class="club" href="#">Old Stoics</a>
+              <span class="g">3</span>
+            </div>
+          </div>
+          <p class="fine">Full time · Sat 14 Mar 2026, 2:00pm · Big Side <span class="ven">H</span></p>
+        </div>
+
+        <div class="mk5-body">
+
+          <section class="mk5-sec mk5-tape-sec">
+            <h3>Beaten by the side below us</h3>
+            <div class="mk5-tape-head">
+              <span class="side a">Old Wellingtonians<span class="pos">5th</span></span>
+              <span class="lbl">Division 5</span>
+              <span class="side b">Old Stoics<span class="pos">6th</span></span>
+            </div>
+            <div class="mk5-tape">
+              <div class="mk5-tr">
+                <span class="v a">12</span>
+                <span class="t a"><i style="width:100%"></i></span>
+                <span class="k">Points</span>
+                <span class="t b"><i style="width:92%"></i></span>
+                <span class="v b" style="color:var(--ink-soft)">11</span>
+              </div>
+              <div class="mk5-tr">
+                <span class="v a">3</span>
+                <span class="t a"><i style="width:100%"></i></span>
+                <span class="k">Won</span>
+                <span class="t b"><i style="width:100%"></i></span>
+                <span class="v b">3</span>
+              </div>
+              <div class="mk5-tr">
+                <span class="v a">3</span>
+                <span class="t a"><i style="width:100%"></i></span>
+                <span class="k">Drawn</span>
+                <span class="t b"><i style="width:67%"></i></span>
+                <span class="v b" style="color:var(--ink-soft)">2</span>
+              </div>
+              <div class="mk5-tr">
+                <span class="v a">6</span>
+                <span class="t a"><i style="width:86%"></i></span>
+                <span class="k">Lost</span>
+                <span class="t b"><i style="width:100%"></i></span>
+                <span class="v b" style="color:var(--ink-soft)">7</span>
+              </div>
+              <div class="mk5-tr">
+                <span class="v a">31</span>
+                <span class="t a"><i style="width:100%"></i></span>
+                <span class="k">Scored</span>
+                <span class="t b"><i style="width:71%"></i></span>
+                <span class="v b" style="color:var(--ink-soft)">22</span>
+              </div>
+              <div class="mk5-tr">
+                <span class="v a" style="color:var(--ink-soft)">36</span>
+                <span class="t a"><i style="width:100%"></i></span>
+                <span class="k">Conceded</span>
+                <span class="t b"><i style="width:94%"></i></span>
+                <span class="v b">34</span>
+              </div>
+            </div>
+            <p class="mk5-tape-foot">Twelve league games each, standings entered 16 March. Third meeting of the season: <span class="num">W 5–1</span> (H) · <span class="num">W 4–1</span> (A) · <span class="num">L 2–3</span> (H).</p>
+          </section>
+
+          <section class="mk5-sec">
+            <h3>The afternoon</h3>
+            <div class="mk5-three">
+              <div class="mk5-cell"><b>2</b><span class="k">Scored</span><span class="vs">season 2.5</span></div>
+              <div class="mk5-cell"><b>3</b><span class="k">Conceded</span><span class="vs">season 2.7</span></div>
+              <div class="mk5-cell"><b>8</b><span class="k">Named</span><span class="vs">all eight started</span></div>
+            </div>
+          </section>
+
+          <section class="mk5-sec">
+            <h3>Goal difference, game by game</h3>
+            <div class="mk5-spark">
+              <svg viewBox="0 0 320 78" role="img" aria-label="Goal difference across 2025/26: minus 2 after one game, a trough of minus 11 after three, recovering to minus 4 after this one.">
+                <polygon points="10,12 30,29 50,64 70,41 90,24 110,35 130,41 150,52 170,35 190,35 210,35 230,47 250,35 270,35 290,18 310,24 310,72 10,72" fill="#8c6716" fill-opacity="0.13"></polygon>
+                <polyline points="10,12 30,29 50,64 70,41 90,24 110,35 130,41 150,52 170,35 190,35 210,35 230,47 250,35 270,35 290,18 310,24" fill="none" stroke="#8c6716" stroke-width="1.7" stroke-linejoin="round"></polyline>
+                <line x1="10" y1="72" x2="310" y2="72" stroke="#c9c4b4" stroke-width="1"></line>
+                <circle cx="50" cy="64" r="3" fill="#f1f3ef" stroke="#b3392f" stroke-width="1.6"></circle>
+                <text x="57" y="68" font-family="Archivo Narrow, sans-serif" font-size="10" fill="#6a6a63">−11 after three</text>
+                <circle cx="310" cy="24" r="3.6" fill="#8c6716"></circle>
+                <text x="303" y="14" text-anchor="end" font-family="Archivo Narrow, sans-serif" font-size="10" fill="#20221f">−4 now</text>
+              </svg>
+            </div>
+          </section>
+
+          <section class="mk5-sec">
+            <h3>Who did what</h3>
+            <ul class="mk5-did">
+              <li>
+                <a class="nm" href="#">Dom Bonham-Lloyd</a>
+                <span class="mk5-glyph"><i class="g"></i></span>
+                <span class="mk5-appbar"><i style="width:69%"></i></span>
+                <span class="ap">11</span>
+              </li>
+              <li>
+                <a class="nm" href="#">Tom Simeon</a>
+                <span class="mk5-glyph"><i class="g"></i></span>
+                <span class="mk5-appbar"><i style="width:63%"></i></span>
+                <span class="ap">10</span>
+              </li>
+              <li class="motm">
+                <a class="nm" href="#">Callum Aungier</a>
+                <span class="mk5-glyph"><i class="a"></i><i class="a"></i></span>
+                <span class="mk5-appbar"><i style="width:50%"></i></span>
+                <span class="ap">8</span>
+              </li>
+              <li>
+                <a class="nm" href="#">Joe Britz</a>
+                <span class="mk5-glyph"></span>
+                <span class="mk5-appbar"><i style="width:56%"></i></span>
+                <span class="ap">9</span>
+              </li>
+              <li>
+                <a class="nm" href="#">Richard Byers</a>
+                <span class="mk5-glyph"></span>
+                <span class="mk5-appbar"><i style="width:50%"></i></span>
+                <span class="ap">8</span>
+              </li>
+              <li>
+                <a class="nm" href="#">Jacob Kasaska</a>
+                <span class="mk5-glyph"></span>
+                <span class="mk5-appbar"><i style="width:44%"></i></span>
+                <span class="ap">7</span>
+              </li>
+              <li>
+                <a class="nm" href="#">Jack Perry</a>
+                <span class="mk5-glyph"></span>
+                <span class="mk5-appbar"><i style="width:69%"></i></span>
+                <span class="ap">11</span>
+              </li>
+              <li>
+                <a class="nm" href="#">David Pugh</a>
+                <span class="mk5-glyph"></span>
+                <span class="mk5-appbar"><i style="width:38%"></i></span>
+                <span class="ap">6</span>
+              </li>
+            </ul>
+            <p class="mk5-key">
+              <span><i style="width:9px;height:9px;border-radius:50%;background:var(--gold-deep);display:block"></i> goal</span>
+              <span><i style="width:9px;height:9px;border-radius:50%;border:2px solid var(--verdigris-deep);display:block"></i> assist</span>
+              <span>bar — appearances this season, of 16</span>
+            </p>
+          </section>
+
+          <section class="mk5-sec">
+            <h3>Golden Boot after 16</h3>
+            <ol class="mk5-boot">
+              <li><a class="nm" href="#">Tom Simeon</a><span class="t"><i style="width:100%"></i></span><span class="g">7</span></li>
+              <li><a class="nm" href="#">Owen Gibbons</a><span class="t"><i style="width:71%"></i></span><span class="g">5</span></li>
+              <li><a class="nm" href="#">Hugh Grindon</a><span class="t"><i style="width:43%"></i></span><span class="g">3</span></li>
+            </ol>
+          </section>
+
+          <section class="mk5-sec mk5-report">
+            <h3>Match report</h3>
+            <p>Two up and comfortable at the break, and then twenty minutes that undid the whole afternoon. Callum Aungier made both goals and deserved better than a scoreline that ends the season against a side we had already beaten twice. Stoics got their third from a corner we had survived twice already.</p>
+            <nav class="mk5-step" style="margin-top:14px">
+              <a href="#">
+                <span class="lbl">← Previous</span>
+                <b>Old Stoics</b>
+                <span class="sc">W 4–1 · 7 Mar</span>
+              </a>
+              <a href="#" class="r">
+                <span class="lbl">Next fixture →</span>
+                <b>Old Cheltonians</b>
+                <span class="sc">28 Mar, 2:00pm · H</span>
+              </a>
+            </nav>
+          </section>
+
+        </div>
+
+        <nav class="tabbar">
+          <a href="#"><svg><use href="#i-home"/></svg>Home</a>
+          <a href="#" class="on"><svg><use href="#i-match"/></svg>Matchday</a>
+          <a href="#"><svg><use href="#i-season"/></svg>Season</a>
+          <a href="#"><svg><use href="#i-players"/></svg>Players</a>
+          <a href="#"><svg><use href="#i-records"/></svg>Records</a>
+        </nav>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+(function () {
+  const tabs = Array.from(document.querySelectorAll('.wb-tabs button'));
+  const panes = Array.from(document.querySelectorAll('.pane'));
+  const widths = Array.from(document.querySelectorAll('.wb-widths button'));
+
+  function show(n) {
+    tabs.forEach((t) => t.setAttribute('aria-selected', String(t.dataset.tab === n)));
+    panes.forEach((p) => { p.hidden = p.dataset.pane !== n; });
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    centreFilmstrips();
+    try { localStorage.setItem('owfc-matchday-tab', n); } catch (e) { /* private window */ }
+  }
+
+  tabs.forEach((t) => t.addEventListener('click', () => show(t.dataset.tab)));
+
+  function setWidth(w) {
+    widths.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.w === w)));
+    document.querySelectorAll('.stage').forEach((s) => s.classList.toggle('wide', w === 'wide'));
+    centreFilmstrips();
+    try { localStorage.setItem('owfc-matchday-width', w); } catch (e) { /* private window */ }
+  }
+
+  widths.forEach((b) => b.addEventListener('click', () => setWidth(b.dataset.w)));
+
+  document.addEventListener('keydown', (e) => {
+    if (e.target.matches('input, textarea')) return;
+    const i = tabs.findIndex((t) => t.getAttribute('aria-selected') === 'true');
+    if (e.key === 'ArrowRight' && i < tabs.length - 1) { show(tabs[i + 1].dataset.tab); tabs[i + 1].focus(); }
+    if (e.key === 'ArrowLeft' && i > 0) { show(tabs[i - 1].dataset.tab); tabs[i - 1].focus(); }
+  });
+
+  function centreFilmstrips() {
+    document.querySelectorAll('.mk2-film').forEach((strip) => {
+      const now = strip.querySelector('.now');
+      if (!now) return;
+      strip.scrollLeft = now.offsetLeft - (strip.clientWidth - now.offsetWidth) / 2;
+    });
+  }
+
+  let tab = '1', width = 'phone';
+  try {
+    tab = localStorage.getItem('owfc-matchday-tab') || '1';
+    width = localStorage.getItem('owfc-matchday-width') || 'phone';
+  } catch (e) { /* storage blocked — defaults are fine */ }
+  if (!tabs.some((t) => t.dataset.tab === tab)) tab = '1';
+  show(tab);
+  setWidth(width);
+  centreFilmstrips();
+  window.addEventListener('load', centreFilmstrips);
+})();
+</script>
