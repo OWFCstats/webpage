@@ -200,3 +200,10 @@ it.
 
 Before adding a feature, check `docs/ROADMAP.md`. If it's not there and it's
 not small, it goes there first.
+
+**When a phase lands, condense it.** Its row in the roadmap's *Done* table is one
+line; its instructions are deleted in the same commit that closes it. The detail
+lives in the commit message (`git log --grep="Phase 20"`) and any ruling it
+established lives in `docs/DESIGN.md`. The roadmap reached 2,163 lines by keeping
+every closed phase in full, which is a cost every session pays and no session
+reads.

@@ -172,6 +172,46 @@ PitchDetails.jsx`) and on the "Next up" fixture card on the same page
 doesn't need directions to the ground it was played on. Logistics belongs with
 the fixture, not the trophy case.
 
+### Matchday is a ladder with one match open on it
+
+> **Phases 25–28.** Decided and approved, not built. The flat is
+> `docs/mocks/matchday-final.html` — open it before writing any Matchday
+> component, and read the phases in `docs/ROADMAP.md` for what each one owns.
+> Until Phase 28 lands, the description above of Matchday's own page still
+> holds; the scoreboard itself survives the rebuild, restyled rather than
+> replaced.
+
+The section owns one match at a time, and the archive across the season. Those
+used to be two objects stacked on one page — a scoreboard on top, a stepper and a
+strip of coloured chips under it, a form strip repeating the chips and a
+next-fixture card repeating Home. They become one: **every game of the season is
+a rung on a ladder, newest first, and the match being read is a highlighted rung
+with its own panel opening off it.**
+
+The ladder carries what a list of games is for — date, opponent, venue, score,
+W/D/L — plus the running goal difference after each game, which is what makes it
+a season rather than an index. Fixtures sit at the top with no score and no
+result. Above 900px the ladder becomes a rail and the match reads beside it: the
+first two-column page on the site, and the one thing a stacked page could never
+do, which is show the whole season while one match is being read.
+
+The panel is, in order: the result on a board, the man of the match gilded on a
+plate, the team sheet, head to head, the report. On a phone the team sheet comes
+**before** head to head — the squad is what a player opens the page for. Three
+things the old page carried are gone rather than moved: the form strip (the
+ladder says it), the next-fixture card (the ladder's top rung says it), and
+"Worth noting" (its appearance ordinals are a column on the team sheet).
+
+Two marks a name can carry on a team sheet, and no more: a **drawn football** for
+a scorer, alongside the goal count rather than instead of it, and a **gold star**
+for the man of the match. Drawn, not emoji — every other mark here is engraved or
+gilded, and an emoji renders in whatever the phone feels like.
+
+**A report shows its first ~300 characters with the rest behind one control.**
+Reports run from two lines to a thousand characters; the long ones used to set the
+length of the whole page, which is a page structure decided by whoever wrote it up
+on the Sunday.
+
 ### A list of records is a ledger
 
 The same idea as the result row, for rows that aren't matches: one grid shared
@@ -736,7 +776,7 @@ and meaningless for a drawing carrying colour on up to thirty-six child paths,
 where it read the initial value, black. It now bakes each icon's computed paint
 into a copy, renders it at 64px, composites it over the ground it actually sits
 on and scores **the share of its own ink clearing 3:1**, failing anything under
-a majority. That is the measurement `ROADMAP.md` → *The artwork* tabulates. A
+a majority. That is what `npm run check:layout` reports, icon by icon. A
 chart is not an icon and is excluded by name: Recharts draws a whole plot into
 one `<svg>` whose gridlines are deliberately faint, and *Chart series* above is
 the rule that governs those.
@@ -765,8 +805,9 @@ even though they now disagree about scope by design.
 > name on the page, and the tiles that put the badges on it. **A later pass**
 > replaced Players' single-season picker with the current-season-plus-archive
 > shape described here, made Squad and the data centre all-time by default,
-> cut the per-card footer, and rebuilt the data centre as one wide table — see
-> `docs/ROADMAP.md`'s most recent phase for the reasoning.
+> cut the per-card footer, and rebuilt the data centre as one wide table —
+> Phase 24 in `docs/ROADMAP.md`, and `git log --grep="Phase 24"` for the
+> reasoning.
 
 ### The boards
 
@@ -1124,39 +1165,41 @@ Records is a reference document and earns length, which is why it splits into
 sub-pages rather than shrinking. Home doesn't. The opponent page is the same kind
 of document as a Records sub-page and takes the same number. `npm run shots`
 reports the real numbers — page by page, at every supported width, into
-`shots/heights.json` — and the roadmap records where each page started. Seven
-of these rows are inside their budgets now: Matchday, Players → Leaderboards
-(Phase 14), Records' three sub-pages (Phase 16), Season → Charts (Phase 18, at
-1,909px), the opponent page (still light on content, but measured and inside
-either way), and Player detail, which Phase 21 brought from 3,127px to
-2,241px — mostly by moving the career-arc chart and "Most played alongside"
+`shots/heights.json` — and the roadmap tracks each page against its budget.
+Seven of these rows are inside now: Matchday's default route, Players →
+Leaderboards (Phase 14, 1,296px), Records' three sub-pages (Phase 16), Season →
+Charts (Phase 18, at 1,909px), the opponent page (still light on content, but
+measured and inside either way), and Player detail, which Phase 21 brought from
+3,127px to 2,241px — mostly by moving the career-arc chart and "Most played alongside"
 off the Overview tab and onto Full stats, next to the season table and squad
 comparison they already keep company with there, the same split between "what
 you open the page for" and "the reference behind it" the two tabs already draw
 everywhere else on the page. The season-by-season cards came off the page
 entirely rather than moving: they repeated, in less detail, the table Full
 stats already carries. Home and Season's own results view are still over —
-Season came down from 3,379px to 3,248px in Phase 18 (Charts
-leaving for its own address and the bars leaving "Most involved" account for
-most of that) but a season of 16 played games costs 1,286px on the shared result row
-before the league table, the summary or a single fixture is counted, and that
-arithmetic doesn't close under 2,200px without cutting games off the page a
-season is supposed to keep — see `docs/ROADMAP.md`, Phase 18. Home came down
-from 2,113px to 1,882px in Phase 19 (the result leading, the next-fixture card
-collapsing to a row, a redundant form-chip strip coming off Recent form) but
-`LeagueTable` and `RecentForm` alone cost 844px of the page's 1,564px of
-widgets, and neither can shrink further without either breaking the "all ten
-columns from 360px up" rule below or cutting Recent form's list under the
-five results `formOf` shows everywhere else on the site — see
-`docs/ROADMAP.md`, Phase 19. `check:layout`
+Season is 3,224px, down from 3,379px in Phase 18 (Charts leaving for its own
+address and the bars leaving "Most involved" account for that) but a season of
+16 played games costs 1,286px on the shared result row before the league table,
+the summary or a single fixture is counted, and that arithmetic doesn't close
+under 2,200px without cutting games off a page a season is supposed to keep.
+Phase 29 owns it, and the lever is the result row becoming a ladder rung.
+Home is 2,047px: Phase 19 took it from 2,113px to 1,882px (the result leading,
+the next-fixture card collapsing to a row, a redundant form-chip strip coming
+off Recent form) and Phase 23's badge, "Goals" label and "Charts" button put
+165px back. `LeagueTable` and `RecentForm` alone are most of the page, and
+neither shrinks further without breaking the "all ten columns from 360px up"
+rule below or cutting Recent form's list under the five results `formOf` shows
+everywhere else on the site — so no phase owns Home's gap today, and closing it
+means cutting a section rather than shaving one. `check:layout`
 prints the gap on every run without failing on it: the phase that owns each page
 closes its own where it can, and a check
 that went red for eleven phases would stop being read.
 
-**"No cap" is not "unmeasured".** The roster is 3,078px as a list and 4,150px as
-tiles at 375px — 49 names on the fixture, which carries two matches the real
-season doesn't, and every one of them on the page. That is the whole argument for
-the row having no budget. It is still measured at every width, and
+**"No cap" is not "unmeasured".** The roster is 1,671px as a list and 2,138px as
+tiles at 375px on the default top-20 view, and every name on the fixture once
+"Show all" is asked for — 49 of them, since the fixture carries two matches the
+real season doesn't. That is the whole argument for the row having no budget. It
+is still measured at every width, and
 that is what caught the tiles collapsing to one a row on a 320px phone and
 running to 7,350px: the grid's measure came down to 130px so the narrowest phone
 keeps two side by side. A page that has earned its length still has to earn it at
@@ -1168,9 +1211,14 @@ archive stepper naming what its dashed chips are, and a key under the squad
 pills explaining gold and dark. Both are paid for and then some — the pitch
 address left the scoreboard for the fixture and the opponent's own page, and
 attaching each score to its own team row cost less height than the
-three-column grid it replaced. The page now measures 1,812px.
+three-column grid it replaced. The default route now measures 1,812px.
 **A budget that gets edited to fit what was built is not a budget** — this one
 didn't need editing; it just got smaller.
+
+That is the *default* route, and it is the thin one. The same page on a match
+with thirteen named and a report is 2,328px, 428px over, which is what the
+budget question in Phase 25 is really about: the rebuild above adds the whole
+season to a page that already misses its budget on its richer routes.
 
 ## CSS structure
 

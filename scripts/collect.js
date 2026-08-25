@@ -139,8 +139,8 @@ export async function collector() {
   // value, black, and would have passed a gold cup on green while failing the
   // same cup on paper. So every icon is drawn at 64px with its computed paint
   // baked in, composited over the ground it sits on, and scored as the share
-  // of its own ink clearing 3:1. That is the measurement ROADMAP → *The
-  // artwork* reports, and Phase 15's badges are held to it.
+  // of its own ink clearing 3:1. That is what this script reports, icon by
+  // icon, and Phase 15's badges are held to it.
   //
   // Two things are still reported as unmeasurable rather than guessed at: a
   // bitmap, whose ink this can't read, and a gradient ground, whose luminance
