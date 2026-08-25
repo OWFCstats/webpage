@@ -93,10 +93,12 @@ export async function collector() {
   // ---- 3. No table hides a column inside a scrolling wrap. ----------------
   // Stated as "a scroller holding a table", not as ".table-wrap", so a wrapper
   // introduced later under a different name is covered by the rule rather than
-  // by somebody remembering to add it. The chip rows (the Matchday stepper,
-  // the season chips) are deliberate horizontal scrollers and hold no table,
-  // so they fall outside this by construction — a stepper is a control, and
-  // scrolling one is not a hidden column.
+  // by somebody remembering to add it. The chip rows (.chip-row, the segmented
+  // control under a section head) are deliberate horizontal scrollers and hold
+  // no table, so they fall outside this by construction — a control is not a
+  // hidden column. Matchday's own stepper and season chips used to be the
+  // example here; Phase 25 replaced both with the ladder, which scrolls
+  // nowhere.
   //
   // `.wide-reference-table` is the one deliberate exception that does hold a
   // table: the data centre's own fbref-style sheet, built for a reader who

@@ -40,6 +40,14 @@ export function formatDate(iso) {
   return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
+/** "14 Mar" — for a row inside a season, where the year is the season's and
+ *  repeating it sixteen times down a ladder says nothing. */
+export function dayMonth(iso) {
+  if (!iso) return '';
+  const d = new Date(`${iso}T00:00:00`);
+  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+}
+
 /** "12 Aug 2026, 21:04" — for a stored timestamp (not a date-only column),
  *  where the time of day is the point: standings entered after the Saturday
  *  results are a different thing from standings entered on the Monday. */

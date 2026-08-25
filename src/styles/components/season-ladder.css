@@ -1,0 +1,156 @@
+/* The season as a ladder — one rung per game, newest first, with the running
+   goal difference down the right.
+
+   It replaces four objects that each said part of a season: an archive
+   stepper, a strip of coloured chips, a form strip repeating those chips and a
+   next-fixture card repeating Home. A rung costs ~40px against the ~80px of
+   the shared result row, which is what lets every game of a season stay on a
+   phone page instead of being indexed by a chip.
+
+   Under components/ rather than pages/ because it dresses a component: Season
+   renders the same ladder (ROADMAP → Phase 29) and the cascade cares about
+   that, not about which page mounts it. */
+
+.ladder-head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s3);
+  margin-bottom: var(--s2);
+}
+
+.ladder-head h2 { margin: 0; }
+
+.ladder-head .cap {
+  margin-left: auto;
+  font-family: var(--font-data);
+  font-size: var(--t-micro);
+  color: var(--ink-soft);
+}
+
+.ladder { display: grid; }
+
+/* One template for every rung, so sixteen dates, sixteen scores and sixteen
+   differences each line up in a column and can be read against each other —
+   the ledger rule, applied to a season. */
+.rung {
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr) auto 34px 22px;
+  gap: var(--s2);
+  align-items: center;
+  min-height: 40px;
+  padding: var(--s1) 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.rung:hover { background: color-mix(in srgb, var(--gold) 7%, transparent); }
+
+.rung .dt {
+  font-family: var(--font-data);
+  font-size: var(--t-small);
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+
+/* Ellipsis rather than a cut word for the one case short_name can't help
+   with: a club that hasn't got one. Nothing should reach it — see the widths
+   below. */
+.rung .op {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rung .sc {
+  font-family: var(--font-data);
+  font-weight: 700;
+  font-size: var(--t-small);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.rung .gd {
+  font-family: var(--font-data);
+  font-size: var(--t-micro);
+  color: var(--ink-soft);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* A fixture has no difference to carry and no result to chip, so it drops two
+   columns rather than leaving two holes. */
+.rung.fixture {
+  grid-template-columns: 46px minmax(0, 1fr) auto;
+  color: var(--ink-soft);
+}
+
+.rung.fixture .sc { color: var(--ink-faint); font-weight: 400; }
+
+.rung .ahead {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+}
+
+/* .block sets a bottom margin for the heading it usually is; on a rung it is
+   a chip in a row. */
+.rung .block { margin-bottom: 0; }
+
+/* The match being read. The wash bleeds a rung's width either side on a
+   shadow rather than a margin, so the highlight reaches the page's edge
+   without any rung being able to widen the page. */
+.rung.now {
+  background: color-mix(in srgb, var(--gold) 13%, transparent);
+  box-shadow:
+    calc(var(--s4) * -1) 0 0 color-mix(in srgb, var(--gold) 13%, transparent),
+    var(--s4) 0 0 color-mix(in srgb, var(--gold) 13%, transparent);
+  border-top: 1px solid var(--gold);
+  border-bottom-color: var(--gold);
+}
+
+.rung.now .gd { color: var(--gold-deep); font-weight: 700; }
+
+/* The panel the current rung opens, sitting inside the season rather than
+   above it. Its own contents already arrive as .sections, so the top gap is
+   theirs and the panel only closes itself off underneath. */
+.ladder-panel {
+  padding-bottom: var(--s5);
+  border-bottom: 1px solid var(--rule-firm);
+}
+
+/* Both names are rendered and CSS picks one — no JS, and no measuring. */
+.rung .op .short { display: none; }
+
+@media (min-width: 900px) {
+  /* The columns stop stretching rather than spreading a scoreline a thousand
+     pixels from the name it belongs to — the ledger rule, and the reason
+     justify-content packs the tracks instead of the rung shrinking: the rung
+     still spans the page, so the hairlines and the gold wash run the full
+     width. Phase 28 replaces this with the rail the ladder is really for. */
+  .rung { grid-template-columns: 46px minmax(0, 20rem) auto 34px 22px; justify-content: start; }
+  .rung.fixture { grid-template-columns: 46px minmax(0, 20rem) auto; }
+}
+
+@media (max-width: 899px) {
+  /* The club's own short name where the rung is narrow. A name clipped
+     mid-word is the bug DESIGN.md names, and short_name is a column the
+     schema already has rather than a truncation we invent. */
+  .rung .op .full { display: none; }
+  .rung .op .short { display: inline; }
+}
+
+@media (max-width: 700px) {
+  .rung { grid-template-columns: 40px minmax(0, 1fr) auto 28px 22px; gap: var(--s1); }
+  .rung.fixture { grid-template-columns: 40px minmax(0, 1fr) auto; }
+  .rung .dt { font-size: var(--t-micro); }
+}
+
+@media (max-width: 400px) {
+  /* One exception at one width, the same shape as the league table's: the
+     venue mark comes off the rung. The scoreboard above the ladder already
+     says where the match being read was played, and every other rung is a
+     link to a page that says it. */
+  .rung .venue-badge { display: none; }
+}

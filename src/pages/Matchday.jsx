@@ -4,20 +4,18 @@ import { useData } from '../context/DataContext';
 import { useAuth } from '../context/AuthContext';
 import { ErrorNote, Spinner } from '../components/bits';
 import ComparisonCard from '../components/matchday/ComparisonCard';
-import FormAndNext from '../components/matchday/FormAndNext';
 import MatchReport from '../components/matchday/MatchReport';
-import MatchdayNav from '../components/matchday/MatchdayNav';
 import MotmCard from '../components/matchday/MotmCard';
 import Scoreboard from '../components/matchday/Scoreboard';
+import SeasonLadder from '../components/matchday/SeasonLadder';
 import SquadPills from '../components/matchday/SquadPills';
 import WorthNoting from '../components/matchday/WorthNoting';
 import {
   currentSeasonOf,
-  fixtures,
-  formOf,
   isPlayed,
   latestResult,
   matchContext,
+  seasonLadder,
 } from '../lib/matches';
 
 export default function Matchday() {
@@ -36,23 +34,15 @@ export default function Matchday() {
       : latestResult(currentSeason ? matches.filter((m) => m.season === currentSeason) : []);
 
     const season = match ? match.season : currentSeason;
-    const seasonMatches = season ? matches.filter((m) => m.season === season) : [];
-    const seasonOrdered = seasonMatches.slice().sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
-    const seasonPlayed = seasonOrdered.filter(isPlayed);
-    const idx = match ? seasonPlayed.findIndex((m) => m.id === match.id) : -1;
-
-    const currentSeasonMatches = currentSeason ? matches.filter((m) => m.season === currentSeason) : [];
 
     return {
       currentSeason,
       season,
       match,
-      seasonOrdered,
-      prevMatch: idx > 0 ? seasonPlayed[idx - 1] : null,
-      nextMatch: idx !== -1 && idx < seasonPlayed.length - 1 ? seasonPlayed[idx + 1] : null,
+      // Scoped to the match's own season, not to every row: the ladder is this
+      // season's archive, and next season's fixtures belong to next season's.
+      rungs: season ? seasonLadder(matches, season) : [],
       ctx: match ? matchContext(match, players, matches, appearances) : null,
-      form: formOf(currentSeasonMatches),
-      nextFixture: fixtures(matches)[0],
     };
   }, [matchId, players, matches, appearances]);
 
@@ -68,12 +58,14 @@ export default function Matchday() {
     );
   }
 
-  const { currentSeason, season, match, seasonOrdered, prevMatch, nextMatch, ctx, form, nextFixture } = view;
+  const { currentSeason, season, match, rungs, ctx } = view;
 
   if (matchId && !match) {
     return <div className="empty sheet">Match not found. <Link className="more" to="/season">Full season →</Link></div>;
   }
 
+  // Nothing played in the current season yet: the ladder is every fixture
+  // ahead, which is the whole page and the truest thing it can show.
   if (!match) {
     return (
       <div>
@@ -81,7 +73,7 @@ export default function Matchday() {
           <h1>{currentSeason ? `Season ${currentSeason}` : 'Old Wellingtonians FC'}</h1>
         </div>
         <p className="muted">{currentSeason ?? 'The new season'} hasn’t started yet.</p>
-        <FormAndNext form={form} next={nextFixture} teams={teams} />
+        <SeasonLadder rungs={rungs} season={season} teams={teams} />
       </div>
     );
   }
@@ -89,7 +81,7 @@ export default function Matchday() {
   const played = isPlayed(match);
   const {
     squad, scorers, motm, dropoutNames, debutIds, seasonAppCount, boot,
-    avgFor, avgAgainst, priorMeetings, matchNumber, seasonGames,
+    avgFor, avgAgainst, priorMeetings,
   } = ctx;
   const star = motm[0];
 
@@ -97,38 +89,33 @@ export default function Matchday() {
     <div>
       <Scoreboard match={match} squad={squad} scorers={scorers} teams={teams} />
 
-      <MatchdayNav
-        match={match}
-        season={season}
-        seasonOrdered={seasonOrdered}
-        prevMatch={prevMatch}
-        nextMatch={nextMatch}
-        matchNumber={matchNumber}
-        seasonGames={seasonGames}
-      />
+      {/* The ladder is the page's spine, not a section on it: the fixtures
+          ahead, the match being read, everything that match has to say, and
+          then the season behind it. */}
+      <SeasonLadder rungs={rungs} season={season} currentId={match.id} teams={teams}>
+        <div className="ladder-panel">
+          <SquadPills squad={squad} debutIds={debutIds} dropoutNames={dropoutNames} />
 
-      <FormAndNext form={form} next={nextFixture} teams={teams} />
-
-      <SquadPills squad={squad} debutIds={debutIds} dropoutNames={dropoutNames} />
-
-      {played && (star || avgFor != null) && (
-        <div className="grid match-cards section">
-          {star && <MotmCard star={star} seasonAppCount={seasonAppCount} boot={boot} />}
-          {avgFor != null && (
-            <ComparisonCard
-              match={match}
-              avgFor={avgFor}
-              avgAgainst={avgAgainst}
-              priorMeetings={priorMeetings}
-              teams={teams}
-            />
+          {played && (star || avgFor != null) && (
+            <div className="grid match-cards section">
+              {star && <MotmCard star={star} seasonAppCount={seasonAppCount} boot={boot} />}
+              {avgFor != null && (
+                <ComparisonCard
+                  match={match}
+                  avgFor={avgFor}
+                  avgAgainst={avgAgainst}
+                  priorMeetings={priorMeetings}
+                  teams={teams}
+                />
+              )}
+            </div>
           )}
+
+          <WorthNoting match={match} ctx={ctx} />
+
+          <MatchReport match={match} canWrite={played && Boolean(session)} />
         </div>
-      )}
-
-      <WorthNoting match={match} ctx={ctx} />
-
-      <MatchReport match={match} canWrite={played && Boolean(session)} />
+      </SeasonLadder>
     </div>
   );
 }
