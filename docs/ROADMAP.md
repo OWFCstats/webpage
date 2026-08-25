@@ -1,33 +1,30 @@
 # Roadmap
 
-Living document. One phase per branch, in order. Each phase says what "done"
-means so it can't quietly expand.
+One phase per branch, in order. Each phase names the files it touches, the work,
+and the test that says it is finished.
 
-Phases 0–9 built the foundation: the CSS layers, the tokens, the surfaces, the
-stats modules, the badge system, the charts, the page/component split, and the
-fixture and checks that let the rest of it be measured. That work holds and none
-of it is being undone.
+**When a phase lands it moves to *Done* as one line, and its instructions are
+deleted.** That is the whole reason this file is short. The detail behind a
+closed phase is in its commit message and in `docs/DESIGN.md` — which is where
+the next session should look, because that file is the contract a component
+author reads. A closed phase kept in full is a thousand tokens every session
+pays for and nobody reads. This file used to be 2,163 lines for exactly that
+reason.
 
-Phases 9 onward are different in kind. Everything up to 8 fixed *how the site is
-built*; none of it changed *what a page decides to say first*, which is why the
-pages still don't work. This half is information design, and it comes out of a
-page-by-page review against the real 2025/26 data — 53 players, 14 matches, 169
-appearances — plus a set of decisions recorded in `DESIGN.md`.
-
-**The badge artwork has landed** — ten drawings in `src/assets/badges/`, ahead of
-Phase 10. It was the only dependency in this plan that code couldn't unblock, and
-with it here phases 14 → 15 → 16 run in that order. **The crest has landed
-too** — `public/crest.png`, uploaded by the club mid-Phase 10 — so all eleven
-files this plan named are now in the repository. See *The artwork* below for
-what arrived and what it settles.
+Read `CLAUDE.md` first, then `docs/DESIGN.md`. This file is the order of the
+work, not the design.
 
 ---
 
-## What phases 0–9 established
+## Done
 
-| # | Phase | What it left behind |
+Phases 0–8 fixed *how the site is built*. Phase 9 made it measurable. Everything
+from 10 on is information design — what a page decides to say first — driven by a
+page-by-page review against the club's real 2025/26 season.
+
+| # | Phase | What changed |
 | --- | --- | --- |
-| 0 | Write it down | `CLAUDE.md`, `DESIGN.md`, this file |
+| 0 | Write it down | `CLAUDE.md`, `DESIGN.md` and this file exist |
 | 1 | Split the CSS | `styles/` in layers, verified pixel-identical |
 | 2 | Tokens and type | One token set, seven type steps, no hex outside `tokens.css` |
 | 3 | Split `.card` | `.sheet` and `.board`, and the rule for which |
@@ -36,2128 +33,314 @@ what arrived and what it settles.
 | 6 | Players page | Leaderboard first, squad as a team sheet |
 | 7 | Charts | Linear lines, flat fills, direct labels |
 | 8 | Page components | Every page reads as a layout, longest 247 lines |
-| 9 | Let the repo see itself | A committed fixture, `npm run shots`, `npm run check:layout`, unit tests, and a CI job holding all three |
+| 9 | Let the repo see itself | Committed fixture, `npm run shots`, `npm run check:layout`, unit tests, CI on every PR |
+| 10 | The current season, and the result row | `currentSeasonOf` (most recent season with a *result*); `ResultList.jsx` is the one scoreline primitive, six call sites |
+| 11 | The palette and the display face | Racing green ground, aged brass, Libre Caslon Display, the four metal ramps |
+| 12 | The label device | `.block` in four variants; one heading grammar; fifteen blocks of explanatory prose cut |
+| 13 | Sub-navigation | Real addresses under a section via a segmented control, applied to Players |
+| 14 | Leaderboards | One leader card per stat rather than one promoted hero; 1,370px, inside budget |
+| 15 | The badge system | Three classes of badge, ten drawings, `.plate` and its 24 "Nobody yet" boxes deleted |
+| 16 | Records, split three ways | `/records`, `/records/honours`, `/records/all-time`; one 4,841px page became three under 2,000 |
+| 17 | The squad view | `Squad.jsx` — list or tiles, all-time by default, top 20 on open |
+| 18 | Season | `/season` and `/season/charts`; Charts at 1,909px |
+| 19 | Home | The result leads, the next fixture collapses to a row; 2,113px → 1,882px, still 282 over |
+| 20 | The Matchday scoreboard | Each score attached to its own team row; the pitch address moved to the fixture; page 1,857px → 1,812px |
+| 21 | Player detail and the opponent page | 3,127px → 2,241px; the head-to-head table stopped hiding 36px at 320px |
+| 22 | The data centre | `/players/data` — every player, every stat, the one deliberate side-scroll |
+| 23 | Home, the cosmetic pass | The last result positions by venue with a badge marking which side is us; the momentum chart gained gridlines, value labels, an area fill and the list's own height, plus a "Charts" button |
+| 24 | Players, the second pass | `seasonPools`, the closed archive banner, five small tables became one wide reference table |
 
-The rulings from those phases that still bind are in `DESIGN.md`. Two are worth
-repeating because later phases keep bumping into them: **everything is derived,
-nothing is stored twice**, and **a component that gains a second page moves up
-to `components/`**.
+**The detail behind any closed phase is in its commit** — `git log --grep="Phase
+20"` finds it, and forty-five commits name their phase. That is what makes
+condensing this file safe rather than lossy.
 
----
-
-## What the review found
-
-The evidence behind phases 9–22, so no phase has to re-argue its own existence.
-
-**Every page is a stack of equal boxes.** One surface, one width, one gap, one
-padding, thirty times. Nothing in the layout says what matters, because `.board`
-— the one surface that breaks the rhythm — is rationed to one per page.
-
-**A match result is written as a sentence.** `Old Wellingtonians 1–7 Old
-Cheltonians` as running text. It wraps mid-name, never lines up in a column, and
-prints our own club's name in all fourteen rows of the season. The most-repeated
-object on the site has no structured form.
-
-**The section-heading grammar isn't one.** Across 30 sections: 4 use eyebrow +
-title, 15 eyebrow only, 7 title only, 2 neither. Home is the only page that is
-internally consistent, and there the eyebrow is usually the title again
-(`UPCOMING` over "Next fixture").
-
-**There are 15 blocks of explanatory prose** across 11 files, 5 on Records
-alone, including a five-line paragraph on the honours board longer than the five
-awards it explains.
-
-**Two tables side-scroll on every phone.** Page-level overflow is clean, but the
-earlier checks tested "no table scrolls *outside* a `.table-wrap`" while
-`DESIGN.md` says a table that side-scrolls is a bug. Records' season index hides
-**319px** at 375px and 374px at 320px — including Position and Top scorer, the
-two interesting columns. Player detail's Firsts & bests hides **122px** and
-clips text mid-word. "Last 6 played" clips opponent names: "Old Cheltonians"
-needs 82px in 74px.
-
-**Pages are 2,000–4,800px tall on a phone.** Records 4,823 · Season 3,530 ·
-Player detail 2,941 · Players 2,714 · Home 2,091 · Matchday 1,857.
-
-**The badge ladder excludes most of the squad.** 32 of the 47 players who have
-turned up hold nothing at all, and 19 of them played exactly once. The board
-prints 24 plates of which 19 say "Nobody yet", and unearned silver is
-pixel-identical to unearned gold, so the tier is carried by a word rather than
-by the metal.
-
-**Five of six leaderboards end with a hedge** — "…and N more level on X". With
-14 games and a rotating squad the boards are mostly ties, so the format is
-fighting the data. The Squad view, the cleanest thing on the site, is truncated
-at 12 of 47 names with three separate "see more" affordances.
-
-**The site is emptiest when the squad is most curious.** The current season is
-derived as the most recent season with *any* match row, and fixtures count as
-rows — so entering a single 2026/27 fixture abandons 2025/26 and every current
-season figure drops to zero. Four of five sections on Home become empty states,
-including the dark board, which is the loudest object on the page. A completed
-season sits in the database and the site hides it, in the month a newcomer is
-most likely to be sent the link.
-
-**The palette had drifted onto a generated-design default.** Warm cream ground,
-high-contrast serif, terracotta accent, hairline rules. `--tangerine #e07a2f`
-had no basis in the club's colours and `--sky-deep #2f6f8f` was a dark blue
-where the brand has a pale aqua.
-
-**Three pages had no owner.** Player detail carries a height budget and no phase
-that meets it; the opponent page appears in no phase at all; and Season's "All
-seasons" option answers the same question as Records → All-time, which is the
-duplication the Players/Records split exists to kill. Phases 18 and 21 take them.
+Two rulings from that half still bind everywhere: **everything is derived,
+nothing is stored twice**, and **a component that gains a second page moves up to
+`components/`**.
 
 ---
 
-## The artwork
+## Now
 
-Phase 15 is the signature, and it was the one phase blocked on something outside
-the repo. **It is unblocked: ten drawings landed in `src/assets/badges/` before
-Phase 10**, one file per badge, named for the slug the badge page will use.
+### Phase 25 — Matchday: the season ladder
 
-| File | Class | Tiers |
-| --- | --- | --- |
-| `appearances.svg` | career badge — shirt | four metals |
-| `goals.svg` | career badge — football | four metals |
-| `assists.svg` | career badge — target and arrow | four metals |
-| `clean-sheets.svg` | career badge — keeper's glove | four metals |
-| `player-of-the-season.svg` | season trophy — cup | gold only |
-| `golden-boot.svg` | season trophy — boot on a plinth | gold only |
-| `playmaker.svg` | season trophy — figure striking a ball | gold only |
-| `the-dependable.svg` | season trophy — cap | gold only |
-| `motm.svg` | event — star | gold only |
-| `hat-trick.svg` | event — three footballs | gold only |
+The stepper, the form strip and the next-fixture card become one object: the
+whole season as a ladder, newest first, with the match being read highlighted in
+it. Approved design: `docs/mocks/matchday-final.html` (Phone and Web).
 
-**Only the four career badges tier.** A trophy is one trophy: winning the Golden
-Boot twice is the same gold boot twice, and there is no bronze Player of the
-Season. The same holds for the two events — a hat-trick is a hat-trick. So the
-metal ramps are read by four drawings and the other six are gold and stay gold.
-An earlier draft of this section, and the artwork brief the icons arrived with,
-both showed all ten in four metals; that was wrong in both.
+**Files**
 
-Four of those six were listed here as arriving gold in the file. **Three of them
-do.** `playmaker.svg` is a black silhouette and `hat-trick.svg`'s footballs are
-black and white, and `golden-boot.svg` — counted as gold here — stands on a
-plinth of five black fills that vanishes on a dark ground. Those three are
-recoloured once, to gold, and never again; the cup, the cap and the star are
-left alone. That is the only recolouring outside Class 1.
+- `src/lib/matches.js` — add `seasonLadder`
+- `src/components/matchday/SeasonLadder.jsx` — new
+- delete `src/components/matchday/MatchdayNav.jsx`, `src/components/matchday/FormAndNext.jsx`
+- `src/pages/Matchday.jsx`, `src/styles/pages/matchday.css`
+- `tests/matches.test.js`, `docs/DESIGN.md` (*Structure*)
 
-**The brace is gone**, from the badge system and from the artwork. It never had
-a drawing and it no longer needs one.
+**Do**
 
-**Still eleven drawings, and a different eleven.** The list this section carried
-before named a brace and forgot the hat-trick, so the count came out right by
-cancelling two errors. The eleventh was `public/crest.png`, the one file this
-plan couldn't unblock by writing code — **it arrived mid-Phase 10**, uploaded
-by the club straight to this branch, and the masthead (`components/Layout.jsx`)
-already renders it in place of the `OW` monogram fallback. Nothing was owed to
-it in code: the `<img>` was always there, `onError` was always the fallback
-path, and the file just had to exist. Phase 19's fixture row still owes it a
-proper thumbnail rather than the empty circle it was designed around — see
-Phase 19 below.
+1. `seasonLadder(matches, season)` → one row per match, newest first:
+   `{ match, gd }`, where `gd` is the cumulative goal difference **after** that
+   game. Walk the played games oldest-first accumulating `goals_for -
+   goals_against`, then reverse. Unplayed fixtures sort to the front with
+   `gd: null`. Built on the existing `isPlayed` / `resultOf` / `playedMatches`;
+   nothing new stored, nothing new in the schema.
+2. `SeasonLadder.jsx` renders a rung per row on one shared
+   `grid-template-columns`: date, opponent + venue mark, score, running `gd`,
+   W/D/L chip. The current match's rung takes the gold wash, a gold rule top and
+   bottom, and `aria-current="page"`. A fixture row drops `gd` and the chip and
+   shows its kick-off time; the soonest one carries a `Next` block.
+3. Names: `teams.short_name` below 900px, full `opponent` above it — one
+   `.full` / `.short` pair switched in CSS, no JS. `short_name` is nullable;
+   fall back to `opponent`.
+4. Below 400px the venue mark comes off the rung — the scoreboard above already
+   carries it. One breakpoint, the same `max-width: 359px`-style single exception
+   the league table already owns; a name clipped mid-word is the bug `DESIGN.md`
+   names, and a short name is a column the schema already has.
+5. `Matchday.jsx` drops `<MatchdayNav>` and `<FormAndNext>`. The ladder is the
+   page's spine: fixtures, the current rung, the match panel, then the older
+   rungs.
+6. `formOf` stays in `lib/matches.js` — Home still uses it. Only Matchday's use
+   of it goes.
+7. **Decide the budget question in this phase, not at the end.** The flat
+   measures 2,522px at 375px against a 1,900px budget, and this ladder is ~700px
+   of it. Pick one, write it down here and in `DESIGN.md`: the ladder opens on
+   the eight most recent games with the rest behind one control; or the budget
+   moves to ~2,300px because the page now carries the archive as well as the
+   match. Do not build the whole page and then negotiate.
 
-### What the drawings measure
-
-The contrast figures `DESIGN.md` quoted were taken in a session whose files were
-never committed. These are taken against the committed ones: each drawing
-rendered at 256px, composited on the ground, and scored as **the share of its own
-ink clearing 3:1**. The grounds are Phase 11's — `--paper #f1f3ef` and `--board
-#16281f` — because the palette changes underneath this phase; against today's
-values nothing moves by more than four points.
-
-| Drawing | on paper | on board | tonal span | as it ships, after Phase 15 |
-| --- | --- | --- | --- | --- |
-| appearances | 11% | 90% | 0.00–0.60 | 99% in bronze on paper, 100% on a medallion |
-| assists | 100% | **0%** | 0.00–0.03 | 96% / 98% |
-| clean-sheets | 64% | 73% | 0.00–0.56 | 100% / 100% |
-| goals | 100% | **0%** | 0.03–0.03 | 94% / 97% |
-| golden-boot | 44% | 57% | 0.00–0.77 | gilded, 100% on a medallion |
-| hat-trick | 38% | 63% | 0.03–1.00 | gilded, 100% |
-| motm | 0% | 100% | 0.52–0.77 | 100% |
-| player-of-the-season | 11% | 90% | 0.06–0.77 | 90% |
-| playmaker | 100% | **0%** | 0.00–0.00 | gilded, 100% |
-| the-dependable | **0%** | 100% | 0.52–0.59 | 100% |
-
-The first three columns are the drawings as the club supplied them. `motm` and
-`the-dependable` are the two rows that moved: the star is a redraw (see below)
-and the cap lost a stray highlight, which took its span with it.
-
-Three rulings come out of that table:
-
-- **The ground rule survives, and now it has the club's own numbers behind it.**
-  The set splits three ways. The near-black drawings — assists, goals, playmaker
-  — are perfect on paper and score **0%** on green. The gold ones invert it: the
-  cap scores 0% on paper and 100% on the board, the cup and the shirt 11% against
-  90%. Only the four that carry both a gold and a dark mass — the glove, the
-  boot, the hat-trick footballs — are middling on each and good on neither.
-  Career badges on the ground, season trophies on a board, which is where the
-  pages put them.
-- **A ramp cannot recolour a silhouette.** Assists, goals and playmaker have a
-  tonal span under 0.04: there is no range in them to map onto a metal. The
-  recolour pipeline reads a drawing's own tones, so for those three it has
-  nothing to read and the metal has to be a flat fill. Only appearances and
-  clean-sheets carry enough span for a mapped ramp. This is the same failure
-  `DESIGN.md` records as "do not normalise an icon to the full ramp", caught this
-  time before it shipped rather than after.
-- **The medallion is no longer parked.** A gold cup on a light page is 11%
-  whatever the ramp does, because a cup is mostly highlight — that is not a band
-  that can be tuned, it is the drawing. The dark medallion behind a light metal is
-  the fix, it is in the brief the artwork arrived with, and it moves into Phase 15.
-
-### What Phase 15 inherited, and what it fixed
-
-- **`motm.svg` was 471 KB of embedded bitmap** — a 1241×1179 raster behind a
-  luminance mask — against 3–22 KB for the nine that are paths. It carried 1.5
-  million pixels for a star that renders into about 2,300 of them at its 16px
-  floor on a retina phone. **Redrawn as ten flat facets in the cup's own three
-  golds: 748 bytes**, and a unit test now fails any drawing over 25 KB or
-  carrying an `<image>`.
-- **`the-dependable.svg` had a stray path.** A near-white hairline
-  (`fill="#f6ffff"`) floated in empty space above and right of the cap, with
-  nothing joining it to the drawing, and read as a speck of dirt on the board.
-  **Deleted**, along with the clip path that existed only to hold it; a test
-  asserts the colour never comes back.
-- **The check measured the wrong ink on a multi-fill drawing.** `collect.js`
-  read `fill` off the root `<svg>`, which is right for the nav icons and the
-  sparklines it was built for — they are one colour, set from CSS — and wrong
-  for a drawing whose colour lives on up to thirty-six child paths. On those it
-  read the initial value, black, and would have passed a gold cup on green
-  while failing it on paper. **It now bakes each icon's computed paint into a
-  copy, renders it at 64px, composites it over its real ground and scores the
-  share of ink clearing 3:1**, which is what the table above reports. 1,388
-  icons are measured on a full run.
-
-The recolour pipeline and the ground rule described in `DESIGN.md` under *The
-icons* survive intact. The numbers under them are now measured against files that
-exist.
+**Done means** `/matchday` has no stepper, no jump strip, no form chips and no
+next-fixture card; `npm test` covers `seasonLadder` against a season containing a
+walkover and against one with unplayed fixtures ahead; `npm run check:layout` is
+clean at all six widths with no new `scripts/expected-failures.js` entry; the
+`npm run shots` height is written into the budget table below.
 
 ---
 
-## Phase 9 — Let the repo see itself
+### Phase 26 — Matchday: the match panel
 
-**Why first.** Every phase from here judges a page, and there is currently no
-way to render one: no fixture, no seed, no screenshot harness. Phases 5, 6 and 8
-each describe building a throwaway one. That is also how two tables came to
-side-scroll on every phone while passing three rounds of "measured, not
-eyeballed" checks — each harness was written to a slightly different invariant,
-and the one `DESIGN.md` actually states was never the one tested.
+The match itself: the board scoreline, the gilded man-of-the-match plate, and the
+team sheet that replaces the pills.
 
-**Build.** A committed fixture and a script that renders it.
+**Files**
 
-- `fixtures/` — the 2025/26 import parsed to JSON, plus the states one real
-  season doesn't contain: a clean sheet, a walkover, cards, a late dropout, two
-  upcoming fixtures, a debutant who scores, a player who has never played. Two
-  named datasets: `mid-season` and `pre-season` (results finished, next season's
-  fixtures entered, nothing played).
-- A dev-only Supabase stub, **wired by a `resolve.alias` in `vite.config.js`
-  rather than a flag read inside `src/`**. `lib/supabase.js` exports `null`
-  when unconfigured and `DataContext` turns that into an error, so an env flag
-  would mean editing both; an alias swaps the whole module for a fixture one and
-  leaves `src/` untouched. `npm run dev:fixture` then serves the real pages with
-  no credentials.
-- `npm run shots` — every route at 320 / 360 / 375 / 414 / 700 / 1400px.
-- `npm run check:layout` — the invariants, as assertions rather than prose:
-  no element exceeds the viewport; **no `.table-wrap` scrolls internally**; no
-  leaf element has `scrollWidth > clientWidth` (that is the clipped-name bug);
-  every icon clears 3:1 against the ground it sits on.
-- **An expected-failure list**, in the check itself. Records' season index stays
-  knowingly red until Phase 16 rebuilds that table, and phases 10–15 have to run
-  green against a check that knows it. A failure the runner can't distinguish
-  from a regression is a check that gets ignored.
-- **A CI job.** `.github/workflows` builds on push to `main` and nothing else,
-  so nothing runs `check:layout` unless a human remembers to. Add it as a pull
-  request check. This is the line that keeps the rest of the plan honest — three
-  rounds of measurement drifted precisely because no job held them.
+- `src/components/matchday/Scoreboard.jsx`
+- `src/components/matchday/MotmCard.jsx` → `MotmPlate.jsx`
+- `src/components/matchday/TeamSheet.jsx` — new; delete `SquadPills.jsx`
+- delete `src/components/matchday/WorthNoting.jsx`
+- `src/components/bits.jsx` — add `BallMark`
+- `src/pages/Matchday.jsx`, `src/styles/pages/matchday.css`, `docs/DESIGN.md`
 
-Optional, and cheap enough to argue for: a handful of unit tests over
-`lib/matches.js` and `lib/awards.js`. Phase 10 changes a derivation every page
-reads and Phase 15 rewrites the badge ladder; a screenshot will not catch an
-off-by-one in either.
+**Do**
 
-**Done means** `npm run check:layout` fails on `main` today, naming the three
-known bugs, and every later phase leaves it passing; the check runs on every
-pull request. No `src/` change.
+1. **Scoreboard** keeps its two mirrored rows. Add a head row above them —
+   competition `.block`, `Matchday n · season`, W/D/L chip — and one condensed
+   meta line below (`Full time · Sat 14 Mar 2026, 2:00pm · Big Side (H)`). The
+   per-row `.sub` squad count comes off; the team sheet's own head says
+   "8 named".
+2. **MotmPlate**: `--board` ground, gold label, name in `--gold-leaf` at
+   `--t-headline`, one line of what they did plus the appearance ordinal. The
+   monogram avatar goes. The Golden Boot line goes with it — Phase 14 gave every
+   stat its own leader row on Players, and this was the last place repeating one.
+3. **TeamSheet**: a ruled ledger on one `grid-template-columns` — name and its
+   marks, what the player did this game, appearance ordinal. Scorers carry
+   `<BallMark />` after the name *and* keep "1 goal" in its column; the MOTM row
+   carries a gold star and the gold wash. Footer line: goals, assists, cards,
+   debuts, and any dropout by name. `matchContext` already returns `squad`,
+   `scorers`, `motm`, `debutIds`, `dropoutNames` and `seasonAppCount` — no new
+   derivation.
+4. **`BallMark`** in `bits.jsx`: a 15px inline SVG, `viewBox="0 0 16 16"`, ring
+   plus centre pentagon plus five spokes that stop inside the ring, all
+   `currentColor` so it inherits `--gold-deep` from the row. Same house as
+   `Layout.jsx`'s nav icons. Drawn rather than an emoji because every other mark
+   on this site is engraved or gilded and an emoji renders in whatever the phone
+   feels like. It does not go in `src/assets/badges/` — that directory is one
+   file per badge slug and this is not a badge.
+5. **WorthNoting goes.** The appearance ordinals it printed are a column on the
+   team sheet now, and the debut and dropout names are on the footer line. This
+   removes the page's last duplicate fact.
 
-### Built — what landed, and what it found
-
-All of the above, plus the unit tests. No `src/` change: `fixtures/`, `scripts/`
-and `tests/` are new directories and the only edit inside the app's own tree is
-the `resolve.alias` in `vite.config.js`, which is only added when `FIXTURE` is
-set. `.github/workflows/check.yml` runs the tests, the layout invariants and a
-production build on every pull request; the build job greps `dist/` for a club
-we have never played, so the fixture can't reach a deploy.
-
-The harness reproduces the review's own numbers, which is the evidence that it
-measures the site rather than a fixture-shaped approximation of it: Records'
-season index hides **319px at 375px and 374px at 320px**, Firsts & bests hides
-**122px at 375px**, "Old Cheltonians" needs **82px in 74px**, Matchday is
-**1,857px** and the squad roster **1,254px** — the same figures the page-by-page
-review reported by hand.
-
-**It found two bugs the review didn't**, both at widths nobody had measured, and
-neither is fixed on the way past — each is on the expected-failure list against
-the phase that owns that page:
-
-| Found | Owner |
-| --- | --- |
-| Season's upcoming-fixtures table hides 4–7px at 320px, and fits from 360px up | Phase 18 |
-| The opponent page's home/away split hides 36px at 320px, and fits from 360px up | Phase 21 |
-
-**And it put a number on the pre-season emptiness.** On the `pre-season`
-dataset, Home is **1,430px** — inside its 1,600px budget for the first time,
-because four of five sections have nothing to say. Players → Leaderboards falls
-to an empty 900px, Season to 1,977px, and Records *grows* to 5,396px on the
-strength of one blank 2026/27 row. A page meeting its budget by having no
-content is not a page meeting its budget, and `shots/pre-season/375/home.png` is
-now the thing Phase 10 has to answer to.
-
-**The check reproduces across machines, in identity but not to the pixel.** CI
-names the same six failures and the same four known ones, on the same routes and
-the same elements — but the measurements move by 2–4px, because font metrics
-differ between platforms ("Old Cheltonians" needs 80px on CI and 82px locally,
-in the same 74px). That is why the expected-failure list matches on invariant,
-route and element rather than on a number: an entry keyed to a pixel count would
-go stale on a font update. It is also why the Season finding is the one to watch —
-a 4px overflow is close enough to the noise floor that a font change could close
-it without anyone fixing the table, and the entry says so.
-
-Three things are worth knowing before the next phase:
-
-- **The check is red on `main` until Phase 10.** The six failures are the three
-  bugs Phase 10 owns, counted per route and per clipped name. Everything else is
-  on `scripts/expected-failures.js` with a phase against it, and an entry that
-  stops failing fails the run — so the phase that fixes one deletes it in the
-  same commit.
-- **Height budgets are reported, not asserted.** Every page but Matchday is over
-  today and the phase that closes each gap is named below; a check that ran red
-  for eleven phases would stop being read. `npm run shots` prints the full table.
-- **Icon contrast has nothing to bite on yet.** 668 icons measured per run, all
-  of them the nav and the sparklines, all passing. A bitmap is reported as
-  unmeasurable rather than as a pass. The badge artwork has since landed as
-  files, but nothing renders it yet and the invariant could not read it if it
-  did — it takes the ink off the root `<svg>`, which is one colour for a nav icon
-  and meaningless for a ten-fill drawing. Phase 15 extends it; see *The artwork*.
+**Done means** no squad pills and no colour legend; the ball and the star are the
+only two marks a name carries; the walkover route (`2025-11-29`, no appearance
+rows at all) still renders with no team sheet, and the clean-sheet route
+(`2026-02-07`) still renders its debut goal, red card and dropout; `npm test`,
+`npm run check:layout` and `npm run build` pass.
 
 ---
 
-## Phase 10 — The current season, and the result row
+### Phase 27 — Matchday: head to head, and the report
 
-Two small changes that unblock most of what follows, and three live bugs.
+"How it compares" becomes a head-to-head section, and a long report stops setting
+the length of the page.
 
-**The current season is the most recent season with a result.** A fixture for
-next season stops being a context switch and becomes a card. Pages label what
-they are showing (`2025/26 · final`) rather than implying it is live.
+**Files**
 
-There is no `currentSeason` helper today — four places roll their own
-`seasonsOf(matches)[0]`: `pages/Home.jsx`, `pages/Matchday.jsx`,
-`lib/players.js` and `components/season/SeasonCharts.jsx`. So this adds the
-derivation to `lib/matches.js` and moves those four onto it. `seasonsOf` itself
-stays row-based, because a season picker should still list a season somebody has
-entered fixtures for.
+- `src/components/matchday/HeadToHead.jsx` — new; delete `ComparisonCard.jsx`
+- `src/components/matchday/MatchReport.jsx`
+- `src/lib/league.js` — add `twoRows`
+- `src/pages/Matchday.jsx`, `src/styles/pages/matchday.css`
+- `tests/league.test.js`, `docs/DESIGN.md`
 
-**A result becomes a row, not a sentence.** One component, one grid:
+**Do**
 
-```
-[W]  Old Stoics          4–1   H
-[D]  Old Salopians       1–1   A
-[L]  Old Worthians       3–5   H
-```
+1. `twoRows(leagueRows, teams, season, opponentTeamId)` → `{ us, them }`, either
+   possibly `null`. It calls `leagueStandings` and picks two rows out of it — it
+   does not re-derive points or goal difference, which that function already
+   owns.
+2. `HeadToHead.jsx`, heading "Head to head": first every meeting with this
+   opponent this season, on `ResultList`'s compact inline variant
+   (`matchContext.priorMeetings` plus this match); then the tape — one row per
+   figure (points, won, drawn, lost, scored, conceded) with the two values at the
+   outer edges and mirrored bars growing outward from a centre label. The leading
+   side's figure takes its own colour, the trailing side's takes `--ink-soft`.
+   Footnote: games played each, and the `updatedAt` `leagueStandings` returns.
+3. **The empty branch is the common one.** A friendly, a cup tie, or a club with
+   no row in the division has no tape. Then the meetings list renders alone, with
+   the two figures `ComparisonCard` used to carry — this game's scored and
+   conceded against the season average before it, already on `matchContext` as
+   `avgFor` / `avgAgainst`. Nothing is lost, it just stops being a card.
+4. `MatchReport.jsx` clamps to the first ~300 characters at a word boundary, with
+   the rest behind one control ("Read the rest" / "Show less"). Split on
+   paragraph breaks so the rest opens as paragraphs, not one block. A report
+   already inside the limit renders whole and shows no control.
 
-Opponent, our score always first, venue as a letter, W/D/L as a chip.
-
-`components/ResultList.jsx` exists and **is the bug** — it renders
-`{homeTeam} {homeGoals}–{awayGoals} {awayTeam}`, which is the sentence the
-review found. This phase rebuilds its internals; it does not reuse them. Where
-`DESIGN.md` calls `ResultList` "the pattern", it means the row this phase
-builds, not the component as it stands.
-
-**Six call sites, not four.** The two extra are both tables, which makes the
-phase cheaper overall rather than dearer — each one retires a table instead of
-restyling it:
-
-| Call site | Today |
-| --- | --- |
-| `season/ResultsTable.jsx` | `ResultList`, as a sentence |
-| `records/ClubRecords.jsx` | `ResultList`, as a sentence |
-| `home/RecentForm.jsx` | inline scoreline in a form list |
-| `matchday/ComparisonCard.jsx` | inline scoreline in a table |
-| `opponent-detail/MeetingsTable.jsx` | a table that can side-scroll |
-| `player-detail/MatchLog.jsx` | a table that can side-scroll |
-
-`player-detail/FirstsTable.jsx` renders `won 4–1` as prose and moves onto the
-row too. `home/LastResult.jsx` and `matchday/Scoreboard.jsx` are scoreboards,
-not rows, and keep their own treatment.
-
-`season/ResultsTable.jsx` also loses its `narrow` prop and its `useIsNarrow`
-branch: one row shape reads at every width, which is the whole point of it.
-
-**The three bugs.** Player detail's Firsts & bests restructures into rows;
-"Last 6 played" stops clipping opponent names (a two-line name beats half a
-name, per `DESIGN.md`). Records' season index is the third and it is fixed in
-Phase 16, where that table is rebuilt anyway — fixing it now and rebuilding it
-later is waste, and Phase 9's expected-failure list names it until then.
-
-**Done means** `check:layout` passes against its expected-failure list; the
-pre-season fixture renders a Home page with no empty states; every scoreline row
-on the site comes from one component; nothing computes its own current season.
-
-### Built — what landed, and what it found
-
-All of the above. `lib/matches.js` gained `currentSeasonOf`, the four call
-sites moved onto it, and `ResultList.jsx` was rebuilt rather than reused — it
-no longer needs `matchHomeAway` at all, because "our score first" is just
-`goals_for`–`goals_against`; the sentence bug was in choosing to print a home
-team and an away team, not in the arithmetic. It grew three props beyond the
-row itself: `showOpponent` for a card that has already named the opponent,
-`showMeta` for a date and competition line, and `inline` for a handful of
-scorelines sitting inside another card's own row.
-
-**`inline` is the one addition this plan didn't foresee, and it exists to
-protect Phase 20's arithmetic.** `matchday/ComparisonCard.jsx`'s "earlier
-against" list is three prior meetings inside a `dl.compare` value — the full
-44px row (correct, and now a real touch target where the old inline links
-never were one) cost Matchday 63px, which put the one page already inside its
-budget over it, on the exact route Phase 20's room-to-add sums against. The
-fix keeps the shared chip/score/venue markup without the row's height, so
-Matchday measures 1,857px unchanged. Phase 20 still opens this file; it
-inherits a card that already reads as one grammar rather than a bespoke one.
-
-**Firsts & bests didn't move onto the row — it moved onto `dl.compare`.**
-Debut / first goal / best game / best season are label-and-sentence pairs, not
-scorelines, and the row's grid has no opponent-shaped hole for a sentence to
-sit in. `dl.compare` already stacks a `dt` over a `dd` at any width with a
-hairline between pairs — the exact shape a table forces into columns — so
-this reused it rather than inventing a fourth pattern for one card.
-
-**The crest arrived.** Partway through this phase the club uploaded the real
-`public/crest.png` straight to this branch — three commits, a false start
-(`public/c`, deleted), then the file. Nothing in `src/` needed to change: the
-`<img>` and its `onError` fallback were always there, waiting for the file to
-exist. What did need attention is that every route now renders a bitmap the
-layout check had never seen render anywhere, and a bitmap's ink can't be read
-for contrast — the same limitation Phase 15 already knows `motm.svg` carries.
-That's on `scripts/expected-failures.js` now, owned by this phase since no
-other phase claims it; `ROADMAP.md` and `DESIGN.md`'s "did not arrive" lines
-are corrected in this commit rather than left describing a masthead that no
-longer matches the site.
-
-**Every measured claim in this phase's own text holds.** `currentSeasonOf`
-returns `2025/26` on the pre-season fixture, matching `latestResult`, not the
-`2026/27` `seasonsOf` returns; Home on that fixture renders zero `.empty`
-states and carries the label `Season 2025/26 · final`; Matchday's default
-route is unchanged at 1,857px. `check:layout` passes — 17 known failures
-against the list (the three inherited from Phase 9, minus the two this phase
-closes, plus the crest) — and all 50 unit tests pass, including a new one
-that exercises `currentSeasonOf` directly rather than only the primitives
-underneath it.
-
-Two things Phase 10 leaves for later, on purpose: several pages measure taller
-than they did — Home +45px, Player detail +143px — because a 44px touch
-target and a second meta line cost more than the table cells they replaced.
-Every page but Matchday was already over its budget before this phase; the
-arithmetic belongs to the phase that owns each page (14, 16, 18, 19, 21), not
-to this one, and `check:layout` reports the gap without failing on it for
-exactly that reason.
+**Done means** no "how it compares" card; a friendly against a club with no
+league row renders the meetings and the two figures and does not crash; the
+control appears only when there is something behind it; the clamp is unit-tested
+(short report, long report, one exactly at the boundary); `check:layout` clean;
+Matchday's height recorded both clamped and open.
 
 ---
 
-## Phase 11 — The palette and the display face
+### Phase 28 — Matchday: the desktop rail
 
-The token layer, plus the handful of call sites that name a token being deleted.
-The same shape as Phase 2, and for the same reason.
+The season on the left, the match on the right. The first two-column page on the
+site.
 
-**The brand, aged.** The school's colours are `#f8d118`, `#a6d7ca`, `#f37d02`,
-on black. At full strength they are three near-primaries that fight each other,
-so each is aged and given exactly one job:
+**Files** `src/pages/Matchday.jsx`, `src/styles/pages/matchday.css`,
+`docs/DESIGN.md` (*Mobile*).
 
-| Token | Value | From | Job |
-| --- | --- | --- | --- |
-| `--paper` | `#f1f3ef` | the mint, desaturated | the page. Cool, not cream |
-| `--board` | `#16281f` | — | racing green. Leather and wealth, and warmer than black |
-| `--gold` | `#c9992b` | `#f8d118` | the identity |
-| `--gold-leaf` | `#e6c65f` | `#f8d118` | names on the board |
-| `--verdigris` | `#8fb3a6` | `#a6d7ca` | the accent, and "this row is us" |
-| `--burnt` | `#bf6a22` | `#f37d02` | rationed: competition tags only |
+**Do**
 
-**`--paper` keeps its name.** An earlier draft renamed it `--ground`, which is
-19 references across 10 files including two JSX components, for nothing a user
-can see — and `DESIGN.md` describes the surface vocabulary as paper throughout,
-so the rename would have fought the doc as well as the code. The value changes;
-the name is the contract and it stays.
+1. Above 900px: `grid-template-columns: 344px 1fr` — the ladder in a rail with a
+   right-hand hairline and a faint tint, the match beside it. Below 900px it is
+   exactly what phases 25–27 built.
+2. **Use a media query, not a container query.** The mock uses `@container` only
+   because it renders inside a fixed-width frame; the app has no such container
+   and `@media (min-width: 900px)` is what `styles/layout.css` already speaks.
+3. **One instance of the match panel.** The mock duplicates it and hides one per
+   width — fine in a flat, not in the app. Render it once and let the grid or
+   `order` place it.
+4. The rail's hairline and tint run the full height of the page, not the height
+   of the ladder.
+5. Nothing to add to the header: `Layout.jsx`'s `.main-nav` already carries the
+   five sections above 700px.
 
-**Deleted:** `--tangerine`, `--tangerine-deep`, `--sky`, `--sky-deep`. The
-terracotta was the strongest single tell that the palette was assembled rather
-than chosen; the dark blue was never a club colour.
-
-Deleting them is not free, and this is the part the phase has to budget for —
-five files name one of the four:
-
-- `primitives.css` — the base `.tag`, its `.board .tag` variant, and `.tag.orange`
-- `pages/home.css` — a chip, and the goals-against bar fill
-- `pages/matchday.css` — the card mark in a squad pill
-- `admin.css` — `.admin-bar`
-- (`tokens.css` itself)
-
-Most of them become verdigris, and `.tag.orange` is the competition tag, which
-is the one job burnt is kept for — so the one-job rule assigns all five without
-a judgement call. It is small, but it means this phase is five CSS files, a
-`package.json` swap and a visual sweep, not one file.
-
-**The metal ramps land here.** `tokens.css` carries three flat values —
-`--bronze`, `--silver`, `--gold-tier` — consumed by `plate.css`. `DESIGN.md`
-specifies four four-stop ramps (`--bronze-1..4` and so on) and no phase owned
-them, so they arrive with the rest of the token layer even though only Phase 15
-consumes them. `plate.css` moves onto stop 2 of each ramp so the live plates
-keep working until the icons replace them.
-
-**Chart series** are reassigned off the new tokens: `--series-4` becomes green
-and `--series-5` becomes plum, which is a swap of two values in `tokens.css`.
-No JS change — `lib/tokens.js` maps appearances to `--series-4` by name, so the
-club's most-looked-at stat stops wearing a colour with no basis in anything by
-the token underneath it changing.
-
-**One face changes.** Fraunces out, **Libre Caslon Display** in. Caslon is the
-English printing letterform, which is what a school honours board is actually
-painted in; Fraunces is a good serif that is also on a very large number of
-sites designed in the last two years. Archivo and Archivo Narrow are untouched.
-`package.json` swaps `@fontsource-variable/fraunces` for the Caslon package and
-`main.jsx` swaps the import.
-
-**Done means** no hex outside `tokens.css`; no reference to a deleted token
-anywhere; every surface repainted and swept at six widths; the board is green
-everywhere it was near-black; `npm run build` clean; `check:layout`'s contrast
-assertion passes on both grounds.
-
-### Built — what landed, and what it found
-
-All of the above. Six CSS files changed rather than five, because the metal
-ramps are a token-layer addition of their own and weren't in the five files
-that named a deleted token: `tokens.css` for the ground, ink, identity,
-accent, metal and series values; `primitives.css` for `.tag`, `.board .tag`
-and `.tag.orange`; `pages/home.css` for the fixture countdown chip and the
-goals-against bar; `pages/matchday.css` for the squad pill's card mark;
-`admin.css` for `.admin-bar`; and `components/plate.css`, which moved its
-three earned tiers onto stop 2 of the new `--bronze-2`/`--silver-2`/`--gold-2`
-ramps in place of the flat values it used to read. `package.json` and
-`main.jsx` did the font swap: `@fontsource-variable/fraunces` out,
-`@fontsource/libre-caslon-display` in — one weight, family name `Libre Caslon
-Display` exactly, no other JS or component change, because every display-face
-rule already reads the font through `--font-display` rather than naming it.
-
-**The one-job rule placed every rule in those five files without a judgement
-call, as the phase predicted.** Six of the seven — the default `.tag`, `.board
-.tag`, the fixture countdown chip, the goals-against bar, the squad pill's
-card mark and the admin bar — move off sky/tangerine onto `--verdigris` /
-`--verdigris-deep`. The seventh, `.tag.orange`, is the one competition-tag
-site and became `--burnt`, the one job that colour is rationed to.
-
-**The chart series note undersold its own diff.** The roadmap text framed this
-as "a swap of two values" — `--series-4` and `--series-5` trading places — but
-`DESIGN.md`'s own table had already retuned all five: `--series-2` moves off
-the deleted `--sky-deep` blue (`#2f6f8f`) onto `--verdigris-deep` green
-(`#3f6b5c`), and `--series-1`/`--series-3` shift by a point or two of hex to
-sit with the new palette. Assists and clean sheets — both `--series-2` — read
-as green now, not blue; nothing else about `lib/tokens.js`'s by-name mapping
-needed to change, so the fix was still one file.
-
-**Verified rather than assumed:** `grep` for `#[0-9a-fA-F]` across `src/`
-matches nothing outside `tokens.css` (the badge SVGs carry their own artwork
-hex, which is not a CSS token and out of scope here); `grep` for `--sky`,
-`--tangerine`, `--bronze` alone, `--silver` alone and `--gold-tier` across
-`src/` returns nothing; `npm run build` is clean and pulls the Caslon woff/
-woff2 files instead of Fraunces's; all 50 unit tests still pass unchanged,
-since no `lib/` derivation moved; `check:layout` reports the same 17 known
-failures against the expected-failure list and nothing new — including its
-icon-contrast assertion, which now measures 674 icons against `--board` at
-`#16281f` and `--paper` at `#f1f3ef` rather than the old near-black and cream,
-and still only reports the bitmap crest as unmeasurable. `npm run shots`
-repainted all six widths on both fixtures; Home, Matchday, Records, Season and
-Players were read back at 375px to confirm the board reads as green leather
-rather than UI chrome, gold sits on it as identity rather than decoration, and
-Libre Caslon Display renders distinctly from the Fraunces it replaced.
-
-**One thing this phase didn't touch, on purpose.** Sixteen rules across nine
-files still pair `var(--font-display)` with `font-weight: 600` and most also
-add `letter-spacing: -0.015em` — a pattern written for a variable face that
-had a 600 weight to give. Libre Caslon Display ships one weight, so those
-rules now ask for a weight the face doesn't have; `npm run shots`' renders
-show the single weight the face ships, not a synthesised bold, so nothing
-looks broken — the declaration is just inert. The repetition itself is the
-parked item this was already filed against ("a figure recipe in the type
-layer," in Parked, below), not new work Phase 11 introduced, and touching
-nine files to strip a now-inert declaration was judged out of the "five
-files plus tokens.css" scope this phase set for itself. Recorded here so
-that parked item's owner knows the face is live first.
+**Done means** 1400px shows the whole season in the rail with the match beside
+it; 700px and below is unchanged from Phase 27; `check:layout` clean at all six
+widths; the 1400px shot shows no void under the rail.
 
 ---
 
-## Phase 12 — The label device, and cutting the prose
+### Phase 29 — Season, inside its budget
 
-Component-level, no new colours. This is the phase that makes every page phase
-after it smaller, because it settles the heading grammar once.
+Season is 3,248px against 2,200. Sixteen played games cost 1,286px on the shared
+result row before the league table, the summary or a single fixture is counted,
+and that arithmetic does not close by trimming.
 
-**The block replaces the eyebrow.** The school's own brand device is bold text
-on a solid field of colour. One `.block` primitive, in four variants (board,
-gold, verdigris, burnt), replaces the tiny uppercase eyebrow. A section head
-becomes legible at a glance instead of a 12px grey whisper, and the 15 near-
-identical label rules collapse to one.
+**Files** `src/pages/Season.jsx`, `src/components/season/*`,
+`src/styles/pages/season.css`, `docs/DESIGN.md`.
 
-**One grammar for all 30 sections.** A section has a block *or* a title, never
-both saying the same word. `UPCOMING` over "Next fixture" becomes one of them.
+**Do**
 
-**The prose goes.** All 15 explanatory blocks — they are the `card-foot` and
-`page-intro` paragraphs across 11 files, including the two on the opponent page
-and Player detail, which no other phase opens. Where a fact genuinely needs a
-note it becomes one short line, not a paragraph. Empty states stay — they are
-content, per `CLAUDE.md` — but they say what to do, not why the design is the
-way it is.
+1. The season's results become a ladder: one ~40px rung per game instead of an
+   ~80px result row, which is roughly 640px back with every game still on the
+   page.
+2. **Reuse `SeasonLadder.jsx` from Phase 25, do not write a second one.** That
+   reuse is the test of whether Phase 25 built a component or a page section; if
+   it needs more than new props, fix it there and note it.
 
-**Done means** every section head resolves to `.block` or a heading and never
-both; `grep` finds no `card-foot` paragraph over 20 words; page heights drop
-measurably in `npm run shots` and the numbers are recorded here.
-
-### Built — what landed, and what it found
-
-`.block` landed in `primitives.css` as four rules — `.board`, `.gold`,
-`.verdigris`, `.burnt` — a solid field, bold text, tight chip padding, one
-`margin-bottom`. Only `.board` carries `--on-board`: gold, verdigris and burnt
-are all light-to-mid tones, so their text is `--board`'s own dark ink, the same
-choice `.tag.gold` had already made. `docs/DESIGN.md`'s `.label` entry, and the
-two code comments that still called section-eyebrow labelling `.label`'s job
-(`base.css`, `pages/season.css`), are corrected in this commit rather than left
-describing a primitive that no longer does that.
-
-**16 section heads moved onto `.block`, not 15.** The review's count of "15
-eyebrow only" is the 15 places a section's whole head was carried by a
-`.label`/`.label.ruled` span standing in for a heading — `MotmCard`, `WorthNoting`,
-`ComparisonCard`, `MatchdayNav`'s "Jump to a matchday", `PlayerDetail`'s
-"Badges" and "Career, against the squad", `FirstsTable`, `FormCard`, `RankCard`,
-`MatesCard`, `SeasonCards`, `SeasonSummary`, `ChartsPanel`, `UpcomingFixtures`
-and `Season.jsx`'s "Most involved" — and all 15 moved onto `.block`. The
-sixteenth is `BarBoard`'s `LeadBoard` in its populated state, where the same
-pattern (a `.label` carrying the whole title, no separate heading) sits inside
-`.lead-hero` rather than a `.sheet`; it wasn't in the review's 15 because
-`LeadBoard`/`BarBoard` didn't exist as today's leaderboard until Phase 14, but
-it's the exact violation this phase fixes and Phase 14 didn't touch its markup.
-Variant chosen by what the section is about, not cycled for variety: `.gold`
-for the three occasion/achievement heads (`MotmCard`, `WorthNoting`, `Badges`,
-plus `LeadBoard`'s dark-ground title), `.verdigris` for the four heads about
-our own performance against a baseline (`ComparisonCard`, `FormCard`, "Career,
-against the squad", "Most involved"), `.board` for the rest, which are plain
-reference lists with nothing to signal. Six card-level headings stay on
-`.label.ruled` and are correctly untouched: `ClubRecords`' six record cards,
-and the three plain `BarBoard` sub-boards nested under "All-time leaders" —
-both are repeated items inside one already-headed section, not a section head
-of their own, which is why the review's count didn't reach them either.
-
-**Home turned out to carry 5 eyebrow+title pairs, not 4** — `LeagueTable`'s
-"Standings"/"League table" is a fifth, on top of `NextFixture`, `LastResult`,
-`RecentForm` and `SeasonStats`. None of the five got `.block`. Unlike the 15
-above, an eyebrow+title pair with two different words already satisfies "never
-both saying the same word" — the label there is a bonus, not a fix owed — and
-`.block`'s own padding and margin cost real height with nothing on Home to pay
-for it: Home carries none of the 15 explanatory paragraphs this phase also
-cuts, so converting its five eyebrows would have made the one page with no
-offsetting cut measurably taller for a purely cosmetic upgrade. They stay
-`.label`, unchanged.
-
-**The one real duplicate is fixed anyway, without `.block`.** `LastResult`'s
-heading fell back to the literal string `'Last time out'` when there was no
-match — the exact word its own eyebrow already said. The heading is now
-conditional on a match existing at all; empty, the label alone carries the
-widget's name, same as the `.empty` line beneath it already explains why.
-`NextFixture` — `DESIGN.md`'s own cited example of "the eyebrow was usually the
-title again" — gets the same fix in spirit: its heading now names the specific
-opponent when one is fixtured, matching the pattern `LastResult` already used,
-rather than repeating the generic "Next fixture" every time. Both changes are
-content-only and cost nothing in height.
-
-**Three of the 15 explanatory paragraphs were over the 20-word line**, not the
-one the original review sampled: Records' badge-board note (40 words) and
-honours-board note (41 words) both had a scene-setting first sentence in front
-of the one fact worth keeping, and `PlayersHub`'s leaderboard note (21 words in
-its scoped form) was two sentences doing one sentence's job. All three are now
-one line: "Every badge in the club, and who's closest to the next one.";
-"Player of the Season is voted, not worked out — every other award is."; and a
-season-scoped/all-time split that keeps the "switch to All time" instruction
-in the scoped case and drops it where there's nothing to switch to. The other
-12 — `RankCard`, `BarBoard`'s level note, `ClubRecords`' run note, `FormCard`'s
-two, `PlayerDetail`'s stats note, `SeasonIndex`'s standings note, and both
-`page-intro` lines on `Season` and `OpponentDetail` — were already one line
-under 20 words and are untouched.
-
-**Heights, `npm run shots` on `mid-season` at 375px, before this phase → after:**
-
-| Page | Before | After |
-| --- | --- | --- |
-| Home | 2113px | 2113px |
-| Matchday — latest | 1857px | 1861px |
-| Matchday — clean sheet, debut goal, red card, dropout | 2378px | 2382px |
-| Matchday — walkover, no team sheet | 1261px | 1270px |
-| Season | 3429px | 3379px |
-| Season — all seasons | 3366px | 3316px |
-| Players — leaderboards | 2997px | 2991px |
-| Player detail — a regular | 3083px | 3059px |
-| Player detail — one appearance, scored on debut | 2467px | 2444px |
-| Records | 4943px | 4831px |
-
-Nine of ten routes move; four routes — `Players → Squad`, `Player detail —
-never played`, `Opponent detail`, and `Home` — carry none of the 16 label
-conversions or the three trimmed paragraphs and are pixel-identical, as
-expected. Records drops the most (-112px, both of its trimmed paragraphs live
-there) and Season drops next (-50px on both its routes, from the "Most
-involved"/"Season at a glance"/"Charts" conversions each shedding a hairline
-and a line of padding that `.label.ruled` used to spend). The three Matchday
-routes gain 4-9px from `MatchdayNav`'s "Jump to a matchday" moving onto
-`.block`, the one conversion on that page with no paragraph nearby to offset
-it — recorded rather than hidden, the same way Phase 10 recorded Home and
-Player detail getting taller for a named reason rather than picking a number
-that flattered the phase.
-
-**Verified rather than assumed:** all 50 unit tests pass unchanged, since no
-`lib/` derivation moved; `npm run build` is clean; `check:layout` reports the
-same 17 known failures against the expected-failure list and nothing new,
-across both fixtures at all six widths. `grep` for `label ruled` and
-`className="label"` across `src/` turns up only field captions, column
-headers, admin/write-side call sites, and the six repeated-card headings named
-above — no section head still carries the old treatment.
+**Done means** `/season` under 2,200px at 375px with all sixteen games on it, or
+a written argument here for why the budget should move; `SeasonLadder` reused,
+not copied; `check:layout` clean.
 
 ---
 
-## Phase 13 — Sub-navigation
+### Phase 30 — The cosmetic review: Players and Records
 
-**The mechanism**, decided: real routes, plus a segmented control at the top of
-the section. Tapping a bottom tab lands on that section's default sub-page; the
-control switches. This extends a pattern the site already runs — `.seg` renders
-on Players, Player detail and the season charts panel — adds no new nav concept,
-keeps five sections, and gives every sub-page a shareable address, which matters
-because WhatsApp is this club's actual distribution channel.
+The last two sections of the review Phase 23 started on Home. Screenshot first at
+375px and 1400px, list the findings, then one branch per page. Matchday's own
+review is superseded by phases 25–28, and Season's length is Phase 29's job.
 
-A dropdown on a five-item bottom bar was considered and rejected: a tap that
-opens a menu instead of navigating is the thing people hate about mobile nav.
-
-**The map.**
-
-| Section | Sub-pages | Default |
-| --- | --- | --- |
-| Home | — | — |
-| Matchday | — | — |
-| Season | Season · Charts | Season |
-| Players | Leaderboards · Squad · Data centre | Leaderboards |
-| Records | Badges · Honours · All-time | Badges |
-
-**The shims cover query strings, not just paths.** Today's views are query
-params — `/players?view=squad` — and `pages/Records.jsx` links to
-`/players?season=all` itself, so those addresses are already in the group chat.
-`/players?view=squad` has to land on `/players/squad`, and a `?season=` on a
-Players address has to survive or resolve, not be dropped on the floor.
-
-**Done means** every sub-page has its own address; the old flat addresses and
-the old query-param views both redirect; `App.jsx`'s shim list is extended
-rather than replaced; the bottom bar still has exactly five entries.
-
-### Built — what landed, and what it found
-
-The mechanism, applied to the one section whose content was already in its
-final shape for it: **Players**. `/players` (Leaderboards, default) and
-`/players/squad` are real routes in `App.jsx` now, both rendering
-`PlayersHub` with a `view` prop rather than a `?view=` query param — the same
-one-file-many-routes shape `Matchday` already uses for `/matchday` and
-`/matchday/:matchId`. The segmented control at the top of the page is real
-navigation: `NavLink`s to the two addresses, carrying the current `?season=`
-across the switch, rather than buttons calling `setSearchParams`.
-`primitives.css`'s `.seg` rules gained an `a` selector alongside `button` —
-the control had only ever driven in-page state before, so it had never
-needed to style a link.
-
-**Season and Records are not split here, on purpose.** Both are named in the
-map above, but neither's content is in a shape a route can just pick up
-today. Season's Charts are a `useState` toggle inside `ChartsPanel`, squeezed
-into the aside at a third of the page's width — Phase 18 is what rebuilds
-that as a full-width sub-page and deletes the toggle, and doing the routing
-now would mean building the same page twice. Records is one page with five
-sections that map onto its eventual three tabs by more than a 1:1 split —
-Phase 16's own text says it splits Records into sub-pages once Phase 14 and
-15 have built what those tabs show, for the same reason `expected-failures.js`
-already gives for not fixing the season-index table early: restructuring
-content now and again once its replacement lands is the same work twice.
-Phase 13 is the mechanism, not a mandate to move content before the phase
-that owns it is ready.
-
-**The shim covers the query string, not just the path.** `/players?view=squad`
-— including with a `?season=` alongside it — redirects to `/players/squad`
-with every other param intact; `PlayersHub` checks for it itself rather than
-`App.jsx` routing around it, since the same file already owns both addresses.
-`Records.jsx`'s own `/players?season=all` link needed no change: it never
-carried `view=`, so it already lands on the new default route correctly.
-`?view=leaders` — never a real address anyone would have shared, since it's
-the default spelled out — is left alone rather than added to the shim; it
-renders the right page either way; and this is only ever the harmless
-default-value, not a second view.
-
-**Verified rather than assumed:** all 50 unit tests pass unchanged, since
-nothing in `lib/` moved; `npm run build` is clean; `check:layout` reports the
-same 17 known failures against the expected-failure list and nothing new,
-across both fixtures at all six widths — including `players-squad`, now
-measured at its real address (`scripts/site-map.js` pointed it at
-`/players?view=squad` before this phase). A headless run against
-`dev:fixture` confirms the parts a screenshot can't: `/players?view=squad&
-season=2025%2F26` redirects to `/players/squad?season=2025%2F26`, the Squad
-tab renders `aria-current="page"` there and the Leaderboards tab doesn't,
-and the reverse holds at `/players`. The header's own `Players` link — never
-`end`-matched — stays highlighted on both addresses, unchanged from how it
-already behaved on `/players/:playerId`.
-
----
-
-## Phase 14 — Leaderboards
-
-Moved ahead of Records, because Records renders this component and cannot be
-built or measured before it exists.
-
-**The format**, decided from the Premier League reference: a grid of cards, one
-per stat, each capped at **top 5**, the leader given the dark row and the
-display face, initials where a photo would go, and the card heading linking to
-the full list.
-
-This keeps every board visible — which is why `DESIGN.md` argued against a
-single stat behind a selector — while cutting each to a fifth of its height. A
-real rank column handles ties natively, so the "…and N more level on 2" line
-that currently ends five of six boards disappears.
-
-**"Where am I" is answered directly.** A footer line — `You're 18th of 47 · 2
-apps` — instead of making a player scan six boards of six names for their own.
-
-**Six boards on both pages.** `LEADERBOARD_STATS` in
-`components/LeaderBoards.jsx` is already one shared list of six — goals,
-assists, goals + assists, appearances, MOTM, clean sheets — and both pages run
-the whole list. Records shows three today; that was a workaround for the page
-being 4,823px long, and the split fixes the cause. See Phase 16 for the height
-arithmetic this commits it to.
-
-**Players loses its "All time" season option.** `pages/PlayersHub.jsx` offers
-one, and with Records → All-time built on the same component it is the same
-board reached two ways, which is the exact duplication the Players/Records split
-exists to remove. **Players is this season; Records is all time.**
-
-**Done means** one component, two pages; six boards fit under 1,400px at 375px
-against 2,714 today; no board ends on a hedge; the bars are gone; Players has no
-all-time scope.
-
-### Built — what landed, and what it found
-
-All of the above, plus a redraw of the card the plan didn't spell out in
-enough detail to build blind. `components/LeaderBoards.jsx` is a `LeaderCard`
-per stat inside a `.grid.boards`; `components/BarBoard.jsx` lost its
-`LeadBoard`/`ChaseRow` pair (the old hero board, now replaced) and kept only
-the plain bar list, which is still Season's "Most involved" board until
-Phase 18. `lib/players.js`'s `statLeaders` gained two fields rather than
-changing shape — `total` (everyone on the board, zeroes excluded) and `next`
-(the first row the cap left out, its rank already resolved against ties) — so
-the existing callers (`BarBoard`'s bar list, still reading `alsoLevel`) didn't
-need to change at all.
-
-**The grid is two cards wide on a phone, not one.** The plan's own arithmetic
-doesn't close without it: six cards stacked one to a row, even drawn as
-tightly as a card can be, cost more than the 1,400px budget has to give once
-the page's own heading, season picker, tab strip and intro line are paid for.
-`minmax(150px, 1fr)` puts two side by side from 360px up and falls back to one
-at 320px, which is the one width narrow enough that two 150px columns don't
-fit — a page nobody measures the budget at, so the fallback costs nothing.
-
-**Three things in the plan's own card description didn't survive contact with
-the budget, and are recorded here rather than silently dropped:**
-
-- **No per-game rate line under the leader's name.** The old hero board's
-  "1.07 goals per game · 14 appearances" was carried into an early draft of
-  this card and then cut — it's not in `DESIGN.md`'s own list of what a card
-  needs, and a two-up card at 165px wide has no width to spare on a second
-  line that repeats arithmetic the tally already states.
-- **No stat icon in the heading**, though an earlier draft of `DESIGN.md`
-  pictured one. There's no icon to hang there yet — Phase 15 is what draws
-  one per stat — and a heading that promises an icon slot before the artwork
-  exists is a placeholder for a placeholder. `DESIGN.md` is corrected to say
-  so rather than describe a heading that isn't built.
-- **The heading doesn't link to "the full list".** There isn't one yet: the
-  nearest page is the squad roster, sorted by appearances rather than by
-  whichever stat the card is about, and linking a "Goals" heading to a list
-  sorted by apps would answer the wrong question. Phase 22's data centre is
-  the real destination for that link, and it's the one piece of the plan this
-  phase leaves for the phase that can actually answer it.
-
-**Every row gets a rank; only the leader gets an avatar.** The plan's
-"initials where a photo would go" reads as universal, but a chaser row in a
-165px-wide card has room for a rank number, a name and a value and nothing
-else — adding a 24px monogram to four rows per card was the first thing cut
-when the grid went to two columns. The leader keeps one: it's the one row
-built to carry the occasion, and it's also the one row with the width for it.
-
-**The footer is a fact about the board, not a claim about the reader.** The
-plan's own draft copy — `You're 18th of 47 · 2 apps` — reads as a personal
-"where am I", but nothing feeding this component knows who's looking at it;
-there is no visitor identity anywhere on this site, admin login included. What
-the footer actually names is the boundary the cap drew: the rank, the field
-size and the value of the row right after the five shown, ties already
-resolved into that rank. `DESIGN.md`'s own text is corrected to describe that
-rather than a personalisation this site doesn't have and isn't building.
-The nouns it counts in are kept short on purpose — `app`/`apps`, `G+A`,
-`sheet`/`sheets` — because "6th of 48 · 9 appearances" wraps a 165px card's
-footer onto a second line and "6th of 48 · 9 apps" doesn't.
-
-**Names wrap; they don't clip.** An early pass reached for
-`text-overflow: ellipsis` to keep every row to one line, the same shortcut
-`components/BarBoard.jsx`'s `.bar-name` already took — and `check:layout`'s
-`text-clipped` invariant caught it immediately, the same way it was built to:
-"Dom Bonham-Lloyd" needing 128px in an 88px cell is exactly the clipped-name
-bug Phase 9 wrote the check to catch. Removed in favour of the site's own
-rule (`docs/DESIGN.md`, *the squad*: "a name wraps rather than clips") — some
-rows run two lines now, and that's a real, accepted cost of the two-up grid
-rather than a hidden one.
-
-**Measured, not assumed.** `npm run shots` on `mid-season` at 375px: Players →
-Leaderboards was 2,992px before this phase and is **1,370px** after, under its
-1,400px budget for the first time. Records — still one long page; Phase 16
-splits it — carries all six boards now instead of three and still *dropped*,
-from 4,831px to 4,655px, because six card-format boards cost less than three
-of the old bar boards did; it remains well over its own 2,000px budget, which
-is Phase 16's arithmetic to close, not this phase's. `check:layout` passes
-with the same 17 known failures and nothing new, across both fixtures and all
-six widths. All 50 existing unit tests pass unchanged; four more were added
-for `statLeaders`' new fields, covering a tie landing exactly on the cap and
-the all-shown case where `next` is `null`.
-
----
-
-## Phase 15 — The badge system
-
-The signature, and the biggest phase. Depends on Phase 13's routes and on the
-artwork, which is in `src/assets/badges/` — read *The artwork* above before
-starting, because it carries the measurements this phase is held to.
-
-**Three classes, not one grid of 24.**
-
-*Class 1 — career badges, four metals.* One badge per category showing the metal
-held. Bronze is a debut, so all 47 players who have turned up own something —
-against 15 of 47 today. **These four are the only badges that tier.**
-
-| Badge | Bronze | Silver | Gold | Diamond | Holders now |
-| --- | --- | --- | --- | --- | --- |
-| Appearances | 1 | 10 | 25 | 50 | 47 / 3 / 0 / 0 |
-| Goals | 1 | 5 | 15 | 30 | 18 / 2 / 0 / 0 |
-| Assists | 1 | 4 | 12 | 25 | 15 / 1 / 0 / 0 |
-| Clean sheets | 1 | 5 | 12 | 25 | 0 / 0 / 0 / 0 |
-
-Clean sheets stays and stays empty. "The club has never kept one" is a live
-target that reads as a challenge.
-
-**Clean sheets is a team badge and the copy says so.** `lib/matches.js` awards
-one to every player who appeared in a match with nothing conceded — positions
-are fluid at this level, so there is no GK/DEF gating and there shouldn't be.
-The consequence is that the club's first clean sheet hands bronze to eleven
-people at once, which makes it the one Class 1 badge that isn't a personal
-total. That is accepted rather than fixed: a clean sheet *is* a team
-achievement, and the badge's own line names it as one so it doesn't read as a
-participation prize.
-
-*Class 2 — events, stackable, no tiers, gold.* Man of the Match and the
-hat-trick. A hat-trick is a thing that happened, not a rung; these carry a small
-multiplier (`×2`) and appear inline under a player's name. `lib/awards.js`
-already counts hat-tricks on `goals >= 3` and that rule is unchanged.
-
-*Class 3 — season honours, trophies, one per season, gold.* Player of the Season
-(voted), Golden Boot, Playmaker, The Dependable. They do not tier and do not
-stack into a bigger version — two Golden Boots is the same trophy twice, shown
-as a year list. **The Dependable is most appearances**, not ever-present: nobody
-was ever-present in 2025/26 and an award nobody can win is not an incentive.
-
-These four are exactly the honours board's rows, so the board and the badges
-cannot drift. `SEASON_AWARDS` in `lib/awards.js` carries five today: **Most MOTM
-is removed** — it usually goes to the same player as Player of the Season — and
-survives as the Class 2 star; **Assist King is renamed Playmaker**; and
-`everPresent` and its `PLATES` family come out with it.
-
-**The brace is not built** — see *There is no brace* in `DESIGN.md`. It leaves no
-code behind: nothing in `lib/awards.js` ever counted one.
-
-**Six of the ten drawings never tier**, so the recolour work is four badges ×
-four metals plus two one-off passes to gold, not ten × four. Two of the four
-career badges — assists and goals — are near-monochrome silhouettes with no
-tonal span to map, so their metal is a flat stop rather than a mapped ramp. The
-measurements are in *The artwork*.
-
-**A badge has its own page.** `/records/badges/:key` lists every holder at every
-tier and who is closest, so a badge is linkable into the group chat. The keys are
-the artwork's filenames.
-
-**The medallion is built here, not parked.** A dark disc behind a light metal.
-The three gold-dominant drawings — cup, cap, star — score 0–21% of their own ink
-against paper and 90–100% against the board, and that is the drawing rather than
-the band: a cup is mostly highlight, so no ramp fixes it. Trophies and events sit
-on a medallion wherever the page around them is light; career badges sit on the
-ground in bronze and on a medallion above it.
-
-**`check:layout` needs extending before it can hold this phase.** Its icon
-invariant reads `fill` off the root `<svg>`, which is one colour for the nav and
-the sparklines and meaningless for a drawing that carries its colour on thirty-six
-child paths. It has to composite the rendered footprint and score the share of
-ink clearing 3:1, which is the measurement *The artwork* reports. Until it does,
-it would pass a gold cup on green and fail the same cup on paper for the same
-reason: it is reading black either way.
-
-**Two artwork defects come off *The artwork*'s list here.** `motm.svg` is 471 KB
-of embedded bitmap and has to become paths or a down-sampled raster before it
-ships to a phone; `the-dependable.svg` has a stray near-white hairline floating
-beside the cap that has to be deleted.
-
-**Done means** the badge board is 4 cards + 2 stackables + 4 trophies, not 24
-plates; every badge has a detail page; a player's own page shows their tier icons
-under their name; no icon renders below its floor (20px for trophies, 16px for
-the rest); no drawing scores under 3:1 across the majority of its ink on the
-ground it ships on; `motm.svg` is under 20 KB; the ladder table above matches
-`lib/awards.js` exactly.
-
-### Built — what landed, and what it found
-
-All of it. `lib/awards.js` carries the three classes and nothing else does:
-`CAREER_BADGES`, `EVENT_BADGES` and `SEASON_AWARDS` are the ten badges, and
-`SEASON_AWARDS` is simultaneously the honours board's rows, so the two cannot
-drift. `PLATES`, `TIERS`, `everPresent`, `playerPlates` and `clubPlates` are
-gone, with `components/Plate.jsx` and `styles/components/plate.css`. Three
-functions replace them — `playerBadges` (a shelf), `clubBadges` (the board),
-`badgeDetail` (one badge's page) — over one shared pass that walks every
-appearance in date order, because a badge has to say *when* it fell and a
-career total never can.
-
-`lib/badge-art.js` is the recolour pipeline: read a drawing's own fills, map
-them onto a slice of the metal, and rewrite the paint. `components/BadgeIcon.jsx`
-is the only thing that draws a badge, and `lib/tokens.js` gained `metalRamp` so
-the hexes stay in `tokens.css` — the same reason the charts read their series
-colours from there. The drawings are inlined via `import.meta.glob(… ?raw)`,
-which is what makes the fills reachable at all.
-
-**A drawing that isn't gold in the file gets gilded, and the boot is one.**
-The plan named two — the playmaker silhouette and the black-and-white
-hat-trick footballs. The Golden Boot was counted as arriving gold and doesn't:
-five of its ten fills are black, they are the plinth, and on a dark medallion
-that plinth disappears, which is the 57% the artwork table records. Gilded, it
-measures 100%. The cup, the cap and the star are left exactly as the club drew
-them. `DESIGN.md` is corrected rather than the measurement excused.
-
-**An unearned badge is a silhouette, not a dimmed metal.** The obvious way to
-show a badge nobody holds is to fade it, and fading is exactly what costs the
-contrast this phase exists to guarantee — a 40%-opacity gold cup fails on any
-ground. So an unheld badge is drawn flat in the ground's own soft ink
-(`--ink-soft` on paper, `--on-board-soft` on a board), both of which clear
-3:1, and the tier is carried by the metal being *there* rather than by how
-bright it is.
-
-**The trophies carry no names on the badge board.** Four of them under an
-honours board that had just listed the same four winners is the page saying
-the same thing twice, which is the failure this half of the roadmap exists to
-fix. Instead the strip is four drawings and four links, and the honours board's
-own rows gained their trophy at 20px — which is also the most direct way to
-show that those rows and the Class 3 badges are the same four objects.
-
-**`.badge-rung.empty` collided with the `.empty` primitive** and inherited its
-empty-state padding, which put the two unheld rungs of every ladder 32px below
-the two held ones and cost 64px a card. Renamed to `.unheld`. Worth recording
-because it is the same class of bug the CSS split was meant to end: a component
-reaching for a word the shared vocabulary already owns.
-
-**A chart is not an icon.** The new composite measurement immediately failed
-the player career chart at 0% — Recharts draws a whole plot into one `<svg>`,
-most of whose ink is deliberately faint gridwork. The old rule passed it by
-accident, reading black off the root element. `collect.js` now excludes
-anything inside `.recharts-wrapper` by name, with the reason, and *Chart
-series* in `DESIGN.md` is the rule that governs those colours instead. The
-hand-rolled sparklines are ours and stay measured.
-
-**A sixth invariant: `icon-below-floor`.** `BadgeIcon` clamps to 20px for a
-trophy and 16px for everything else, but a clamp can't see a flex or grid
-context squeezing a badge afterwards, so the floor rides on the element as
-`data-floor` and the check measures what was actually drawn. Nothing is under
-its floor today.
-
-**Measured, not assumed.** `npm run shots` on `mid-season` at 375px: the three
-badge pages are **1,322px** (a career badge, 48 bronze holders listed),
-**900px** and **900px**, all inside the 2,000px a Records sub-page gets.
-Records went from 4,655px to **4,841px** — the badge board is 186px taller
-than the twenty-four plates it replaced, and Phase 16 is the phase that splits
-this page. Player detail went 3,059 → **3,127px** for a regular and 2,444 →
-**2,747px** for a debutant, all of it the shelf now naming all four career
-badges instead of three plates in one row; Phase 21 owns that budget.
-`check:layout` passes with the same known failures and nothing new, 1,388
-icons measured for contrast across 16 routes × 2 fixtures × 6 widths. Unit
-tests went from 54 to 66: the badge ladder is asserted against the table in
-this file, and `tests/badge-art.test.js` holds the artwork itself — every key
-is a filename, no drawing embeds a raster or exceeds 25 KB, the three
-silhouettes take one flat stop, and the cap's stray hairline can't come back.
-
-**The repository is 470 KB lighter.** The star was 471 KB of embedded bitmap
-and is 748 bytes of paths; the other nine drawings are unchanged apart from
-the cap's deleted speck.
-
----
-
-## Phase 16 — Records, split three ways
-
-The worst page. 4,823px on a phone, five sections, and it opens with a set of
-mismatched cards that are hard to read.
-
-Moved after 14 and 15, because it assembles what they build. An earlier draft
-had it here first, stubbing the badge board and rendering the leaderboards with
-the six bar boards that are 2,714px on their own — a page built twice and a
-2,000px budget that couldn't be met either time.
-
-**Badges** (default) — Phase 15's board and the badge detail pages.
-
-**Honours** — the honours board, which is the one surface the review found
-nothing wrong with, moved onto green with its caption cut, and now carrying
-Phase 15's four rows rather than five. Plus the season index, restructured from
-a 10-column table into rows: that table currently hides 319px at 375px, and the
-fix is the Phase 10 result row, not a narrower font. This is the third of Phase
-10's known bugs and it comes off Phase 9's expected-failure list here.
-
-**All-time** — Phase 14's six boards, plus club records. Club records stop being
-five differently-sized sheets and become one ruled list on the Phase 10 result
-row, so the scores line up in a column and "Old Wellingtonians 1–7 Old /
-Cheltonians" stops wrapping mid-name.
-
-The height arithmetic, because this is the sub-page the 2,000px budget binds
-hardest: six boards at Phase 14's 1,400px, plus seven club-record rows at a
-44px touch target and a heading (~400px), plus the segmented control, the title
-and the intro (~150px) is **~1,950px**. It fits with about 50px of slack, and
-where more is needed it comes from the record rows — two of them currently print
-the same two matches back to back, because the longest unbeaten run and the
-longest winning run are both "2 games", which reads as a bug. Where runs
-coincide, one row says so, and the list is six rows rather than seven.
-
-**Done means** no Records sub-page over 2,000px at 375px; `check:layout` clean
-with an empty expected-failure list; five sections became three pages and
-nothing was dropped.
-
-### Built — what landed, and what it found
-
-Three real addresses on Phase 13's mechanism: `/records` (Badges, the default),
-`/records/honours` and `/records/all-time`, all three rendering `pages/Records.jsx`
-with a `view` prop — the same one-file-many-routes shape Players and Matchday
-already use. `/records/badges/:key` is untouched and still the way into a badge,
-and `/history` still lands on Badges. Measured at 375px, against one page of
-4,841px:
-
-| Sub-page | mid-season | pre-season | Budget |
-| --- | --- | --- | --- |
-| Badges | 1,667px | 1,667px | 2,000 |
-| Honours | 961px | 1,285px | 2,000 |
-| All-time | 1,880px | 1,880px | 2,000 |
-
-**The tab is each sub-page's heading.** Whatever leads a sub-page carries no
-second heading — the badge board, the honours board and the six leaderboards
-each start straight under the intro line — and a section *under* that one keeps
-its `h2`. Three of the five old headings went that way, and it is the rule the
-next section split should follow.
-
-**The height arithmetic came in with more slack than the plan expected, from
-different places.** All-time was projected at ~1,950px and measures 1,880px.
-The plan's own figure — "seven club-record rows at a 44px touch target and a
-heading (~400px)" — was wrong twice over in ways that cancelled out.
-`clubRecords` derives **six** records, not seven, and a record needs **two**
-lines rather than one: at 375px a record's name and its scoreline cannot share
-a row, so each is a caption line (name left, mark right) over the result row —
-77px each, 86px for the run that carries three chips, 58px for the run that
-carries two. The list is **453px** and the sheet around it 487px, against the
-plan's 400. What paid for it was the chrome the split removed — two `h2`s, the
-badge board's own caption, and the "every season together" footer, which is now
-the intro line and carries the link to Players.
-
-**The runs coincide in the club's real record and not in the fixture, which is
-worth knowing before reading the screenshots.** `lib/awards.js` gained
-`runsCoincide` — the two runs holding the same games is a fact about the record,
-so the derivation states it rather than leaving a component to work it out — and
-`ClubRecords` prints one row when it is true, with the note *"Also the club's
-longest winning run."* Run over `fixtures/2025-26.json` — the club's real
-14-match import, before the fixture adds anything — both runs are the same two
-games, Old Stoics 5–1 and Old Salopians 4–1, and the flag is true: the bug this
-phase was told to fix is real and now merges into one row. On the fixture
-datasets it doesn't — the walkover 3–0 and the two draws after it make an
-unbeaten run of three against a winning run of two — so the harness measures the
-**six**-row list, which is the expensive case, and the five-row merge was
-verified by forcing the flag, re-shooting and reverting. Two unit tests hold both branches, including a club with no result at
-all, where both rows stay named rather than merging into one.
-
-**Two of the season index's ten columns are gone rather than restructured, and
-that is the one qualification on "nothing was dropped".** Top scorer said
-exactly what the honours board immediately above it says, season by season —
-the same page twice, which is the failure this half of the roadmap exists to
-fix — and Position was structurally blank on every row, so it is a footnote
-until standings are entered rather than a column of "Not recorded". What is
-left is a ledger: the season and its games and competitions on the left, W-D-L
-and goals in a column on the right, under a head of labels. No wrap, nothing
-hidden, and the whole row is the link across to Season.
-
-**The club records became one ledger on `dl.compare`,** which is the pattern
-Phase 10 chose for Firsts & bests and the reason this needed no new list
-primitive — the caption line is a `dt` with the mark flexed to its right edge,
-and the row underneath is `ResultList`, so every scoreline on the site still
-comes from one component. A run is the exception: five 44px rows for one record
-would have cost more than the four records above it put together, so a run is
-its count, its games as one line of `ResultList`'s inline chips, and the months
-it spanned.
-
-**Past a phone the rows stop stretching.** At 1,400px the result row's `1fr`
-opponent column put "Old Stoics" and "5–1" 1,100px apart — the widest this row
-has ever been rendered, since every other caller sits in a column of 830px or
-less. From 700px up the ledger's rows cap their measure and cluster left; the
-hairlines still run the full width. That rule is in `DESIGN.md` under *A list of
-records is a ledger*, along with when to reach for a ledger instead of a table.
-
-**The expected-failure list is not empty, and this phase could not make it so.**
-Records' season index came off it — the wrap it was hiding behind doesn't exist
-any more — but four entries remain: Season's fixtures table on two routes
-(Phase 18), the opponent page's home/away split (Phase 21), and the crest, which
-no phase owns. "An empty list" can only ever have meant this phase's own entry;
-the rest belong to pages this phase doesn't touch, and deleting a still-failing
-entry fails the run by design.
-
-**Measured, not assumed.** `check:layout` passes with 21 known failures and
-nothing new — up from 20 because the two new routes each render the same
-unmeasurable crest, and down one for the table that no longer exists — across
-both datasets at all six widths. 68 unit tests pass, two of them new. `npm run
-build` is clean. A headless run confirms what a screenshot can't: each of the
-three addresses renders its own sub-page with the right tab carrying
-`aria-current="page"`, `/history` still redirects to Badges, and `/records/badges/motm`
-is unchanged. `styles/pages/records.css` went from 32 lines to 115 — the six
-record sheets' rules are gone and the two ledgers' are new — which is the one
-number in this phase that went the wrong way, and the trade for it is 2,961px
-of page.
-
-**Players → Leaderboards nearly paid for this.** Its footer used to point at
-`/records`; it now points at `/records/all-time`, which is the address that
-actually holds career totals. The first wording ran to two lines and took
-Leaderboards from 1,370px to 1,392px against a 1,400px budget — 8px of slack
-left. Shortened back to one line, and it measures 1,370px again. A cross-link
-is not worth a third of another page's headroom.
-
----
-
-## Phase 17 — The squad view
-
-The cleanest thing on the site, spoiled by truncation.
-
-- **All 47 names**, not 12. This is the page people come to to find their own.
-- **List or cards**, a toggle. The list is the current team sheet; cards give
-  each player a tile with their badge icons, which is the view that makes the
-  badges visible without opening a profile.
-- **One "see more" affordance**, not three. Search stays; "Full table" and "Show
-  all 47" go.
-
-**Done means** no name is behind a tap; the monogram still drops below 360px per
-`DESIGN.md`; both views share one row-shape definition.
-
-### Built — what landed, and what it found
-
-`components/players-hub/SquadList.jsx` is `Squad.jsx`, because it renders a list
-or a wall of tiles and a name that says only one of those would be actively
-misleading. Two addresses on one component: `/players/squad` is the team sheet
-and `/players/squad?layout=cards` is the tiles, and both are on the harness.
-Measured at 375px on the mid-season fixture:
-
-| View | Before | After | Budget |
-| --- | --- | --- | --- |
-| Squad — list | 1,255px (12 of 49 names) | 3,078px (49 of 49) | no cap — it's a roster |
-| Squad — cards | — | 4,150px | no cap — it's a roster |
-
-**Every name, and the page got 1,823px longer for it.** 47 in the club's real
-season and 49 on the fixture, which carries two matches the season doesn't. That
-is the trade the phase was for: the old page fitted a phone by showing a quarter
-of the squad, and the budget table has said "no cap — it's a roster" since it was
-written. Three affordances became one — the search box stays, "Full table" and
-"Show all N players" are gone — and nothing else was cut to pay for the length,
-because there is nothing on a roster to cut but names.
-
-**The layout is a param and not component state, and it earned that twice
-over.** Once because a view nobody can link to is a view `npm run shots` can't
-open: the tiles are the only surface on the site outside Records that draws badge
-art, and an unmeasured view is where a clipped name hides. And once immediately —
-at the leaderboard grid's own 150px measure the tiles dropped to **one a row at
-320px and the page ran to 7,350px**, longer than the Records page this half of
-the roadmap exists to fix. The measure came down to 130px, which keeps two side
-by side in the 288px a 320px phone leaves, and that route reads 4,490px. Nothing
-on a screenshot would have said so, because nobody would have taken one.
-
-**A tile is not a squashed list row, and three things fell out of trying to make
-it one.** The monogram went: it costs 40px of a 141px measure and put nearly
-every name on two lines, and a stand-in for a photo we don't have is not worth
-folding a name in half — the list keeps it, including its 359px drop. The tiles
-got no long-form column heads: `APPS` is 33.5px at 12px with the label style's
-tracking and `ASSISTS` is 57px against a 47px figure column, so both views read
-the same three labels off one `FIGURES` list, which is what "one row-shape
-definition" turned out to mean in practice. And the badges are drawn at **21px,
-where 22 would have cost half the squad a shelf row**: a medallion's footprint is
-the drawing plus 0.4 of it plus its rim, so four across is 137.6px against the
-141.5px a tile has, and at 22 it is 143.2px and three go across.
-
-**A shelf on a tile shows only what somebody holds.** The player page shows all
-four career badges held or not, and is right to — a badge you can't see is not an
-incentive. Fifty tiles doing the same is two hundred grey drawings, which reads
-as absence rather than ambition. An unmedalled bronze badge takes the medallion's
-own inset as transparent padding, so a row of six reads as six badges of two
-metals rather than of two sizes. The one player in the fixture picked and never
-played gets *"Nothing on the shelf yet"*, which is the empty state working.
-
-**Badges are career-wide where the figures are the season's**, and one line under
-the grid says so. It is not a compromise: a career badge has no season, and
-silver appearances beside one game is the most useful thing a tile can say about
-a player who has been at the club for years and turned out once this time.
-
-**`lib/awards.js` gained `squadBadges` and `heldBadges`.** `playerBadges` walks
-the whole appearance log per call, so the tiles asking it 49 times was 49 passes
-to answer one question; `squadBadges` is one pass and returns the same shelves,
-which a test asserts player by player rather than by spot-check. `heldBadges` is
-the held-only, board-ordered list a tile draws, and it decides the metal — the
-component never picks one.
-
-**The one bug this phase found was not in the squad view.** `/players?view=squad`
-— Phase 13's own redirect shim, and the only address it exists for — has been
-blanking the page since it was written. The `<Navigate>` returned *before* the
-`useMemo` below it, React Router renders the new address through the same
-component, and the second render threw *"Rendered more hooks than during the
-previous render"*, taking the whole document with it. On `main`, that address
-leaves `location.hash` at `#/players/squad` and no `<main>` element at all.
-
-**And the reason nobody noticed is the more useful half.** Phase 13 verified this
-address with a headless run and reported it working, correctly: the redirect
-*does* fire, so the hash it asserted was right. What it asserted was the address
-and not the content, and behind a correct address the page was blank. `shots` and
-`check:layout` would have caught it in a line, and neither visits a redirect shim
-because `site-map.js` lists destinations. So: **a route assertion that reads
-`location` and not the DOM can pass on a page that renders nothing** — worth
-knowing before the next phase writes a shim, and the reason this phase's own
-headless run counts rows and reads text rather than URLs.
-
-The guard now sits with the loading and error returns, after every hook, and the
-address renders the roster with the season still on it.
-
-**Measured, not assumed.** `check:layout` passes with 22 known failures and
-nothing new — up one from 21, and it is the new route rendering the same
-unmeasurable crest, the same arithmetic Phase 16's two routes added. 71 unit
-tests pass, three of them new. `npm run build` is clean. A headless run confirms
-the toggle writes the address and the address sets the view, `aria-selected`
-follows it, an unknown `?layout=` falls back to the list, a `?layout=` on
-Leaderboards is inert rather than a crash, a search that matches nobody keeps the
-box it was typed into, and the expected-failure list is untouched: no entry on it
-belongs to this page.
-
-**`SortableTable` survives the "Full table" deletion**, which is worth stating
-because the thirteen columns it held — starts, MOTM, clean sheets, cards,
-dropouts and the per-game rates — are not on the site anywhere now. Three admin
-pages still render the component, and Phase 22's data centre is where those
-columns come back at a real address. That is the one qualification on "nothing
-was dropped": a toggle inside a sheet was the wrong home for them, and the gap
-between here and Phase 22 is the cost of saying so.
-
----
-
-## Phase 18 — Season
-
-The top of this page already works — the league table and the season summary are
-a good pair and they stay together.
-
-- **Results** use the Phase 10 row, so a season reads as a column of scores.
-- **Upcoming fixtures** move onto that row too, and off a table: it hides 4–7px
-  at 320px, which `check:layout` found and holds against this phase. It is the
-  smallest of the table findings and the cheapest to retire, because the row
-  already exists by then.
-- **Charts move to their own sub-page** at full width. They are currently behind
-  a toggle at the bottom of a 3,530px phone page, squeezed into a corner, which
-  means they effectively don't exist. The Results/Charts toggle is deleted; the
-  sub-page nav replaces it.
-- **"Most involved"** loses its plum bars along with the rest of the bar boards.
-- **"All seasons" comes off the season picker.** `pages/Season.jsx` offers it,
-  and an all-seasons Season page is Records → All-time reached from the wrong
-  section — the same twice-said-thing Phase 14 takes off Players. Season owns one
-  season; a link across to Records replaces the option.
-
-**Done means** the Season page under 2,200px at 375px; the charts get the full
-column width; the redundant toggle is gone; the picker offers seasons only; the
-Season entries come off `scripts/expected-failures.js`.
-
-### Built — what landed, and what didn't close
-
-Two real addresses on Phase 13's mechanism: `/season` and `/season/charts`,
-both rendering `pages/Season.jsx` with a `view` prop — the same one-file-
-many-routes shape Players and Records already use. The season picker and the
-segmented control are common to both; only the content beneath them differs.
-
-**Upcoming fixtures moved onto the Phase 10 row**, off the table `check:layout`
-found hiding 4–7px at 320px. `components/season/UpcomingFixtures.jsx` is now
-four lines of markup around `ResultList`, and it carries less than the table
-did on purpose: kickoff time and the ground's address and map link are gone
-from the list, because every fixture row already links to `/matchday/:id`,
-and `Scoreboard.jsx` has shown that same information in full for an unplayed
-match since Phase 10. A season overview repeating a match page's own logistics
-for every fixture in it was showing the same fact twice; the row keeps the
-opponent, the venue letter and the date, and a tap answers the rest. Both of
-the table's entries — `season` and `season-all` — come off
-`scripts/expected-failures.js` in this commit, because there is no table left
-to overflow.
-
-**Charts are a real sub-page, not a toggle at the bottom of the aside.**
-`components/season/ChartsPanel.jsx` — the `useState('results'/'charts')` pair
-of buttons — is deleted; `SeasonCharts` is lazy-imported directly in
-`pages/Season.jsx` and rendered full width when `view === 'charts'`, same
-`Suspense`/`Spinner` guard as before so Recharts still ships in its own
-~7KB chunk (`SeasonCharts-*.js`) that a visitor to the results view never
-downloads. `SeasonCharts` itself lost its `season === 'all'` branches along
-with the picker option that fed them — it takes one resolved season now,
-not two params that meant the same thing once "all" was gone.
-
-**"Most involved" is a `LeaderBoards` card, not a bar list.** One call —
-`<LeaderBoards rows={totals} stats={['appearances']} limit={4} />` — in the
-aside, the same component and the same rank/leader/footer shape Players and
-Records have run since Phase 14. `components/BarBoard.jsx` and
-`styles/components/bar-board.css` are deleted rather than kept for a caller
-that no longer exists: Season was the one component still drawing a bar and
-the one place `--bar-accent` and `.bar-name`'s ellipsis were still live. That
-ellipsis was a real, unflagged instance of the clipped-name bug Phase 14 had
-already fixed everywhere else — it never tripped `check:layout` because
-nothing in either fixture squad has a name long enough to hit it at four
-rows, not because the bug wasn't there. `lib/players.js`'s `statLeaders` lost
-the `alsoLevel` field it only ever computed for `BarBoard`'s hedge sentence;
-nothing else read it.
-
-**"All seasons" is gone from the picker, and the address it used to produce
-still goes somewhere.** `SeasonSelect`'s `allowAll` is `false` here, same as
-Players since Phase 14. `/season?season=all` — a link somebody may already
-have shared — redirects to `/records/all-time` rather than silently falling
-back to the latest season: the board it used to show *is* Records' now, and
-landing on the latest season instead would have answered a different
-question without saying so.
-
-**Measured, not assumed — a headless run against `dev:fixture` at 375px, both
-datasets, cross-checked against `check:layout`'s own reported figure:**
-
-| Route | Before | mid-season | pre-season | Budget |
-| --- | --- | --- | --- | --- |
-| Season | 3,379px | 3,248px | 1,799px | 2,200 |
-| Season — all seasons (removed) | 3,316px | — | — | — |
-| Season → Charts | — (behind a toggle) | 1,909px | 1,433px | 2,200 |
-
-**Charts closes its budget; the results view doesn't, and the arithmetic is
-worth writing down rather than arguing with.** Season came down 131px —
-Charts leaving for its own address and the bars leaving cost most of that —
-but the league table (483px, the full division) and the results list alone
-account for 1,769px of the mid-season page before the season summary, the
-"most involved" card or a single upcoming fixture is counted. Sixteen played
-games at the shared row's 75px (a 44px touch target plus the date/competition
-line Phase 10 gave this exact caller) is 1,200px of that on its own. Cutting
-games off the list would close the gap — and would be the one change this
-plan explicitly rules out: `CLAUDE.md` calls the club's history the second
-job of this whole site, and a season page that hides its own games to hit a
-number is the failure mode the budget exists to prevent, not serve. **A
-budget that gets edited to fit what was built is not a budget** (`DESIGN.md`
-→ *Page length*), so this one stands unmet rather than the page being made to
-lie about it: `check:layout` reports Season's results view at 3,248px against
-2,200 and does not fail the run for it, the same standing exception Home and
-Player detail already carry. The pre-season route — next season's four
-fixtures, nothing played — fits at 1,799px, which is the harness confirming
-the length is the season's, not the page's own chrome.
-
-**Verified rather than assumed:** all 71 unit tests pass, one of them
-touched — `alsoLevel` was never under test, so `statLeaders`' own suite is
-unchanged. `npm run build` is clean and `SeasonCharts` still lands in its own
-chunk. `check:layout` passes with 20 known failures against the
-expected-failure list and nothing new, across both fixtures at all six
-widths — down from 22 by exactly the two entries this phase closed. A
-headless run confirms what a screenshot can't: `/season/charts` carries
-`aria-current="page"` on the Charts tab and `/season` on Season's, the season
-picker's choice survives the tab switch in the address bar, and
-`/season?season=all` lands on `/records/all-time` rather than on a season.
-
----
-
-## Phase 19 — Home
-
-**Whose page it is**, decided: the squad's, on the first screen.
-
-- **The result leads**, at full size, with the MOTM named on the same board —
-  not as a 14px line 700px down the page.
-- **The club's name is said once**, in the masthead. The H1 that repeats it goes.
-- **The league table stays**, because "where are we" is why people open the
-  site. Season leads with something else.
-- **The next fixture is a compact row**, not a 280px card carrying eight words
-  with a black circle where a crest should be. `public/crest.png` has since
-  arrived (see *The artwork*) — the circle becomes a real crest thumbnail, not
-  a state this phase still has to design around.
-- **The pre-season state is a real design**, not four stacked empty states —
-  Phase 10 makes that possible and this phase makes it look intentional.
-
-"A stranger should see a real, competitive team" stays true, but it stops being
-a first-screen requirement: a stranger who scrolls one screen gets it anyway.
-
-**Done means** Home under 1,600px at 375px against 2,091 today; a result, a
-name and a league position above the fold at 375px; both fixture datasets look
-deliberate.
-
-### Built — what landed, and what didn't close
-
-The reorder and the two component rebuilds, plus one thing this phase found
-it couldn't do inside its own budget.
-
-**The H1 is gone.** `pages/Home.jsx` no longer renders `Old Wellingtonians FC`
-at all — the masthead already says it on every route, empty state included,
-so the page now opens on a one-line `Season 2025/26 · final` note and nothing
-else names the club.
-
-**The result leads.** `LastResult`'s board — already the page's one board,
-already carrying the MOTM line this phase's own text worried about — moves
-from a 50/50 grid with the fixture card to the first thing on the page, full
-width. `LeagueTable` follows it directly, ahead of the fixture and the form
-widgets: "where are we" is answered right under "what just happened," and a
-headless measurement confirms both land inside a typical phone's first
-screen — the MOTM name's own line ends at **311px**, the highlighted
-`Old Wellingtonians` row in the standings at **675px**, both well inside the
-600–800px a phone actually shows before the browser's own chrome, address bar
-included.
-
-**The next fixture is a compact row.** `components/home/NextFixture.jsx` is
-rebuilt from the four-part card (badge circles, a meta line, a location line,
-a countdown chip) onto one row: a crest, the opponent's name, the date and
-venue, the countdown chip at the end. Kick-off time, the ground's address and
-its map link are gone from the row — the same trade Phase 18 made for
-Season's own upcoming list, and for the same reason: every fixture row
-already links to `/matchday/:id`, and `Scoreboard.jsx` shows all of it there.
-The crest is real now rather than a state to design around: `Crest` moved out
-of `Layout.jsx` into `bits.jsx` (shared vocabulary, since it now has two
-callers) so the same `public/crest.png` draws in the row as in the masthead,
-in place of the "OW" text the row used to carry unconditionally. That crest
-is a second bitmap the icon-contrast check can't read — the masthead's own
-entry in `scripts/expected-failures.js` is scoped to `a.brand`, so this is a
-second line, owned here rather than widening that one.
-
-**The redundant form-chip strip came off Recent form.** `FormBadges` and the
-`ResultList` rows underneath it were both drawing the same five results —
-each `result-row` already opens with the same colour-coded W/D/L pill the
-chip strip repeated above it — so the chips added a second copy of the same
-five facts in a less useful shape. `RecentForm` now renders the list alone,
-and lets `ResultList`'s own empty state show through on a season with nothing
-played yet, rather than rendering nothing.
-
-**Both fixture datasets read as one design, not two.** `pre-season` — last
-season finished, this one only fixtures — shows the same real result and
-board, `2025/26 · final` on the season line, and the next-fixture row pointing
-at the first `2026/27` game months out with its own countdown. Nothing on the
-page is an empty state on either dataset: the last genuinely blank widget was
-`LeagueTable`'s own placeholder line, and neither dataset triggers it.
-
-**The 1,600px budget stands unmet, and the arithmetic is worth recording
-rather than arguing with.** Home measures **1,882px** at 375px on both
-datasets — down from 2,113px (2,091px by the original review's own count),
-a real 231px cut, but 282px still over. A headless measurement of every
-widget explains where the rest of it lives:
-
-| Widget | Height |
-| --- | --- |
-| Season note | 16px |
-| Last result (board) | 249px |
-| League table | 427px |
-| Next fixture (compact row) | 139px |
-| Recent form | 417px |
-| Season stats | 259px |
-
-The two widgets left standing are the two this phase has no authority to cut
-further. `LeagueTable` shows all ten columns from 360px up on every page that
-renders it — `docs/DESIGN.md` → *Mobile* states that as a rule, not a
-suggestion, and shrinking its five-row window would touch a shared component
-on the one axis that rule doesn't cover, which this phase's own brief
-("the league table stays") reads as an instruction to leave alone rather than
-an invitation to resize. `RecentForm`'s list holds the last five results,
-which is `formOf`'s own default and the same number `FormBadges` showed
-everywhere else on the site before today — cutting it to three would save
-real height and no less real history, for a page whose second job (per
-`CLAUDE.md`) is keeping exactly that. Between them those two widgets are
-844px of the page's 1,564px of actual content; the chrome around it — header,
-page padding, footer, the phone tab bar — is the other ~318px and belongs to
-`Layout.jsx`, not to this page. **A budget that gets edited to fit what was
-built is not a budget** (`docs/DESIGN.md` → *Page length*), so this one is
-reported rather than massaged: Home joins Season and Player detail as a page
-whose gap is named rather than hidden, for the same reason theirs are — the
-content that's left costs more than the budget has to give, and the
-alternative is cutting it.
-
-**Verified rather than assumed.** All 71 unit tests pass unchanged, since
-nothing in `lib/` moved. `npm run build` is clean. `check:layout` passes with
-21 known failures against the expected-failure list and nothing new, across
-both fixtures at all six widths — one new entry on the list (the next-fixture
-row's crest, above) and nothing else moved. `npm run shots` confirms Home at
-375px: **1,882px** on both `mid-season` and `pre-season`, and the two
-datasets differ only below 375px, where the next-fixture row is the only
-widget that moves — its own text wraps a line earlier in one fixture than
-the other, and nothing else on the page depends on which season is which.
-
----
-
-## Phase 20 — The Matchday scoreboard
-
-Not a rebuild. The scoreboard is the best surface on the site and two things
-about it are wrong.
-
-- **Nothing attaches either number to either team.** `2–3` floats between two
-  columns that aren't even mirror images: ours carries a badge, a name and "8 in
-  the squad", theirs carries a badge, a name, a date and a five-line pitch
-  address. The address is logistics in the trophy case — it belongs with the
-  fixture, not the result.
-- **The squad is the last thing on the page**, under a comparison table. For a
-  site whose first job is making people want to turn up, the list of who turned
-  up cannot be the footer.
-
-Also: the matchday stepper is 14 unlabelled colour chips plus two dotted
-mysteries, and the pill colours in the squad list are never explained.
-
-**Where the room comes from.** This is the only page inside its budget already —
-1,857 against 1,900 — and this phase *adds* content: labels on 14 stepper chips
-and a key for the squad pills. Both are paid for by the comparison table, which
-moves onto the Phase 10 row and gets shorter, and by the pitch address leaving
-the scoreboard. The budget does not rise; if it has to, that's a finding worth
-recording rather than a number worth editing.
-
-**Done means** the score reads as a scoreboard at 375px; the squad is above the
-comparison; the stepper says what each chip is; Matchday still under 1,900px.
-
-### Built — what landed, and what it found
-
-`components/matchday/Scoreboard.jsx` is two mirrored `.sb-row`s now, not a
-`1fr auto 1fr` grid with the score in its own middle column: each row is
-badge, name-and-sub, score, so `2` sits against "Old Wellingtonians" and `3`
-against the opponent rather than `2–3` floating equidistant from both. The
-mobile-only `@media (max-width: 700px)` block that used to swap the grid and
-reorder the score above both sides on a phone is gone with it — a row of
-badge/name/score reads the same way at 320px and at 1400px, so there was
-nothing left to reorder. The pitch address (`pitch_name`, `pitch_address`,
-`postcode`, the map link) came off the scoreboard entirely rather than moving:
-`venueTeam` was only ever read here to build that block, so the whole import
-goes with it. It cost nothing to lose — the same address is already on the
-opponent's own page (`components/opponent-detail/PitchDetails.jsx`) and, for
-whichever match is next, on this page's own "Next up" card
-(`components/matchday/FormAndNext.jsx`). A fixture that hasn't been played
-keeps the same two rows and a score cell of `–`, so the shape Scoreboard's own
-comment promises — "shouldn't change on kick-off" — holds for the one live
-path that reaches it unplayed: the jump-strip's own dashed chips and Home's
-"Next up" card both link straight into a fixture's `/matchday/:id`.
-
-**The stepper's "14 unlabelled chips" turned out to already be labelled — the
-two dashed ones weren't.** Rendering the jump-strip showed every played chip
-already prints its own `W`/`D`/`L` as visible text, at `--t-micro` on
-`--on-board`, which is legible in the screenshots this phase took to check —
-`DESIGN.md`'s own "W/D/L is a convention people read instantly" already
-covers that case, and adding a legend for it would explain something nobody
-was confused by. What the review's "unlabelled" was actually reaching for is
-narrower: those chips carried a `title`, which is invisible on a tap and
-unreliable to a screen reader, and the two dashed fixture chips carried no
-content at all — no letter, no accessible name, nothing a screen reader
-announces and nothing to explain the dashed style to a sighted user either.
-Both are fixed rather than the first: every chip in `MatchdayNav.jsx` now
-carries an `aria-label` alongside its `title` (matching the pattern the
-Previous/Next links already used), and a one-line caption —
-"Dashed — not played yet." — renders under the strip, only when the season
-actually has a fixture chip to explain.
-
-**The squad pill key is the same shape, for the same reason.** `SquadPills.jsx`
-already prints "3G"/"2A" on a pill, so the goals-and-assists numbers were never
-color-only; the one color with nothing standing next to it was gold for Man of
-the match, indistinguishable from the plain "scored" dark pill without
-already knowing the convention. One line — "Gold — Man of the match · Dark —
-scored." — renders under the pill list, and only when the squad actually has
-a scorer or a MOTM to explain; a clean sheet with nobody on the ball has
-nothing for the key to gloss.
-
-**The squad moved up one section**, from after the MOTM/comparison cards to
-before them — `<SquadPills>` now renders directly after `<FormAndNext>` in
-`pages/Matchday.jsx`. It doesn't move above the archive stepper or the form
-strip, which are navigation rather than the "did I play" content the roadmap
-flagged; the specific complaint was the squad sitting under a comparison
-table, and it no longer does.
-
-**The comparison table had already stopped being one.** Phase 10's own text
-warned that `ComparisonCard`'s "earlier against" list was rebuilt onto
-`dl.compare` and an inline `ResultList` specifically "to protect Phase 20's
-arithmetic" — this phase opened that file and confirmed it: there was no table
-left to move, and no height to bank from moving it. The room this phase spent
-came entirely from the pitch address leaving the scoreboard, and it was
-enough with room to spare.
-
-**Measured, not assumed.** `npm run shots` on `mid-season` at 375px: the
-default route ("Matchday — latest") was 1,861px and is **1,812px** now — under
-budget by more than it was before, not less, even after adding the two
-captions. The scoreboard's own share of the page fell from 29% to **11%** of
-it (`Records → Honours` is the new deepest board on the site at 28%, unchanged
-by this phase — `DESIGN.md`'s board-proportion claim is corrected to name it
-rather than the scoreboard this phase shrank). The two other Matchday routes
-this site measures both dropped too: "Matchday — clean sheet, debut goal, red
-card, dropout" fell from 2,382px to **2,328px**, still over this page's
-1,900px budget for a reason outside this phase's brief — four named events
-stacked on one page — and recorded rather than hidden; "Matchday — walkover,
-no team sheet" fell from 1,270px to **1,226px**, comfortably under.
-`check:layout` passes with the same 21 known failures against the
-expected-failure list and nothing new, across both fixtures and all six
-widths; all 71 existing unit tests pass unchanged, since nothing in `lib/`
-moved.
-
----
-
-## Phase 21 — Player detail and the opponent page
-
-The two pages no phase owned. Small, and last before the data centre, because
-four earlier phases each shave a bit off them and this is where the result gets
-measured rather than assumed.
-
-**Player detail** is 2,941px against a 2,400px budget. Phase 10 restructures
-Firsts & bests and the match log, Phase 12 cuts its prose, Phase 15 puts badge
-icons under the name. What is left for this phase is the arithmetic: measure it,
-and cut whichever section is still paying for itself in scroll rather than
-interest.
-
-**The opponent page** appears in no phase and has no budget. It gets one here —
-**2,000px**, the same as a Records sub-page, since it is the same kind of
-reference document. Phase 10 already rebuilds its meetings table; this phase
-gives the head-to-head and pitch details the same once-over. The head-to-head
-table hides 36px at 320px — found by `check:layout`, not by the review, and held
-against this phase.
-
-**Done means** Player detail under 2,400px at 375px; the opponent page under
-2,000px; both pages' budgets recorded in `DESIGN.md`; `check:layout` clean —
-which by then means the expected-failure list is empty.
-
-### Built — what landed, and what it found
-
-**The opponent page's fix is the one the plan predicted.** `HeadToHeadTable`'s
-eight columns (a blank label plus P/W/D/L/GF/GA/GD) needed 290px at 320px
-against the 254px its card gave it. `docs/DESIGN.md`'s own rule is condensed
-figures first, restructure into rows only where condensing isn't enough — and
-condensing was enough: `table.data.h2h` drops to 0.5rem/0.3rem padding below
-360px, the same breakpoint and the same fix the league table already uses, in
-a new `src/styles/pages/opponent-detail.css`. No column came off it, so the
-league table stays the only place on the site that hides one. Pitch details
-and the meetings list got their once-over and needed nothing: both were
-already clean, and the page measures 1,259px against its 2,000px budget with
-nothing else to fix.
-
-**Player detail needed a real cut, not arithmetic on the margins.** The page
-measures 3,127px today — up from the review's 2,941px, because Phase 10's
-44px rows and Phase 15's badge icons both cost more than the table cells and
-plates they replaced, same as Home and Player detail's own entry in Phase 10
-already recorded. Closing 727px meant moving content, not trimming padding:
-
-- **`SeasonCards` is deleted**, not relocated. It repeated — in four figures
-  instead of eleven, and without starts, MOTM, cards or dropouts — exactly
-  what `SeasonTable` already shows under Full stats, and `FirstsTable`'s own
-  "Best season" line already names the one year worth calling out on the
-  Overview tab. A season-by-season card grid earns its keep on a page that
-  doesn't already carry a season-by-season table two taps away; this one
-  didn't, so it's gone rather than moved.
-- **The career-arc chart and "Most played alongside" moved to Full stats.**
-  Both are reference material once you look at what they're next to on that
-  tab: the chart sits with the season table it visualises, seguing between
-  the squad-comparison stat grid above it and the season-by-season table
-  below; the teammates list sits with the stat grid it doesn't duplicate.
-  Nothing was deleted — the existing Overview/Full stats split, built for
-  exactly this "what you opened the page for" vs "the reference behind it"
-  divide, just gained two more residents on the reference side.
-
-**The two-up grid this phase tried for "Where they rank" and "Most played
-alongside" didn't survive contact with real names.** The plan's own instinct
-— condense before you relocate — said try a `.grid.cols-2` row for the two
-plainest cards, the ones with no pill badges to justify the old
-`.grid.player-cards` comment's "far too narrow" warning. It wasn't plain
-enough: `rank-list`'s fixed-width rank, "of N" and value columns leave as
-little as 15px for the label at 320px, and "Goals in 2025/26" needs 106px of
-it; `mate-list` has the same problem the moment a surname is "Dom
-Bonham-Lloyd". Both moved back to full width, stacked — the shape the
-original card grid always fell back to below 640px, which the review this
-comment is arguing with had simply never measured a two-up phone layout
-against.
-
-**Trying it anyway found a real bug, and the fix outlasts the grid that
-found it.** The half-width cards didn't clip their labels — they overflowed
-the page instead, `main.page > div > div.grid.cols-2.section > div.sheet`
-extending 107px past the viewport at 320px, because a CSS grid item defaults
-to `min-width: auto` and refuses to shrink below its own content's
-minimum. `.grid.player-cards` had carried exactly this reset for exactly
-this reason, and deleting that class along with the three-column layout
-deleted the guard with it. The fix goes on the shared primitive instead of
-back on a page-specific class: `.grid > * { min-width: 0; }` in
-`primitives.css`, so the next grid that meets a row it can't shrink doesn't
-have to relearn this. `check:layout` is what caught it — page-overflow and
-element-overflow, not the text-clipped invariant the label width suggested.
-Player detail dropped the two-up grid it was found on, so the reset now
-guards the five `.grid` call sites `check:layout` does cover — the squad's
-cards, Records' badge board, Season's four-figure summary, every leaderboard
-and Matchday's own card grid — plus admin's own `.grid.cols-2`, which the
-public check can't reach. None of them changed shape once their children
-could actually shrink; the reset only bites where a row couldn't already.
-
-**Measured, not assumed.** `npm run shots` on `mid-season` at 375px: Player
-detail — a regular fell from 3,127px to **2,241px**, comfortably inside the
-2,400px budget with room to spare rather than landing on it; the debutant
-route fell from 2,747px to **2,107px**; the never-played route is unchanged
-at 1,043px, since none of this touches the `!played` empty state. The
-opponent page is unchanged at 375px (1,259px / 1,335px) — its fix only bites
-at 320px, which is exactly where it needed to. `check:layout` passes with
-**20** known failures against the expected-failure list, one fewer than
-Phase 20 left it (the opponent table's entry is deleted in this commit) and
-nothing new across both fixtures and all six widths — including a full sweep
-of every `.grid` route on the site, checked specifically because this phase
-changed what the primitive does. All 71 existing unit tests pass unchanged,
-since nothing in `lib/` moved; `npm run build` is clean.
-
----
-
-## Phase 22 — The data centre
-
-Players' third sub-page. Deliberately last: it serves one user well where
-everything else serves the squad, and a half-filterable stats table is more
-annoying than none.
-
-Every player, every stat, filterable and sortable — goals, assists,
-contributions, cards, and the per-game rates.
-
-**One thing to record.** `appearances` has no `minutes` column, so per-90 is not
-computable. Adding one means 11–16 numbers typed per match on a phone in a pub,
-which is the largest data-entry burden anyone has proposed for this site, and
-burden is what kills volunteer-run stats sites. So the figures are **per
-appearance**, labelled per appearance, with one footnote saying we don't record
-minutes. That is the club's own assumption, written down once rather than
-implied.
-
-**Done means** filters that compose; the table doesn't side-scroll on a phone or
-the whole idea is wrong for mobile and it says so; the footnote exists.
-
-### Built — what landed, and what it found
-
-`/players/data` — a fourth address for the sub-nav's three, `PlayersHub` with
-`view="data"` rendering the new `components/players-hub/DataCentre.jsx`.
-`SortableTable` is reused rather than reinvented, exactly as Phase 17 left it
-for this phase to find: the columns it held before the "Full table" toggle
-was deleted — starts, MOTM, clean sheets, cards, dropouts, the per-game
-rates — are back, at a real address, thirteen stat columns over the same
-`playerTotals` rows the leaderboard and the squad already read. Nothing in
-`lib/` changed: everything the table shows was already derived.
-
-**One wide table is the idea that's wrong for mobile, and it says so by not
-existing.** Thirteen stat columns beside a name has no width to give on a
-320px phone — the league table needs 303px for ten single- and double-digit
-numbers and a club name short enough to wrap; a player's name is longer
-("Dom Bonham-Lloyd") and there are more columns here, not fewer, so the same
-trade doesn't close. The plan's own "filterable and sortable" never promised
-every column visible at once — only that every stat answers to both — so the
-fix is five small tables, not one wide one: `STAT_GROUPS` in `DataCentre.jsx`
-splits the thirteen into Playing time (apps, starts, dropouts), Attacking
-(goals, assists, G+A), Discipline (yellows, reds), Team & honours (MOTM,
-clean sheets), and Per appearance (the three rates), two or three columns
-each — the same budget the squad list already gives its own figures beside a
-name. A `<select>` switches the group rather than a `.seg`: five tabs at
-`.seg`'s own padding would overflow a 320px phone before a single column did,
-where a native select costs one compact control regardless of how many
-options it holds.
-
-**The group is a real address, `?stat=`, for the same reason the squad's
-`?layout=` is.** Every group renders the same name column, which is the one
-column at risk of hiding a letter, so an unmeasured group is exactly where
-Phase 9's rule says a clipped name hides. Five routes are on the harness
-(`players-data` plus one per non-default group in `scripts/site-map.js`),
-not one, and all five were red on the first pass — see below.
-
-**The per-appearance headers found the one column set that didn't fit.**
-`Goals/app` / `Assists/app` / `G+A/app` beside a wrapping name hid 42px at
-320px and 2px at 360px — `table.data th` doesn't wrap, so three nine-to-
-eleven-character headers cost more than the group's own numbers ever would.
-Shortened to `G/app` / `A/app` / `G+A/app`, the same abbreviation the squad
-list already uses for goals and assists, and the group clears every width
-with nothing hidden. The other four groups' headers (`Apps`, `Starts`,
-`Yellows`, `Clean sheets`, and the rest) were never the problem — only the
-rate group's habit of repeating "/app" three times was.
-
-**The name column needed one override, not a redesign.** `table.data td` is
-nowrap by default, which is right for `SeasonTable`'s season string and wrong
-for a name — the exact clipped-name bug `check:layout` exists to catch.
-`.dc-table table.data td:first-child { white-space: normal }` in
-`styles/components/data-centre.css` is the one rule this table needed that no
-other `table.data` caller does, because this is the one table on the site
-whose first column is a name rather than a short label. Padding condenses
-below 480px the same way the league table's does, for the same reason: a few
-columns and a wrapping name need the room back that the sheet spends around
-the table.
-
-**Filters compose because they're independent, not because either is
-clever.** The search box is local state, same as the squad's; the stat group
-is the URL param. Switching group never clears the search box, and searching
-never resets the group — verified with a headless run: filtering to one name
-and then switching from Playing time to Per appearance left the same one row
-on screen and the same text in the box. Position was considered and dropped
-before it was built: every player in the real 2025/26 fixture carries
-`position: null`, so a filter over a column nobody has ever filled in is
-decoration, not a filter (`CLAUDE.md`'s own line for what doesn't belong).
-
-**The footnote is the one `DESIGN.md` already argued for.** "Figures are per
-appearance, not per 90 — the club doesn't record minutes played," under the
-table on every group, so the assumption is written down once rather than
-carried in every column head.
-
-**Measured, not assumed.** All five routes pass `check:layout` at every width
-on both fixtures, nothing added to the expected-failure list — the full
-suite still reports the same 25 known failures it did before this phase, all
-pre-existing. `npm run shots` on `mid-season` at 375px: 2,603px, the same
-figure across all five groups since the row count and the name column, not
-the stat columns, set the page's length. `pre-season` — no games played yet
-— renders the same empty state every other view does, at 900px, well before
-the table would ever mount. All 71 existing unit tests pass unchanged, since
-nothing in `lib/` moved; `npm run build` is clean.
-
----
-
-## Phase 23 — Home, the cosmetic pass
-
-The first of a page-by-page cosmetic review — small layout and type fixes,
-not new sections, done one page at a time against real screenshots before
-anything is built. Home found two.
-
-**The last result card only ever puts "us" first, top-left, at every
-width.** `components/home/LastResult.jsx` reads fine as a sentence but not as
-a scoreboard: on a phone the team names and score sit flush against the left
-edge instead of using the box they're in; on desktop the same left-hugging
-block leaves roughly half the card blank.
-
-- Position follows venue, not the club — home side left (desktop) / top
-  (phone), away side right / bottom, always. `match.venue` already carries
-  this; nothing new to store.
-- Position no longer marks which side is us, so a badge does instead — the
-  same gold-for-us / board-soft-for-them pair `components/matchday/
-  Scoreboard.jsx`'s `.sb-row .badge` already draws for exactly this job,
-  reused rather than invented.
-- Scorers get a "Goals" label to match the "MOTM" line beside them, rather
-  than sitting unlabelled.
-- The footer — goals, MOTM, "Report & squad" — centres under the score
-  instead of hugging the left edge, which is most of what read as "awkward."
-
-**One open question this settles before it's built, not after.** Attaching
-the score to a side by position implies reading it home-first, away-second
-(`1–4` when we're away, not `4–1`) — every other scoreline on the site
-(`ResultList`, Season, player pages) reads goals-for–goals-against, ours
-first. Phase 20 moved Matchday's own scoreboard away from a floating,
-unattached score for the same reason this phase is drawn toward one; the
-difference is that Home's card carries no per-row subtext (squad count,
-pitch address) competing for the same line the way `Scoreboard.jsx`'s rows
-do, so a centred score reads unambiguously here in a way it didn't there.
-Worth the club confirming the score-order change explicitly before
-`resultOf`/`matchContext` callers change — easy to get right on purpose,
-easy to ship wrong by accident.
-
-**The momentum block's chart has no axis and no scale.** `RecentForm.jsx`'s
-sparkline draws a bare line with nothing to read it against, which a
-screenshot made obvious in a way the component never owned up to on its own.
-It also plots the full season's cumulative points while the list above it
-shows only the last five games — one card, two different claims. Fix, the
-second of three options put to the club and the one picked:
-
-- Keep the side-by-side shape — list left, chart right — rather than
-  restacking the card.
-- Give the chart column the list's own top offset and the list's own
-  rendered height (five 44px result rows plus their borders), not a fixed
-  guess, so list and chart start and end on the same line. Today's
-  `.home-form-trend { padding-top: var(--s5) }` is exactly the offset that
-  currently breaks this.
-- Real gridlines and value labels (0 / midpoint / max) and a filled area
-  under the line — `lib/charts.js`'s `seasonTrend` already returns everything
-  needed to draw this; nothing new to compute.
-- A small secondary button, "Charts," beside it, linking to
-  `/season/charts` — the door to the fuller chart set already on that page,
-  not a new chart of its own.
-
-**Done means** home/away ordering, the badge, the "Goals" label and the
-centred footer land in `LastResult.jsx` and `home.css`, at every width
-`check:layout` covers; the momentum chart and list measure equal height in a
-headless run, not just by eye in one screenshot; `npm test`, `npm run
-check:layout` and `npm run build` all still pass; and Home's height is
-reported rather than massaged — Phase 19 already left it 282px over its
-1,600px budget, this phase adds a badge, a label line and a button, so the
-honest outcome is either "still 282px, net zero" or a slightly larger number
-written down plainly, the same way Phases 19 and 20 wrote theirs down.
-Matchday, Season, Players and Records follow the same review, one phase
-each, once Home ships.
-
----
-
-## Phase 24 — Players, the second pass
-
-A club request rather than a review finding: three changes to how the
-section's own sub-pages scope themselves to a season, plus a rebuild of the
-data centre from five small tables into the one wide reference table Phase 22
-argued against building.
-
-**Leaderboards keeps a season picker in spirit, not in the control.** The
-`<select>` this page shared with Squad and the data centre is gone; the
-current season's six boards render open, and every earlier season is a thin
-`<details>` banner underneath, closed until it's tapped — "keep it condensed
-as the seasons pile up," which a picker already did by hiding everything
-behind one choice, and a stacked grid of boards per season never would have.
-See *The season archive* in `DESIGN.md`.
-
-**Squad and the data centre flip from this-season to all-time.** Both used to
-read whatever season the shared picker was on, same as Leaderboards; both now
-default to the club's whole history, with an optional `?season=` filter for
-one year only. The reasoning is the reverse of Leaderboards': a name or a
-stat should be findable regardless of when it happened, where Leaderboards is
-specifically about the thing that's live right now. `CLAUDE.md`'s "Players is
-scoped to a season, Records is all-time" line no longer holds for all three
-sub-pages at once and is corrected to say which is which.
-
-**The squad's own cap comes back, for a different reason than the one Phase
-17 removed it for.** One season's ~50 names fits a phone with room to spare;
-the whole club across every season on record doesn't, and only grows. The
-list opens on the top 20 by appearances with one "Show all N players" beneath
-it — the same one-affordance rule Phase 17 argued for, applied to a bigger
-roster. A search is never capped, regardless of scope.
-
-**The data centre's five small tables become one.** Phase 22 built five
-groups of two or three columns each because a name plus thirteen stat columns
-has no width to share with a 320px phone, and split the difference by
-hiding most of the table behind a `<select>`. That trade is reversed here: the
-club wants every stat visible and sortable in one table, `starts` retired as a
-column that never told anyone anything (every player who's picked starts),
-and the rate columns relabelled "/90" for the fbref reader who expects that
-shorthand even though they're really per-appearance figures — the club has
-never recorded minutes, and the table's own footnote says so once. That table
-cannot fit a phone's width and isn't trying to: it's the one deliberate
-exception to "a table never side-scrolls" the whole rest of the site holds
-to, carrying its own `wide-reference-table` marker class that
-`scripts/collect.js`'s own invariant explicitly skips. The name column still
-sticks below 700px, same as every other table on the site. A "Columns"
-picker (a native `<details>` full of checkboxes) lets a reader narrow the
-table to fewer columns than are on it, for whoever doesn't want the whole
-width open at once — filtering the table down rather than filtering it by
-group, which is what the club asked for in place of the old switcher.
-
-**The per-card footer is cut, not reworded.** `6th of 48 · 9 apps` under
-every leaderboard card named the rank right after the cut, correctly, and
-read as jargon to the players it was written for regardless. See *The
-boards* in `DESIGN.md` for what replaces the question it was answering.
-
-**Done means** `npm test` and `npm run check:layout` both pass; Leaderboards
-stays under its 1,400px budget with the archive present and collapsed; the
-squad and data centre routes measure at their all-time default and at a
-season filter; the data centre's wide table carries no unexpected
-`table-wrap-scrolls` finding outside its own marker class; `CLAUDE.md` and
-`DESIGN.md` describe the new scoping rather than the old one.
-
-### Built — what landed, and what it found
-
-All of the above. `lib/players.js` gained `seasonPools` — one player-totals
-pool per season, current one flagged by `currentSeasonOf` rather than by
-`seasonsOf`'s row-based ordering, so a fixture-only next season never
-displaces a completed one as "current" here either (`CLAUDE.md`'s own rule,
-already load-bearing on Home and Matchday). `components/players-hub/
-SeasonBoards.jsx` is the archive, reusing `LeaderBoards` once per season
-rather than inventing a second collapsible shape. `LeaderBoards.jsx` lost its
-per-card footer and the `next`/`total`/`noun` plumbing that only existed to
-print it.
-
-**The wide table's first attempt was quietly two-and-a-half times taller than
-it needed to be, and the fixture caught it before a screenshot would have
-had to.** Every other table on the site overrides `white-space: nowrap` to
-`normal` on its name column, because a name forced onto one line is what
-makes a *width-constrained* table clip or grow past budget. The data centre
-carried that same override forward from the five-group design by habit — and
-with thirteen columns competing for room, the browser's own table layout
-gave the (now wrappable) name column barely enough width for "Hugh Grindon,"
-wrapping nearly every row to two lines and measuring **3,300px** against the
-old five-group design's 2,603px for the same 49 rows. This table has no width
-to protect — scrolling past 375px is the entire point of building it — so the
-fix was to drop the override and let the name sit on its natural single line
-like every other column. **2,584px**, slightly under the old figure, for the
-same rows plus nine more visible columns.
-
-**The squad and data centre routes needed their own site-map entries, not
-just new content at the old addresses.** `players-data`'s four stat-group
-siblings (`?stat=attacking` etc.) are gone — there's one table now, so
-nothing left for that param to switch between — replaced by one route
-proving the all-time default and one proving the `?season=` filter, and the
-squad gained the equivalent filtered route it never needed before this
-phase. `PlayersHub.jsx` still strips a stray `?stat=` from any link still
-carrying one rather than erroring on it.
-
-**Measured, not assumed.** `npm run shots` on `mid-season` at 375px: Players →
-Leaderboards is **1,296px** with no archive to show (the fixture has one real
-season); on `pre-season`, where 2026/27's two fixtures are entered and
-nothing's been played in them yet, it's **1,358px** with the current-season
-board replaced by a one-line "no games played" note and 2025/26 sitting in
-the archive as a single closed banner — both under the 1,400px budget.
-Squad and the data centre are unchanged in height between the all-time
-default and the one-season filter on either fixture, because neither fixture
-has a second season with anyone in it yet; the filtered routes exist so that
-stops being true unmeasured the day a real second season is. All 73 unit
-tests pass (four new, for `seasonPools`), `npm run build` is clean, and
-`check:layout` passes with the same 23 known failures it did before this
-phase and nothing new.
+**Done means** two short phases appended above with real findings, or a line here
+saying a page had none.
 
 ---
 
 ## Page budgets
 
-**`DESIGN.md`'s *Page length* table is the authority for the budget numbers** —
-they are a design constraint, and a component author reads that file. This table
-is the tracking view: where each page started, so a phase can show it moved.
+`DESIGN.md`'s *Page length* table is the authority for the numbers — they are a
+design constraint and a component author reads that file. This is the tracking
+view. *Now* is `npm run shots` on the `mid-season` fixture at 375px.
 
-*Review* is what the page-by-page review measured by hand. *Harness* is
-`npm run shots` on the `mid-season` fixture at 375px, which is what every phase
-from here is measured by. Where they differ, the fixture is carrying two matches
-the real season doesn't have — a walkover and a clean sheet — which lengthens
-anything that lists results. Matchday and the squad roster land on the same pixel
-either way, which is the check that the harness measures the same thing the
-review did.
+| Page | Now | Budget | Owner |
+| --- | --- | --- | --- |
+| Home | 2,047 | 1,600 | **unowned** — 447 over; Phase 23's badge, label and button cost 165px of it |
+| Matchday — latest | 1,812 | 1,900 | 25–28 |
+| Matchday — clean sheet (13 named, a report) | 2,328 | 1,900 | 25–28 — **already 428 over before the rebuild starts** |
+| Matchday — walkover (no team sheet) | 1,226 | 1,900 | within |
+| Season | 3,224 | 2,200 | 29 |
+| Season → charts | 1,909 | 2,200 | met (18) |
+| Players → Leaderboards | 1,296 | 1,400 | met (14, 24) |
+| Records → badges / honours / all-time | 1,667 / 961 / 1,807 | 2,000 | met (16) |
+| Player detail | 2,241 | 2,400 | met (21) |
+| Opponent detail | 1,259 | 2,000 | met (21) |
+| Players → Squad | 1,671 list / 2,138 tiles | no cap — it's a roster | measured, not capped (17, 24) |
+| Players → Data centre | 2,584 | no cap — it's the reference table | measured, not capped (22, 24) |
 
-| Page | Review | Harness | Budget | Phase that meets it |
-| --- | --- | --- | --- | --- |
-| Home | 2,091 | 2,068 | 1,600 | 19 — built: 1,882, over by 282 |
-| Matchday | 1,857 | 1,857 | 1,900 | 20 |
-| Season | 3,530 | 3,672 | 2,200 | 18 |
-| Players → Leaderboards | 2,714 | 2,997 | 1,400 | 14 — built: 1,370; **24**: 1,296 (no archive) / 1,358 (one closed banner), still under 1,400 |
-| Players → Squad | 1,254 | 1,254 | no cap — it's a roster | 17 — built: 3,078 list / 4,150 cards, every name; **24**: scope flipped to all-time and the default view capped at 20 — see that phase |
-| Records → any sub-page | 4,823 (one page) | 5,071 (one page) | 2,000 | 16 — met: 1,667 / 961 / 1,880 |
-| Player detail | 2,941 | 2,940 | 2,400 | 21 |
-| Opponent detail | not measured | 1,196 | 2,000 | 21 |
-| Players → Data centre | didn't exist | 2,603 | no cap — it's the reference table | 22 — built: 2,603, same across all five stat groups; **24**: rebuilt as one wide table, 2,584, deliberately exempt from the no-side-scroll rule |
+Home is the one page with no phase against it. Add one when someone is willing to
+cut a section rather than shave one, because `LeagueTable` and `RecentForm` alone
+are most of the page and neither shrinks without breaking a rule.
 
-Records earns length as a reference document, which is why it splits rather than
-shrinks. Home does not.
+---
 
-The opponent page turns out to be the only one already inside its budget, along
-with Matchday. That is not a reason to leave it alone — it is 1,196px because
-half of what it should say isn't there yet, and Phase 21 owns both ends of that.
+## Decisions
+
+**Open — blocking a phase.**
+
+1. **Matchday's budget** (Phase 25, step 7). The flat is 2,522px against 1,900,
+   on an eight-man squad — a thirteen-man one is longer, and that route is
+   already 428px over today. Either the ladder opens on eight games with the
+   rest behind a control, or the budget moves to ~2,300px because the page now
+   carries the archive as well as the match.
+**Settled, and worth knowing before you touch a scoreline.**
+
+2. **Score order.** Phase 23 made Home read home-first (`1–4` when we are away), with a badge marking which side is us.
+   Every other scoreline on the site reads goals-for–goals-against, ours first.
+   That is deliberate — a scoreboard reads by venue, a result row reads by us —
+   but if it ever needs to be uniform it is a `DESIGN.md` ruling, not a
+   component fix.
 
 ---
 
 ## Parked
 
-Named so they don't get lost, and not built yet.
+Named so they don't get lost.
 
-- **About us** — club story and a team photo. Needs a photo worth showing.
-- **Player photos** — real headshots. Blocked on collecting 30 of them; the
-  design works without them and the initials placeholder is fine.
-- **Final league positions per season** — the Records season index named a
-  Position column that was blank on every row; Phase 16 cut it to a footnote
-  and the row is waiting for it. Needs standings entered per season.
-- **Head-to-head pages** — the opponent page exists and Phase 21 tidies it; a
-  proper record against each club could grow from there.
-- **New badge types** — attendance streaks, consecutive-scoring runs. Add once
-  Phase 15's three classes are proven against a second season.
-- **A figure recipe in the type layer** — the display face at 600 weight with
+- **About us** — needs a photo worth showing.
+- **Player photos** — blocked on collecting 30 headshots; initials are fine.
+- **Final league positions per season** — the Records season index has a footnote
+  waiting for standings entered per season.
+- **Head-to-head pages** — Phase 27's tape could grow into the opponent page.
+- **New badge types** — attendance streaks, consecutive scoring. Add once Phase
+  15's three classes have survived a second season.
+- **A figure recipe in the type layer** — the display face at 600 with
   `-0.015em` and tabular figures is written out in twelve rules. One decision in
-  `DESIGN.md`'s *Type* section, not a component question.
+  `DESIGN.md`'s *Type* section.
 
 ---
 
 ## Not on the list
 
 Dark mode, a component library, a CSS framework, an animation library,
-server-side aggregation of stats, a sixth nav section. See *Deliberately not
-doing* in `DESIGN.md`.
+server-side aggregation, a sixth nav section. See *Deliberately not doing* in
+`DESIGN.md`.
