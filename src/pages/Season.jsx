@@ -4,13 +4,12 @@ import { useData } from '../context/DataContext';
 import { ErrorNote, SeasonSelect, Spinner } from '../components/bits';
 import LeaderBoards from '../components/LeaderBoards';
 import LeagueTable from '../components/LeagueTable';
-import ResultsTable from '../components/season/ResultsTable';
+import SeasonLadder from '../components/SeasonLadder';
 import SeasonSummary from '../components/season/SeasonSummary';
-import UpcomingFixtures from '../components/season/UpcomingFixtures';
 import { monthYear } from '../lib/format';
 import {
-  fixtures,
   playedMatches,
+  seasonLadder,
   seasonsOf,
   seasonSummary,
   venueSummary,
@@ -27,7 +26,7 @@ const VIEWS = [
 ];
 
 export default function Season({ view }) {
-  const { players, matches, appearances, loading, error } = useData();
+  const { players, matches, appearances, teams, loading, error } = useData();
   const seasons = seasonsOf(matches);
   // Records' season index links a season across as ?season=; the picker
   // takes over from there. Anything unrecognised — an old link, a hand-typed
@@ -44,13 +43,13 @@ export default function Season({ view }) {
   const season = seasons.includes(asked) ? asked : 'latest';
   const activeSeason = season === 'latest' ? seasons[0] : season;
 
-  const { pool, summary, results, upcoming, homeAway, totals } = useMemo(() => {
+  const { pool, summary, results, rungs, homeAway, totals } = useMemo(() => {
     const pool = matches.filter((m) => m.season === activeSeason);
     return {
       pool,
       summary: seasonSummary(pool),
       results: playedMatches(pool),
-      upcoming: fixtures(pool),
+      rungs: seasonLadder(matches, activeSeason),
       homeAway: venueSummary(pool),
       totals: playerTotals(players, pool, appearances),
     };
@@ -116,9 +115,7 @@ export default function Season({ view }) {
             {/* The whole division, not the window Home shows. */}
             <LeagueTable season={activeSeason} full showSeasonLink={false} />
 
-            <ResultsTable results={results} />
-
-            <UpcomingFixtures upcoming={upcoming} />
+            <SeasonLadder rungs={rungs} season={activeSeason} teams={teams} />
           </div>
 
           <aside className="sheet season-aside">

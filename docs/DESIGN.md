@@ -1196,13 +1196,15 @@ comparison they already keep company with there, the same split between "what
 you open the page for" and "the reference behind it" the two tabs already draw
 everywhere else on the page. The season-by-season cards came off the page
 entirely rather than moving: they repeated, in less detail, the table Full
-stats already carries. Home and Season's own results view are still over —
-Season is 3,224px, down from 3,379px in Phase 18 (Charts leaving for its own
-address and the bars leaving "Most involved" account for that) but a season of
-16 played games costs 1,286px on the shared result row before the league table,
-the summary or a single fixture is counted, and that arithmetic doesn't close
-under 2,200px without cutting games off a page a season is supposed to keep.
-Phase 29 owns it, and the lever is the result row becoming a ladder rung.
+stats already carries. Home is still over. Season closed most of its gap:
+Phase 29 replaced the shared result row and the separate upcoming-fixtures
+block with `SeasonLadder` — Phase 25's component, reused rather than copied —
+a ~40px rung against the ~80px row, with every game still on the page. That
+took Season from 3,224px to 2,490px, 734px back, but not the full 1,024px the
+2,200 budget asked for: the rest is the full league table and the aside
+(season at a glance, the appearances leaderboard), neither of which Phase 29's
+brief covered cutting. The remaining 290px is `ROADMAP.md` → *Decisions* →
+*Open*.
 Home is 2,047px: Phase 19 took it from 2,113px to 1,882px (the result leading,
 the next-fixture card collapsing to a row, a redundant form-chip strip coming
 off Recent form) and Phase 23's badge, "Goals" label and "Charts" button put
