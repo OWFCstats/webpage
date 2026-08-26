@@ -56,3 +56,22 @@ export function leagueStandings(leagueRows, teams, season) {
     ),
   };
 }
+
+/**
+ * The two rows in one season's table for us and one opponent, ranked and
+ * picked out of `leagueStandings` rather than re-deriving points or goal
+ * difference, which that function already owns. `them` is null when the
+ * season has no table entered, or the opponent has no row in it — a
+ * friendly, a cup tie, a club outside the division — which is the common
+ * case a head-to-head tape has to render around rather than crash on.
+ */
+export function twoRows(leagueRows, teams, season, opponentTeamId) {
+  const { rows, division, updatedAt } = leagueStandings(leagueRows, teams, season);
+  const ranked = rows.map((r, i) => ({ ...r, rank: r.position ?? i + 1 }));
+  return {
+    us: ranked.find((r) => r.isUs) ?? null,
+    them: opponentTeamId ? ranked.find((r) => r.team_id === opponentTeamId) ?? null : null,
+    division,
+    updatedAt,
+  };
+}

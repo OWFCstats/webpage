@@ -9,7 +9,7 @@ import { ordinal, plural } from '../../lib/format';
 export default function MotmPlate({ star, seasonAppCount }) {
   const app = seasonAppCount.get(star.player_id);
   return (
-    <div className="board motm-plate">
+    <div className="board motm-plate section">
       <span className="label">Man of the match</span>
       <Link to={`/players/${star.player.id}`} className="name">{star.player.name}</Link>
       <span className="did">

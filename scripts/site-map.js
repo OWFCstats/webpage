@@ -36,6 +36,16 @@ export const ROUTES = [
     name: 'Matchday — clean sheet, debut goal, red card, dropout',
     budget: 'Matchday',
   },
+  // Same match, report expanded — the clamp's whole point is that the
+  // clamped height is the one that matters for the budget, but the open one
+  // still has to be measured rather than assumed safe (DESIGN.md → Structure).
+  {
+    id: 'matchday-clean-sheet-open',
+    route: `/matchday/${match('2026-02-07', 'Wellington IX')}`,
+    name: 'Matchday — clean sheet, report open',
+    budget: 'Matchday',
+    open: true,
+  },
   {
     id: 'matchday-walkover',
     route: `/matchday/${match('2025-11-29', 'Old Amplefordians')}`,

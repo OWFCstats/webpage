@@ -80,8 +80,11 @@ export async function startHarness() {
   };
 }
 
-/** Navigates and waits for the app to have rendered something real. */
-export async function visit(page, route, { charts = false } = {}) {
+/** Navigates and waits for the app to have rendered something real. `open`
+ *  clicks a match report's "Read the rest" control, if the route has one, so
+ *  a route can be measured both clamped and open without a second page —
+ *  see the `-open` entries in site-map.js. */
+export async function visit(page, route, { charts = false, open = false } = {}) {
   page.fixtureProblems.length = 0;
   const url = page.fixtureUrl(route);
   // Hash routing: a same-document hash change doesn't reload, so the route is
@@ -102,6 +105,13 @@ export async function visit(page, route, { charts = false } = {}) {
   // route needs its 1.5s to finish or the screenshot catches a half-drawn line.
   if (charts) await page.waitForTimeout(1900);
   else await page.waitForTimeout(150);
+  if (open) {
+    const control = page.locator('.report-more');
+    if (await control.count() > 0) {
+      await control.click();
+      await page.waitForTimeout(50);
+    }
+  }
 }
 
 /**

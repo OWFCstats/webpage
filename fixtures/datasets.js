@@ -131,6 +131,10 @@ function withVenues(matches) {
 
 // Reports on two of sixteen results, which is roughly the club's own hit rate.
 // Matchday needs both branches: a match with a report and a match without.
+// The Wellington IX one runs past the ~300-character clamp on its own first
+// paragraph and carries a second, so it's the state that exercises Phase
+// 27's clamp for real rather than only in tests/format.test.js — a report
+// this length is exactly what the clamp exists for.
 const REPORTS = {
   '2026-03-07:Old Stoics':
     'Four unanswered in the second half after a scrappy opening. Tom Simeon took '
@@ -138,8 +142,16 @@ const REPORTS = {
     + 'minutes, and the back four barely had a decision to make after that.',
   '2026-02-07:Wellington IX':
     'A clean sheet at last, and a debut worth the wait: Gus Hill scored on his '
-    + 'first appearance and went off with the ball. Bertie Morgan dropped out on '
-    + 'the Friday night, which is the only blot on an otherwise straight evening.',
+    + 'first appearance and went off with the ball, latching onto a knockdown '
+    + 'from Tom Simeon five minutes before the break and finishing low past a '
+    + "goalkeeper who never picked up the flight of it. Hugh Grindon's cross made "
+    + 'the second on the hour, Simeon arriving unmarked at the back post to put '
+    + 'the game to bed before it had a chance to get away from us.\n\n'
+    + 'Jack Perry saw red just after the hour for a second bookable challenge, '
+    + 'and the ten men held out well enough that it barely registered. Richard '
+    + 'Byers picked up a yellow of his own steadying the back line. Bertie Morgan '
+    + 'dropped out on the Friday night, which is the only blot on an otherwise '
+    + 'straight evening — the first clean sheet the club has kept all season.',
 };
 
 const withReports = (matches) =>
