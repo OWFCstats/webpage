@@ -61,14 +61,20 @@ export const ROUTES = [
     charts: true,
   },
   { id: 'players', route: '/players', name: 'Players — leaderboards', budget: 'Players → Leaderboards' },
-  { id: 'players-squad', route: '/players/squad', name: 'Players — squad', budget: 'Players → Squad' },
-  // The roster's two layouts are one address apart precisely so both get
-  // measured: the tiles carry badge drawings the list has no column for, and an
+  // The default is the tiles, which is why the bare address measures those and
+  // the list carries the param. Both are measured precisely because both are
+  // addresses: the tiles carry badge drawings the list has no column for, and an
   // unmeasured view is where a clipped name hides.
   {
-    id: 'players-squad-cards',
-    route: '/players/squad?layout=cards',
+    id: 'players-squad',
+    route: '/players/squad',
     name: 'Players — squad, cards',
+    budget: 'Players → Squad',
+  },
+  {
+    id: 'players-squad-list',
+    route: '/players/squad?layout=list',
+    name: 'Players — squad, team sheet',
     budget: 'Players → Squad',
   },
   // The all-time default is the one every other squad route measures; this

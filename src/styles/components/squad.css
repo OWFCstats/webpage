@@ -179,18 +179,11 @@
 }
 
 /* The shelf. A tighter gap than a badge row elsewhere, because four drawings
-   across is the difference between one row of shelf and two. */
+   across is the difference between one row of shelf and two — and with the
+   medallion gone a drawing's footprint is the drawing, so four across at 26px
+   plus their 4px gaps is 116px against the 117.5px a tile's content box has on
+   a 375px phone. That is where the 26 comes from; it is not a round number. */
 .squad-card-badges { gap: var(--s1); }
-
-/* One slot per drawing, medallion or not. A bronze career badge wears no disc —
-   the disc is for a light metal that needs a ground (DESIGN → Badge) — and in a
-   row of six that reads as badges of two sizes rather than of two metals. The
-   inset is the disc's own arithmetic, so the two footprints stay equal if it
-   ever changes. */
-.squad-card-badges .badge-icon:not(.medal) {
-  padding: calc(var(--badge-size) * 0.2);
-  border: 1px solid transparent;
-}
 
 .squad-card-badges.none {
   font-size: var(--t-micro);

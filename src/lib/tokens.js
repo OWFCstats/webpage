@@ -1,12 +1,16 @@
 /**
  * Reading tokens.css from JavaScript.
  *
- * Recharts, the hand-rolled sparklines and the badge drawings all write their
- * colours into SVG attributes (`stroke`, `fill`), and an SVG attribute is not
- * a CSS property — `var(--series-1)` is simply invalid there. So the few
- * colours they need are read back out of the stylesheet at runtime instead of
- * being written down a second time in JS. tokens.css stays the only place a
- * colour lives.
+ * Recharts and the hand-rolled sparklines write their colours into SVG
+ * attributes (`stroke`, `fill`), and an SVG attribute is not a CSS property —
+ * `var(--series-1)` is simply invalid there. So the few colours they need are
+ * read back out of the stylesheet at runtime instead of being written down a
+ * second time in JS. tokens.css stays the only place a colour lives.
+ *
+ * The badges used to read this too, for the four metal ramps a tier recoloured
+ * a drawing through. They don't any more — the club draws every tier — so
+ * `metalRamp` is gone and the ramps are only ever read by CSS, as the tier
+ * beads on the Records board.
  */
 
 const resolved = new Map();
@@ -69,13 +73,4 @@ export function statToken(statKey) {
 /** The resolved colour a stat wears — for SVG attributes, where it doesn't. */
 export function statColour(statKey) {
   return token(statToken(statKey));
-}
-
-/**
- * A metal's four stops, darkest first — what lib/badge-art.js maps a drawing's
- * own tones onto. The ramp is read rather than passed in so a tier is named by
- * its metal everywhere and the hexes stay in tokens.css.
- */
-export function metalRamp(metal) {
-  return [1, 2, 3, 4].map((stop) => token(`--${metal}-${stop}`));
 }

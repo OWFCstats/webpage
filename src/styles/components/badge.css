@@ -1,35 +1,50 @@
-/* The badge — the site's signature, and the surface the plate used to be.
+/* The badge — the site's signature.
 
-   A badge is an icon in a metal and it has no box: the drawing sits directly
-   on whatever is behind it, which is what lets the same badge appear in a hero
-   band, in a card and in a list without three versions of itself. The metal
-   comes from the drawing's own fills (lib/badge-art.js); everything here is
-   size, spacing and the medallion.
+   A badge is a drawing and it has no box: it sits directly on whatever is
+   behind it, which is what lets the same badge appear in a hero band, in a card
+   and in a list without three versions of itself. Everything here is size,
+   spacing and the one state a drawing can't carry itself.
 
-   The medallion is the one shape this file adds: a dark disc behind a light
-   metal. It isn't decoration — a gold cup on paper puts 11% of its own ink
-   above 3:1 whatever the ramp does, because a cup is mostly highlight, and the
-   disc is what gives it a ground to read against. */
+   The medallion is gone. It was a dark disc behind a light metal, and it was
+   never decoration — a recoloured gold cup put 11% of its own ink above 3:1 on
+   paper, because a cup is mostly highlight, and the disc gave it a ground. The
+   club's drawings carry their own frame and their own contrast, on paper and on
+   a board alike, so there is nothing left for a disc to fix. With it goes the
+   `on` prop, the two bands of the ramp and every rule in the site that had to
+   know which ground a badge had landed on.
+
+   One thing this file does add: the slot. The drawings are not square and not
+   one shape — a crest is 0.9 wide for its height, a diamond 1.17, the
+   hat-trick's three footballs 1.57 — so each is contained in a square slot and
+   centred in it. Sizing each to its own width is what used to leave a shelf's
+   labels starting at four different places down the page. */
 
 .badge-icon {
   display: inline-flex;
   flex: none;
+  align-items: center;
+  justify-content: center;
+  width: var(--badge-size);
+  height: var(--badge-size);
   line-height: 0;
 }
 
-.badge-icon svg {
+.badge-icon img {
   display: block;
-  width: var(--badge-size);
-  height: var(--badge-size);
+  width: 100%;
+  height: 100%;
+  /* The slot is square and the drawing isn't: contain is what centres a
+     hat-trick in it rather than stretching three footballs into ovals. */
+  object-fit: contain;
 }
 
-.badge-icon.medal {
-  background: var(--board);
-  border-radius: var(--r-pill);
-  padding: calc(var(--badge-size) * 0.2);
-  /* The rim is the medal's edge, not a shadow: gold at a hairline, the same
-     gilding the board carries along its bottom. */
-  border: 1px solid color-mix(in srgb, var(--gold) 45%, transparent);
+/* An unearned career badge is its own bronze drawing, drained — present, named,
+   and visibly not yours. Drained rather than dimmed: `brightness` lands it on
+   one mid grey whatever the drawing's own tones are, so it reads as absence
+   against paper and against the board from the same rule, where an opacity
+   would fade it into whichever of the two was behind it. */
+.badge-icon.unheld img {
+  filter: grayscale(1) brightness(1.35) contrast(0.55);
 }
 
 /* ---- a row of badges: a player's shelf, inline under their name ---- */
@@ -47,6 +62,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.2rem;
+  text-decoration: none;
 }
 
 .badge-stack .times {
@@ -152,7 +168,7 @@
   display: flex;
   align-items: center;
   gap: var(--s3);
-  padding: var(--s3) 0;
+  padding: var(--s4) 0;
   border-bottom: 1px solid var(--rule);
   color: inherit;
   text-decoration: none;
@@ -182,19 +198,27 @@
 .board .badge-line { border-bottom-color: color-mix(in srgb, var(--on-board) 14%, transparent); }
 
 /* Four trophies across, or two on a phone: they carry no names here — the
-   honours board above them holds those, and printing them twice is how a page
-   ends up saying the same thing in two places. */
+   cabinet on the honours page holds those, and printing them twice is how a
+   page ends up saying the same thing in two places.
+
+   The band pays for the trophies rather than the other way round. At 40px in a
+   strip the height of a caption, four plinths read as four smudges; the strip
+   now gives them 64px and enough room above and below that the band looks like
+   a shelf they are standing on. This is the one board in the site whose whole
+   content is drawings, which is what earns it the extra height. */
+.trophy-cabinet { padding-block: var(--s5); }
+
 .trophy-strip {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: var(--s3);
+  gap: var(--s4) var(--s3);
   text-align: center;
 }
 
 .trophy-strip a {
   display: grid;
   justify-items: center;
-  gap: var(--s2);
+  gap: var(--s3);
   font-family: var(--font-data);
   font-size: var(--t-micro);
   line-height: 1.3;
@@ -207,12 +231,22 @@
   .trophy-strip { grid-template-columns: repeat(2, 1fr); }
 }
 
-/* ---- a player's own shelf ---- */
+/* ---- a player's own shelf ----
+   A grid, not a flex row, and the first column is a fixed 40px: the drawing is
+   the only thing in a badge row whose width isn't the page's to decide, and a
+   flex row let each one set where its own label started. Four rows, four
+   starting points. `--shelf-icon` is the same number BadgeShelf.jsx passes as
+   the badge's size — the slot and the drawing in it are one measurement. */
 
-.badge-shelf { display: grid; gap: 0; }
+.badge-shelf {
+  --shelf-icon: 40px;
+  display: grid;
+  gap: 0;
+}
 
 .badge-held {
-  display: flex;
+  display: grid;
+  grid-template-columns: var(--shelf-icon) minmax(0, 1fr) auto;
   align-items: center;
   gap: var(--s3);
   padding: var(--s3) 0;
@@ -223,7 +257,7 @@
 
 .badge-held:last-child { border-bottom: none; }
 
-.badge-held .what { flex: 1; min-width: 0; }
+.badge-held .what { min-width: 0; }
 
 .badge-held .what strong { font-weight: 600; }
 
@@ -326,11 +360,3 @@
 
 /* The row under a player's name in the hero band. */
 .hero-badges { margin-top: var(--s3); }
-
-/* The honours board's rows are the four trophies, so each one carries its
-   drawing. Inline rather than a column of its own: a dt is a label, and the
-   icon rides its baseline instead of restructuring the row. */
-.hb-award dt .badge-icon {
-  vertical-align: -0.35em;
-  margin-right: 0.4rem;
-}

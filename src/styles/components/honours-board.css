@@ -1,67 +1,164 @@
-/* The honours board — the school hall board, one block per season.
+/* The trophy cabinet — components/records/HonoursBoard.jsx.
 
-   The rules are the structure here: an engraved hairline under each award and
-   a firmer one between seasons is what makes a list of names read as a board
-   rather than as a table that lost its borders. The .board surface supplies
-   the ground, the gold edge and the ink for every label and link inside it. */
+   One green band, a shelf per season, four trophies standing on each. It
+   replaced a list of four label/name rows a season, which said everything and
+   showed nothing: the trophies are the club's own drawings and the reason anyone
+   opens this page.
 
-.honours-board .hb-season + .hb-season {
+   The rules are still the structure — a firm hairline between seasons is what
+   makes a stack of shelves read as one cabinet rather than as four loose blocks
+   — but the shelf itself is a grid now, and the grid is the whole design: the
+   four trophies sit in the same order and the same place down every season, so a
+   name is found by which shelf it stands on rather than by reading a label off
+   the row it's in. The .board surface supplies the ground, the gold edge and
+   the ink for every label and link inside it. */
+
+.honours-cabinet .hc-season + .hc-season {
   margin-top: var(--s5);
   padding-top: var(--s5);
   border-top: 1px solid color-mix(in srgb, var(--on-board) 26%, transparent);
 }
 
-.hb-year {
+.hc-year {
   font-family: var(--font-display);
   font-size: var(--t-title);
   letter-spacing: -0.015em;
-  margin: 0 0 var(--s2);
+  margin: 0 0 var(--s4);
 }
 
-.hb-awards { margin: 0; }
-
-/* Award on the left as a caption, name on the right as the point — the same
-   shape as a name painted on a board with the year beside it. */
-.hb-award {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--s3);
-  padding: 0.45rem 0;
-  border-bottom: 1px solid color-mix(in srgb, var(--on-board) 14%, transparent);
-}
-
-.hb-award:last-child { border-bottom: none; }
-
-.hb-award dd {
+/* Two up on a phone, four across from 520px. Four at 375px gives a column 78px,
+   and a 78px trophy with a name under it is the list this replaced with extra
+   steps; two gives each one about 160px, which is a 72px trophy, a name on one
+   line and its mark under it. The order never changes with the layout — Player
+   of the Season, Golden Boot, Playmaker, The Dependable — because the position
+   on the shelf is how a reader knows which trophy they are looking at before
+   they read its label. */
+.hc-shelf {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--s5) var(--s3);
   margin: 0;
-  min-width: 0;
-  text-align: right;
-  font-family: var(--font-data);
-  font-size: var(--t-small);
-  font-weight: 600;
+  padding: 0;
+  list-style: none;
 }
 
-/* Gold under the voted award only: it separates the one name the players chose
-   from the four the arithmetic did. */
-.hb-award.voted { border-bottom-color: color-mix(in srgb, var(--gold) 55%, transparent); }
+@media (min-width: 520px) {
+  .hc-shelf { grid-template-columns: repeat(4, 1fr); }
 
-.hb-note {
+  /* Two lines of label, reserved. Four across gives a column about 110px and
+     "Player of the Season" wants 150 at this size, so one of the four wraps and
+     the other three don't — which drops that column's winner a line below its
+     neighbours and un-shelves the whole row. Reserving the second line is what
+     puts the four names back on one line; on a phone the columns are 160px, all
+     four labels fit, and the reserve would be dead space, which is why it lives
+     here rather than on the rule above. */
+  .hc-award { min-height: 2.5em; }
+}
+
+/* Each trophy is its own small column: drawing, award, winner, mark, top to
+   bottom and centred, which is how a trophy stands in a case. `align-content:
+   start` so a shared award growing to two names doesn't drag its neighbours'
+   plinths off the shelf line. */
+.hc-trophy {
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  gap: 0.15rem;
+  text-align: center;
+  min-width: 0;
+}
+
+/* The drawing and its award name are one target: tapping either goes to the
+   badge's own page, which is where every winner of it ever is listed. */
+.hc-cup {
+  display: grid;
+  justify-items: center;
+  gap: var(--s2);
+  margin-bottom: var(--s2);
+  text-decoration: none;
+  min-width: 0;
+}
+
+.hc-cup:hover .hc-award { text-decoration: underline; }
+
+/* The award's own name, as a caption under the drawing rather than a heading
+   over it: the drawing is what identifies the trophy and the words are the
+   confirmation. Small caps at micro, the site's label voice. */
+.hc-award {
   display: block;
+  font-family: var(--font-data);
   font-size: var(--t-micro);
-  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  line-height: 1.25;
   color: var(--on-board-soft);
 }
 
-/* Wide enough for a gutter: the year steps out to the left and the awards run
-   across, which is how the printed board reads. */
+/* The winner. Gold leaf, one name per line where an award was shared — two
+   names run together at 160px wrap mid-name and read as one person with a long
+   one. */
+.hc-names {
+  display: grid;
+  gap: 0.1rem;
+  font-family: var(--font-data);
+  font-size: var(--t-small);
+  font-weight: 600;
+  line-height: 1.2;
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+/* The mark under the name, in the caption ink: what they did to win it. Tabular
+   because a column of them lines up down the cabinet. */
+.hc-mark {
+  font-family: var(--font-data);
+  font-size: var(--t-micro);
+  font-variant-numeric: tabular-nums;
+  color: var(--on-board-soft);
+}
+
+.hc-shared { font-style: italic; }
+
+/* Nobody has won it yet — every award of a season the moment its fixtures are
+   entered. The drawing above is drained by `.badge-icon.unheld`; this is the
+   words, in the same caption ink as a mark so the shelf keeps its shape whether
+   a trophy has been handed out or not. */
+.hc-none {
+  font-family: var(--font-data);
+  font-size: var(--t-small);
+  color: var(--on-board-soft);
+}
+
+/* Gold under Player of the Season and nothing under the other three: it marks
+   the one name the players chose from the three the arithmetic did. The same
+   device the list carried, moved from the row's bottom rule to the trophy's own
+   plinth line — which is why it sits under the drawing and its label rather
+   than under the whole column. */
+.hc-trophy.voted .hc-cup {
+  padding-bottom: var(--s2);
+  border-bottom: 1px solid color-mix(in srgb, var(--gold) 55%, transparent);
+}
+
+/* An admin's own words about the vote, full width under the shelf. A note is a
+   sentence and a trophy's column is 160px. */
+.hc-note {
+  margin: var(--s4) 0 0;
+  font-size: var(--t-micro);
+  color: var(--on-board-soft);
+}
+
+/* Wide enough for a gutter: the year steps out to the left and the shelf runs
+   across, which is how a printed board reads and how a cabinet is labelled. */
 @media (min-width: 700px) {
-  .hb-season {
+  .hc-season {
     display: grid;
     grid-template-columns: 8rem 1fr;
     gap: var(--s4);
     align-items: start;
   }
 
-  .hb-year { margin: 0; }
+  .hc-year { margin: 0; }
+
+  /* The note sits under the shelf, not under the year. */
+  .hc-note { grid-column: 2; }
 }

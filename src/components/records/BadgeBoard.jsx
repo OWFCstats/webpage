@@ -2,6 +2,19 @@ import { Link } from 'react-router-dom';
 import BadgeIcon from '../BadgeIcon';
 import { plural } from '../../lib/format';
 
+/** The three sizes on this page, each stated where the reason for it is. A
+ *  career card's drawing is the biggest thing on the card and can afford 52; a
+ *  trophy in the strip is the point of the strip, which is why it gets 64 and
+ *  the strip got taller to hold it.
+ *
+ *  The stackables get 48 rather than 40 because of the hat-trick: it is the one
+ *  drawing wider than it is tall — three footballs at 1.57 — and a square slot
+ *  contains it to 63% of the slot's height, so beside the MOTM star at the same
+ *  size it reads as the smaller badge. 48 is where the three balls separate.
+ *  This is the row that can afford it: it is a flex row rather than an aligned
+ *  column, so nothing downstream depends on the slot staying 40. */
+const SIZE = { career: 52, event: 48, trophy: 64 };
+
 /** What a career badge has come to in the club: how many hold it and who has
  *  most. A badge nobody holds says so — the club is early, not empty. */
 function heldLine(badge) {
@@ -22,9 +35,14 @@ function eventLine(badge) {
  * twenty-four plates — the ladder this replaced printed every category three
  * times and said "Nobody yet" nineteen times over.
  *
- * The trophies carry no names here. The honours board immediately above holds
- * them season by season, and the four icons are the way through to a badge's
- * own page rather than a second copy of the same four names.
+ * A badge nobody in the club holds draws its **bronze** artwork, greyed — the
+ * rung somebody is next in line for rather than a silhouette or a prize three
+ * tiers away. `badge.top` being null is what says so, and `BadgeIcon` does the
+ * greying; nothing here needs to know which drawing that is.
+ *
+ * The trophies carry no names here. The cabinet on the honours page holds those
+ * season by season, and the four drawings are the way through to a badge's own
+ * page rather than a second copy of the same four names.
  */
 export default function BadgeBoard({ badges }) {
   return (
@@ -34,7 +52,7 @@ export default function BadgeBoard({ badges }) {
         {badges.career.map((badge) => (
           <Link key={badge.key} className="sheet badge-card" to={`/records/badges/${badge.key}`}>
             <div className="badge-card-head">
-              <BadgeIcon badge={badge.key} metal={badge.top} size={44} />
+              <BadgeIcon badge={badge.key} metal={badge.top} size={SIZE.career} />
               <div>
                 <h3>{badge.label}</h3>
                 <span className="badge-holds">{heldLine(badge)}</span>
@@ -60,7 +78,7 @@ export default function BadgeBoard({ badges }) {
       <div className="sheet">
         {badges.events.map((badge) => (
           <Link key={badge.key} className="badge-line" to={`/records/badges/${badge.key}`}>
-            <BadgeIcon badge={badge.key} metal={badge.awarded > 0 ? 'gold' : null} size={34} />
+            <BadgeIcon badge={badge.key} metal={badge.awarded > 0 ? 'gold' : null} size={SIZE.event} />
             <span className="what">
               <strong>{badge.label}</strong>
               <span className="muted">{eventLine(badge)}</span>
@@ -71,16 +89,11 @@ export default function BadgeBoard({ badges }) {
       </div>
 
       <h3 className="label ruled section">Season honours — one a season</h3>
-      <div className="board">
+      <div className="board trophy-cabinet">
         <div className="trophy-strip">
           {badges.trophies.map((badge) => (
             <Link key={badge.key} to={`/records/badges/${badge.key}`}>
-              <BadgeIcon
-                badge={badge.key}
-                metal={badge.wins.length > 0 ? 'gold' : null}
-                on="board"
-                size={40}
-              />
+              <BadgeIcon badge={badge.key} metal={badge.wins.length > 0 ? 'gold' : null} size={SIZE.trophy} />
               {badge.label}
             </Link>
           ))}

@@ -34,9 +34,12 @@ export default function PlayersHub({ view }) {
   const scopeSeason = askedSeason && seasons.includes(askedSeason) ? askedSeason : 'all';
   const scope = scopeSeason === 'all' ? null : scopeSeason;
 
-  // The roster's two layouts are one address apart, so the cards can be linked
-  // to and — the reason it isn't just component state — measured by the harness.
-  const layout = params.get('layout') === 'cards' ? 'cards' : 'list';
+  // The roster's two layouts are one address apart, so either can be linked to
+  // and — the reason it isn't just component state — measured by the harness.
+  // Cards is the default now, so `?layout=list` is the one that appears in an
+  // address: the defaults stay out of it, and the cards are the view that shows
+  // the badges.
+  const layout = params.get('layout') === 'list' ? 'list' : 'cards';
 
   const scopePool = useMemo(() => {
     if (loading || view === 'leaders') return { rows: [], played: 0 };
@@ -200,7 +203,7 @@ export default function PlayersHub({ view }) {
               rows={scopePool.rows}
               badges={badges}
               layout={layout}
-              onLayout={(next) => go({ layout: next === 'list' ? null : next })}
+              onLayout={(next) => go({ layout: next === 'cards' ? null : next })}
               scope={scope}
               onSearchAllTime={clearScope}
               emptyText={`Nobody was picked ${scope ? `in ${scope}` : 'yet'}.`}

@@ -10,7 +10,7 @@ import { badgeDetail } from '../lib/awards';
 
 /** What the hero wears: the best metal anyone in the club holds, so the page
  *  opens on where the badge has actually got to. Gold for the six that don't
- *  tier, and a silhouette while nobody holds it at all. */
+ *  tier, and the drawing drained of its colour while nobody holds it at all. */
 function heroMetal(view) {
   if (view.badge.class === 'trophy') return view.wins.length > 0 ? 'gold' : null;
   if (view.badge.class === 'event') return view.awarded > 0 ? 'gold' : null;
@@ -47,7 +47,7 @@ export default function BadgeDetail() {
   return (
     <div>
       <div className="board badge-hero">
-        <BadgeIcon badge={badge.key} metal={heroMetal(view)} on="board" size={72} />
+        <BadgeIcon badge={badge.key} metal={heroMetal(view)} size={72} />
         <div>
           <h1>{badge.label}</h1>
           <p className="badge-what">{badge.line}</p>

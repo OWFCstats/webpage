@@ -5,10 +5,11 @@
    check is how the old single stylesheet reached 2,654 lines. */
 
 /* ---- surfaces ----
-   Two of the three the design system names. The third, the plate, is badges
-   only and lives with its component in components/plate.css — keeping it out
-   of the shared vocabulary is what stops it being reached for as a fourth
-   general-purpose surface. */
+   Both of the two the design system names. There was a third — the plate, a box
+   every badge was cut from — and Phase 15 deleted it: a badge is a drawing and
+   sits on whatever is behind it, which is what lets the same one appear in a
+   hero band, in a card and in a list. components/badge.css is what's left of it,
+   and it draws no surface. */
 
 /* The default, and where most data lives. Paper, a hairline, no shadow.
    Separation inside a sheet is another hairline, never a nested box. */

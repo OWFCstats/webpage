@@ -55,10 +55,17 @@ page-by-page review against the club's real 2025/26 season.
 | 28 | Matchday: the desktop rail | Above 900px, `.matchday-rail` in `styles/pages/matchday.css` turns the page into a 344px/1fr grid, the season on the left and the match beside it. Built with `display: contents` on `SeasonLadder`'s wrapping elements so one tree served both layouts; **superseded by Phase 31**, which is where the mechanism is now written down. Below 900px is unchanged |
 | 29 | Season, the ladder | `SeasonLadder` moved to `components/` and reused on Season in place of `ResultsTable` and `UpcomingFixtures` — a ~40px rung against the ~80px row, every game and both fixtures still on the page; 3,224px → 2,490px, 734px back but 290 short of the 2,200 budget — see *Decisions* → *Open* |
 | 31 | Matchday: the rail, corrected | Phase 28's `display: contents` put the match panel in the *open rung's own grid row*, so that rung stretched to the panel's height — a 40px rung became a thousand-pixel gold slab, and the rest of the season was pushed below the whole match instead of continuing under it. The rail and the match are two ordinary boxes again; Matchday reads the 900px breakpoint with `useIsNarrow` and places the panel, because CSS can restyle a box but not reparent one. Above 1200px the match splits into the two columns the approved flat always had — squad left, comparison and report right — which no phase had ever asked for. `MatchReport`'s clamp state moved up to its caller, so a resize across 900px no longer collapses an open report. 375px is untouched (2,456 / 2,746 / 3,150px); 1400px goes 2,336 → 1,183px on the default route. Out of order on purpose: a defect in shipped work, not new scope |
+| 32 | The new badge art | Twenty-two drawings in, one per badge per tier, `<img>` rather than inlined; out went the four metal ramps as paint, `recolour`, `toneRange`, `metalRamp`, the paper/board bands, the `on` prop and the medallion. `npm run badges -- <dir>` ingests a drop — rename, `svgo` at one decimal, 1.8 MB → 807 KB with nothing visible changing. The icon-contrast invariant learned to fetch and score an SVG `<img>`, and to score a shaded badge on separation from its ground (2:1 on the mean) rather than on the share of its ink that happens to be dark — the three drawings the medallion existed for score 1.31–1.78, this set's worst is 2.12 |
+| 33 | The cosmetic pass the art paid for | Player badges 24 → 34 in the hero and 30–34 → 40 on the shelf, with the shelf's first column fixed at 40px so four labels start in one place; squad tiles 21 + a disc → 26 of drawing; the roster opens on **cards** (`?layout=list` is the address the team sheet carries now); Records' career cards 44 → 52, stackables 34 → 48 (the hat-trick is 1.57 wide and was reading as the smaller badge), trophy strip 40 → 64 in a band that grew to hold it; the badge page's four tiers 28 → 40, which is the one place all four drawings are set side by side. Player detail 2,241 → 2,279px, squad tiles 2,138 → 2,057 |
+| 34 | The trophy cabinet | `/records/honours` stopped being a list of four label/name rows a season. One green band, a shelf per season, the year top-left and the four trophies across it at 72px with the winner under each and their mark — carrying a `unit`, since "9" under a boot is a shirt number until it says "9 goals" — under the name. 2×2 on a phone, four across from 520px. A season nobody has won yet keeps its four drawings, drained, under *Not awarded*: that is the season the reader is about to play. 961 → 1,155px against a 2,000 budget |
 
 **The detail behind any closed phase is in its commit** — `git log --grep="Phase
 20"` finds it, and forty-five commits name their phase. That is what makes
-condensing this file safe rather than lossy.
+condensing this file safe rather than lossy. Phases 32–34 are the one exception
+to one-phase-one-commit: they arrived as a single drop of artwork and landed
+together, because 33 and 34 are decisions about drawings that only exist after
+32 — sizes, a greyed placeholder, a shelf of trophies. One commit names all
+three, so the grep still finds each of them.
 
 Two rulings from that half still bind everywhere: **everything is derived,
 nothing is stored twice**, and **a component that gains a second page moves up to
@@ -70,10 +77,10 @@ nothing is stored twice**, and **a component that gains a second page moves up t
 
 ### Phase 30 — The cosmetic review: Players and Records
 
-The last two sections of the review Phase 23 started on Home. Screenshot first at
-375px and 1400px, list the findings, then one branch per page. Matchday's own
-review is superseded by phases 25–28, and Season's length was Phase 29's job —
-closed to within 290px; the rest is *Decisions* → *Open*.
+Still open, and now partly answered: Phase 33 is the badge half of the Players
+and Records findings. What Phase 30 still owns is everything on those two pages
+that isn't a badge. Screenshot at 375px and 1400px, list the findings, one branch
+per page.
 
 **Done means** two short phases appended above with real findings, or a line here
 saying a page had none.
@@ -95,10 +102,10 @@ view. *Now* is `npm run shots` on the `mid-season` fixture at 375px.
 | Season | 2,490 | 2,200 | **unowned** — 290 over; Phase 29's `SeasonLadder` reuse took 734px back, see *Decisions* → *Open* |
 | Season → charts | 1,909 | 2,200 | met (18) |
 | Players → Leaderboards | 1,296 | 1,400 | met (14, 24) |
-| Records → badges / honours / all-time | 1,667 / 961 / 1,807 | 2,000 | met (16) |
-| Player detail | 2,241 | 2,400 | met (21) |
+| Records → badges / honours / all-time | 1,729 / 1,155 / 1,807 | 2,000 | met (16); badges +62 and honours +194 for the bigger trophies (32–34) |
+| Player detail | 2,279 | 2,400 | met (21); +38 for the 40px shelf (33) |
 | Opponent detail | 1,259 | 2,000 | met (21) |
-| Players → Squad | 1,671 list / 2,138 tiles | no cap — it's a roster | measured, not capped (17, 24) |
+| Players → Squad | 2,057 cards (default) / 1,671 list | no cap — it's a roster | measured, not capped (17, 24, 33); the tiles lost 81px to the medallion coming off, despite the drawings growing |
 | Players → Data centre | 2,584 | no cap — it's the reference table | measured, not capped (22, 24) |
 
 Home is the one page with no phase against it. Add one when someone is willing to
@@ -174,7 +181,8 @@ Named so they don't get lost.
   waiting for standings entered per season.
 - **Head-to-head pages** — Phase 27's tape could grow into the opponent page.
 - **New badge types** — attendance streaks, consecutive scoring. Add once Phase
-  15's three classes have survived a second season.
+  15's three classes have survived a second season. Note the cost changed with
+  Phase 32: a new career badge is four drawings, not one recolour.
 - **A figure recipe in the type layer** — the display face at 600 with
   `-0.015em` and tabular figures is written out in twelve rules. One decision in
   `DESIGN.md`'s *Type* section.

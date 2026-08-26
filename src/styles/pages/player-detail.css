@@ -1,6 +1,6 @@
 /* A player's own page: the hero, the badge shelf, firsts, form, ranks,
-   teammates and per-season breakdown. The shelf itself is the plate component
-   — see styles/components/plate.css. */
+   teammates and per-season breakdown. The shelf itself is not this file's —
+   see styles/components/badge.css. */
 
 /* ---- player pages ------------------------------------------------------ */
 
@@ -9,7 +9,12 @@
    and the gilded edge come from .board. */
 .player-hero {
   display: flex;
-  align-items: center;
+  /* Top-aligned, not centred: the badge row under the name is 34px of drawing
+     now and wraps to a second line for anyone holding six, which left a centred
+     crest floating at the middle of a 150px block with the name well above it.
+     Aligned to the top it sits level with the name, which is where a monogram
+     standing in for a photo belongs. */
+  align-items: flex-start;
   gap: var(--s4);
   flex-wrap: wrap;
 }

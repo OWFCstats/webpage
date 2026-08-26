@@ -4,7 +4,12 @@ import { plural } from '../../lib/format';
 
 /** Every holder at every tier, in the ladder's own order. An empty rung keeps
  *  its place: where the metal stops is the story on a club this young, and a
- *  tier nobody has reached is a live target rather than a gap. */
+ *  tier nobody has reached is a live target rather than a gap.
+ *
+ *  This is the one page in the site that sets all four drawings of a badge side
+ *  by side, which is how somebody learns that a crest changes shape as well as
+ *  colour on the way up — so the drawings are 40px here rather than the 28 they
+ *  were when a tier was a tint. */
 export default function CareerTiers({ badge, tiers, chasing }) {
   return (
     <>
@@ -13,7 +18,7 @@ export default function CareerTiers({ badge, tiers, chasing }) {
           <section className="badge-tier" key={tier.metal}>
             <div className="badge-tier-head">
               <span className="tier-name">
-                <BadgeIcon badge={badge.key} metal={tier.metal} size={28} />
+                <BadgeIcon badge={badge.key} metal={tier.metal} size={40} />
                 <b>{tier.metal}</b>
                 <span className="at">{tier.threshold}+</span>
               </span>
