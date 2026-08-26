@@ -50,6 +50,26 @@ export function FormBadges({ matches }) {
   );
 }
 
+/** A scorer's mark on the team sheet, beside the goal count rather than
+ *  instead of it. Drawn, not an emoji ball — every other mark on the site is
+ *  engraved or gilded, and an emoji renders in whatever the phone feels
+ *  like. `currentColor` throughout, so it takes its row's own ink. */
+export function BallMark() {
+  return (
+    <svg className="ball-mark" viewBox="0 0 16 16" width="15" height="15" aria-hidden="true">
+      <circle cx="8" cy="8" r="6.6" fill="none" stroke="currentColor" strokeWidth="1.25" />
+      <path d="M8 4.9 10.95 7.04 9.82 10.51H6.18L5.05 7.04z" fill="currentColor" />
+      <path
+        d="M8 4.9V2.4M10.95 7.04 13.33 6.27M9.82 10.51 11.29 12.53M6.18 10.51 4.71 12.53M5.05 7.04 2.67 6.27"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
 /** Small H/A icon for a fixture row. Renders nothing for neutral or
  * unrecorded venues rather than guessing. */
 export function VenueBadge({ venue }) {

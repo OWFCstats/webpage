@@ -40,6 +40,16 @@ export function formatDate(iso) {
   return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
+/** "Sat 14 Mar 2026" — for the scoreboard's own meta line, where the day of
+ *  the week is worth carrying and a ladder rung's date is not. */
+export function weekdayDate(iso) {
+  if (!iso) return '';
+  const d = new Date(`${iso}T00:00:00`);
+  return d.toLocaleDateString('en-GB', {
+    weekday: 'short', day: 'numeric', month: 'short', year: 'numeric',
+  });
+}
+
 /** "14 Mar" — for a row inside a season, where the year is the season's and
  *  repeating it sixteen times down a ladder says nothing. */
 export function dayMonth(iso) {

@@ -50,6 +50,7 @@ page-by-page review against the club's real 2025/26 season.
 | 23 | Home, the cosmetic pass | The last result positions by venue with a badge marking which side is us; the momentum chart gained gridlines, value labels, an area fill and the list's own height, plus a "Charts" button |
 | 24 | Players, the second pass | `seasonPools`, the closed archive banner, five small tables became one wide reference table |
 | 25 | Matchday: the season ladder | `seasonLadder` + `SeasonLadder.jsx`: the stepper, jump strip, form chips and next-fixture card became one object, every game a rung with its running goal difference; the budget moved to 2,300 |
+| 26 | Matchday: the match panel | `MotmPlate.jsx` and `TeamSheet.jsx` replace the monogram card and squad pills; the scoreboard gained a head row (competition, matchday number, W/D/L) and one condensed meta line; `BallMark` and a gold star are the only two marks a name carries; `WorthNoting` deleted, its ordinals now the team sheet's own App column |
 
 **The detail behind any closed phase is in its commit** — `git log --grep="Phase
 20"` finds it, and forty-five commits name their phase. That is what makes
@@ -62,57 +63,6 @@ nothing is stored twice**, and **a component that gains a second page moves up t
 ---
 
 ## Now
-
-### Phase 26 — Matchday: the match panel
-
-The match itself: the board scoreline, the gilded man-of-the-match plate, and the
-team sheet that replaces the pills.
-
-**Files**
-
-- `src/components/matchday/Scoreboard.jsx`
-- `src/components/matchday/MotmCard.jsx` → `MotmPlate.jsx`
-- `src/components/matchday/TeamSheet.jsx` — new; delete `SquadPills.jsx`
-- delete `src/components/matchday/WorthNoting.jsx`
-- `src/components/bits.jsx` — add `BallMark`
-- `src/pages/Matchday.jsx`, `src/styles/pages/matchday.css`, `docs/DESIGN.md`
-
-**Do**
-
-1. **Scoreboard** keeps its two mirrored rows. Add a head row above them —
-   competition `.block`, `Matchday n · season`, W/D/L chip — and one condensed
-   meta line below (`Full time · Sat 14 Mar 2026, 2:00pm · Big Side (H)`). The
-   per-row `.sub` squad count comes off; the team sheet's own head says
-   "8 named".
-2. **MotmPlate**: `--board` ground, gold label, name in `--gold-leaf` at
-   `--t-headline`, one line of what they did plus the appearance ordinal. The
-   monogram avatar goes. The Golden Boot line goes with it — Phase 14 gave every
-   stat its own leader row on Players, and this was the last place repeating one.
-3. **TeamSheet**: a ruled ledger on one `grid-template-columns` — name and its
-   marks, what the player did this game, appearance ordinal. Scorers carry
-   `<BallMark />` after the name *and* keep "1 goal" in its column; the MOTM row
-   carries a gold star and the gold wash. Footer line: goals, assists, cards,
-   debuts, and any dropout by name. `matchContext` already returns `squad`,
-   `scorers`, `motm`, `debutIds`, `dropoutNames` and `seasonAppCount` — no new
-   derivation.
-4. **`BallMark`** in `bits.jsx`: a 15px inline SVG, `viewBox="0 0 16 16"`, ring
-   plus centre pentagon plus five spokes that stop inside the ring, all
-   `currentColor` so it inherits `--gold-deep` from the row. Same house as
-   `Layout.jsx`'s nav icons. Drawn rather than an emoji because every other mark
-   on this site is engraved or gilded and an emoji renders in whatever the phone
-   feels like. It does not go in `src/assets/badges/` — that directory is one
-   file per badge slug and this is not a badge.
-5. **WorthNoting goes.** The appearance ordinals it printed are a column on the
-   team sheet now, and the debut and dropout names are on the footer line. This
-   removes the page's last duplicate fact.
-
-**Done means** no squad pills and no colour legend; the ball and the star are the
-only two marks a name carries; the walkover route (`2025-11-29`, no appearance
-rows at all) still renders with no team sheet, and the clean-sheet route
-(`2026-02-07`) still renders its debut goal, red card and dropout; `npm test`,
-`npm run check:layout` and `npm run build` pass.
-
----
 
 ### Phase 27 — Matchday: head to head, and the report
 
@@ -236,9 +186,9 @@ view. *Now* is `npm run shots` on the `mid-season` fixture at 375px.
 | Page | Now | Budget | Owner |
 | --- | --- | --- | --- |
 | Home | 2,047 | 1,600 | **unowned** — 447 over; Phase 23's badge, label and button cost 165px of it |
-| Matchday — latest | 2,218 | 2,300 | met (25) — 1,812 before the ladder, against the old 1,900 |
-| Matchday — clean sheet (13 named, a report) | 2,734 | 2,300 | 26–27 — 434 over; the report clamp is the big lever |
-| Matchday — walkover (no team sheet) | 1,633 | 2,300 | within |
+| Matchday — latest | 2,220 | 2,300 | met (25) — 1,812 before the ladder, against the old 1,900 |
+| Matchday — clean sheet (12 named, a report) | 2,682 | 2,300 | 27 — 382 over; the report clamp is the big lever |
+| Matchday — walkover (no team sheet) | 1,507 | 2,300 | within |
 | Season | 3,224 | 2,200 | 29 |
 | Season → charts | 1,909 | 2,200 | met (18) |
 | Players → Leaderboards | 1,296 | 1,400 | met (14, 24) |

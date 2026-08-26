@@ -5,11 +5,10 @@ import { useAuth } from '../context/AuthContext';
 import { ErrorNote, Spinner } from '../components/bits';
 import ComparisonCard from '../components/matchday/ComparisonCard';
 import MatchReport from '../components/matchday/MatchReport';
-import MotmCard from '../components/matchday/MotmCard';
+import MotmPlate from '../components/matchday/MotmPlate';
 import Scoreboard from '../components/matchday/Scoreboard';
 import SeasonLadder from '../components/matchday/SeasonLadder';
-import SquadPills from '../components/matchday/SquadPills';
-import WorthNoting from '../components/matchday/WorthNoting';
+import TeamSheet from '../components/matchday/TeamSheet';
 import {
   currentSeasonOf,
   isPlayed,
@@ -80,25 +79,23 @@ export default function Matchday() {
 
   const played = isPlayed(match);
   const {
-    squad, scorers, motm, dropoutNames, debutIds, seasonAppCount, boot,
-    avgFor, avgAgainst, priorMeetings,
+    squad, motm, dropoutNames, debutIds, seasonAppCount,
+    avgFor, avgAgainst, priorMeetings, matchNumber,
   } = ctx;
   const star = motm[0];
 
   return (
     <div>
-      <Scoreboard match={match} squad={squad} scorers={scorers} teams={teams} />
+      <Scoreboard match={match} matchNumber={matchNumber} teams={teams} />
 
       {/* The ladder is the page's spine, not a section on it: the fixtures
           ahead, the match being read, everything that match has to say, and
           then the season behind it. */}
       <SeasonLadder rungs={rungs} season={season} currentId={match.id} teams={teams}>
         <div className="ladder-panel">
-          <SquadPills squad={squad} debutIds={debutIds} dropoutNames={dropoutNames} />
-
           {played && (star || avgFor != null) && (
             <div className="grid match-cards section">
-              {star && <MotmCard star={star} seasonAppCount={seasonAppCount} boot={boot} />}
+              {star && <MotmPlate star={star} seasonAppCount={seasonAppCount} />}
               {avgFor != null && (
                 <ComparisonCard
                   match={match}
@@ -111,7 +108,12 @@ export default function Matchday() {
             </div>
           )}
 
-          <WorthNoting match={match} ctx={ctx} />
+          <TeamSheet
+            squad={squad}
+            seasonAppCount={seasonAppCount}
+            debutIds={debutIds}
+            dropoutNames={dropoutNames}
+          />
 
           <MatchReport match={match} canWrite={played && Boolean(session)} />
         </div>

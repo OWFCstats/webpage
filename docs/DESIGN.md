@@ -175,14 +175,16 @@ only on the two pages above.
 
 ### Matchday is a ladder with one match open on it
 
-> **Phase 25 has landed; 26–28 have not.** The ladder itself is built —
-> `lib/matches.js`’s `seasonLadder`, `components/matchday/SeasonLadder.jsx`
-> and `styles/components/season-ladder.css`. What is still the old page is the
-> match panel that opens off it: the squad pills, the two cards and the
-> unclamped report. The flat is `docs/mocks/matchday-final.html` — open it
-> before writing any Matchday component, and read the phases in
-> `docs/ROADMAP.md` for what each one owns. The scoreboard survives the
-> rebuild, restyled rather than replaced.
+> **Phases 25–26 have landed; 27–28 have not.** The ladder is built —
+> `lib/matches.js`'s `seasonLadder`, `components/matchday/SeasonLadder.jsx`
+> and `styles/components/season-ladder.css` — and so is the match panel's own
+> read: `Scoreboard.jsx` carries the new head row and condensed meta line,
+> `MotmPlate.jsx` replaces the monogram card, and `TeamSheet.jsx` replaces the
+> squad pills, with `WorthNoting` deleted into its App column. What is still
+> the old page is `ComparisonCard.jsx` (Phase 27 replaces it with
+> `HeadToHead.jsx`) and the unclamped report. The flat is
+> `docs/mocks/matchday-final.html` — open it before writing any Matchday
+> component, and read the phases in `docs/ROADMAP.md` for what each one owns.
 
 The section owns one match at a time, and the archive across the season. Those
 used to be two objects stacked on one page — a scoreboard on top, a stepper and a
@@ -1255,15 +1257,15 @@ two-thirds of a season can't do that job. A rung is already the cheapest row on
 this site at ~40px, against the ~80px of the shared result row. Collapsing it
 would be shaving. The budget question was about what the page now *is*.
 
-The default route measures 2,218px against the new number, with 82px in hand —
+The default route measured 2,218px against the new number, with 82px in hand —
 it was 1,812px against the old one, and Phase 20 had taken it there from 1,857px
 by moving the pitch address off the scoreboard and attaching each score to its
-own team row. The richer routes are still over: the clean-sheet match, thirteen
-named with a report, is 2,734px. That gap belongs to Phases 26 and 27 — the team
-sheet replacing the squad pills, "Worth noting" going, head to head replacing
-the comparison card, and above all the report clamping to ~300 characters, which
-is what stops whoever wrote it up on the Sunday from setting the length of the
-page.
+own team row. The richer routes were still over: the clean-sheet match, thirteen
+named with a report, was 2,734px. That gap belonged to Phases 26 and 27 — the
+team sheet replacing the squad pills and "Worth noting" going (Phase 26, to
+2,682px) — and head to head replacing the comparison card, and above all the
+report clamping to ~300 characters, which is what stops whoever wrote it up on
+the Sunday from setting the length of the page, are Phase 27's.
 
 ## CSS structure
 

@@ -23,6 +23,18 @@
   padding: var(--s5) var(--s5) var(--s4);
 }
 
+/* Competition, the match's own place in the season, and the result — the
+   three facts a scoreline needs before the two team rows are read. */
+.sb-head {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+}
+
+.sb-head .block { margin-bottom: 0; }
+
+.sb-head .label { min-width: 0; }
+
 .sb-row {
   display: grid;
   grid-template-columns: auto 1fr auto;
@@ -55,8 +67,6 @@
   line-height: 1.2;
 }
 
-.sb-row .sub { display: block; font-size: var(--t-small); color: var(--on-board-soft); margin-top: 0.15rem; }
-
 .sb-row .score {
   font-family: var(--font-display);
   font-size: var(--t-title);
@@ -68,7 +78,15 @@
 
 .sb-row .score.upcoming { color: var(--on-board-soft); }
 
-.sb-state { text-align: center; margin-top: 0.1rem; }
+/* The old play-state line, now carrying the date, kick-off, pitch and venue
+   that used to sit under the "them" row on their own — one condensed line
+   rather than two rows each saying a piece of it. */
+.sb-meta {
+  text-align: center;
+  font-family: var(--font-data);
+  font-size: var(--t-small);
+  color: var(--on-board-soft);
+}
 
 .sb-strip {
   border-top: 1px solid color-mix(in srgb, var(--on-board) 14%, transparent);
@@ -86,36 +104,113 @@
    so a lone card has to fill the row instead of leaving a hole. */
 .grid.match-cards { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
 
-.motm-feature { display: flex; align-items: center; gap: var(--s3); }
+/* ---- the gilded plate ---- */
+.motm-plate { display: grid; gap: 0.2rem; }
 
-.motm-feature .avatar {
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  background: var(--board);
+.motm-plate .label { color: var(--gold); }
+
+.motm-plate .name {
+  font-family: var(--font-display);
+  font-size: var(--t-headline);
+  font-weight: 600;
+  letter-spacing: -0.015em;
   color: var(--gold-leaf);
+  line-height: 1.15;
+}
+
+.motm-plate .did { font-family: var(--font-data); font-size: var(--t-small); color: var(--on-board-soft); }
+
+/* ---- the team sheet: a ruled ledger, one row a player ----
+   Name and its two marks, what they did this game, and the appearance
+   ordinal — which does double duty as the debut flag, so a "1st" here is
+   the only place a debut still shows on the row. */
+.team-sheet { display: grid; margin-top: var(--s2); }
+
+.team-sheet .head,
+.team-sheet li {
   display: grid;
-  place-items: center;
+  grid-template-columns: minmax(0, 1fr) auto 2.4rem;
+  gap: var(--s2);
+  align-items: center;
+}
+
+.team-sheet .head {
+  padding-bottom: var(--s1);
+  border-bottom: 1px solid var(--rule-firm);
+}
+
+.team-sheet .head span:last-child,
+.team-sheet li .ap { text-align: right; }
+
+.team-sheet li {
+  padding: var(--s2) 0;
+  border-bottom: 1px solid var(--rule);
+  min-height: 42px;
+}
+
+.team-sheet .who { display: flex; align-items: center; gap: 0.4rem; min-width: 0; }
+
+.team-sheet .nm {
   font-family: var(--font-display);
-  font-weight: 600;
   font-size: var(--t-body);
-  flex: none;
+  letter-spacing: -0.005em;
+  line-height: 1.25;
+  min-width: 0;
 }
 
-.motm-name {
-  font-family: var(--font-display);
-  font-size: var(--t-subtitle);
-  font-weight: 600;
-  display: block;
+.team-sheet .did,
+.team-sheet .ap {
+  font-family: var(--font-data);
+  font-size: var(--t-small);
+  color: var(--ink-soft);
 }
 
-.motm-line { display: block; font-size: var(--t-small); margin-top: 0.15rem; }
+/* The wash bleeds a row's width either side on a shadow rather than a
+   margin, the same technique the current ladder rung uses, so the
+   highlight reaches the sheet's own padded edge without widening it. */
+.team-sheet li.motm {
+  background: color-mix(in srgb, var(--gold) 11%, transparent);
+  box-shadow:
+    calc(var(--s5) * -1) 0 0 color-mix(in srgb, var(--gold) 11%, transparent),
+    var(--s5) 0 0 color-mix(in srgb, var(--gold) 11%, transparent);
+  border-top: 1px solid var(--gold);
+  border-bottom-color: var(--gold);
+}
 
-.boot-line { margin: var(--s3) 0 0; padding-top: var(--s3); border-top: 1px solid var(--rule); font-size: var(--t-small); }
+/* The two marks a name can carry here, and no more. */
+.ball-mark { width: 15px; height: 15px; flex: none; color: var(--gold-deep); }
 
+.star { color: var(--gold); font-size: var(--t-small); line-height: 1; flex: none; }
+
+.sheet-foot {
+  margin-top: var(--s1);
+  padding-top: var(--s3);
+  border-top: 1px solid var(--rule);
+  font-family: var(--font-data);
+  font-size: var(--t-small);
+  color: var(--ink-soft);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s1) var(--s4);
+}
+
+@media (min-width: 900px) {
+  /* The same fix the ladder rung already carries, and the same reason: a
+     stat sitting a thousand pixels from the name it belongs to. The name
+     column stops stretching and the row packs to the left; the sheet
+     itself still spans the rail's own width. Phase 28 replaces this with
+     the rail proper. */
+  .team-sheet .head,
+  .team-sheet li {
+    grid-template-columns: minmax(0, 20rem) auto 2.4rem;
+    justify-content: start;
+  }
+}
+
+/* Still shared with the admin "Add result" flow's own MOTM picker
+   (components/add-result/ExtrasStep.jsx) — the pill itself, not the
+   matchday-only marks that used to ride on it. */
 .squad-pills { display: flex; flex-wrap: wrap; gap: var(--s1); }
-
-.squad-key { margin-top: var(--s3); }
 
 .squad-pill {
   font-size: var(--t-small);
@@ -126,21 +221,7 @@
   padding: 0.22rem 0.7rem;
 }
 
-.squad-pill.scored { background: var(--board); border-color: var(--board); color: var(--on-board); }
-
 .squad-pill.motm { background: var(--gold); border-color: var(--gold); color: var(--board); font-weight: 700; }
-
-.squad-pill em {
-  font-style: normal;
-  opacity: 0.65;
-  font-family: var(--font-data);
-  font-size: var(--t-micro);
-  margin-left: 0.3rem;
-}
-
-.squad-pill em.card-mark { color: var(--verdigris-deep); opacity: 1; }
-
-.squad-pill.scored em.card-mark, .squad-pill.motm em.card-mark { color: inherit; }
 
 .squad-pill.as-button { cursor: pointer; font: inherit; font-size: var(--t-small); font-weight: 600; }
 
@@ -158,4 +239,12 @@
   .sb-row .badge { width: 36px; height: 36px; font-size: var(--t-micro); }
 
   .grid.match-cards { grid-template-columns: 1fr; }
+
+  /* .sheet's own padding drops to --s4 at this width, and the wash has to
+     bleed the same distance to still reach the edge. */
+  .team-sheet li.motm {
+    box-shadow:
+      calc(var(--s4) * -1) 0 0 color-mix(in srgb, var(--gold) 11%, transparent),
+      var(--s4) 0 0 color-mix(in srgb, var(--gold) 11%, transparent);
+  }
 }
