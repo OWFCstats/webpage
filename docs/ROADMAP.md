@@ -51,6 +51,7 @@ page-by-page review against the club's real 2025/26 season.
 | 24 | Players, the second pass | `seasonPools`, the closed archive banner, five small tables became one wide reference table |
 | 25 | Matchday: the season ladder | `seasonLadder` + `SeasonLadder.jsx`: the stepper, jump strip, form chips and next-fixture card became one object, every game a rung with its running goal difference; the budget moved to 2,300 |
 | 26 | Matchday: the match panel | `MotmPlate.jsx` and `TeamSheet.jsx` replace the monogram card and squad pills; the scoreboard gained a head row (competition, matchday number, W/D/L) and one condensed meta line; `BallMark` and a gold star are the only two marks a name carries; `WorthNoting` deleted, its ordinals now the team sheet's own App column |
+| 27 | Matchday: head to head, and the report | `HeadToHead.jsx` (`lib/league.js`'s `twoRows`) replaces `ComparisonCard.jsx`: every meeting this season on `ResultList`'s inline variant, then a six-row mirrored-bar tape where the opponent has a league row this season, the old two-figure comparison where it doesn't; `MatchReport.jsx` clamps to its first ~300 characters (`lib/format.js`'s `clampReport`) with the rest behind one control. Real new content, not a wash: the default route rose to 2,456px against its 2,300 budget, purely from the tape — see `DESIGN.md` → *Page length* |
 
 **The detail behind any closed phase is in its commit** — `git log --grep="Phase
 20"` finds it, and forty-five commits name their phase. That is what makes
@@ -63,50 +64,6 @@ nothing is stored twice**, and **a component that gains a second page moves up t
 ---
 
 ## Now
-
-### Phase 27 — Matchday: head to head, and the report
-
-"How it compares" becomes a head-to-head section, and a long report stops setting
-the length of the page.
-
-**Files**
-
-- `src/components/matchday/HeadToHead.jsx` — new; delete `ComparisonCard.jsx`
-- `src/components/matchday/MatchReport.jsx`
-- `src/lib/league.js` — add `twoRows`
-- `src/pages/Matchday.jsx`, `src/styles/pages/matchday.css`
-- `tests/league.test.js`, `docs/DESIGN.md`
-
-**Do**
-
-1. `twoRows(leagueRows, teams, season, opponentTeamId)` → `{ us, them }`, either
-   possibly `null`. It calls `leagueStandings` and picks two rows out of it — it
-   does not re-derive points or goal difference, which that function already
-   owns.
-2. `HeadToHead.jsx`, heading "Head to head": first every meeting with this
-   opponent this season, on `ResultList`'s compact inline variant
-   (`matchContext.priorMeetings` plus this match); then the tape — one row per
-   figure (points, won, drawn, lost, scored, conceded) with the two values at the
-   outer edges and mirrored bars growing outward from a centre label. The leading
-   side's figure takes its own colour, the trailing side's takes `--ink-soft`.
-   Footnote: games played each, and the `updatedAt` `leagueStandings` returns.
-3. **The empty branch is the common one.** A friendly, a cup tie, or a club with
-   no row in the division has no tape. Then the meetings list renders alone, with
-   the two figures `ComparisonCard` used to carry — this game's scored and
-   conceded against the season average before it, already on `matchContext` as
-   `avgFor` / `avgAgainst`. Nothing is lost, it just stops being a card.
-4. `MatchReport.jsx` clamps to the first ~300 characters at a word boundary, with
-   the rest behind one control ("Read the rest" / "Show less"). Split on
-   paragraph breaks so the rest opens as paragraphs, not one block. A report
-   already inside the limit renders whole and shows no control.
-
-**Done means** no "how it compares" card; a friendly against a club with no
-league row renders the meetings and the two figures and does not crash; the
-control appears only when there is something behind it; the clamp is unit-tested
-(short report, long report, one exactly at the boundary); `check:layout` clean;
-Matchday's height recorded both clamped and open.
-
----
 
 ### Phase 28 — Matchday: the desktop rail
 
@@ -186,9 +143,9 @@ view. *Now* is `npm run shots` on the `mid-season` fixture at 375px.
 | Page | Now | Budget | Owner |
 | --- | --- | --- | --- |
 | Home | 2,047 | 1,600 | **unowned** — 447 over; Phase 23's badge, label and button cost 165px of it |
-| Matchday — latest | 2,220 | 2,300 | met (25) — 1,812 before the ladder, against the old 1,900 |
-| Matchday — clean sheet (12 named, a report) | 2,682 | 2,300 | 27 — 382 over; the report clamp is the big lever |
-| Matchday — walkover (no team sheet) | 1,507 | 2,300 | within |
+| Matchday — latest | 2,456 | 2,300 | **unowned** — 156 over; head to head's tape, real content the old card didn't carry (28?) |
+| Matchday — clean sheet (12 named, a report, clamped / open) | 2,746 / 3,150 | 2,300 | **unowned** — 446 over clamped; the clamp bounds it, it doesn't fit it (28?) |
+| Matchday — walkover (no team sheet) | 1,533 | 2,300 | within |
 | Season | 3,224 | 2,200 | 29 |
 | Season → charts | 1,909 | 2,200 | met (18) |
 | Players → Leaderboards | 1,296 | 1,400 | met (14, 24) |
@@ -206,7 +163,18 @@ are most of the page and neither shrinks without breaking a rule.
 
 ## Decisions
 
-**Nothing open.**
+**Open.**
+
+1. Whether Matchday's budget needs to move again, the way it did in Phase 25,
+   or whether Phase 28's rail closes the gap on its own. Phase 27 shipped head
+   to head at its full designed size — the tape's six rows, not a smaller
+   version — and that alone put the default route 156px over 2,300; the
+   clean-sheet route's report clamp bounds a long write-up rather than
+   shrinking the page below what Phase 26 measured. The numbers and the
+   argument are in `DESIGN.md` → *Page length*. Left open because a rail may
+   answer it for free — putting the ladder in its own column stops the panel
+   stacking under it at all — and that is worth measuring before anyone
+   shrinks a tape this phase was asked to build in full.
 
 **Settled, and worth knowing before you touch a scoreline.**
 

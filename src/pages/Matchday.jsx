@@ -3,12 +3,13 @@ import { Link, useParams } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import { useAuth } from '../context/AuthContext';
 import { ErrorNote, Spinner } from '../components/bits';
-import ComparisonCard from '../components/matchday/ComparisonCard';
+import HeadToHead from '../components/matchday/HeadToHead';
 import MatchReport from '../components/matchday/MatchReport';
 import MotmPlate from '../components/matchday/MotmPlate';
 import Scoreboard from '../components/matchday/Scoreboard';
 import SeasonLadder from '../components/matchday/SeasonLadder';
 import TeamSheet from '../components/matchday/TeamSheet';
+import { twoRows } from '../lib/league';
 import {
   currentSeasonOf,
   isPlayed,
@@ -19,7 +20,7 @@ import {
 
 export default function Matchday() {
   const { matchId } = useParams();
-  const { players, matches, appearances, teams, loading, error } = useData();
+  const { players, matches, appearances, teams, leagueRows, loading, error } = useData();
   const { session } = useAuth();
 
   const view = useMemo(() => {
@@ -42,8 +43,9 @@ export default function Matchday() {
       // season's archive, and next season's fixtures belong to next season's.
       rungs: season ? seasonLadder(matches, season) : [],
       ctx: match ? matchContext(match, players, matches, appearances) : null,
+      rows: match ? twoRows(leagueRows, teams, match.season, match.opponent_team_id) : null,
     };
-  }, [matchId, players, matches, appearances]);
+  }, [matchId, players, matches, appearances, leagueRows, teams]);
 
   if (loading) return <Spinner />;
   if (error) return <ErrorNote message={error} />;
@@ -57,7 +59,7 @@ export default function Matchday() {
     );
   }
 
-  const { currentSeason, season, match, rungs, ctx } = view;
+  const { currentSeason, season, match, rungs, ctx, rows } = view;
 
   if (matchId && !match) {
     return <div className="empty sheet">Match not found. <Link className="more" to="/season">Full season →</Link></div>;
@@ -93,20 +95,7 @@ export default function Matchday() {
           then the season behind it. */}
       <SeasonLadder rungs={rungs} season={season} currentId={match.id} teams={teams}>
         <div className="ladder-panel">
-          {played && (star || avgFor != null) && (
-            <div className="grid match-cards section">
-              {star && <MotmPlate star={star} seasonAppCount={seasonAppCount} />}
-              {avgFor != null && (
-                <ComparisonCard
-                  match={match}
-                  avgFor={avgFor}
-                  avgAgainst={avgAgainst}
-                  priorMeetings={priorMeetings}
-                  teams={teams}
-                />
-              )}
-            </div>
-          )}
+          {played && star && <MotmPlate star={star} seasonAppCount={seasonAppCount} />}
 
           <TeamSheet
             squad={squad}
@@ -114,6 +103,20 @@ export default function Matchday() {
             debutIds={debutIds}
             dropoutNames={dropoutNames}
           />
+
+          {played && (
+            <HeadToHead
+              match={match}
+              teams={teams}
+              priorMeetings={priorMeetings}
+              avgFor={avgFor}
+              avgAgainst={avgAgainst}
+              us={rows.us}
+              them={rows.them}
+              division={rows.division}
+              updatedAt={rows.updatedAt}
+            />
+          )}
 
           <MatchReport match={match} canWrite={played && Boolean(session)} />
         </div>

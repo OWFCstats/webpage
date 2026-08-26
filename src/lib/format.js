@@ -93,3 +93,39 @@ export function ordinal(n) {
   const v = n % 100;
   return n + (s[(v - 20) % 10] || s[v] || s[0]);
 }
+
+/**
+ * A match report clamped to its first ~300 characters at a word boundary, so
+ * a long write-up doesn't set the length of the page it sits on. Paragraphs
+ * (blank-line separated) are kept whole where they fit; the one the cut
+ * falls inside is trimmed to the last word boundary and its own tail becomes
+ * the first paragraph of `rest`, so reopening it reads as paragraphs rather
+ * than one block. `rest` is empty when the whole report already fits within
+ * `limit` — the caller's signal to render it whole and show no control.
+ */
+export function clampReport(text, limit = 300) {
+  const paragraphs = text.trim().split(/\n{2,}/).map((p) => p.trim()).filter(Boolean);
+  if (text.length <= limit) return { head: paragraphs, rest: [] };
+
+  const head = [];
+  const rest = [];
+  let used = 0;
+  for (const p of paragraphs) {
+    if (rest.length > 0) {
+      rest.push(p);
+      continue;
+    }
+    if (used + p.length <= limit) {
+      head.push(p);
+      used += p.length;
+      continue;
+    }
+    const budget = limit - used;
+    const cut = p.lastIndexOf(' ', budget);
+    const at = cut > 0 ? cut : budget;
+    head.push(`${p.slice(0, at).trimEnd()}…`);
+    const tail = p.slice(at).trim();
+    if (tail) rest.push(tail);
+  }
+  return { head, rest };
+}

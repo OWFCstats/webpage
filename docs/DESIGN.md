@@ -70,8 +70,8 @@ One invariant is worth keeping, because it is what stops a fourth surface
 arriving by accident: **no class whose name contains `card` draws a surface.**
 Several survive as names for objects and layouts — `.card-foot` is the footnote
 at the foot of a surface, `.card-mark` is a yellow or a red card, `.lead-card`,
-`.chart-card` and `.season-card` name components, and `.season-cards`,
-`.player-cards` and `.match-cards` are grids. Every one of them either sets
+`.chart-card` and `.season-card` name components, and `.season-cards` and
+`.player-cards` are grids. Every one of them either sets
 padding on an element that already carries `.sheet`, or lays out a row. The only
 one that touches colour is `.season-card.best`, and it re-tints a sheet rather
 than defining one.
@@ -175,16 +175,20 @@ only on the two pages above.
 
 ### Matchday is a ladder with one match open on it
 
-> **Phases 25–26 have landed; 27–28 have not.** The ladder is built —
+> **Phases 25–27 have landed; 28 has not.** The ladder is built —
 > `lib/matches.js`'s `seasonLadder`, `components/matchday/SeasonLadder.jsx`
 > and `styles/components/season-ladder.css` — and so is the match panel's own
 > read: `Scoreboard.jsx` carries the new head row and condensed meta line,
 > `MotmPlate.jsx` replaces the monogram card, and `TeamSheet.jsx` replaces the
-> squad pills, with `WorthNoting` deleted into its App column. What is still
-> the old page is `ComparisonCard.jsx` (Phase 27 replaces it with
-> `HeadToHead.jsx`) and the unclamped report. The flat is
-> `docs/mocks/matchday-final.html` — open it before writing any Matchday
-> component, and read the phases in `docs/ROADMAP.md` for what each one owns.
+> squad pills, with `WorthNoting` deleted into its App column.
+> `HeadToHead.jsx` (`lib/league.js`'s `twoRows`) replaces `ComparisonCard.jsx`,
+> and `MatchReport.jsx` clamps to its first ~300 characters
+> (`lib/format.js`'s `clampReport`) with the rest behind one control. What is
+> still the old page is the single column below 900px: Phase 28 is what turns
+> it into a rail, with the ladder down the side and the match beside it. The
+> flat is `docs/mocks/matchday-final.html` — open it before writing any
+> Matchday component, and read the phases in `docs/ROADMAP.md` for what each
+> one owns.
 
 The section owns one match at a time, and the archive across the season. Those
 used to be two objects stacked on one page — a scoreboard on top, a stepper and a
@@ -1266,6 +1270,30 @@ team sheet replacing the squad pills and "Worth noting" going (Phase 26, to
 2,682px) — and head to head replacing the comparison card, and above all the
 report clamping to ~300 characters, which is what stops whoever wrote it up on
 the Sunday from setting the length of the page, are Phase 27's.
+
+Phase 27 shipped both, and the clean-sheet number moved the wrong way first.
+The old fixture report was 222 characters — short enough that the clamp never
+fired, which proved nothing about it — so it grew to 784 across two paragraphs,
+a length the club's own reports do reach. Clamped, the route is now 2,746px:
+worse than the 2,682px it replaces, because a bounded ~300 characters of report
+is still more than a whole 222, and the six-row tape (points, won, drawn, lost,
+scored, conceded, each with its own head and footnote) is real content a
+two-line "how it compares" card never carried. That is the honest comparison —
+not the clamp failing, but the old number having been measured against a report
+too short to need one. What the clamp actually buys is bounded growth: open, the
+same route is 3,150px, and that is the number a full unclamped report would have
+put on the page regardless of length. The default route moved too, to 2,456px
+against its 82px of headroom — purely the tape, since Old Stoics has a row in
+the table and the season's most-viewed match now carries the full six-row
+comparison the old card never showed. `npm run shots` records all three
+(`matchday`, `matchday-clean-sheet`, `matchday-clean-sheet-open`); `check:layout`
+reports the overage rather than failing on it, the same as it does for Home and
+Season. Matchday's budget moved from 1,900 to 2,300 once already, for the same
+reason it may need a second look now: the page's job changed again, in the same
+direction the ladder moved it. No phase owns closing this gap yet — Phase 28's
+rail is the likelier fix than a smaller head to head, since a side column stops
+it stacking under the ladder at all, rather than shrinking content this phase
+was asked to add in full.
 
 ## CSS structure
 

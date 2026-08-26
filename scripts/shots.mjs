@@ -36,7 +36,7 @@ try {
       await mkdir(dir, { recursive: true });
       const page = await harness.open(dataset, width);
       for (const route of routes) {
-        await visit(page, route.route, { charts: route.charts });
+        await visit(page, route.route, { charts: route.charts, open: route.open });
         await page.screenshot({ path: join(dir, `${route.id}.png`), fullPage: true });
         const height = await page.evaluate(() =>
           Math.max(document.documentElement.scrollHeight, document.body.scrollHeight));
