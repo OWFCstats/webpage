@@ -52,8 +52,9 @@ page-by-page review against the club's real 2025/26 season.
 | 25 | Matchday: the season ladder | `seasonLadder` + `SeasonLadder.jsx`: the stepper, jump strip, form chips and next-fixture card became one object, every game a rung with its running goal difference; the budget moved to 2,300 |
 | 26 | Matchday: the match panel | `MotmPlate.jsx` and `TeamSheet.jsx` replace the monogram card and squad pills; the scoreboard gained a head row (competition, matchday number, W/D/L) and one condensed meta line; `BallMark` and a gold star are the only two marks a name carries; `WorthNoting` deleted, its ordinals now the team sheet's own App column |
 | 27 | Matchday: head to head, and the report | `HeadToHead.jsx` (`lib/league.js`'s `twoRows`) replaces `ComparisonCard.jsx`: every meeting this season on `ResultList`'s inline variant, then a six-row mirrored-bar tape where the opponent has a league row this season, the old two-figure comparison where it doesn't; `MatchReport.jsx` clamps to its first ~300 characters (`lib/format.js`'s `clampReport`) with the rest behind one control. Real new content, not a wash: the default route rose to 2,456px against its 2,300 budget, purely from the tape — see `DESIGN.md` → *Page length* |
-| 28 | Matchday: the desktop rail | Above 900px, `.matchday-rail` in `styles/pages/matchday.css` turns the page into a 344px/1fr grid: `SeasonLadder`'s own two wrapping elements go `display: contents`, promoting the head, every rung and the current match's panel to be direct grid items, so the one tree Matchday already builds serves both layouts. The open rung shares a row with the panel and stretches to match it, turning the highlight into a gold band the height of the match beside it. Below 900px is unchanged; the 375px budget is untouched since the rail is a >=900px-only change — see `DESIGN.md` → *Page length* |
+| 28 | Matchday: the desktop rail | Above 900px, `.matchday-rail` in `styles/pages/matchday.css` turns the page into a 344px/1fr grid, the season on the left and the match beside it. Built with `display: contents` on `SeasonLadder`'s wrapping elements so one tree served both layouts; **superseded by Phase 31**, which is where the mechanism is now written down. Below 900px is unchanged |
 | 29 | Season, the ladder | `SeasonLadder` moved to `components/` and reused on Season in place of `ResultsTable` and `UpcomingFixtures` — a ~40px rung against the ~80px row, every game and both fixtures still on the page; 3,224px → 2,490px, 734px back but 290 short of the 2,200 budget — see *Decisions* → *Open* |
+| 31 | Matchday: the rail, corrected | Phase 28's `display: contents` put the match panel in the *open rung's own grid row*, so that rung stretched to the panel's height — a 40px rung became a thousand-pixel gold slab, and the rest of the season was pushed below the whole match instead of continuing under it. The rail and the match are two ordinary boxes again; Matchday reads the 900px breakpoint with `useIsNarrow` and places the panel, because CSS can restyle a box but not reparent one. Above 1200px the match splits into the two columns the approved flat always had — squad left, comparison and report right — which no phase had ever asked for. `MatchReport`'s clamp state moved up to its caller, so a resize across 900px no longer collapses an open report. 375px is untouched (2,456 / 2,746 / 3,150px); 1400px goes 2,336 → 1,183px on the default route. Out of order on purpose: a defect in shipped work, not new scope |
 
 **The detail behind any closed phase is in its commit** — `git log --grep="Phase
 20"` finds it, and forty-five commits name their phase. That is what makes
@@ -88,8 +89,8 @@ view. *Now* is `npm run shots` on the `mid-season` fixture at 375px.
 | Page | Now | Budget | Owner |
 | --- | --- | --- | --- |
 | Home | 2,047 | 1,600 | **unowned** — 447 over; Phase 23's badge, label and button cost 165px of it |
-| Matchday — latest | 2,456 | 2,300 | **unowned** — 156 over; head to head's tape, real content the old card didn't carry. Phase 28's rail doesn't move this: the budget is stated at 375px and the rail is a >=900px-only change |
-| Matchday — clean sheet (12 named, a report, clamped / open) | 2,746 / 3,150 | 2,300 | **unowned** — 446 over clamped; the clamp bounds it, it doesn't fit it. Same as above, untouched by 28 |
+| Matchday — latest | 2,456 | 2,300 | **unowned** — 156 over; head to head's tape, real content the old card didn't carry. The rail doesn't move this: the budget is stated at 375px and the rail is a >=900px-only change |
+| Matchday — clean sheet (12 named, a report, clamped / open) | 2,746 / 3,150 | 2,300 | **unowned** — 446 over clamped; the clamp bounds it, it doesn't fit it. Same as above, untouched by 28 or 31 |
 | Matchday — walkover (no team sheet) | 1,533 | 2,300 | within |
 | Season | 2,490 | 2,200 | **unowned** — 290 over; Phase 29's `SeasonLadder` reuse took 734px back, see *Decisions* → *Open* |
 | Season → charts | 1,909 | 2,200 | met (18) |
@@ -116,7 +117,7 @@ are most of the page and neither shrinks without breaking a rule.
    that alone put the default route 156px over 2,300; the clean-sheet route's
    report clamp bounds a long write-up rather than shrinking the page below
    what Phase 26 measured. The numbers and the argument are in `DESIGN.md` →
-   *Page length*. Phase 28's rail was the hoped-for third way — a side column
+   *Page length*. The rail was the hoped-for third way — a side column
    stops the panel stacking under the ladder at all — but it doesn't reach
    this number: the budget is stated at 375px and the rail only applies above
    900px, so the gap is exactly what Phase 27 left it (see *Settled* below).

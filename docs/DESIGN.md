@@ -187,16 +187,30 @@ W/D/L — plus the running goal difference after each game, which is what makes 
 a season rather than an index. Fixtures sit at the top with no score and no
 result. Above 900px the ladder becomes a rail and the match reads beside it: the
 first two-column page on the site, and the one thing a stacked page could never
-do, which is show the whole season while one match is being read (Phase 28).
-`SeasonLadder`'s own two wrapping elements — the section and the list — go
-`display: contents` at that width, in `styles/pages/matchday.css`, which
-promotes the head, every rung, and the panel a current match opens to be
-direct items of the page's own grid. That is what lets the tree Matchday
-already builds serve both layouts: one column below 900px, two above it,
-the panel written once either way. The rung that shares a row with the panel
-is the one that's open — its own cell stretches to match, so the highlight
-becomes a gold band running the height of the match beside it, rather than
-leaving a gap in the rail.
+do, which is show the whole season while one match is being read (Phase 28,
+corrected in Phase 31).
+
+**A rung is a rung at every width.** The rail is a 344px box holding the whole
+ladder, the match is a box beside it, and each keeps its own flow — so the
+season runs unbroken down the left however tall the match is, and the open
+rung is the same 40px as the fifteen above and below it. Phase 28 built this
+as one grid with `display: contents` on `SeasonLadder`'s two wrapping
+elements, so a single tree could serve both layouts. It cost more than it
+saved: promoting every rung to a grid item put the panel in the open rung's
+own *row*, which made that rung stretch a thousand pixels to meet it — the
+match a reader picked turned into a gold slab down the rail — and pushed the
+rest of the season below the whole panel rather than letting it continue
+under the rung. Reparenting is the one thing CSS cannot do to a box, so
+Matchday reads the breakpoint in JS (`useIsNarrow`, the hook the charts
+already use) and places the match panel in the ladder below 900px and in the
+detail column above it. One instance either way; two ordinary boxes.
+
+**Above 1200px the match splits in two**: the squad on the left — the man of
+the match and the team sheet, what a player opened the page for — and the
+comparison and the write-up on the right. Below that the detail column is one
+stack, because half of it is narrower than a team sheet. A walkover has no
+squad and no man of the match, which would leave one half empty, so the split
+only happens when both sides have something in them.
 
 **The ladder is scoped to one season — the season of the match being read.** It
 is that season's archive, so next season's fixtures are not on it, which is the
@@ -1285,15 +1299,19 @@ Season. Matchday's budget moved from 1,900 to 2,300 once already, for the same
 reason it may need a second look now: the page's job changed again, in the same
 direction the ladder moved it.
 
-Phase 28's rail doesn't close this gap, and measuring it settles why: the
-budget is stated at 375px, and the rail only applies above 900px, so the
-number this table tracks is untouched — the default route is still 2,456px,
-the clean-sheet route still 2,746px clamped and 3,150px open, the same three
-figures Phase 27 left. What the rail does move is the reading nobody had
-taken yet: at 1400px those same three routes are 2,336px, 2,580px and
-2,821px — shorter than at 700px, because the panel no longer stacks under the
-whole ladder — but it isn't the number this table tracks, so it isn't this
-gap closing. No phase owns the 375px gap yet.
+The rail doesn't close this gap, and measuring it settles why: the budget is
+stated at 375px, and the rail only applies above 900px, so the number this
+table tracks is untouched — the default route is still 2,456px, the
+clean-sheet route still 2,746px clamped and 3,150px open, the same three
+figures Phase 27 left. What the rail moves is the reading nobody had taken
+yet. Phase 28 took those three routes at 1400px to 2,336px, 2,580px and
+2,821px; Phase 31's correction takes them to 1,183px, 1,378px and 1,378px,
+because the season now runs beside the match instead of around it and the
+match itself sits in two columns. The clamped and open clean-sheet routes
+measure the same at that width — the team sheet sets the page's height, not
+the report — which is the clamp doing nothing it needs to do on a desktop and
+everything it needs to do on a phone. None of it is the number this table
+tracks, so none of it is this gap closing. No phase owns the 375px gap yet.
 
 ## CSS structure
 

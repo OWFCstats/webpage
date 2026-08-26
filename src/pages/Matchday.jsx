@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import { useAuth } from '../context/AuthContext';
@@ -10,6 +10,7 @@ import Scoreboard from '../components/matchday/Scoreboard';
 import SeasonLadder from '../components/SeasonLadder';
 import TeamSheet from '../components/matchday/TeamSheet';
 import { twoRows } from '../lib/league';
+import { useIsNarrow } from '../lib/useIsNarrow';
 import {
   currentSeasonOf,
   isPlayed,
@@ -22,6 +23,17 @@ export default function Matchday() {
   const { matchId } = useParams();
   const { players, matches, appearances, teams, leagueRows, loading, error } = useData();
   const { session } = useAuth();
+  // The rail is a real two-column layout, so the panel is a child of the
+  // ladder below 900px and a child of the detail column above it. CSS can
+  // restyle a box but it cannot reparent one, and the alternative — leaving
+  // the panel inside the ladder and dissolving the ladder with
+  // `display: contents` — is what made the open rung stretch to the panel's
+  // height. Same hook the charts already use for the same reason.
+  const stacked = useIsNarrow('(max-width: 899px)');
+  // The report's clamp control, held here rather than in MatchReport: the
+  // line above unmounts it when the window crosses 900px, and an opened
+  // report should survive a resize.
+  const [reportOpen, setReportOpen] = useState(false);
 
   const view = useMemo(() => {
     const currentSeason = currentSeasonOf(matches);
@@ -86,43 +98,69 @@ export default function Matchday() {
   } = ctx;
   const star = motm[0];
 
+  // The match, built once and placed by whichever layout is live. The flat
+  // renders it twice and hides one per width, which is fine in a flat and not
+  // in a component.
+  const scoreboard = <Scoreboard match={match} matchNumber={matchNumber} teams={teams} />;
+  const plate = played && star ? <MotmPlate star={star} seasonAppCount={seasonAppCount} /> : null;
+  const sheet = (
+    <TeamSheet
+      squad={squad}
+      seasonAppCount={seasonAppCount}
+      debutIds={debutIds}
+      dropoutNames={dropoutNames}
+    />
+  );
+  const h2h = played ? (
+    <HeadToHead
+      match={match}
+      teams={teams}
+      priorMeetings={priorMeetings}
+      avgFor={avgFor}
+      avgAgainst={avgAgainst}
+      us={rows.us}
+      them={rows.them}
+      division={rows.division}
+      updatedAt={rows.updatedAt}
+    />
+  ) : null;
+  const report = (
+    <MatchReport
+      match={match}
+      canWrite={played && Boolean(session)}
+      open={reportOpen}
+      onToggle={() => setReportOpen((o) => !o)}
+    />
+  );
+
+  // Stacked: the ladder is the page's spine — the fixtures ahead, the match
+  // being read, everything that match has to say, and then the season behind
+  // it.
+  if (stacked) {
+    return (
+      <div>
+        {scoreboard}
+        <SeasonLadder rungs={rungs} season={season} currentId={match.id} teams={teams}>
+          <div className="ladder-panel">{plate}{sheet}{h2h}{report}</div>
+        </SeasonLadder>
+      </div>
+    );
+  }
+
+  // The rail: the season whole on the left, one match read on the right. The
+  // two stacks inside the match sit side by side once the column is wide
+  // enough for both — the squad first, because that is what a player opened
+  // the page for. See .detail-cols in styles/pages/matchday.css.
   return (
     <div className="matchday-rail">
-      <Scoreboard match={match} matchNumber={matchNumber} teams={teams} />
-
-      {/* The ladder is the page's spine, not a section on it: the fixtures
-          ahead, the match being read, everything that match has to say, and
-          then the season behind it. Above 900px, matchday.css turns this
-          same tree into two columns — see the .matchday-rail rules there for
-          why nothing here needs to change to do it. */}
-      <SeasonLadder rungs={rungs} season={season} currentId={match.id} teams={teams}>
-        <div className="ladder-panel">
-          {played && star && <MotmPlate star={star} seasonAppCount={seasonAppCount} />}
-
-          <TeamSheet
-            squad={squad}
-            seasonAppCount={seasonAppCount}
-            debutIds={debutIds}
-            dropoutNames={dropoutNames}
-          />
-
-          {played && (
-            <HeadToHead
-              match={match}
-              teams={teams}
-              priorMeetings={priorMeetings}
-              avgFor={avgFor}
-              avgAgainst={avgAgainst}
-              us={rows.us}
-              them={rows.them}
-              division={rows.division}
-              updatedAt={rows.updatedAt}
-            />
-          )}
-
-          <MatchReport match={match} canWrite={played && Boolean(session)} />
+      <SeasonLadder rungs={rungs} season={season} currentId={match.id} teams={teams} />
+      <div className="match-detail">
+        {scoreboard}
+        <div className="detail-cols">
+          <div>{plate}{sheet}</div>
+          <div>{h2h}{report}</div>
         </div>
-      </SeasonLadder>
+      </div>
     </div>
   );
 }
