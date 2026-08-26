@@ -53,6 +53,7 @@ page-by-page review against the club's real 2025/26 season.
 | 26 | Matchday: the match panel | `MotmPlate.jsx` and `TeamSheet.jsx` replace the monogram card and squad pills; the scoreboard gained a head row (competition, matchday number, W/D/L) and one condensed meta line; `BallMark` and a gold star are the only two marks a name carries; `WorthNoting` deleted, its ordinals now the team sheet's own App column |
 | 27 | Matchday: head to head, and the report | `HeadToHead.jsx` (`lib/league.js`'s `twoRows`) replaces `ComparisonCard.jsx`: every meeting this season on `ResultList`'s inline variant, then a six-row mirrored-bar tape where the opponent has a league row this season, the old two-figure comparison where it doesn't; `MatchReport.jsx` clamps to its first ~300 characters (`lib/format.js`'s `clampReport`) with the rest behind one control. Real new content, not a wash: the default route rose to 2,456px against its 2,300 budget, purely from the tape — see `DESIGN.md` → *Page length* |
 | 28 | Matchday: the desktop rail | Above 900px, `.matchday-rail` in `styles/pages/matchday.css` turns the page into a 344px/1fr grid: `SeasonLadder`'s own two wrapping elements go `display: contents`, promoting the head, every rung and the current match's panel to be direct grid items, so the one tree Matchday already builds serves both layouts. The open rung shares a row with the panel and stretches to match it, turning the highlight into a gold band the height of the match beside it. Below 900px is unchanged; the 375px budget is untouched since the rail is a >=900px-only change — see `DESIGN.md` → *Page length* |
+| 29 | Season, the ladder | `SeasonLadder` moved to `components/` and reused on Season in place of `ResultsTable` and `UpcomingFixtures` — a ~40px rung against the ~80px row, every game and both fixtures still on the page; 3,224px → 2,490px, 734px back but 290 short of the 2,200 budget — see *Decisions* → *Open* |
 
 **The detail behind any closed phase is in its commit** — `git log --grep="Phase
 20"` finds it, and forty-five commits name their phase. That is what makes
@@ -66,39 +67,12 @@ nothing is stored twice**, and **a component that gains a second page moves up t
 
 ## Now
 
-### Phase 29 — Season, inside its budget
-
-Season is 3,248px against 2,200. Sixteen played games cost 1,286px on the shared
-result row before the league table, the summary or a single fixture is counted,
-and that arithmetic does not close by trimming.
-
-**Files** `src/pages/Season.jsx`, `src/components/season/*`,
-`src/styles/pages/season.css`, `docs/DESIGN.md`.
-
-**Do**
-
-1. The season's results become a ladder: one ~40px rung per game instead of an
-   ~80px result row, which is roughly 640px back with every game still on the
-   page.
-2. **Reuse `SeasonLadder.jsx` from Phase 25, do not write a second one.** It
-   takes `rungs`, `season`, `teams`, an optional `currentId` and optional
-   `children` (the panel that opens under the current rung); Season passes
-   neither of the last two and gets one unbroken ladder. It is in
-   `components/matchday/` and moves up to `components/` on that second caller,
-   with `styles/components/season-ladder.css` already where it needs to be. If
-   it needs more than new props, fix it there and note it.
-
-**Done means** `/season` under 2,200px at 375px with all sixteen games on it, or
-a written argument here for why the budget should move; `SeasonLadder` reused,
-not copied; `check:layout` clean.
-
----
-
 ### Phase 30 — The cosmetic review: Players and Records
 
 The last two sections of the review Phase 23 started on Home. Screenshot first at
 375px and 1400px, list the findings, then one branch per page. Matchday's own
-review is superseded by phases 25–28, and Season's length is Phase 29's job.
+review is superseded by phases 25–28, and Season's length was Phase 29's job —
+closed to within 290px; the rest is *Decisions* → *Open*.
 
 **Done means** two short phases appended above with real findings, or a line here
 saying a page had none.
@@ -117,7 +91,7 @@ view. *Now* is `npm run shots` on the `mid-season` fixture at 375px.
 | Matchday — latest | 2,456 | 2,300 | **unowned** — 156 over; head to head's tape, real content the old card didn't carry. Phase 28's rail doesn't move this: the budget is stated at 375px and the rail is a >=900px-only change |
 | Matchday — clean sheet (12 named, a report, clamped / open) | 2,746 / 3,150 | 2,300 | **unowned** — 446 over clamped; the clamp bounds it, it doesn't fit it. Same as above, untouched by 28 |
 | Matchday — walkover (no team sheet) | 1,533 | 2,300 | within |
-| Season | 3,224 | 2,200 | 29 |
+| Season | 2,490 | 2,200 | **unowned** — 290 over; Phase 29's `SeasonLadder` reuse took 734px back, see *Decisions* → *Open* |
 | Season → charts | 1,909 | 2,200 | met (18) |
 | Players → Leaderboards | 1,296 | 1,400 | met (14, 24) |
 | Records → badges / honours / all-time | 1,667 / 961 / 1,807 | 2,000 | met (16) |
@@ -148,6 +122,17 @@ are most of the page and neither shrinks without breaking a rule.
    900px, so the gap is exactly what Phase 27 left it (see *Settled* below).
    Still open, and still nobody's — a phase that takes it needs to choose
    between the two.
+
+2. Season's remaining 290px. Phase 29 reused `SeasonLadder` in place of the
+   shared result row and the separate upcoming-fixtures block, which took the
+   page from 3,224px to 2,490px — 734px back, all sixteen played games and
+   both fixtures ahead still on it. The 2,200 budget assumed the whole gap
+   would close on that lever alone; it doesn't, because what's left is the
+   full league table and the aside (season at a glance, the appearances
+   leaderboard), and Phase 29's brief was the ladder, not those two. A phase
+   that takes this needs to choose between shrinking one of them or moving
+   the budget the way Matchday's did — argued before the page is touched
+   again, not fitted to it afterwards.
 
 **Settled, and worth knowing before you touch a scoreline.**
 

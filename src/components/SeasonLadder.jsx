@@ -1,8 +1,8 @@
 import { Fragment } from 'react';
 import { Link } from 'react-router-dom';
-import { VenueBadge } from '../bits';
-import { dayMonth, formatDate, formatKickoff } from '../../lib/format';
-import { isPlayed, opponentTeam, resultOf } from '../../lib/matches';
+import { VenueBadge } from './bits';
+import { dayMonth, formatDate, formatKickoff } from '../lib/format';
+import { isPlayed, opponentTeam, resultOf } from '../lib/matches';
 
 /**
  * The opponent twice over, and CSS picks which one is read. Below 900px the

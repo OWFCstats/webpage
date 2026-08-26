@@ -7,7 +7,7 @@ import HeadToHead from '../components/matchday/HeadToHead';
 import MatchReport from '../components/matchday/MatchReport';
 import MotmPlate from '../components/matchday/MotmPlate';
 import Scoreboard from '../components/matchday/Scoreboard';
-import SeasonLadder from '../components/matchday/SeasonLadder';
+import SeasonLadder from '../components/SeasonLadder';
 import TeamSheet from '../components/matchday/TeamSheet';
 import { twoRows } from '../lib/league';
 import {

@@ -4,7 +4,7 @@ import { countdownLabel, formatDate, formatKickoff } from '../../lib/format';
 
 /** A compact row — who, when, and where. Full logistics (kickoff, ground,
  *  map) live on the fixture's own Matchday page, a tap away — the same trade
- *  Season's own upcoming list makes (see UpcomingFixtures). */
+ *  a fixture rung on Season's ladder makes. */
 export default function NextFixture({ next }) {
   const countdown = next ? countdownLabel(next.date) : null;
   const kickoff = next ? formatKickoff(next.kickoff_time) : '';
