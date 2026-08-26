@@ -87,12 +87,14 @@ export default function Matchday() {
   const star = motm[0];
 
   return (
-    <div>
+    <div className="matchday-rail">
       <Scoreboard match={match} matchNumber={matchNumber} teams={teams} />
 
       {/* The ladder is the page's spine, not a section on it: the fixtures
           ahead, the match being read, everything that match has to say, and
-          then the season behind it. */}
+          then the season behind it. Above 900px, matchday.css turns this
+          same tree into two columns — see the .matchday-rail rules there for
+          why nothing here needs to change to do it. */}
       <SeasonLadder rungs={rungs} season={season} currentId={match.id} teams={teams}>
         <div className="ladder-panel">
           {played && star && <MotmPlate star={star} seasonAppCount={seasonAppCount} />}

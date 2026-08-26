@@ -175,21 +175,6 @@ only on the two pages above.
 
 ### Matchday is a ladder with one match open on it
 
-> **Phases 25–27 have landed; 28 has not.** The ladder is built —
-> `lib/matches.js`'s `seasonLadder`, `components/matchday/SeasonLadder.jsx`
-> and `styles/components/season-ladder.css` — and so is the match panel's own
-> read: `Scoreboard.jsx` carries the new head row and condensed meta line,
-> `MotmPlate.jsx` replaces the monogram card, and `TeamSheet.jsx` replaces the
-> squad pills, with `WorthNoting` deleted into its App column.
-> `HeadToHead.jsx` (`lib/league.js`'s `twoRows`) replaces `ComparisonCard.jsx`,
-> and `MatchReport.jsx` clamps to its first ~300 characters
-> (`lib/format.js`'s `clampReport`) with the rest behind one control. What is
-> still the old page is the single column below 900px: Phase 28 is what turns
-> it into a rail, with the ladder down the side and the match beside it. The
-> flat is `docs/mocks/matchday-final.html` — open it before writing any
-> Matchday component, and read the phases in `docs/ROADMAP.md` for what each
-> one owns.
-
 The section owns one match at a time, and the archive across the season. Those
 used to be two objects stacked on one page — a scoreboard on top, a stepper and a
 strip of coloured chips under it, a form strip repeating the chips and a
@@ -202,10 +187,16 @@ W/D/L — plus the running goal difference after each game, which is what makes 
 a season rather than an index. Fixtures sit at the top with no score and no
 result. Above 900px the ladder becomes a rail and the match reads beside it: the
 first two-column page on the site, and the one thing a stacked page could never
-do, which is show the whole season while one match is being read. (Until Phase
-28 builds that rail, a rung above 900px simply stops stretching — its columns
-pack to the left so a scoreline never sits a thousand pixels from the name it
-belongs to, while the hairline and the gold wash still run the full width.)
+do, which is show the whole season while one match is being read (Phase 28).
+`SeasonLadder`'s own two wrapping elements — the section and the list — go
+`display: contents` at that width, in `styles/pages/matchday.css`, which
+promotes the head, every rung, and the panel a current match opens to be
+direct items of the page's own grid. That is what lets the tree Matchday
+already builds serve both layouts: one column below 900px, two above it,
+the panel written once either way. The rung that shares a row with the panel
+is the one that's open — its own cell stretches to match, so the highlight
+becomes a gold band running the height of the match beside it, rather than
+leaving a gap in the rail.
 
 **The ladder is scoped to one season — the season of the match being read.** It
 is that season's archive, so next season's fixtures are not on it, which is the
@@ -1290,10 +1281,17 @@ comparison the old card never showed. `npm run shots` records all three
 reports the overage rather than failing on it, the same as it does for Home and
 Season. Matchday's budget moved from 1,900 to 2,300 once already, for the same
 reason it may need a second look now: the page's job changed again, in the same
-direction the ladder moved it. No phase owns closing this gap yet — Phase 28's
-rail is the likelier fix than a smaller head to head, since a side column stops
-it stacking under the ladder at all, rather than shrinking content this phase
-was asked to add in full.
+direction the ladder moved it.
+
+Phase 28's rail doesn't close this gap, and measuring it settles why: the
+budget is stated at 375px, and the rail only applies above 900px, so the
+number this table tracks is untouched — the default route is still 2,456px,
+the clean-sheet route still 2,746px clamped and 3,150px open, the same three
+figures Phase 27 left. What the rail does move is the reading nobody had
+taken yet: at 1400px those same three routes are 2,336px, 2,580px and
+2,821px — shorter than at 700px, because the panel no longer stacks under the
+whole ladder — but it isn't the number this table tracks, so it isn't this
+gap closing. No phase owns the 375px gap yet.
 
 ## CSS structure
 

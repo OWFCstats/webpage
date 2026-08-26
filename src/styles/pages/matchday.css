@@ -333,3 +333,63 @@
       var(--s4) 0 0 color-mix(in srgb, var(--gold) 11%, transparent);
   }
 }
+
+/* ---- the desktop rail ----
+   Above 900px the season stops stacking above the match and sits beside it.
+   .season-ladder and .ladder — SeasonLadder's own two wrapping elements —
+   go display:contents here, which promotes their contents (the head, every
+   rung, and the panel a current match opens) up to be direct items of this
+   grid. The panel is still written once, in the one place Matchday.jsx puts
+   it; contents is what lets a single tree serve both layouts, rather than
+   the flat's two copies shown and hidden per width. */
+@media (min-width: 900px) {
+  .matchday-rail {
+    display: grid;
+    grid-template-columns: 344px 1fr;
+    align-items: start;
+    column-gap: var(--s5);
+    background: linear-gradient(
+      to right,
+      color-mix(in srgb, var(--sheet) 55%, var(--paper)) 0 344px,
+      var(--rule) 344px calc(344px + 1px),
+      transparent calc(344px + 1px)
+    );
+  }
+
+  .matchday-rail .season-ladder,
+  .matchday-rail .ladder {
+    display: contents;
+  }
+
+  .matchday-rail .ladder-head { grid-column: 1; grid-row: 1; padding-inline: var(--s4); }
+
+  .matchday-rail .scoreboard { grid-column: 2; grid-row: 1; }
+
+  /* The rail is 344px minus its own padding — narrower than the page this
+     rung was built for, and closer to a phone's width than to it. It keeps
+     the phone's flexible name column and short club name rather than the
+     wide-page rule (20rem, packed left) two rules up in season-ladder.css,
+     which would overflow a column this narrow. */
+  .matchday-rail .rung {
+    grid-column: 1;
+    grid-template-columns: 40px minmax(0, 1fr) auto 28px 22px;
+    gap: var(--s1);
+    padding-inline: var(--s4);
+  }
+
+  .matchday-rail .rung.fixture { grid-template-columns: 40px minmax(0, 1fr) auto; }
+
+  .matchday-rail .rung .dt { font-size: var(--t-micro); }
+
+  .matchday-rail .rung .op .full { display: none; }
+  .matchday-rail .rung .op .short { display: inline; }
+  .matchday-rail .rung .venue-badge { display: none; }
+
+  /* The one rung that ever shares a row with something in column two: the
+     panel lands beside whichever match is open, and stretching that rung's
+     own cell is what turns its wash into a gold band running the height of
+     the panel beside it, rather than leaving a gap in the rail. */
+  .matchday-rail .rung.now { align-self: stretch; }
+
+  .matchday-rail .ladder-panel { grid-column: 2; }
+}

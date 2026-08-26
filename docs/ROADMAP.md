@@ -52,6 +52,7 @@ page-by-page review against the club's real 2025/26 season.
 | 25 | Matchday: the season ladder | `seasonLadder` + `SeasonLadder.jsx`: the stepper, jump strip, form chips and next-fixture card became one object, every game a rung with its running goal difference; the budget moved to 2,300 |
 | 26 | Matchday: the match panel | `MotmPlate.jsx` and `TeamSheet.jsx` replace the monogram card and squad pills; the scoreboard gained a head row (competition, matchday number, W/D/L) and one condensed meta line; `BallMark` and a gold star are the only two marks a name carries; `WorthNoting` deleted, its ordinals now the team sheet's own App column |
 | 27 | Matchday: head to head, and the report | `HeadToHead.jsx` (`lib/league.js`'s `twoRows`) replaces `ComparisonCard.jsx`: every meeting this season on `ResultList`'s inline variant, then a six-row mirrored-bar tape where the opponent has a league row this season, the old two-figure comparison where it doesn't; `MatchReport.jsx` clamps to its first ~300 characters (`lib/format.js`'s `clampReport`) with the rest behind one control. Real new content, not a wash: the default route rose to 2,456px against its 2,300 budget, purely from the tape — see `DESIGN.md` → *Page length* |
+| 28 | Matchday: the desktop rail | Above 900px, `.matchday-rail` in `styles/pages/matchday.css` turns the page into a 344px/1fr grid: `SeasonLadder`'s own two wrapping elements go `display: contents`, promoting the head, every rung and the current match's panel to be direct grid items, so the one tree Matchday already builds serves both layouts. The open rung shares a row with the panel and stretches to match it, turning the highlight into a gold band the height of the match beside it. Below 900px is unchanged; the 375px budget is untouched since the rail is a >=900px-only change — see `DESIGN.md` → *Page length* |
 
 **The detail behind any closed phase is in its commit** — `git log --grep="Phase
 20"` finds it, and forty-five commits name their phase. That is what makes
@@ -64,36 +65,6 @@ nothing is stored twice**, and **a component that gains a second page moves up t
 ---
 
 ## Now
-
-### Phase 28 — Matchday: the desktop rail
-
-The season on the left, the match on the right. The first two-column page on the
-site.
-
-**Files** `src/pages/Matchday.jsx`, `src/styles/pages/matchday.css`,
-`docs/DESIGN.md` (*Mobile*).
-
-**Do**
-
-1. Above 900px: `grid-template-columns: 344px 1fr` — the ladder in a rail with a
-   right-hand hairline and a faint tint, the match beside it. Below 900px it is
-   exactly what phases 25–27 built.
-2. **Use a media query, not a container query.** The mock uses `@container` only
-   because it renders inside a fixed-width frame; the app has no such container
-   and `@media (min-width: 900px)` is what `styles/layout.css` already speaks.
-3. **One instance of the match panel.** The mock duplicates it and hides one per
-   width — fine in a flat, not in the app. Render it once and let the grid or
-   `order` place it.
-4. The rail's hairline and tint run the full height of the page, not the height
-   of the ladder.
-5. Nothing to add to the header: `Layout.jsx`'s `.main-nav` already carries the
-   five sections above 700px.
-
-**Done means** 1400px shows the whole season in the rail with the match beside
-it; 700px and below is unchanged from Phase 27; `check:layout` clean at all six
-widths; the 1400px shot shows no void under the rail.
-
----
 
 ### Phase 29 — Season, inside its budget
 
@@ -143,8 +114,8 @@ view. *Now* is `npm run shots` on the `mid-season` fixture at 375px.
 | Page | Now | Budget | Owner |
 | --- | --- | --- | --- |
 | Home | 2,047 | 1,600 | **unowned** — 447 over; Phase 23's badge, label and button cost 165px of it |
-| Matchday — latest | 2,456 | 2,300 | **unowned** — 156 over; head to head's tape, real content the old card didn't carry (28?) |
-| Matchday — clean sheet (12 named, a report, clamped / open) | 2,746 / 3,150 | 2,300 | **unowned** — 446 over clamped; the clamp bounds it, it doesn't fit it (28?) |
+| Matchday — latest | 2,456 | 2,300 | **unowned** — 156 over; head to head's tape, real content the old card didn't carry. Phase 28's rail doesn't move this: the budget is stated at 375px and the rail is a >=900px-only change |
+| Matchday — clean sheet (12 named, a report, clamped / open) | 2,746 / 3,150 | 2,300 | **unowned** — 446 over clamped; the clamp bounds it, it doesn't fit it. Same as above, untouched by 28 |
 | Matchday — walkover (no team sheet) | 1,533 | 2,300 | within |
 | Season | 3,224 | 2,200 | 29 |
 | Season → charts | 1,909 | 2,200 | met (18) |
@@ -166,15 +137,17 @@ are most of the page and neither shrinks without breaking a rule.
 **Open.**
 
 1. Whether Matchday's budget needs to move again, the way it did in Phase 25,
-   or whether Phase 28's rail closes the gap on its own. Phase 27 shipped head
-   to head at its full designed size — the tape's six rows, not a smaller
-   version — and that alone put the default route 156px over 2,300; the
-   clean-sheet route's report clamp bounds a long write-up rather than
-   shrinking the page below what Phase 26 measured. The numbers and the
-   argument are in `DESIGN.md` → *Page length*. Left open because a rail may
-   answer it for free — putting the ladder in its own column stops the panel
-   stacking under it at all — and that is worth measuring before anyone
-   shrinks a tape this phase was asked to build in full.
+   or whether the head to head tape needs to shrink. Phase 27 shipped it at
+   its full designed size — the tape's six rows, not a smaller version — and
+   that alone put the default route 156px over 2,300; the clean-sheet route's
+   report clamp bounds a long write-up rather than shrinking the page below
+   what Phase 26 measured. The numbers and the argument are in `DESIGN.md` →
+   *Page length*. Phase 28's rail was the hoped-for third way — a side column
+   stops the panel stacking under the ladder at all — but it doesn't reach
+   this number: the budget is stated at 375px and the rail only applies above
+   900px, so the gap is exactly what Phase 27 left it (see *Settled* below).
+   Still open, and still nobody's — a phase that takes it needs to choose
+   between the two.
 
 **Settled, and worth knowing before you touch a scoreline.**
 
@@ -189,7 +162,15 @@ are most of the page and neither shrinks without breaking a rule.
    flat, and would break Phase 29, which needs this component to put *every* game
    of a season on the page.
 
-2. **Score order.** Phase 23 made Home read home-first (`1–4` when we are away), with a badge marking which side is us.
+2. **The rail doesn't move the 375px budget.** Measured at Phase 28: the
+   default and clean-sheet routes are 2,456 / 2,746 / 3,150px at 375px, the
+   same three figures Phase 27 left, because the rail is a `min-width: 900px`
+   change and the budget is stated at 375px. What the rail does change is a
+   reading the table doesn't track — at 1400px the same three routes are
+   2,336 / 2,580 / 2,821px, shorter than at 700px, because the panel no
+   longer stacks under the whole ladder — but that isn't this gap closing.
+
+3. **Score order.** Phase 23 made Home read home-first (`1–4` when we are away), with a badge marking which side is us.
    Every other scoreline on the site reads goals-for–goals-against, ours first.
    That is deliberate — a scoreboard reads by venue, a result row reads by us —
    but if it ever needs to be uniform it is a `DESIGN.md` ruling, not a
