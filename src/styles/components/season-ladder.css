@@ -114,7 +114,9 @@
 
 /* The panel the current rung opens, sitting inside the season rather than
    above it. Its own contents already arrive as .sections, so the top gap is
-   theirs and the panel only closes itself off underneath. */
+   theirs and the panel only closes itself off underneath. Below 900px only:
+   above it the match reads beside the ladder instead — see .matchday-rail in
+   pages/matchday.css. */
 .ladder-panel {
   padding-bottom: var(--s5);
   border-bottom: 1px solid var(--rule-firm);
@@ -128,7 +130,8 @@
      pixels from the name it belongs to — the ledger rule, and the reason
      justify-content packs the tracks instead of the rung shrinking: the rung
      still spans the page, so the hairlines and the gold wash run the full
-     width. Phase 28 replaces this with the rail the ladder is really for. */
+     width. This is Season's rule; Matchday overrides it inside the rail, which
+     is 344px wide and closer to a phone. */
   .rung { grid-template-columns: 46px minmax(0, 20rem) auto 34px 22px; justify-content: start; }
   .rung.fixture { grid-template-columns: 46px minmax(0, 20rem) auto; }
 }

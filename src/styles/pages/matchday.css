@@ -285,8 +285,8 @@
   /* The same fix the ladder rung already carries, and the same reason: a
      stat sitting a thousand pixels from the name it belongs to. The name
      column stops stretching and the row packs to the left; the sheet
-     itself still spans the rail's own width. Phase 28 replaces this with
-     the rail proper. */
+     itself still spans its container's width. Inside the rail's split
+     detail column the sheet fills instead — see .detail-cols below. */
   .team-sheet .head,
   .team-sheet li {
     grid-template-columns: minmax(0, 20rem) auto 2.4rem;
@@ -335,43 +335,44 @@
 }
 
 /* ---- the desktop rail ----
-   Above 900px the season stops stacking above the match and sits beside it.
-   .season-ladder and .ladder — SeasonLadder's own two wrapping elements —
-   go display:contents here, which promotes their contents (the head, every
-   rung, and the panel a current match opens) up to be direct items of this
-   grid. The panel is still written once, in the one place Matchday.jsx puts
-   it; contents is what lets a single tree serve both layouts, rather than
-   the flat's two copies shown and hidden per width. */
+   Above 900px the season stops stacking above the match and sits beside it:
+   the ladder is one box in a 344px rail, the match is one box in the column
+   next to it, and each keeps its own flow.
+
+   Phase 28 built this as a single grid with `display: contents` on
+   SeasonLadder's two wrapping elements, so the one tree Matchday already
+   built could serve both layouts. It cost more than it saved. Promoting every
+   rung to a grid item put the panel in the *open rung's own row*, which meant
+   the rung had to stretch a thousand pixels to meet it — the match a reader
+   picked turned into a gold slab down the rail — and the rest of the season
+   was pushed below the whole panel rather than continuing under it. Reparenting
+   is the one thing CSS can't do to a box, so Matchday now places the panel in
+   JS at this breakpoint (`useIsNarrow`) and the layout is two ordinary boxes.
+   Corrected in Phase 31. */
 @media (min-width: 900px) {
   .matchday-rail {
     display: grid;
-    grid-template-columns: 344px 1fr;
-    align-items: start;
-    column-gap: var(--s5);
-    background: linear-gradient(
-      to right,
-      color-mix(in srgb, var(--sheet) 55%, var(--paper)) 0 344px,
-      var(--rule) 344px calc(344px + 1px),
-      transparent calc(344px + 1px)
-    );
+    grid-template-columns: 344px minmax(0, 1fr);
   }
 
-  .matchday-rail .season-ladder,
-  .matchday-rail .ladder {
-    display: contents;
+  /* The rail is a box again, so its hairline and tint stretch to the taller of
+     the two columns — the full height of the page, which is what Phase 28
+     wanted of them and painted as a background gradient to get. */
+  .matchday-rail .season-ladder {
+    margin-top: 0;
+    padding-block: var(--s4);
+    background: color-mix(in srgb, var(--sheet) 55%, var(--paper));
+    border-right: 1px solid var(--rule);
   }
 
-  .matchday-rail .ladder-head { grid-column: 1; grid-row: 1; padding-inline: var(--s4); }
-
-  .matchday-rail .scoreboard { grid-column: 2; grid-row: 1; }
+  .matchday-rail .ladder-head { padding-inline: var(--s4); }
 
   /* The rail is 344px minus its own padding — narrower than the page this
      rung was built for, and closer to a phone's width than to it. It keeps
      the phone's flexible name column and short club name rather than the
-     wide-page rule (20rem, packed left) two rules up in season-ladder.css,
-     which would overflow a column this narrow. */
+     wide-page rule (20rem, packed left) in season-ladder.css, which would
+     overflow a column this narrow. */
   .matchday-rail .rung {
-    grid-column: 1;
     grid-template-columns: 40px minmax(0, 1fr) auto 28px 22px;
     gap: var(--s1);
     padding-inline: var(--s4);
@@ -385,11 +386,41 @@
   .matchday-rail .rung .op .short { display: inline; }
   .matchday-rail .rung .venue-badge { display: none; }
 
-  /* The one rung that ever shares a row with something in column two: the
-     panel lands beside whichever match is open, and stretching that rung's
-     own cell is what turns its wash into a gold band running the height of
-     the panel beside it, rather than leaving a gap in the rail. */
-  .matchday-rail .rung.now { align-self: stretch; }
+  /* The rung's own padding already carries the wash to both edges of the rail,
+     so the bleed the full-width layout needs would push it past them — over
+     the hairline on one side and into the match on the other. */
+  .matchday-rail .rung.now { box-shadow: none; }
 
-  .matchday-rail .ladder-panel { grid-column: 2; }
+  .matchday-rail .match-detail {
+    min-width: 0;
+    padding: 0 0 var(--s5) var(--s5);
+  }
+}
+
+/* The match itself splits in two once the column beside the rail can hold two
+   readable ledgers: the squad on the left — what a player opened the page for
+   — and the comparison and the write-up on the right. Below this width it
+   stays one stack, because half of the column is narrower than a team sheet;
+   the two wrapping divs are transparent to layout until then. */
+@media (min-width: 1200px) {
+  .matchday-rail .detail-cols {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--s5);
+    align-items: start;
+  }
+
+  /* A walkover has no squad and no man of the match, which leaves one of the
+     two stacks empty — and half a column of nothing is worse than one column.
+     :empty is exact here: a stack with nothing in it renders no children. */
+  .matchday-rail .detail-cols:has(> :empty) { display: block; }
+
+  /* Inside a half-column the sheet fills its width instead of packing to
+     20rem: the column is already the width that rule was protecting the name
+     from, and packing it just leaves a strip of nothing down the right. */
+  .matchday-rail .detail-cols .team-sheet .head,
+  .matchday-rail .detail-cols .team-sheet li {
+    grid-template-columns: minmax(0, 1fr) auto 2.4rem;
+    justify-content: stretch;
+  }
 }

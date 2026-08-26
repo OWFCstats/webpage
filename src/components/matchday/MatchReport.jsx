@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { clampReport } from '../../lib/format';
 
@@ -8,10 +7,13 @@ const CLAMP = 300;
  *  behind one control, since reports run from two lines to a thousand
  *  characters and the long ones used to set the length of the whole page.
  *  For an admin with nothing to show, the prompt to write one; a visitor
- *  sees nothing rather than an empty heading. */
-export default function MatchReport({ match, canWrite }) {
-  const [open, setOpen] = useState(false);
-
+ *  sees nothing rather than an empty heading.
+ *
+ *  `open` is the caller's, not this component's: Matchday moves the report
+ *  between the ladder and the rail's detail column at 900px, which unmounts
+ *  it, and a reader who has opened a report should not lose it to a window
+ *  resize. */
+export default function MatchReport({ match, canWrite, open, onToggle }) {
   if (match.report) {
     const { head, rest } = clampReport(match.report, CLAMP);
     return (
@@ -25,7 +27,7 @@ export default function MatchReport({ match, canWrite }) {
               type="button"
               className="report-more"
               aria-expanded={open}
-              onClick={() => setOpen((o) => !o)}
+              onClick={onToggle}
             >
               {open ? 'Show less' : 'Read the rest'}
             </button>
