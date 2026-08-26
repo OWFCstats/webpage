@@ -12,6 +12,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "fixtures:build": "node fixtures/build.mjs",
+    "badges": "node --import ./tests/register.mjs scripts/badges.mjs",
     "shots": "node scripts/shots.mjs",
     "check:layout": "node scripts/check-layout.mjs",
     "test": "node --import ./tests/register.mjs --test 'tests/**/*.test.js'"
@@ -29,6 +30,7 @@
   "devDependencies": {
     "@vitejs/plugin-react": "^4.3.1",
     "playwright": "^1.62.1",
+    "svgo": "^3.3.5",
     "vite": "^5.4.0"
   }
 }

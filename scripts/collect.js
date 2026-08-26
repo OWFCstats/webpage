@@ -133,7 +133,7 @@ export async function collector() {
     }
   }
 
-  // ---- 5. Every icon clears 3:1 across the majority of its own ink. -------
+  // ---- 5. Every icon reads against the ground it sits on. ----------------
   // Composited rather than read off an attribute. The old rule took `fill`
   // from the root <svg>, which is one colour for the five nav icons it was
   // written against and meaningless for a badge drawing that carries its
@@ -143,6 +143,30 @@ export async function collector() {
   // baked in, composited over the ground it sits on, and scored as the share
   // of its own ink clearing 3:1. That is what this script reports, icon by
   // icon, and Phase 15's badges are held to it.
+  //
+  // An <img> is measured too, as long as it is a drawing: since the badges
+  // stopped being inlined they arrive as <img src="…svg">, and an SVG's ink is
+  // perfectly readable — it just needs fetching first. Any CSS filter on the
+  // element is baked into the same pass, so a greyed unearned badge is scored
+  // as what the page actually shows rather than as the colours in the file.
+  //
+  // **A badge is scored differently from an icon, and this is the second time
+  // this rule has had to change with the artwork.** The share-of-ink figure is
+  // right for an icon — a glyph in one colour, where every pixel is the signal.
+  // It is the wrong question for a shaded illustration: the club's badges are
+  // modelled with highlights and shadow, so the share of their ink that happens
+  // to be dark is a fact about the lighting, not about whether the badge can be
+  // seen. Scored that way a silver crest reads as a failure at 50% while being
+  // perfectly legible, and a drawing would be rewarded for having no highlight.
+  //
+  // What can actually go wrong is the medallion case: a drawing that doesn't
+  // separate from the page at all. So a badge is scored on the contrast between
+  // the ground and the **mean** of its own composited ink — does this read as an
+  // object on the page — and the bar is 2:1. That number has a negative control
+  // behind it rather than being fitted to the art: the three drawings the dark
+  // disc was invented for score 1.50 (the gold cup), 1.31 (the star) and 1.78
+  // (the shirt) on paper, and the current set's worst case, a drained badge on
+  // the recessed ground, is 2.12. Held on paper the set's worst is 2.57.
   //
   // Two things are still reported as unmeasurable rather than guessed at: a
   // bitmap, whose ink this can't read, and a gradient ground, whose luminance
@@ -198,30 +222,63 @@ export async function collector() {
   const ctx = canvas.getContext('2d', { willReadFrequently: true });
   const scored = new Map();
 
-  /** The share of an icon's own ink that clears 3:1 on `bg`, or null when the
-   *  drawing renders nothing at all. */
-  async function inkAbove3(markup, bg) {
-    const key = `${markup}|${bg.join(',')}`;
+  /**
+   * A drawing composited onto `bg`, as two figures: `share`, how much of its
+   * own ink clears 3:1, and `mean`, the contrast between the ground and the
+   * average of that ink. Null when the drawing renders nothing at all.
+   *
+   * `filter` is the element's own computed filter, baked in: a badge greyed by
+   * CSS has to be scored grey, not scored as the colours in the file.
+   */
+  async function score(markup, bg, filter = 'none') {
+    const key = `${markup}|${bg.join(',')}|${filter}`;
     if (scored.has(key)) return scored.get(key);
     const img = new Image(SIZE, SIZE);
     img.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(markup)}`;
     await img.decode();
     ctx.clearRect(0, 0, SIZE, SIZE);
+    ctx.filter = filter && filter !== 'none' ? filter : 'none';
     ctx.drawImage(img, 0, 0, SIZE, SIZE);
+    ctx.filter = 'none';
     const { data } = ctx.getImageData(0, 0, SIZE, SIZE);
     let ink = 0;
     let clears = 0;
+    const sum = [0, 0, 0];
     for (let i = 0; i < data.length; i += 4) {
       const alpha = data[i + 3] / 255;
       // Half-covered pixels are the antialiased edge, not the drawing.
       if (alpha < 0.5) continue;
       ink += 1;
       const over = [0, 1, 2].map((c) => data[i + c] * alpha + bg[c] * (1 - alpha));
+      for (let c = 0; c < 3; c += 1) sum[c] += over[c];
       if (ratio(over, bg) >= 3) clears += 1;
     }
-    const share = ink === 0 ? null : clears / ink;
-    scored.set(key, share);
-    return share;
+    const result = ink === 0
+      ? null
+      : { share: clears / ink, mean: ratio(sum.map((v) => v / ink), bg) };
+    scored.set(key, result);
+    return result;
+  }
+
+  /** The bar a drawing has to clear, and the finding when it doesn't. A badge
+   *  is judged on separation from its ground, everything else on its own ink —
+   *  see the note above for why the two can't be one number. */
+  function judge(el, result, badge) {
+    if (result === null) return false; // draws nothing — there is no ink to score
+    if (badge) {
+      if (result.mean < 2) {
+        add('icon-contrast', el, `${result.mean.toFixed(2)}:1 between the drawing and its ground, needs 2:1`);
+      }
+      return true;
+    }
+    if (result.share < 0.5) {
+      add(
+        'icon-contrast',
+        el,
+        `${Math.round(result.share * 100)}% of its ink clears 3:1 against its ground, needs a majority`,
+      );
+    }
+    return true;
   }
 
   let iconsMeasured = 0;
@@ -232,9 +289,12 @@ export async function collector() {
       || /(^|[\s-])icon([\s-]|$)/.test(el.getAttribute('class') || ''),
   );
   for (const el of icons) {
-    // A wrapper around a drawing is not itself an icon — the svg inside it is,
-    // and one bug should produce one finding.
-    if (el.tagName !== 'svg' && el.querySelector('svg')) continue;
+    // A wrapper around a drawing is not itself an icon — the drawing inside it
+    // is, and one bug should produce one finding. `img` as well as `svg`: a
+    // badge is `<span class="badge-icon"><img …></span>`, and that span matches
+    // the icon-class test above, so without this the span would be scored for
+    // its own text colour and the drawing scored again inside it.
+    if (el.tagName !== 'svg' && el.querySelector('svg, img')) continue;
     // A chart is not an icon. Recharts draws a whole plot into one <svg>, most
     // of whose ink is gridlines and axis rules that are deliberately faint;
     // scoring that as one drawing's footprint measures nothing. The series
@@ -244,12 +304,26 @@ export async function collector() {
     if (el.closest('.recharts-wrapper')) continue;
     const bg = ground(el);
     if (!bg) continue;
-    if (el.tagName === 'IMG') {
-      add('icon-unmeasurable', el, 'bitmap icon — contrast has to be measured against the artwork');
-      continue;
-    }
     if (bg.gradient) {
       add('icon-unmeasurable', el, 'sits on a gradient — ground luminance varies across the icon');
+      continue;
+    }
+    const badge = Boolean(el.closest('.badge-icon'));
+    if (el.tagName === 'IMG') {
+      const src = el.currentSrc || el.src || '';
+      if (!src || !new URL(src, location.href).pathname.endsWith('.svg')) {
+        add('icon-unmeasurable', el, 'bitmap icon — contrast has to be measured against the artwork');
+        continue;
+      }
+      let result = null;
+      try {
+        const markup = await fetch(src).then((r) => r.text());
+        result = await score(markup, bg.rgb, getComputedStyle(el).filter);
+      } catch (err) {
+        add('icon-unmeasurable', el, `could not be fetched for measurement: ${err.message}`);
+        continue;
+      }
+      if (judge(el, result, badge)) iconsMeasured += 1;
       continue;
     }
     if (el.tagName !== 'svg') {
@@ -264,22 +338,14 @@ export async function collector() {
       }
       continue;
     }
-    let share = null;
+    let result = null;
     try {
-      share = await inkAbove3(baked(el), bg.rgb);
+      result = await score(baked(el), bg.rgb, getComputedStyle(el).filter);
     } catch (err) {
       add('icon-unmeasurable', el, `could not be rendered for measurement: ${err.message}`);
       continue;
     }
-    if (share === null) continue; // draws nothing — there is no ink to score
-    iconsMeasured += 1;
-    if (share < 0.5) {
-      add(
-        'icon-contrast',
-        el,
-        `${Math.round(share * 100)}% of its ink clears 3:1 against its ground, needs a majority`,
-      );
-    }
+    if (judge(el, result, badge)) iconsMeasured += 1;
   }
 
   // ---- 6. No badge renders below its floor. -------------------------------
@@ -291,9 +357,9 @@ export async function collector() {
   for (const el of visible) {
     if (!el.classList.contains('badge-icon')) continue;
     const floor = Number(el.dataset.floor);
-    const svg = el.querySelector('svg');
-    if (!floor || !svg) continue;
-    const box = svg.getBoundingClientRect();
+    const drawing = el.querySelector('img, svg');
+    if (!floor || !drawing) continue;
+    const box = drawing.getBoundingClientRect();
     const drawn = Math.min(box.width, box.height);
     if (drawn < floor - SLACK) {
       add('icon-below-floor', el, `${el.dataset.badge} draws at ${Math.round(drawn)}px, floor is ${floor}px`);

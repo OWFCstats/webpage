@@ -81,8 +81,11 @@ export function clubRecords(matches) {
  * disagree, this file is right and the doc is wrong.
  */
 
-/** The four metals, lowest first. A tier is a metal and nothing else — the
- *  word isn't printed anywhere, because the drawing in the metal is the badge. */
+/** The four metals, lowest first. A tier is a metal and nothing else, and the
+ *  word is printed in only one place — a badge's own page, where all four are
+ *  set side by side and somebody has to be told which is which. Everywhere else
+ *  the drawing says it: each tier is drawn separately, on a frame that changes
+ *  shape as well as colour on the way up. */
 export const METALS = ['bronze', 'silver', 'gold', 'diamond'];
 
 /**
@@ -94,8 +97,9 @@ export const METALS = ['bronze', 'silver', 'gold', 'diamond'];
  * roughly four seasons at fourteen games — a mark that takes years, which is
  * what a top rung is for.
  *
- * `key` is the drawing's own filename in src/assets/badges, and the address of
- * the badge's page.
+ * `key` is the badge's address under /records/badges, and — with the metal
+ * appended — the drawing's own filename in src/assets/badges: these four are the
+ * ones drawn four times over. See lib/badge-art.js.
  */
 export const CAREER_BADGES = [
   {
@@ -168,8 +172,10 @@ export const EVENT_BADGES = [
  * Player of the Season leads because it's the one the players vote on — and
  * the only one no formula produces, which is why it needs a row in
  * `season_awards` and an admin to type it in. `stat` is what the other three
- * are read off; `key` is both the drawing and the `award_key` a voted row
- * carries.
+ * are read off and `unit` is the word their mark is printed in — the cabinet
+ * puts the mark under the winner's name, and "9" under a boot is a shirt number
+ * until it says "9 goals". `key` is both the drawing and the `award_key` a voted
+ * row carries.
  *
  * Most MOTM was a fifth here and is gone: it usually went to the same player
  * as Player of the Season, so it was a second trophy for one performance. It
@@ -188,6 +194,7 @@ export const SEASON_AWARDS = [
     class: 'trophy',
     label: 'Golden Boot',
     stat: 'goals',
+    unit: 'goals',
     line: 'Most goals in a season. A tie is kept whole — both of them won it.',
   },
   {
@@ -195,6 +202,7 @@ export const SEASON_AWARDS = [
     class: 'trophy',
     label: 'Playmaker',
     stat: 'assists',
+    unit: 'assists',
     line: 'Most assists in a season. One name for one award.',
   },
   {
@@ -202,6 +210,7 @@ export const SEASON_AWARDS = [
     class: 'trophy',
     label: 'The Dependable',
     stat: 'appearances',
+    unit: 'apps',
     // Most appearances, not ever-present: nobody was ever-present in 2025/26
     // and an award nobody can win in a squad where people miss games for
     // weddings is not an incentive.
@@ -413,8 +422,8 @@ export function squadBadges(players, matches, appearances, seasonAwards = []) {
  *
  * Held only, unlike the shelf on a player's own page: that page argues a badge
  * you can't see is not an incentive, and it is right, but a squad's worth of
- * cards each carrying four silhouettes is a couple of hundred grey drawings and
- * reads as absence. A card says what somebody has; the page it links to says
+ * cards each carrying four drained drawings is a couple of hundred grey shapes
+ * and reads as absence. A card says what somebody has; the page it links to says
  * what is next.
  */
 export function heldBadges(badges) {

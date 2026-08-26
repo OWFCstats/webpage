@@ -1,6 +1,13 @@
 import BadgeIcon from '../BadgeIcon';
 import { initials } from '../../lib/format';
 
+/** What a badge draws at in the hero band. 34px rather than the shelf's 40: the
+ *  band already carries a 62px crest, a headline and five figures, and the row
+ *  here is a glance at what somebody has rather than the section that names each
+ *  one. At the 24px it was, a crest's frame and the thing inside it were one
+ *  blob — which is the whole reason the club redrew these. */
+const SIZE = 34;
+
 /**
  * All-time totals across the top, in the same dark band the Match Centre uses,
  * with what they have won under the name. Held badges only: a row of empty
@@ -28,18 +35,29 @@ export default function PlayerHero({ player, career, seasonsActive, badges }) {
           </span>
         </div>
         {metals.length + events.length + trophies.length > 0 && (
-          <div className="badge-row hero-badges">
+          /* One label for the row rather than one per drawing, the same trade
+             the squad tile makes: the badges are the content here, and a screen
+             reader wants to be told there is a shelf and what is on it. */
+          <div
+            className="badge-row hero-badges"
+            role="img"
+            aria-label={`Badges: ${[
+              ...metals.map((b) => `${b.label} ${b.metal}`),
+              ...events.map((b) => `${b.label} ×${b.count}`),
+              ...trophies.map((b) => `${b.label} ${b.seasons.join(', ')}`),
+            ].join(', ')}`}
+          >
             {metals.map((badge) => (
-              <BadgeIcon key={badge.key} badge={badge.key} metal={badge.metal} on="board" size={24} />
+              <BadgeIcon key={badge.key} badge={badge.key} metal={badge.metal} size={SIZE} />
             ))}
             {events.map((badge) => (
               <span key={badge.key} className="badge-stack">
-                <BadgeIcon badge={badge.key} metal="gold" on="board" size={24} />
+                <BadgeIcon badge={badge.key} metal="gold" size={SIZE} />
                 <span className="times">×{badge.count}</span>
               </span>
             ))}
             {trophies.map((badge) => (
-              <BadgeIcon key={badge.key} badge={badge.key} metal="gold" on="board" size={24} />
+              <BadgeIcon key={badge.key} badge={badge.key} metal="gold" size={SIZE} />
             ))}
           </div>
         )}

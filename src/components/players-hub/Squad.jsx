@@ -25,10 +25,13 @@ const FIGURES = [
   { key: 'assists', label: 'A' },
 ];
 
-/** The two ways to read the same roster. */
+/** The two ways to read the same roster, cards first because that is the
+ *  default: the tiles are the only view with anywhere to put the badges, and the
+ *  badges are the site's argument for turning up. A roster that opens on the
+ *  team sheet hides them behind a control most people never touch. */
 const LAYOUTS = [
-  { id: 'list', label: 'List' },
   { id: 'cards', label: 'Cards' },
+  { id: 'list', label: 'List' },
 ];
 
 /** How many names show before "Show all" is needed. The roster is the whole
@@ -94,12 +97,11 @@ function SquadCard({ row, badges }) {
         ))}
       </span>
       {/* No count and no year list beside a badge: those are what a shelf is
-          for, and a tile this narrow spends its room on the drawings.
-
-          21px, and the two pixels matter. A medal's footprint is the drawing
-          plus 0.4 of it plus the rim, so four across plus their gaps is 137.6px
-          against the 141.5px a tile has on a 375px phone. At 22 it is 143.2 and
-          three go across, which costs half the squad a second shelf row. */}
+          for, and a tile this narrow spends its room on the drawings. The tier
+          is in the drawing now — a bronze crest and a diamond one are two
+          different shapes — so a card says which one somebody holds without a
+          word for it. 26px is what four across costs; squad.css has the
+          arithmetic. */}
       {held.length > 0 ? (
         // One label for the row rather than six: the drawings are the content
         // here, and `role="img"` is what lets a screen reader be told there is a
@@ -110,7 +112,7 @@ function SquadCard({ row, badges }) {
           aria-label={`Badges: ${held.map((b) => `${b.label} ${b.mark}`).join(', ')}`}
         >
           {held.map((b) => (
-            <BadgeIcon key={b.key} badge={b.key} metal={b.metal} size={21} />
+            <BadgeIcon key={b.key} badge={b.key} metal={b.metal} size={26} />
           ))}
         </span>
       ) : (
@@ -122,8 +124,10 @@ function SquadCard({ row, badges }) {
 
 /**
  * The squad: every player the club has ever picked, by default — not one
- * season's roster. Two views over the same rows: the team sheet, and the
- * tiles that put the badges on the page.
+ * season's roster. Two views over the same rows, and **the tiles are the
+ * default**: they are the only view with room for the badges, and the badges are
+ * the reason this section exists. The team sheet is what you switch to when you
+ * want three figures lined up down a column rather than a wall of drawings.
  *
  * **Nobody is behind more than one tap.** A season's worth of names fits a
  * phone; the club's whole history doesn't, so the list opens on the top 20 by
@@ -140,7 +144,7 @@ function SquadCard({ row, badges }) {
 export default function Squad({
   rows,
   badges = null,
-  layout = 'list',
+  layout = 'cards',
   onLayout,
   scope = null,
   onSearchAllTime,

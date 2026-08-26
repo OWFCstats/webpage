@@ -78,6 +78,7 @@ npm run build
 npm test                # lib/ unit tests, over the fixture
 npm run check:layout    # the mobile invariants, as assertions
 npm run shots           # every route × width to shots/, with page heights
+npm run badges -- <dir> # ingest a drop of badge art: rename, optimise, commit
 ```
 
 No test needs a database. `fixtures/` holds the club's real 2025/26 season
@@ -94,7 +95,7 @@ data is protected by RLS, not by hiding it.
 ```
 src/
   main.jsx, App.jsx        routing, providers
-  assets/badges/           the club's badge drawings, one SVG per badge
+  assets/badges/           the club’s badge drawings — one SVG per badge per tier
   context/                 AuthContext (session), DataContext (one load, shared)
   lib/                     derivation and helpers — no JSX
   components/              presentational; shared at the top, one dir per page
@@ -113,14 +114,17 @@ docs/ROADMAP.md            what's planned, in order
 site ships imports them, and the fixture stub reaches the app through one alias
 in `vite.config.js` rather than a flag anybody has to remember to unset.
 
-`src/assets/badges/` is inside `src/` for the opposite reason: the four career
-badges are recoloured per tier and three more are gilded once, which means their
-fills have to be reachable, so they are inlined rather than served as images —
-`components/BadgeIcon.jsx` is the only thing that reads them and `lib/badge-art.js`
-does the recolouring. A file there is named for the badge's own slug, which is
-also its key in `lib/awards.js` and its address under `/records/badges/`, and
-nothing else goes in it. `public/` stays for what the browser fetches whole —
-today that is only the crest.
+`src/assets/badges/` is inside `src/` so Vite hashes and emits the twenty-two
+drawings as cached assets rather than serving them unversioned: they are
+`<img src>` now, not inlined markup, because nothing recolours them any more and
+807 KB of artwork does not belong in the JavaScript bundle.
+`components/BadgeIcon.jsx` is the only thing that draws one and
+`lib/badge-art.js` is the whole of the lookup. A career badge's file is
+`<key>-<metal>.svg` and everything else is `<key>.svg`, where the key is also its
+key in `lib/awards.js` and its address under `/records/badges/`; nothing else
+goes in that directory. `npm run badges -- <dir>` is how a fresh drop of art gets
+renamed, optimised and written there. `public/` stays for what the browser
+fetches whole and unversioned — today that is only the crest.
 
 **Everything is derived, nothing is stored twice.** Player totals, records,
 form, badges, points, goal difference — all computed from `players`, `matches`,

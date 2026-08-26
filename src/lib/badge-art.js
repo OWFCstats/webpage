@@ -1,118 +1,48 @@
-// Recolouring a drawing into a metal.
+// Which drawing a badge is, at the tier it is held in.
 //
-// The club's badges are drawings, not glyphs: a shirt, a glove, a cup. A tier
-// is a metal, and a metal is a four-stop ramp (DESIGN.md → Metals), so a
-// bronze shirt is the shirt's own tones mapped onto a slice of the bronze
-// ramp. Reading the drawing rather than hand-tinting it keeps the
-// relationships the artwork already has — a glove's palm stays lighter than
-// its back — and means a redrawn icon recolours without anyone picking hexes.
+// This used to be a recolouring pipeline: one drawing per badge, read for its
+// own tonal range and mapped onto a slice of a metal ramp, with a medallion
+// behind the light metals so a gold cup had a ground to read against. All of
+// that is gone. The club drew all twenty-two badges — four tiers of each career
+// badge, plus the six that don't tier — and each one arrives in the colour it
+// is meant to be, on a frame that carries its own contrast on paper and on a
+// board alike. There is nothing left to compute, so what's left is a lookup.
 //
-// Two rules come out of measuring the committed files, and both were shipped
-// wrong once (DESIGN.md → The icons):
-//
-//   * The band depends on the ground. Mapping onto the whole ramp bleaches the
-//     large light shapes — the shirt is 89% gold fill, and stretched to the top
-//     of a ramp it is a pale shape on pale paper. So a drawing on the ground
-//     takes the ramp's dark half and one on a board takes its light half.
-//   * A ramp cannot recolour a silhouette. The target, the football and the
-//     playmaker figure span under 0.04 in luminance: there is no range in them
-//     to map, so they take one stop flat instead of having a range invented.
-//
-// No colour is written down here. The ramps arrive from the caller, which
-// reads them out of tokens.css — same reason lib/tokens.js exists.
+// The four ramps stay in tokens.css: `badge.css` still draws the tier beads on
+// the Records board from them, and a bead is a swatch of a metal rather than a
+// recolour of a drawing.
 
-/** Below this much luminance range, a drawing is a silhouette. */
-export const FLAT_SPAN = 0.04;
+import { CAREER_BADGES, METALS, BADGES } from './awards';
+
+/** The badge keys whose drawing changes with the tier — Class 1, and only
+ *  Class 1. A trophy is a trophy whoever holds it and a hat-trick is a
+ *  hat-trick; DESIGN.md → *Badges and awards* is the argument. Not exported:
+ *  `artKey` is the answer to every question a caller has about it. */
+const TIERED = new Set(CAREER_BADGES.map((b) => b.key));
 
 /**
- * Where on the ramp a drawing sits, as positions in 0–1 across the four stops.
- * The ground's own name, because that is the decision: paper takes stops 1–2,
- * a board (or the medallion standing in for one) takes stops 3–4.
+ * The tier a career badge wears when nobody holds it. Bronze, because bronze
+ * is one — one appearance, one goal, one assist — so the greyed placeholder is
+ * the rung the reader is actually next in line for rather than a prize three
+ * rungs away.
  */
-export const BANDS = {
-  paper: [0, 1 / 3],
-  board: [2 / 3, 1],
-};
-
-const HEX = /^#([0-9a-f]{6})$/i;
-
-/** sRGB channels 0–255 from #rrggbb. Null for anything else — `none`, a
- *  gradient reference, a keyword — which is left alone rather than guessed at. */
-export function rgb(hex) {
-  const match = HEX.exec(hex.trim());
-  if (!match) return null;
-  const n = parseInt(match[1], 16);
-  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
-}
-
-const channel = (c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
-
-/** WCAG relative luminance, the same figure check:layout scores contrast on. */
-export function luminance(hex) {
-  const parts = rgb(hex);
-  if (!parts) return null;
-  const [r, g, b] = parts.map((v) => channel(v / 255));
-  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
-}
-
-const hex = ([r, g, b]) =>
-  `#${[r, g, b].map((v) => Math.round(v).toString(16).padStart(2, '0')).join('')}`;
+export const PLACEHOLDER_METAL = 'bronze';
 
 /**
- * The colour at position `p` (0–1) along a four-stop ramp, interpolated in
- * sRGB. The stops are picked to read as metal in sequence, so mixing between
- * two neighbours stays on the metal; mixing 1 into 4 would not.
+ * The drawing's own slug for a badge at a metal, which is also its filename in
+ * `src/assets/badges`. A tiered badge with no metal takes the placeholder's
+ * drawing — the greying is the page's job, not the file's.
  */
-export function rampColour(ramp, p) {
-  const at = Math.min(1, Math.max(0, p)) * (ramp.length - 1);
-  const i = Math.min(ramp.length - 2, Math.floor(at));
-  const t = at - i;
-  const from = rgb(ramp[i]);
-  const to = rgb(ramp[i + 1]);
-  return hex(from.map((v, k) => v + (to[k] - v) * t));
-}
-
-/** Every fill colour in the drawing. The fills are the drawing: the only
- *  strokes in this artwork are sub-pixel hairlines, and letting one set the
- *  span is how the football would read as a full-range image. */
-export function fillsOf(source) {
-  return [...source.matchAll(/fill="(#[0-9a-fA-F]{6})"/g)].map((m) => m[1].toLowerCase());
+export function artKey(badgeKey, metal = null) {
+  if (!TIERED.has(badgeKey)) return badgeKey;
+  return `${badgeKey}-${METALS.includes(metal) ? metal : PLACEHOLDER_METAL}`;
 }
 
 /**
- * A drawing's own tonal range, as {min, max, span} over its fills, plus
- * whether that range is wide enough for a ramp to say anything. Exported
- * because it is the measurement the rule is stated in, and a test that asserts
- * "the football is flat" should read the same number the pipeline does.
+ * Every drawing the system expects, in the badge board's order. The ingest
+ * script checks a drop against this and a test checks the directory against it,
+ * so a missing tier fails somewhere other than on the page.
  */
-export function toneRange(source) {
-  const tones = [...new Set(fillsOf(source))].map(luminance).filter((l) => l != null);
-  if (tones.length === 0) return { min: 0, max: 0, span: 0, flat: true };
-  const min = Math.min(...tones);
-  const max = Math.max(...tones);
-  return { min, max, span: max - min, flat: max - min < FLAT_SPAN };
-}
-
-/**
- * The drawing in a metal. `ramp` is the metal's four stops, darkest first;
- * `ground` is what it will sit on, which picks the band.
- *
- * A flat drawing takes the band's inner stop — the one nearer the middle of
- * the ramp, which is the stop that reads as the metal rather than as its
- * shadow or its highlight.
- */
-export function recolour(source, ramp, ground = 'paper') {
-  const [lo, hi] = BANDS[ground] ?? BANDS.paper;
-  const { min, span, flat } = toneRange(source);
-  const flatStop = ground === 'board' ? lo : hi;
-  const position = (colour) => {
-    if (flat) return flatStop;
-    const l = luminance(colour);
-    if (l == null) return flatStop;
-    return lo + Math.min(1, Math.max(0, (l - min) / span)) * (hi - lo);
-  };
-  return source.replace(
-    /(fill|stroke)="(#[0-9a-fA-F]{6})"/g,
-    (_, attr, colour) => `${attr}="${rampColour(ramp, position(colour))}"`,
-  );
-}
+export const BADGE_ART = BADGES.flatMap((badge) =>
+  TIERED.has(badge.key) ? METALS.map((metal) => `${badge.key}-${metal}`) : [badge.key],
+);

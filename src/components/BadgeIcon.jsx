@@ -1,90 +1,71 @@
 import { badgeByKey } from '../lib/awards';
-import { recolour } from '../lib/badge-art';
-import { metalRamp, token } from '../lib/tokens';
+import { artKey } from '../lib/badge-art';
 
 /**
- * A badge is an icon in a metal, and this is the only thing that draws one.
+ * A badge is a drawing, and this is the only thing that draws one.
  *
- * The drawings are inlined rather than served as images because the metal is
- * paint: a tier recolours the fills, and an `<img>` has no fills to reach. Ten
- * files, none over 22 KB — the raster star that made this expensive was
- * redrawn as paths in Phase 15.
+ * It used to be a drawing *in a metal*: ten files, recoloured per tier through
+ * a four-stop ramp, with a dark medallion behind the light metals so a gold cup
+ * had a ground to read against. The club has since drawn all twenty-two — four
+ * tiers of each career badge and the six that don't tier — and every one
+ * arrives in its own colour on a frame that carries its contrast on paper and
+ * on a board alike. So the ramp, the bands, the medallion and the `on` prop are
+ * gone, and what's left is picking a file.
+ *
+ * `<img>`, not inline SVG. Inlining was never a preference — it was what made
+ * the fills reachable, and nothing reaches for them now. The drawings are 807 KB
+ * across twenty-two files: as markup that is 807 KB of JavaScript bundle every
+ * visitor downloads before the first paint, and up to 520 path nodes per badge
+ * on a squad page that draws a hundred of them. As images they are cached
+ * requests the browser dedupes by URL and never parses twice.
  */
 const SOURCES = Object.fromEntries(
   Object.entries(
-    import.meta.glob('../assets/badges/*.svg', { query: '?raw', import: 'default', eager: true }),
-  ).map(([path, source]) => [path.split('/').pop().replace(/\.svg$/, ''), source]),
+    import.meta.glob('../assets/badges/*.svg', { query: '?url', import: 'default', eager: true }),
+  ).map(([path, url]) => [path.split('/').pop().replace(/\.svg$/, ''), url]),
 );
 
 /**
- * The three drawings that don't arrive gold, measured on the ground they ship
- * on: the playmaker figure is a black silhouette (0% of its ink clears 3:1 on
- * a board), the hat-trick footballs are black and white (63%), and the boot
- * stands on a plinth of five black fills that simply disappears (57%). One
- * pass through the gold ramp each and never again — the cup, the cap and the
- * star arrive gold and are left alone.
+ * Nothing renders below this, and all three moved up with the new art: the old
+ * drawings were flat shapes that held at 16px, these are framed crests with a
+ * rim, an inner field and a highlight, and below their floor the frame closes
+ * over the thing inside it. A trophy is still the deepest — a plinth plus an
+ * object needs 24 to stay two objects. DESIGN.md → The icons.
  */
-const GILDED = new Set(['golden-boot', 'hat-trick', 'playmaker']);
-
-/** An unearned badge is a silhouette, not a faded metal: present, named, and
- *  visibly not yours. A ground's soft ink is the one tone that reads as absence
- *  and still clears 3:1 — a dimmed metal clears nothing. */
-const UNHELD = { paper: '--ink-soft', board: '--on-board-soft' };
-
-/** Nothing renders below this. A trophy is a plinth plus an object and merges
- *  into a blob under 20px; the rest hold at 16. DESIGN.md → The icons. */
-const FLOOR = { career: 16, event: 16, trophy: 20 };
-
-const cache = new Map();
+const FLOOR = { career: 20, event: 20, trophy: 24 };
 
 /**
- * The drawing in a metal, recoloured once per metal and ground and kept.
- * Only Class 1 reads the four ramps: a trophy is one trophy, so the six that
- * don't tier are gold whoever holds them and four of those six are gold in the
- * file already.
+ * `metal` is the tier a career badge is held in, and null means unheld — of a
+ * career badge or of any other: an unwon trophy and an unearned crest are the
+ * same state and get the same treatment. A tiered badge with no metal borrows
+ * bronze's drawing, the rung the reader is next in line for. Either way the
+ * drawing is drained rather than replaced by a silhouette, because these have a
+ * shape worth recognising before you own one.
+ *
+ * `size` is the *box*, not the drawing. The badges are not square and not one
+ * shape — a crest is 0.9 wide for its height, a diamond 1.17, the hat-trick's
+ * three footballs 1.57 — so each is contained in a square slot and centred in
+ * it. That is what keeps a column of them aligned and a label starting at the
+ * same place down a shelf, which a row of drawings sized to their own widths
+ * never did.
  */
-function art(family, metal, ground) {
-  const id = `${family.key}|${metal ?? 'unheld'}|${ground}`;
-  const had = cache.get(id);
-  if (had) return had;
-  const source = SOURCES[family.key];
-  if (!source) return '';
-  const ramp = metal
-    ? metalRamp(family.class === 'career' ? metal : 'gold')
-    : Array(4).fill(token(UNHELD[ground]));
-  // Called before the stylesheet has applied, tokens read as empty; draw the
-  // artwork as supplied rather than caching a badge with no colour in it.
-  if (ramp.some((stop) => !stop)) return source;
-  const paint = !metal || family.class === 'career' || GILDED.has(family.key);
-  const drawn = paint ? recolour(source, ramp, ground) : source;
-  cache.set(id, drawn);
-  return drawn;
-}
-
-/**
- * `metal` null is a badge its holder hasn't got. `on` is the ground the page
- * puts it on, which decides both the band of the ramp and whether it needs a
- * medallion: a light metal on a light page is 11% of its own ink above 3:1
- * whatever the band does, because a cup is mostly highlight. The dark disc is
- * the fix, and it makes a badge read as an actual medal.
- */
-export default function BadgeIcon({ badge, metal = null, on = 'paper', size = 40 }) {
+export default function BadgeIcon({ badge, metal = null, size = 40, alt = '' }) {
   const family = badgeByKey(badge);
   if (!family) return null;
   const px = Math.max(size, FLOOR[family.class]);
-  const medal = on === 'paper' && metal !== null && (family.class !== 'career' || metal !== 'bronze');
-  const ground = medal || on === 'board' ? 'board' : 'paper';
+  const src = SOURCES[artKey(family.key, metal)];
+  if (!src) return null;
+  const unheld = metal === null;
   return (
     <span
-      className={`badge-icon${medal ? ' medal' : ''}${metal ? ` ${metal}` : ' unheld'}`}
+      className={`badge-icon${unheld ? ' unheld' : ''}`}
       style={{ '--badge-size': `${px}px` }}
       /* The floor rides on the element so check:layout can measure what was
          actually drawn rather than trusting the clamp above it. */
       data-badge={family.key}
       data-floor={FLOOR[family.class]}
-      /* The drawings are committed assets, not content: nothing user-entered
-         reaches this, and inlining is what makes the fills recolourable. */
-      dangerouslySetInnerHTML={{ __html: art(family, metal, ground) }}
-    />
+    >
+      <img src={src} alt={alt} width={px} height={px} loading="lazy" decoding="async" />
+    </span>
   );
 }
