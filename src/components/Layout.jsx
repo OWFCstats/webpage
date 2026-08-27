@@ -1,6 +1,8 @@
+import { Suspense } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Crest } from './bits';
+import ErrorBoundary from './ErrorBoundary';
+import { Crest, Spinner } from './bits';
 
 // Home is the front door — a dashboard of the season at a glance — and the
 // four sections behind it. Anything narrower than an idea of its own lives
@@ -98,7 +100,18 @@ export default function Layout() {
           Pathname, not location.key: a ?q= change is the user typing in a
           search box, and that must not refade the page under them. */}
       <main className="page" key={pathname}>
-        <Outlet />
+        {/* The waiting and the failing both belong in the page column, not
+            around the whole document. The admin section is fetched on demand,
+            and with the boundary outside this element a tap on "Add result"
+            took the masthead, the tab bar and the footer down with it — a
+            spinner alone on empty paper while the chunk arrived, and nothing
+            at all if it never did. Both are inside the key, so a failed page
+            clears itself on the next navigation. */}
+        <ErrorBoundary>
+          <Suspense fallback={<Spinner />}>
+            <Outlet />
+          </Suspense>
+        </ErrorBoundary>
       </main>
       <footer className="site-footer">
         Old Wellingtonians FC · est. on the pitch, settled in the bar

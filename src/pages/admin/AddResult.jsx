@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useData } from '../../context/DataContext';
-import { Spinner } from '../../components/bits';
+import { ErrorNote, Spinner } from '../../components/bits';
 import ExtrasStep from '../../components/add-result/ExtrasStep';
 import GoalsStep from '../../components/add-result/GoalsStep';
 import SquadStep from '../../components/add-result/SquadStep';
@@ -30,7 +30,7 @@ import { latestResult, seasonsOf } from '../../lib/matches';
 const STEPS = ['The match', 'Who played?', 'Goals & assists', 'Cards & MOTM'];
 
 export default function AddResult() {
-  const { players, matches, appearances, teams, loading, refresh } = useData();
+  const { players, matches, appearances, teams, loading, error: loadError, refresh } = useData();
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const [step, setStep] = useState(0);
@@ -69,6 +69,10 @@ export default function AddResult() {
   const defaultSeason = recentSeasons[0] ?? '';
 
   if (loading) return <Spinner />;
+  // Every public page says so when the load failed; this one used to open
+  // the wizard over empty arrays instead — a diary with no fixtures in it
+  // and a squad with nobody in it, and no clue why.
+  if (loadError) return <ErrorNote message={loadError} />;
 
   const active = players
     .filter((p) => p.status === 'active' || picked.has(p.id))

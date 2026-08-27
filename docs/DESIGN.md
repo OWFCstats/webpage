@@ -133,6 +133,36 @@ sub-pages are that split made visible: **Badges** is the signature and the way
 into a badge's own page, **Honours** is who won what season by season, and
 **All-time** is every season's numbers together.
 
+### The frame outlives the page
+
+The masthead, the tab bar and the footer belong to the site, not to whichever
+route is open, so **nothing a page does may unmount them**. Waiting and failing
+are both states of the page column: the spinner goes where the page would have
+been, and so does the message when it doesn't arrive.
+
+Stated because the site broke it in the ordinary case, not the exotic one. The
+admin section is fetched on demand — that is the point of splitting it out — and
+the Suspense boundary those routes need sat around the whole router, outside
+`Layout`. So tapping **Add result** on a phone unmounted the entire document
+while the chunk downloaded: a spinner alone on empty paper, for as long as the
+signal took. And if the chunk never came — a dropped connection in a pub car
+park, or a tab left open across a deploy that renamed it — the import rejected,
+nothing caught it, and React emptied `#root` for good. A white page with no
+crest, no nav and no way back but knowing to pull down and refresh, on the one
+flow the club uses standing up on a Saturday night.
+
+So `components/Layout.jsx` holds both boundaries, inside `<main>` and therefore
+inside its pathname key: a `<Suspense>` for the wait and a `<ErrorBoundary>` for
+the failure, the second clearing itself on the next navigation because the key
+remounts it. A page that fails says what to do next — reload — and the frame
+around it still works.
+
+The rule the fix is really an instance of: **a page reports its own trouble.**
+Every public page renders `ErrorNote` when the load failed; the admin pages did
+not, so a failed fetch opened the wizard over empty arrays — a diary with no
+fixtures in it and a squad with nobody in it, and no clue why. Add result reads
+the error now. The rest of the write side is still to do.
+
 ### A result is a row, not a sentence
 
 ```
