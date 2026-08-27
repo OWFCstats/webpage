@@ -1,16 +1,21 @@
 import { useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../context/AuthContext';
 
 export default function Login() {
   const { session } = useAuth();
+  const location = useLocation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [busy, setBusy] = useState(false);
 
-  if (session) return <Navigate to="/admin" replace />;
+  // AdminLayout records where the admin was headed before it bounced them
+  // here; this used to capture that and then drop it, so a link straight to a
+  // match's lineup always landed on the overview instead.
+  const from = location.state?.from?.pathname;
+  if (session) return <Navigate to={from ?? '/admin'} replace />;
 
   async function submit(e) {
     e.preventDefault();

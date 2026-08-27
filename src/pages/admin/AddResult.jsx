@@ -1,15 +1,18 @@
 import { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useData } from '../../context/DataContext';
 import { Spinner } from '../../components/bits';
 import ExtrasStep from '../../components/add-result/ExtrasStep';
 import GoalsStep from '../../components/add-result/GoalsStep';
-import MatchStep from '../../components/add-result/MatchStep';
 import SquadStep from '../../components/add-result/SquadStep';
+import WhichMatch from '../../components/add-result/WhichMatch';
 import WalkoverForm from '../../components/WalkoverForm';
 import WizardActions from '../../components/add-result/WizardActions';
 import WizardSteps from '../../components/add-result/WizardSteps';
+import {
+  blankResultForm, fixtureFor, fixturesToFill, resultFormFrom, todayISO,
+} from '../../lib/admin';
 import { latestResult, seasonsOf } from '../../lib/matches';
 
 /**
@@ -18,6 +21,10 @@ import { latestResult, seasonsOf } from '../../lib/matches';
  * the extras. Nothing is written to the database until the final step; every
  * step can go back. Subs and late dropouts stay in the full lineup editor —
  * this flow covers the common case with the fewest possible taps.
+ *
+ * Step one starts by asking *which* game, because the club enters fixtures in
+ * advance and this flow used to insert a second row for one that already
+ * existed. See `lib/admin.js` → `fixtureFor`.
  */
 
 const STEPS = ['The match', 'Who played?', 'Goals & assists', 'Cards & MOTM'];
@@ -25,23 +32,25 @@ const STEPS = ['The match', 'Who played?', 'Goals & assists', 'Cards & MOTM'];
 export default function AddResult() {
   const { players, matches, appearances, teams, loading, refresh } = useData();
   const navigate = useNavigate();
+  const [params] = useSearchParams();
   const [step, setStep] = useState(0);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
   const [showWalkover, setShowWalkover] = useState(false);
 
-  const [form, setForm] = useState(() => ({
-    season: '',
-    date: '',
-    kickoff_time: '',
-    opponent: '',
-    opponent_team_id: '',
-    competition: 'League',
-    venue: '',
-    goals_for: '',
-    goals_against: '',
-    own_goals_for: 0,
-  }));
+  const today = todayISO();
+  const openFixtures = useMemo(() => fixturesToFill(matches, today), [matches, today]);
+
+  // The Overview's "Enter result" links straight at the fixture it is nagging
+  // about, so the admin lands on the game rather than on the list of them.
+  const requested = params.get('fixture');
+  const seed = requested ? matches.find((m) => m.id === requested) : null;
+
+  const [fixtureId, setFixtureId] = useState(() => seed?.id ?? null);
+  // Null until the admin has answered "which game?" — the diary can't be
+  // skipped past silently, but it also can't be in the way when it is empty.
+  const [asked, setAsked] = useState(() => Boolean(seed) || openFixtures.length === 0);
+  const [form, setForm] = useState(() => (seed ? resultFormFrom(seed) : blankResultForm()));
   const [picked, setPicked] = useState(() => new Map()); // playerId -> {goals,assists,yellows,reds,motm}
   const [query, setQuery] = useState('');
 
@@ -76,7 +85,23 @@ export default function AddResult() {
   const ownGoals = Number(form.own_goals_for) || 0;
   const remaining = gf == null ? null : gf - ownGoals - scored;
 
+  // Typing a date and opponent that are already in the diary is the same
+  // mistake the picker exists to prevent, reached the long way round.
+  const clash = fixtureId
+    ? null
+    : fixtureFor(matches, {
+        date: form.date,
+        opponentTeamId: form.opponent_team_id,
+        opponent: form.opponent,
+      });
+
   const blank = () => ({ goals: 0, assists: 0, yellows: 0, reds: 0, motm: false });
+
+  function chooseFixture(f) {
+    setAsked(true);
+    setFixtureId(f?.id ?? null);
+    if (f) setForm(resultFormFrom(f));
+  }
 
   function toggle(id) {
     setPicked((prev) => {
@@ -128,18 +153,25 @@ export default function AddResult() {
       goals_for: gf,
       goals_against: ga,
       own_goals_for: ownGoals,
-      own_goals_against: 0,
       result: gf == null || ga == null ? null : gf > ga ? 'W' : gf < ga ? 'L' : 'D',
     };
-    const { data: created, error: mErr } = await supabase
-      .from('matches').insert(payload).select().single();
+    // A fixture already in the diary is filled in, not duplicated. Insert sets
+    // own_goals_against because the column is NOT NULL; an update leaves it,
+    // and anything else on the row the wizard doesn't ask about, alone.
+    const { data: saved, error: mErr } = fixtureId
+      ? await supabase.from('matches').update(payload).eq('id', fixtureId).select().single()
+      : await supabase
+          .from('matches')
+          .insert({ ...payload, own_goals_against: 0 })
+          .select()
+          .single();
     if (mErr) {
       setBusy(false);
       setError(mErr.message);
       return;
     }
     const rows = [...picked.entries()].map(([player_id, v]) => ({
-      match_id: created.id,
+      match_id: saved.id,
       player_id,
       started: true,
       dropout: false,
@@ -150,7 +182,11 @@ export default function AddResult() {
       motm: v.motm,
     }));
     if (rows.length > 0) {
-      const { error: aErr } = await supabase.from('appearances').insert(rows);
+      // Upsert, not insert: a fixture being filled in a second time (a score
+      // corrected an hour later) already has its team sheet.
+      const { error: aErr } = await supabase
+        .from('appearances')
+        .upsert(rows, { onConflict: 'match_id,player_id' });
       if (aErr) {
         setBusy(false);
         setError(`The match saved but the lineup didn't: ${aErr.message}. Open the lineup editor to finish it.`);
@@ -159,7 +195,7 @@ export default function AddResult() {
       }
     }
     await refresh();
-    navigate(`/matchday/${created.id}`);
+    navigate(`/matchday/${saved.id}`);
   }
 
   const q = query.trim().toLowerCase();
@@ -192,12 +228,19 @@ export default function AddResult() {
       <WizardSteps steps={STEPS} step={step} />
 
       {step === 0 && (
-        <MatchStep
+        <WhichMatch
+          fixtures={openFixtures}
+          today={today}
+          fixtureId={fixtureId}
+          asked={asked}
+          clash={clash}
           form={form}
           setForm={setForm}
           recentSeasons={recentSeasons}
           defaultSeason={defaultSeason}
           teams={teams}
+          onChoose={chooseFixture}
+          onClear={() => { setFixtureId(null); setAsked(false); }}
         />
       )}
 
@@ -237,7 +280,7 @@ export default function AddResult() {
         step={step}
         pickedCount={picked.size}
         nonScorerCount={nonScorers.length}
-        detailsOk={detailsOk}
+        detailsOk={asked && detailsOk}
         busy={busy}
         onBack={() => setStep(step - 1)}
         onNext={() => setStep(step + 1)}

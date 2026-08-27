@@ -46,7 +46,7 @@ try {
     for (const width of WIDTHS) {
       const page = await harness.open(dataset, width);
       for (const route of routes) {
-        await visit(page, route.route, { charts: route.charts, open: route.open });
+        await visit(page, route.route, { charts: route.charts, open: route.open, admin: route.admin });
         const result = await page.evaluate(collector);
         iconsMeasured += result.iconsMeasured;
         heights.push({ dataset, width, route: route.id, name: route.name, height: result.height, budget: route.budget });

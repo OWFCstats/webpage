@@ -463,6 +463,11 @@ button.small {
 .form-actions {
   margin-top: var(--s4);
   display: flex;
+  /* Wraps, because a form's actions are however many that form has and 320px
+     fits about three. The edit-match row reached four in Phase 35 and pushed
+     Delete 47px off the edge — a row that can't wrap is a hidden control, and
+     this one held the destructive one. */
+  flex-wrap: wrap;
   gap: var(--s2);
   align-items: center;
 }

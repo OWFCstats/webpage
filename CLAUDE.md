@@ -56,7 +56,19 @@ both take an optional year filter for the reader who wants one season only.
 all-time board**, so a career total is never the same board shown twice.
 
 Admin sits behind a login and is lazy-loaded, so a public visitor never
-downloads it.
+downloads it. It is the phone-first flow — a pub table on a Saturday night —
+and it is measured like every public page: its routes are in
+`scripts/site-map.js` and `npm run check:layout` covers them. They were outside
+that list until Phase 35, which is how three of its pages came to hide columns
+on a phone while every reader-facing one was checked at six widths on every
+pull request.
+
+**One match is one row.** Fixtures are entered in advance, so every write path
+that records a result — the wizard and the walkover form — fills in the fixture
+already in the diary rather than inserting beside it (`lib/admin.js` →
+`fixtureFor`). Getting this wrong is not a cosmetic bug: the site showed one
+game as both the last result and the next fixture, and lost the kick-off time
+and venue entered with it.
 
 Renames are expensive — every old address needs a redirect shim, and
 `src/App.jsx` already carries seven of them. Name a section for what it *is*,

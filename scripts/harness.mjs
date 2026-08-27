@@ -74,7 +74,11 @@ export async function startHarness() {
         if (msg.type() === 'error') problems.push(msg.text());
       });
       page.fixtureProblems = problems;
-      page.fixtureUrl = (route) => `${base}/?fixture=${datasetName}#${route}`;
+      // `admin=1` is the fixture stub's own switch (fixtures/README.md): it
+      // boots signed in, which is the only way the write side is reachable
+      // to measure at all.
+      page.fixtureUrl = (route, { admin = false } = {}) =>
+        `${base}/?fixture=${datasetName}${admin ? '&admin=1' : ''}#${route}`;
       return page;
     },
   };
@@ -83,10 +87,11 @@ export async function startHarness() {
 /** Navigates and waits for the app to have rendered something real. `open`
  *  clicks a match report's "Read the rest" control, if the route has one, so
  *  a route can be measured both clamped and open without a second page —
- *  see the `-open` entries in site-map.js. */
-export async function visit(page, route, { charts = false, open = false } = {}) {
+ *  see the `-open` entries in site-map.js. `admin` boots the page signed in,
+ *  for the routes behind the login. */
+export async function visit(page, route, { charts = false, open = false, admin = false } = {}) {
   page.fixtureProblems.length = 0;
-  const url = page.fixtureUrl(route);
+  const url = page.fixtureUrl(route, { admin });
   // Hash routing: a same-document hash change doesn't reload, so the route is
   // set on a fresh document every time. Slower, and it means one route can't
   // leave state behind for the next.

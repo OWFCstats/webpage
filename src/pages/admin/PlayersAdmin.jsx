@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useData } from '../../context/DataContext';
-import SortableTable from '../../components/SortableTable';
+import AdminList, { AdminRow } from '../../components/AdminList';
 
 const POSITIONS = ['GK', 'DEF', 'MID', 'FWD'];
 const BLANK = { name: '', position: '', status: 'active' };
@@ -12,11 +12,18 @@ export default function PlayersAdmin() {
   const [editingId, setEditingId] = useState(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
+  const nameRef = useRef(null);
 
+  // The form is one sheet at the top of a list fifty-three names long, so on a
+  // phone "Edit" on the last row used to change a form five thousand pixels
+  // above the tap and nothing moved — it read as a dead button. Carry the
+  // admin to the thing they just opened.
   function startEdit(p) {
     setEditingId(p.id);
     setForm({ name: p.name, position: p.position ?? '', status: p.status });
     setError(null);
+    nameRef.current?.scrollIntoView({ block: 'center' });
+    nameRef.current?.focus({ preventScroll: true });
   }
 
   function reset() {
@@ -52,12 +59,12 @@ export default function PlayersAdmin() {
   return (
     <div className="section">
       <div className="sheet">
-        <h2>{editingId ? 'Edit player' : 'Add player'}</h2>
+        <h2>{editingId ? `Edit ${form.name || 'player'}` : 'Add player'}</h2>
         <form onSubmit={submit}>
           <div className="form-grid">
             <label className="field">
               <span>Name</span>
-              <input type="text" value={form.name} required
+              <input type="text" ref={nameRef} value={form.name} required
                 onChange={(e) => setForm({ ...form, name: e.target.value })} />
             </label>
             <label className="field">
@@ -85,28 +92,34 @@ export default function PlayersAdmin() {
 
       <div className="sheet section">
         <h2>Squad</h2>
-        <SortableTable
+        <AdminList
           filterable
+          filterLabel="Find a player…"
           rows={players}
           rowKey={(p) => p.id}
-          initialSort={{ key: 'name', dir: 'asc' }}
+          filterValue={(p) => `${p.name} ${p.position ?? ''} ${p.status}`}
           emptyText="No players yet — add the squad above."
-          columns={[
-            { key: 'name', label: 'Name' },
-            { key: 'position', label: 'Position', render: (p) => p.position ?? '—' },
-            { key: 'status', label: 'Status' },
-            {
-              key: 'actions',
-              label: '',
-              render: (p) => (
-                <span className="controls" style={{ marginBottom: 0 }}>
-                  <button className="secondary small" onClick={() => startEdit(p)}>Edit</button>
-                  <button className="danger small" onClick={() => remove(p)}>Delete</button>
-                </span>
-              ),
-            },
-          ]}
-        />
+        >
+          {(p) => (
+            <AdminRow
+              title={
+                <>
+                  {p.name}
+                  {p.position && <span className="tag">{p.position}</span>}
+                  {p.status !== 'active' && <span className="tag orange">inactive</span>}
+                </>
+              }
+              actions={
+                <>
+                  <button type="button" className="secondary small"
+                    onClick={() => startEdit(p)}>Edit</button>
+                  <button type="button" className="danger small"
+                    onClick={() => remove(p)}>Delete</button>
+                </>
+              }
+            />
+          )}
+        </AdminList>
       </div>
     </div>
   );

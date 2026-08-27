@@ -57,6 +57,7 @@ page-by-page review against the club's real 2025/26 season.
 | 31 | Matchday: the rail, corrected | Phase 28's `display: contents` put the match panel in the *open rung's own grid row*, so that rung stretched to the panel's height — a 40px rung became a thousand-pixel gold slab, and the rest of the season was pushed below the whole match instead of continuing under it. The rail and the match are two ordinary boxes again; Matchday reads the 900px breakpoint with `useIsNarrow` and places the panel, because CSS can restyle a box but not reparent one. Above 1200px the match splits into the two columns the approved flat always had — squad left, comparison and report right — which no phase had ever asked for. `MatchReport`'s clamp state moved up to its caller, so a resize across 900px no longer collapses an open report. 375px is untouched (2,456 / 2,746 / 3,150px); 1400px goes 2,336 → 1,183px on the default route. Out of order on purpose: a defect in shipped work, not new scope |
 | 32 | The new badge art | Twenty-two drawings in, one per badge per tier, `<img>` rather than inlined; out went the four metal ramps as paint, `recolour`, `toneRange`, `metalRamp`, the paper/board bands, the `on` prop and the medallion. `npm run badges -- <dir>` ingests a drop — rename, `svgo` at one decimal, 1.8 MB → 807 KB with nothing visible changing. The icon-contrast invariant learned to fetch and score an SVG `<img>`, and to score a shaded badge on separation from its ground (2:1 on the mean) rather than on the share of its ink that happens to be dark — the three drawings the medallion existed for score 1.31–1.78, this set's worst is 2.12 |
 | 33 | The cosmetic pass the art paid for | Player badges 24 → 34 in the hero and 30–34 → 40 on the shelf, with the shelf's first column fixed at 40px so four labels start in one place; squad tiles 21 + a disc → 26 of drawing; the roster opens on **cards** (`?layout=list` is the address the team sheet carries now); Records' career cards 44 → 52, stackables 34 → 48 (the hat-trick is 1.57 wide and was reading as the smaller badge), trophy strip 40 → 64 in a band that grew to hold it; the badge page's four tiers 28 → 40, which is the one place all four drawings are set side by side. Player detail 2,241 → 2,279px, squad tiles 2,138 → 2,057 |
+| 35 | The admin review | The write side, page by page. **Add result stopped inserting blind**: it opens on the fixtures already in the diary and fills one in (`lib/admin.js` → `fixtureFor`), so the same game can't exist twice — it did, and Home showed one match as both the last result and "kick-off in 8 days", losing the fixture's kick-off time and venue with it. The walkover form does the same. **The three admin tables became `AdminList`** — the match list was hiding 484px of its 738px at 375px with all three of its actions off screen; teams hid 289px, the squad 98px. **The admin routes went into `site-map.js`**, which is why none of that had ever been measured. Plus: MOTM is one a game in the lineup editor too (it was a plain checkbox per slot, so eleven could be saved and all eleven counted); the lineup grid captions its inputs and its save follows you down, both of which the league grid already did; Edit on the squad list carries you to the form instead of changing one 4,994px above the tap; login honours the address it bounced you from; Overview leads on what is outstanding — a fixture played but not entered first, then lineups, MOTM, a stale table, an unvoted season — and dropped two cards that restated the nav |
 | 34 | The trophy cabinet | `/records/honours` stopped being a list of four label/name rows a season. One green band, a shelf per season, the year top-left and the four trophies across it at 72px with the winner under each and their mark — carrying a `unit`, since "9" under a boot is a shirt number until it says "9 goals" — under the name. 2×2 on a phone, four across from 520px. A season nobody has won yet keeps its four drawings, drained, under *Not awarded*: that is the season the reader is about to play. 961 → 1,155px against a 2,000 budget |
 
 **The detail behind any closed phase is in its commit** — `git log --grep="Phase
@@ -74,6 +75,21 @@ nothing is stored twice**, and **a component that gains a second page moves up t
 ---
 
 ## Now
+
+### Phase 36 — Losing a form on a phone
+
+Nothing on the write side warns before it drops what you typed. The wizard holds
+four steps in memory and writes nothing until the last one, so a stray tap on the
+bottom bar loses the lot; the lineup editor, the league grid and the report
+editor are the same. `beforeunload` covers a reload and a closed tab and not the
+tap that actually does it — in-app navigation needs `useBlocker`, which
+React Router only gives a data router, and this app is on `<HashRouter>`. So
+this is a routing change first and a dialogue second, which is why Phase 35
+left it rather than half-doing it.
+
+**Done means** leaving a half-filled form asks first, at 375px, on every write
+page — or a written argument here for why the wizard should save a draft
+instead.
 
 ### Phase 30 — The cosmetic review: Players and Records
 
@@ -183,6 +199,13 @@ Named so they don't get lost.
 - **New badge types** — attendance streaks, consecutive scoring. Add once Phase
   15's three classes have survived a second season. Note the cost changed with
   Phase 32: a new career badge is four drawings, not one recolour.
+- **Own goals against us, in the wizard** — `MatchForm` takes both columns; the
+  four-step flow only takes `own_goals_for`, so a player putting one into his own
+  net has to be recorded through the full editor. Rare enough to leave, common
+  enough to name.
+- **The awards page, once there are ten seasons** — it renders every season on
+  record as its own block with its own picker, and saves all of them at once.
+  Fine at two. Not at ten.
 - **A figure recipe in the type layer** — the display face at 600 with
   `-0.015em` and tabular figures is written out in twelve rules. One decision in
   `DESIGN.md`'s *Type* section.

@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useData } from '../../context/DataContext';
-import { slugify } from '../../lib/matches';
-import SortableTable from '../../components/SortableTable';
+import { opponentTeam, slugify } from '../../lib/matches';
+import AdminList, { AdminRow } from '../../components/AdminList';
 
 const BLANK = {
   name: '',
@@ -21,13 +21,21 @@ export default function TeamsAdmin() {
   const [editingId, setEditingId] = useState(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
+  const nameRef = useRef(null);
 
+  // Counted through opponentTeam, not off opponent_team_id: a row saved before
+  // the teams migration carries only the name, and counting the id alone let
+  // its club be deleted out from under it — which breaks the opponent page the
+  // same rows still resolve to by name.
   const matchCount = new Map();
   for (const m of matches) {
-    if (!m.opponent_team_id) continue;
-    matchCount.set(m.opponent_team_id, (matchCount.get(m.opponent_team_id) ?? 0) + 1);
+    const team = opponentTeam(m, teams);
+    if (!team) continue;
+    matchCount.set(team.id, (matchCount.get(team.id) ?? 0) + 1);
   }
 
+  // Same reason as the squad list: the form sits above the whole list, so an
+  // Edit tapped from the bottom of it has to bring the form to the admin.
   function startEdit(t) {
     setEditingId(t.id);
     setForm({
@@ -41,6 +49,8 @@ export default function TeamsAdmin() {
       notes: t.notes ?? '',
     });
     setError(null);
+    nameRef.current?.scrollIntoView({ block: 'center' });
+    nameRef.current?.focus({ preventScroll: true });
   }
 
   function reset() {
@@ -105,12 +115,12 @@ export default function TeamsAdmin() {
   return (
     <div className="section">
       <div className="sheet">
-        <h2>{editingId ? 'Edit team' : 'Add team'}</h2>
+        <h2>{editingId ? `Edit ${form.name || 'team'}` : 'Add team'}</h2>
         <form onSubmit={submit}>
           <div className="form-grid">
             <label className="field">
               <span>Name</span>
-              <input type="text" value={form.name} required
+              <input type="text" ref={nameRef} value={form.name} required
                 onChange={(e) => setForm({ ...form, name: e.target.value })} />
             </label>
             <label className="field">
@@ -159,34 +169,41 @@ export default function TeamsAdmin() {
 
       <div className="sheet section">
         <h2>Teams</h2>
-        <SortableTable
+        <AdminList
           filterable
+          filterLabel="Find a club…"
           rows={sortedTeams}
           rowKey={(t) => t.id}
+          filterValue={(t) => `${t.name} ${t.short_name ?? ''} ${t.pitch_name ?? ''} ${t.postcode ?? ''}`}
           emptyText="No teams yet — add one above."
-          columns={[
-            { key: 'name', label: 'Name', render: (t) => t.is_club ? <strong>{t.name}</strong> : t.name },
-            { key: 'pitch_name', label: 'Pitch', render: (t) => t.pitch_name ?? '—' },
-            { key: 'postcode', label: 'Postcode', render: (t) => t.postcode ?? '—' },
-            {
-              key: 'matches',
-              label: 'Matches',
-              num: true,
-              sortValue: (t) => matchCount.get(t.id) ?? 0,
-              render: (t) => matchCount.get(t.id) ?? 0,
-            },
-            {
-              key: 'actions',
-              label: '',
-              render: (t) => (
-                <span className="controls" style={{ marginBottom: 0 }}>
-                  <button className="secondary small" onClick={() => startEdit(t)}>Edit</button>
-                  <button className="danger small" onClick={() => remove(t)}>Delete</button>
-                </span>
-              ),
-            },
-          ]}
-        />
+        >
+          {(t) => (
+            <AdminRow
+              title={
+                <>
+                  {t.is_club ? <strong>{t.name}</strong> : t.name}
+                  {t.is_club && <span className="tag">us</span>}
+                </>
+              }
+              meta={
+                <>
+                  {t.pitch_name ?? 'no pitch recorded'}
+                  {t.postcode && ` · ${t.postcode}`}
+                  {' · '}
+                  {matchCount.get(t.id) ?? 0} match{(matchCount.get(t.id) ?? 0) === 1 ? '' : 'es'}
+                </>
+              }
+              actions={
+                <>
+                  <button type="button" className="secondary small"
+                    onClick={() => startEdit(t)}>Edit</button>
+                  <button type="button" className="danger small"
+                    onClick={() => remove(t)}>Delete</button>
+                </>
+              }
+            />
+          )}
+        </AdminList>
       </div>
     </div>
   );
