@@ -3,12 +3,39 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#16171b" />
+    <!-- --board from styles/tokens.css. A hex outside tokens.css, because a
+         <meta> can't read a custom property — the same exception lib/tokens.js
+         exists for. It paints the browser chrome directly above the masthead,
+         and installed to a home screen it is the status bar, so it has to be
+         the masthead's own green rather than the near-black it was. -->
+    <meta name="theme-color" content="#16281f" />
     <meta name="apple-mobile-web-app-title" content="OWFC Stats" />
     <link rel="icon" href="./crest.png" />
-    <link rel="apple-touch-icon" href="./crest.png" />
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+    <!-- Installs to a phone's home screen with the crest as its icon, opening
+         on Home with no browser chrome. The squad checks this on a Sunday
+         morning; a tap from the home screen is a shorter route than a browser
+         tab they have to find. -->
+    <link rel="manifest" href="./manifest.webmanifest" />
     <title>Old Wellingtonians FC — Stats</title>
     <meta name="description" content="Results, stats and leaderboards for Old Wellingtonians FC" />
+
+    <!-- The link preview. This site spreads by being pasted into the squad's
+         group chat, and a link with no og:image is a grey rectangle with a URL
+         in it. %SITE_URL% is substituted at build time by vite.config.js —
+         these have to be absolute, which is the one place the site knows its
+         own address. og.png is built by `npm run og`. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Old Wellingtonians FC" />
+    <meta property="og:title" content="Old Wellingtonians FC — Stats" />
+    <meta property="og:description" content="Results, stats and leaderboards for Old Wellingtonians FC" />
+    <meta property="og:url" content="%SITE_URL%/" />
+    <meta property="og:image" content="%SITE_URL%/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="The Old Wellingtonians FC crest" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="canonical" href="%SITE_URL%/" />
   </head>
   <body>
     <div id="root"></div>

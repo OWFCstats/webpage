@@ -157,7 +157,11 @@ drawings as cached assets rather than serving them unversioned: they are
 key in `lib/awards.js` and its address under `/records/badges/`; nothing else
 goes in that directory. `npm run badges -- <dir>` is how a fresh drop of art gets
 renamed, optimised and written there. `public/` stays for what the browser
-fetches whole and unversioned — today that is only the crest.
+fetches whole and unversioned: the crest, the share card (`og.png`) and the
+home-screen icons, which a WhatsApp scraper and a phone's installer both have
+to find at a stable address rather than a hashed one. `npm run og` redraws all
+four against `styles/tokens.css` and the site's own faces; nothing in CI runs
+it, so re-run it when the crest or the palette changes.
 
 **Everything is derived, nothing is stored twice.** Player totals, records,
 form, badges, points, goal difference — all computed from `players`, `matches`,

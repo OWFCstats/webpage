@@ -54,6 +54,51 @@ push to `main`. Before the first deploy:
 The build uses relative asset paths and hash-based routing, so the same build
 works on GitHub Pages and on a custom domain later — no URL is hardcoded.
 
+## The link preview, and the home screen
+
+`npm run og` draws four files into `public/`: `og.png`, the 1200x630 card a
+messaging app shows when the link is pasted, and the 192 / 512 / 180px icons a
+phone uses when the site is installed to a home screen. They are rendered in
+Chromium against `src/styles/tokens.css` in the site's own faces, so the card is
+the masthead at poster size rather than a second place a colour is written down.
+The output is committed — a scraper needs a stable address, not a hashed one.
+Nothing in CI runs it: re-run it by hand when the crest or the palette changes.
+
+`public/manifest.webmanifest` is what makes *Add to Home Screen* give the crest
+as an icon and open the site full-screen on Home, with no browser chrome.
+
+The `og:image` and `og:url` tags need an absolute URL — a scraper isn't a
+browser that already knows where it is — so `vite.config.js` substitutes
+`%SITE_URL%` at build time. It is the one absolute URL in the build. Unset it
+falls back to the GitHub Pages address; see below.
+
+## A custom domain
+
+Optional — the site works on `owfcstats.github.io/webpage/`. What a domain buys
+is an address people can remember and one that survives ever moving off GitHub
+Pages. Nothing in the build hardcodes a URL, so it is configuration, not a
+change:
+
+1. Register the domain (~£10/year).
+2. At the registrar's DNS, for an apex domain like `owfc.co.uk`, add GitHub's
+   four `A` records (and the matching `AAAA` records if you want IPv6) — take
+   the current addresses from GitHub's own *Managing a custom domain* page
+   rather than from here, they are the one value in this file that could go
+   stale. For `www`, a single `CNAME` to `owfcstats.github.io` instead.
+3. Repo *Settings → Pages → Custom domain*, enter it, save, wait for the DNS
+   check, then tick **Enforce HTTPS**. The certificate is free and automatic.
+4. Add a `public/CNAME` file containing just the domain. With an
+   Actions-based deploy the setting above lives in repo config rather than in
+   the branch, and this keeps it in the artifact too.
+5. Set the `SITE_URL` repository *variable* (*Settings → Secrets and variables
+   → Actions → Variables*) to `https://your-domain`, and re-run the deploy so
+   the link preview points at the new address.
+
+The old `github.io` address keeps redirecting, so nothing anyone has already
+shared breaks. URLs keep the `#` — that's hash routing, which is what lets a
+single-page app work on a static host, and changing it would break every link
+already shared.
+
 ## Backups, and keeping the database awake
 
 `.github/workflows/backup.yml` runs `npm run backup` every day at 04:17 UTC. It

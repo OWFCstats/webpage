@@ -31,10 +31,16 @@ jobs:
       # Set these in the repo: Settings → Secrets and variables → Actions →
       # Secrets: VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY.
       # The publishable key is a public client key; RLS protects the data.
+      # SITE_URL is a repository *variable*, not a secret — it is the public
+      # address of the site, and it only exists because a link preview's
+      # og:image has to be absolute. Unset, vite.config.js falls back to the
+      # GitHub Pages address; set it to the custom domain the day there is one
+      # (Settings -> Secrets and variables -> Actions -> Variables).
       - run: npm run build
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
+          SITE_URL: ${{ vars.SITE_URL }}
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
