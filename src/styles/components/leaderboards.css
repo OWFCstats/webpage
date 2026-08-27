@@ -79,7 +79,9 @@
   font-size: var(--t-body);
 }
 
-.lb-names a:hover { color: var(--gold); }
+@media (hover: hover) and (pointer: fine) {
+  .lb-names a:hover { color: var(--gold); }
+}
 
 /* A crowd at the top is a fact about the season, not a name to pick out of
    it — set smaller than a single leader's name so it reads as a count. */
@@ -133,9 +135,12 @@
   font-weight: 600;
   font-size: var(--t-small);
   min-width: 0;
+  transition: color var(--dur-tint) ease;
 }
 
-.lb-name:hover { color: var(--gold-deep); }
+@media (hover: hover) and (pointer: fine) {
+  .lb-name:hover { color: var(--gold-deep); }
+}
 
 .lb-value {
   font-family: var(--font-data);
@@ -174,6 +179,11 @@
   padding: var(--s2) 0;
   cursor: pointer;
   list-style: none;
+  transition: background var(--dur-tint) ease;
+}
+
+.season-archive-entry summary:active {
+  background: color-mix(in srgb, var(--gold) 10%, transparent);
 }
 
 .season-archive-entry summary::-webkit-details-marker { display: none; }
@@ -198,7 +208,7 @@
   border-right: 2px solid var(--ink-soft);
   border-bottom: 2px solid var(--ink-soft);
   transform: rotate(-45deg);
-  transition: transform 0.15s ease;
+  transition: transform var(--dur-pop) var(--ease-in-out);
 }
 
 .season-archive-entry[open] .season-archive-arrow {
@@ -207,4 +217,19 @@
 
 .season-archive-panel {
   padding-bottom: var(--s4);
+}
+
+/* A year of boards can't have its height animated without JS, so the panel
+   settles in place instead of the block growing — the chevron above it is
+   what carries the open/closed state. The lift is 4px: enough to read as
+   arriving under the banner, not enough to be a slide. */
+@media (prefers-reduced-motion: no-preference) {
+  .season-archive-entry[open] .season-archive-panel {
+    animation: archive-in var(--dur-pop) var(--ease-out) both;
+  }
+
+  @keyframes archive-in {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: none; }
+  }
 }

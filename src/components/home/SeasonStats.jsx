@@ -33,14 +33,18 @@ export default function SeasonStats({ summary, cleanSheets }) {
           <div className="home-bar">
             <span className="home-bar-label">Goals for</span>
             <span className="home-bar-track">
-              <i className="home-bar-fill gf" style={{ width: `${(summary.goalsFor / goalScale) * 100}%` }} />
+              {/* The fraction goes in as a custom property rather than a width:
+                  home.css scales the bar with a transform, and an inline
+                  transform would outrank the @starting-style that gives it
+                  something to grow from. */}
+              <i className="home-bar-fill gf" style={{ '--fill': (summary.goalsFor / goalScale).toFixed(3) }} />
             </span>
             <span className="home-bar-value">{summary.goalsFor}</span>
           </div>
           <div className="home-bar">
             <span className="home-bar-label">Against</span>
             <span className="home-bar-track">
-              <i className="home-bar-fill ga" style={{ width: `${(summary.goalsAgainst / goalScale) * 100}%` }} />
+              <i className="home-bar-fill ga" style={{ '--fill': (summary.goalsAgainst / goalScale).toFixed(3) }} />
             </span>
             <span className="home-bar-value">{summary.goalsAgainst}</span>
           </div>

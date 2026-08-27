@@ -22,7 +22,9 @@
   padding: 0.15rem 0.35rem;
 }
 
-.picker-clear:hover { color: var(--loss); filter: none; }
+@media (hover: hover) and (pointer: fine) {
+  .picker-clear:hover { color: var(--loss); filter: none; }
+}
 
 /* A dropdown genuinely floats above the page, so it keeps a shadow. */
 .picker-list {

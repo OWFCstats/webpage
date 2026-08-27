@@ -1152,12 +1152,38 @@ the data table carry series identity there instead.
 
 Restrained. Motion marks a change the user caused, and nothing else.
 
-- The existing page transition stays (`page-in`, 0.25s).
-- Bar fills and badges animate their width/opacity on first paint, 0.4s ease.
-- Hover changes colour or border, never size or position.
-- No scroll-triggered reveals, no parallax, no ambient movement.
-- Everything above sits behind `prefers-reduced-motion` — already handled
-  correctly throughout the current CSS. Keep it that way.
+Every value comes from the five motion tokens in `tokens.css` — two curves and
+three durations — and nothing picks a number outside them. Both curves are the
+strong variants; the built-in CSS easings are too soft to read as deliberate.
+`ease-in` isn't among them, because starting slow delays the one frame the user
+is watching hardest.
+
+- **Only `transform` and `opacity` animate.** They skip layout and paint. The
+  home stat bars animated `width`, which is all three, and scale now.
+- **Press is what a phone has instead of hover, and it isn't optional.** A tap
+  has nothing else to acknowledge it. Compact controls — buttons, chips, the
+  segmented control, a bottom tab — scale to 0.97 under the finger. Full-width
+  rows tint instead: a whole row shrinking 3% reads as the page flexing, not as
+  a press. `.pick-row` is the one button that takes the row treatment, and says
+  so where it overrides.
+- **Every `:hover` rule sits behind `@media (hover: hover) and (pointer: fine)`.**
+  Touch fires hover on tap and leaves it there until you tap elsewhere, so an
+  ungated hover is a stuck highlight on the design target. Correctness, not
+  taste.
+- **`page-in` is a route transition now**, keyed on the pathname in
+  `Layout.jsx`. For its first year `<main>` never remounted, so it only ever ran
+  on first paint — this file claimed a transition the site didn't have. Opacity
+  only: a tab is tapped dozens of times in a sitting, and at that rate the 4px
+  rise it used to carry was movement on every one.
+- **Hover changes colour or border, never size or position.** Press is the
+  exception, and only while held.
+- **No scroll-triggered reveals, no parallax, no ambient movement.**
+- **Movement sits behind `prefers-reduced-motion: no-preference`; colour
+  doesn't.** Reduced motion means gentler, not nothing — a press still tints and
+  a state change still settles, and only the transforms go. Worth knowing that
+  the harness runs with reduced motion *on*, so `npm run shots` and
+  `check:layout` never exercise the other half: anything new here has to be
+  looked at by hand with motion enabled.
 
 ## Mobile
 
@@ -1474,7 +1500,8 @@ growing past ~80 lines means something in it should have been a primitive.
   the board surfaces already give the site tonal range.
 - **No component library.** Vanilla CSS with tokens. The site is ~7k lines;
   adding Tailwind or a UI kit now would be more migration than benefit.
-- **No animation library.** CSS transitions cover everything above.
+- **No animation library.** CSS transitions, five keyframes and one
+  `@starting-style` cover everything under *Motion*.
 - **No sixth section.** Depth goes into a sub-page of one of the five, per
   *Structure*. A section is expensive to add and expensive to rename — `App.jsx`
   already carries seven redirect shims.

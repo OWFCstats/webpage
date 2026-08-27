@@ -45,7 +45,9 @@
    direction is named after. */
 .board a { color: var(--gold-leaf); }
 
-.board a:hover { color: var(--gold); }
+@media (hover: hover) and (pointer: fine) {
+  .board a:hover { color: var(--gold); }
+}
 
 /* ---- a table on a board: the honours board ----
    Ruled and gilded rather than boxed. Only the hairlines and the ink change;
@@ -58,9 +60,11 @@
 
 .board table.data td { border-bottom-color: color-mix(in srgb, var(--on-board) 14%, transparent); }
 
-.board table.data tbody tr:hover { background: color-mix(in srgb, var(--gold) 16%, transparent); }
+@media (hover: hover) and (pointer: fine) {
+  .board table.data tbody tr:hover { background: color-mix(in srgb, var(--gold) 16%, transparent); }
 
-.board table.data a:hover { color: var(--gold); }
+  .board table.data a:hover { color: var(--gold); }
+}
 
 /* The first column sticks on a phone, so its backing has to be the board's
    own ground rather than paper. */
@@ -212,7 +216,9 @@ dl.compare dt {
   color: var(--gold-deep);
 }
 
-.section-head .more:hover { text-decoration: underline; }
+@media (hover: hover) and (pointer: fine) {
+  .section-head .more:hover { text-decoration: underline; }
+}
 
 /* form badges */
 .form-row {
@@ -320,9 +326,12 @@ table.data th {
 table.data th.sortable {
   cursor: pointer;
   user-select: none;
+  transition: color var(--dur-tint) ease;
 }
 
-table.data th.sortable:hover { color: var(--ink); }
+@media (hover: hover) and (pointer: fine) {
+  table.data th.sortable:hover { color: var(--ink); }
+}
 
 table.data th .arrow {
   color: var(--gold-deep);
@@ -336,18 +345,25 @@ table.data td {
 }
 
 table.data tbody tr {
-  transition: background 0.12s ease;
+  transition: background var(--dur-tint) ease;
 }
 
-table.data tbody tr:hover {
-  background: color-mix(in srgb, var(--gold) 7%, transparent);
+@media (hover: hover) and (pointer: fine) {
+  table.data tbody tr:hover {
+    background: color-mix(in srgb, var(--gold) 7%, transparent);
+  }
 }
 
 table.data td.num, table.data th.num { text-align: right; }
 
-table.data a { font-weight: 600; }
+table.data a {
+  font-weight: 600;
+  transition: color var(--dur-tint) ease;
+}
 
-table.data a:hover { color: var(--gold-deep); }
+@media (hover: hover) and (pointer: fine) {
+  table.data a:hover { color: var(--gold-deep); }
+}
 
 /* ---- controls ---- */
 .controls {
@@ -376,7 +392,7 @@ input[type='email'], input[type='password'], textarea {
   border-radius: var(--r);
   background: var(--paper);
   color: var(--ink);
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition: border-color var(--dur-tint) ease, box-shadow var(--dur-tint) ease;
 }
 
 select:focus, input:focus, textarea:focus {
@@ -402,13 +418,27 @@ button, .btn {
   cursor: pointer;
   background: var(--gold);
   color: var(--board);
-  transition: filter 0.15s ease, transform 0.05s ease;
+  transition: filter var(--dur-tint) ease, transform var(--dur-press) var(--ease-out);
   display: inline-block;
 }
 
-button:hover, .btn:hover { filter: brightness(1.06); }
+/* Touch fires :hover on tap and then leaves it there until you tap something
+   else, so the brightness lift is desktop-only. The press below is what a
+   phone gets instead, and it's the more useful of the two. */
+@media (hover: hover) and (pointer: fine) {
+  button:hover, .btn:hover { filter: brightness(1.06); }
+}
 
-button:active, .btn:active { transform: translateY(1px); }
+/* A tap has nothing to acknowledge it — no hover, no cursor. Scaling the whole
+   control down while the finger is down is that acknowledgement, and scale
+   takes the label with it, which translateY never did. It has to settle inside
+   the tap: any slower and it reads as the page lagging, not answering. */
+@media (prefers-reduced-motion: no-preference) {
+  button:active:not(:disabled),
+  .btn:active,
+  /* A sub-page in a segmented control is a NavLink, not a button. */
+  .seg a:active { transform: scale(0.97); }
+}
 
 button:disabled {
   opacity: 0.5;
@@ -526,6 +556,8 @@ button.small {
   font-size: var(--t-small);
   white-space: nowrap;
   flex: none;
+  transition: background var(--dur-tint) ease, border-color var(--dur-tint) ease,
+    color var(--dur-tint) ease, transform var(--dur-press) var(--ease-out);
 }
 
 .chip-btn.active {
@@ -562,6 +594,11 @@ button.small {
   color: var(--ink-soft);
   border-radius: var(--r-sm);
   padding: 0.4rem 1.1rem;
+  /* The thumb settles into its new half rather than cutting to it. The track
+     and the labels stay put while it does — only the segment under the finger
+     moves, and only while it's held. */
+  transition: background var(--dur-tint) ease, color var(--dur-tint) ease,
+    box-shadow var(--dur-tint) ease, transform var(--dur-press) var(--ease-out);
 }
 
 /* The active thumb of a segmented control is one of the few things on the
@@ -618,7 +655,7 @@ dl.compare dd { margin: 0.1rem 0 0; font-size: var(--t-body); }
   border-radius: 50%;
   border: 3px solid var(--rule);
   border-top-color: var(--gold);
-  animation: spin 0.8s linear infinite;
+  animation: spin 0.6s linear infinite;
 }
 
 @keyframes spin {
@@ -632,7 +669,9 @@ dl.compare dd { margin: 0.1rem 0 0; font-size: var(--t-body); }
 /* Games with a goal or an assist in them, so the eye lands on the good days. */
 table.data tbody tr.scored-row { background: color-mix(in srgb, var(--gold) 8%, transparent); }
 
-table.data tbody tr.scored-row:hover { background: color-mix(in srgb, var(--gold) 14%, transparent); }
+@media (hover: hover) and (pointer: fine) {
+  table.data tbody tr.scored-row:hover { background: color-mix(in srgb, var(--gold) 14%, transparent); }
+}
 
 button.secondary.active, .btn.secondary.active {
   border-color: var(--gold);

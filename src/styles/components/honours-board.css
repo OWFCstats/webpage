@@ -79,7 +79,9 @@
   min-width: 0;
 }
 
-.hc-cup:hover .hc-award { text-decoration: underline; }
+@media (hover: hover) and (pointer: fine) {
+  .hc-cup:hover .hc-award { text-decoration: underline; }
+}
 
 /* The award's own name, as a caption under the drawing rather than a heading
    over it: the drawing is what identifies the trophy and the words are the

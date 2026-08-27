@@ -69,6 +69,21 @@
   /* Only things that genuinely float above the page get a shadow. */
   --shadow-pop: 0 6px 20px rgba(26, 28, 25, 0.14);
 
+  /* ---- motion ----
+     Two curves and three durations, and nothing picks a number outside them.
+     The built-in CSS easings are too soft to read as deliberate, so both
+     curves here are the strong variants; ease-in is absent on purpose,
+     because starting slow is exactly the moment the user is watching.
+
+     The durations are named for the job, not the length: a press has to land
+     inside the tap, a tint is a colour settling, a pop is something arriving
+     on top of the page. Nothing on the site needs longer than a pop. */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --dur-press: 120ms;
+  --dur-tint: 150ms;
+  --dur-pop: 180ms;
+
   /* ---- spacing: a 4px scale ---- */
   --s1: 4px;
   --s2: 8px;
