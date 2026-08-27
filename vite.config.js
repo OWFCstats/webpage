@@ -19,10 +19,32 @@ import { fileURLToPath } from 'node:url';
 const fixtureMode = Boolean(process.env.FIXTURE);
 const stub = fileURLToPath(new URL('./fixtures/supabase-stub.js', import.meta.url));
 
+// The site's own address, and the only absolute URL in the build. Everything
+// else is relative on purpose (see `base` below), but a link preview can't be:
+// og:image is fetched by WhatsApp's scraper, not by a browser that already
+// knows where it is, and a relative one is simply dropped.
+//
+// So it comes in at build time. The default is the GitHub Pages address; a
+// custom domain means setting the SITE_URL repository variable in
+// .github/workflows/deploy.yml and re-running the deploy — one value in one
+// place, and no page has to know about it.
+const siteUrl = (process.env.SITE_URL || 'https://owfcstats.github.io/webpage').replace(/\/+$/, '');
+
+const siteUrlPlugin = {
+  name: 'owfc-site-url',
+  transformIndexHtml: {
+    // Before Vite's own HTML pass, which decodeURI()s every href it finds and
+    // throws "URI malformed" on a bare %SITE_URL% — the placeholder has to be
+    // gone by then.
+    order: 'pre',
+    handler: (html) => html.replaceAll('%SITE_URL%', siteUrl),
+  },
+};
+
 // base './' keeps every asset reference relative, so the same build works on
 // GitHub Pages (served from /<repo>/) and on a custom domain later.
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), siteUrlPlugin],
   base: './',
   resolve: {
     alias: fixtureMode ? [{ find: /^(?:\.\.\/)+lib\/supabase$/, replacement: stub }] : [],

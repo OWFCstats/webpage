@@ -20,7 +20,7 @@ const root = dirname(dirname(fileURLToPath(import.meta.url)));
  * one and fall back to whatever is installed rather than failing on a browser
  * that is right there.
  */
-function executablePath() {
+export function executablePath() {
   if (process.env.CHROMIUM_PATH) return process.env.CHROMIUM_PATH;
   const pinned = chromium.executablePath();
   if (existsSync(pinned)) return undefined; // let Playwright use its own

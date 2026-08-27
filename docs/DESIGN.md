@@ -317,6 +317,14 @@ Two things follow from that, because a token can't be written down twice:
   `lib/tokens.js` reads the computed value off `:root`. It also owns the one
   place that says which token a stat wears, so goals are the same brass on a
   leaderboard bar, a sparkline and a chart line.
+- **`index.html` is the one file that writes a hex down.** `<meta
+  name="theme-color">` paints the browser's own chrome, which is outside the
+  document and can't read a custom property, and the manifest is JSON that CSS
+  never sees. Both carry `--board`. It is the same exception `lib/tokens.js`
+  is, and it is spelled out here so the next person doesn't quietly add a
+  third: the share card and the home-screen icons are *rendered against*
+  `tokens.css` by `npm run og` rather than drawn with colours typed into a
+  script.
 
 ### Ground and ink
 

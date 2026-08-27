@@ -87,7 +87,8 @@ not for what it currently shows.
 React 18 + Vite, React Router (hash routing), Supabase (Postgres + auth),
 Recharts. Deployed to GitHub Pages by `.github/workflows/deploy.yml` on push to
 `main`; `.github/workflows/check.yml` runs the tests, the layout invariants and
-a production build on every pull request.
+a production build on every pull request; `.github/workflows/backup.yml` dumps
+the database to `backups/` daily.
 
 ```sh
 npm install
@@ -99,6 +100,7 @@ npm test                # lib/ unit tests, over the fixture
 npm run check:layout    # the mobile invariants, as assertions
 npm run shots           # every route × width to shots/, with page heights
 npm run badges -- <dir> # ingest a drop of badge art: rename, optimise, commit
+npm run backup          # pull every row to backups/ — what CI runs daily
 ```
 
 No test needs a database. `fixtures/` holds the club's real 2025/26 season
@@ -124,15 +126,26 @@ src/
   styles/                  see docs/DESIGN.md
 supabase/                  schema.sql + one migration file per change
 fixtures/                  the committed season, the datasets, the Supabase stub
+backups/                   the database, dumped daily by CI: JSON + restore.sql
 scripts/                   the harness: shots, check:layout, the invariants
 tests/                     node --test over lib/, against the fixture
 docs/DESIGN.md             the design system — read before touching UI
 docs/ROADMAP.md            what's planned, in order
 ```
 
-`fixtures/`, `scripts/` and `tests/` are outside `src/` on purpose: nothing the
-site ships imports them, and the fixture stub reaches the app through one alias
-in `vite.config.js` rather than a flag anybody has to remember to unset.
+`fixtures/`, `scripts/`, `tests/` and `backups/` are outside `src/` on purpose:
+nothing the site ships imports them, and the fixture stub reaches the app
+through one alias in `vite.config.js` rather than a flag anybody has to
+remember to unset.
+
+**`backups/` is the club's history, not a fixture.** Everything the site knows
+lives in one free-tier Postgres instance with no automated backups, so the daily
+job in `.github/workflows/backup.yml` is the only second copy — six JSON files
+plus a `restore.sql` that upserts them back. CI writes it and nothing else does;
+a human editing a file in there is editing a record, not a config. The same run
+is the keepalive (Supabase pauses a free project after about a week idle) and
+the site's only alerting (a failed fetch fails the job and emails the owner),
+which is why it is daily rather than weekly.
 
 `src/assets/badges/` is inside `src/` so Vite hashes and emits the twenty-two
 drawings as cached assets rather than serving them unversioned: they are
@@ -144,7 +157,11 @@ drawings as cached assets rather than serving them unversioned: they are
 key in `lib/awards.js` and its address under `/records/badges/`; nothing else
 goes in that directory. `npm run badges -- <dir>` is how a fresh drop of art gets
 renamed, optimised and written there. `public/` stays for what the browser
-fetches whole and unversioned — today that is only the crest.
+fetches whole and unversioned: the crest, the share card (`og.png`) and the
+home-screen icons, which a WhatsApp scraper and a phone's installer both have
+to find at a stable address rather than a hashed one. `npm run og` redraws all
+four against `styles/tokens.css` and the site's own faces; nothing in CI runs
+it, so re-run it when the crest or the palette changes.
 
 **Everything is derived, nothing is stored twice.** Player totals, records,
 form, badges, points, goal difference — all computed from `players`, `matches`,
@@ -176,10 +193,13 @@ A component that gains a second page moves up — that's what happened to
 **`lib/` is split by domain, not by size.** Formatting, matches, players,
 awards, league, charts, tokens. A helper goes where its subject lives.
 
-`lib/tokens.js` is the one that isn't about football: it reads the design
+Two modules in there aren't about football. `lib/tokens.js` reads the design
 tokens out of `styles/tokens.css` for the charts and sparklines, which put
-colours in SVG attributes where `var()` doesn't work. No colour is ever written
-down in JS.
+colours in SVG attributes where `var()` doesn't work — no colour is ever
+written down in JS. `lib/analytics.js` is the usage counter, and it names no
+vendor: which counter is a signup decision, so it takes a script URL and one
+data-attribute as build-time variables and does nothing at all when they are
+unset, which is every local run and every pull request.
 
 ## Conventions
 
