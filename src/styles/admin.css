@@ -381,7 +381,23 @@
 
 .pick-list li:last-child .pick-row { border-bottom: none; }
 
-.pick-row:hover { filter: none; background: color-mix(in srgb, var(--gold) 8%, transparent); }
+/* Picking a squad is the whole of the Saturday-night flow: thirty taps down
+   a list, on a phone, in a pub. The tint settling rather than snapping is
+   what makes a run of them read as a list being ticked off.
+
+   It overrides the scale every other button gets, hence the :not(:disabled)
+   needed to outweigh it. A compact button shrinking under a thumb reads as a
+   press; a full-width row doing it reads as the page flexing. */
+.pick-row { transition: background var(--dur-tint) ease; }
+
+.pick-row:active:not(:disabled) {
+  transform: none;
+  background: color-mix(in srgb, var(--gold) 16%, transparent);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pick-row:hover { filter: none; background: color-mix(in srgb, var(--gold) 8%, transparent); }
+}
 
 .pick-row.picked { background: color-mix(in srgb, var(--gold) 12%, transparent); }
 

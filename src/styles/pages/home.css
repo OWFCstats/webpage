@@ -47,7 +47,9 @@
   white-space: nowrap;
 }
 
-.home-widget .more:hover { text-decoration: underline; }
+@media (hover: hover) and (pointer: fine) {
+  .home-widget .more:hover { text-decoration: underline; }
+}
 
 /* ---- next fixture: a compact row, not a card of its own ---- */
 
@@ -79,9 +81,21 @@
   gap: 0.15rem;
 }
 
-.fixture-row-body strong { overflow-wrap: break-word; }
+.fixture-row-body strong {
+  overflow-wrap: break-word;
+  transition: color var(--dur-tint) ease;
+}
 
-a.fixture-row:hover .fixture-row-body strong { color: var(--gold-deep); }
+a.fixture-row {
+  border-radius: var(--r);
+  transition: background var(--dur-tint) ease;
+}
+
+a.fixture-row:active { background: color-mix(in srgb, var(--gold) 12%, transparent); }
+
+@media (hover: hover) and (pointer: fine) {
+  a.fixture-row:hover .fixture-row-body strong { color: var(--gold-deep); }
+}
 
 .fixture-countdown {
   flex: none;
@@ -318,10 +332,25 @@ a.fixture-row:hover .fixture-row-body strong { color: var(--gold-deep); }
 
 .home-bar-fill {
   display: block;
+  width: 100%;
   height: 100%;
   border-radius: var(--r-sm);
-  transition: width 0.4s ease;
+  transform: scaleX(var(--fill));
+  transform-origin: left;
+  transition: transform var(--dur-pop) var(--ease-out);
 }
+
+/* Without this the bars are simply painted at their final length — a width
+   transition never fires on first render, which is why the 0.4s one this
+   replaces had never once run. Transform also keeps the fill off the layout
+   and paint path, where animating width put it. */
+@starting-style {
+  .home-bar-fill { transform: scaleX(0); }
+}
+
+/* Against follows For rather than racing it: two bars arriving in the same
+   frame read as one block appearing, one after the other reads as a count. */
+.home-bar-fill.ga { transition-delay: 60ms; }
 
 .home-bar-fill.gf { background: var(--gold); }
 

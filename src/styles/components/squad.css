@@ -78,7 +78,21 @@
   overflow-wrap: break-word;
 }
 
-.player-row:hover .who { color: var(--gold-deep); }
+/* Both of these are <Link>s, and on a phone a link has no hover to say the
+   tap landed on this name and not the one above it. The tint is that, and
+   it's colour rather than movement so it survives reduced motion. */
+.player-row,
+.squad-card { transition: background var(--dur-tint) ease, border-color var(--dur-tint) ease; }
+
+.player-row .who,
+.squad-card .who { transition: color var(--dur-tint) ease; }
+
+.player-row:active,
+.squad-card:active { background: color-mix(in srgb, var(--gold) 12%, transparent); }
+
+@media (hover: hover) and (pointer: fine) {
+  .player-row:hover .who { color: var(--gold-deep); }
+}
 
 .player-row .fig {
   font-family: var(--font-data);
@@ -116,7 +130,9 @@
   cursor: pointer;
 }
 
-.squad-more:hover { text-decoration: underline; }
+@media (hover: hover) and (pointer: fine) {
+  .squad-more:hover { text-decoration: underline; }
+}
 
 /* Search on the left, the layout toggle at the far end, both views carrying the
    same control in the same place so switching doesn't move it. The box grows
@@ -157,9 +173,11 @@
   text-decoration: none;
 }
 
-.squad-card:hover { border-color: var(--rule-firm); }
+@media (hover: hover) and (pointer: fine) {
+  .squad-card:hover { border-color: var(--rule-firm); }
 
-.squad-card:hover .who { color: var(--gold-deep); }
+  .squad-card:hover .who { color: var(--gold-deep); }
+}
 
 /* The figures as a three-column strip with the heads above them — the list's
    own arrangement, turned on its side to fit a tile. */

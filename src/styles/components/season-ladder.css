@@ -42,7 +42,9 @@
   border-bottom: 1px solid var(--rule);
 }
 
-.rung:hover { background: color-mix(in srgb, var(--gold) 7%, transparent); }
+@media (hover: hover) and (pointer: fine) {
+  .rung:hover { background: color-mix(in srgb, var(--gold) 7%, transparent); }
+}
 
 .rung .dt {
   font-family: var(--font-data);

@@ -87,7 +87,9 @@
   text-decoration: none;
 }
 
-.badge-card:hover { border-color: var(--rule-firm); }
+@media (hover: hover) and (pointer: fine) {
+  .badge-card:hover { border-color: var(--rule-firm); }
+}
 
 .badge-card-head {
   display: flex;
@@ -225,7 +227,9 @@
   text-decoration: none;
 }
 
-.trophy-strip a:hover { text-decoration: underline; }
+@media (hover: hover) and (pointer: fine) {
+  .trophy-strip a:hover { text-decoration: underline; }
+}
 
 @media (max-width: 520px) {
   .trophy-strip { grid-template-columns: repeat(2, 1fr); }

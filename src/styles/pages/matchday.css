@@ -21,7 +21,9 @@
   cursor: pointer;
 }
 
-.report-more:hover { border-bottom-color: var(--verdigris-deep); }
+@media (hover: hover) and (pointer: fine) {
+  .report-more:hover { border-bottom-color: var(--verdigris-deep); }
+}
 
 /* ---- head to head: the meetings, then the league tape ---- */
 .tape-head {
@@ -312,7 +314,9 @@
 
 .squad-pill.as-button { cursor: pointer; font: inherit; font-size: var(--t-small); font-weight: 600; }
 
-.squad-pill.as-button:hover { filter: none; border-color: var(--gold); }
+@media (hover: hover) and (pointer: fine) {
+  .squad-pill.as-button:hover { filter: none; border-color: var(--gold); }
+}
 
 @media (max-width: 700px) {
   /* The top nav is Admin/Log in only at this width — all five sections live

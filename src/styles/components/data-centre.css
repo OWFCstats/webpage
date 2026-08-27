@@ -71,6 +71,13 @@
 
 .col-picker summary::-webkit-details-marker { display: none; }
 
+.col-picker summary {
+  transition: color var(--dur-tint) ease, border-color var(--dur-tint) ease,
+    background var(--dur-tint) ease;
+}
+
+.col-picker summary:active { background: color-mix(in srgb, var(--gold) 10%, transparent); }
+
 .col-picker[open] summary { color: var(--ink); border-color: var(--gold-deep); }
 
 /* Anchored to its own right edge and capped well under the narrowest phone,
@@ -90,6 +97,21 @@
   gap: var(--s1);
   width: max-content;
   max-width: min(220px, calc(100vw - (var(--s4) * 2)));
+  /* It belongs to the button it hangs off, so it grows out of that corner
+     rather than out of its own middle. Never from scale(0): a panel that
+     comes from nothing looks like it was drawn, not opened. */
+  transform-origin: top right;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .col-picker[open] .col-picker-panel {
+    animation: col-picker-in var(--dur-pop) var(--ease-out) both;
+  }
+
+  @keyframes col-picker-in {
+    from { opacity: 0; transform: scale(0.96); }
+    to { opacity: 1; transform: none; }
+  }
 }
 
 .col-picker-panel label {

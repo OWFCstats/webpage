@@ -20,7 +20,9 @@ table.data.league-table tr.lt-us { background: color-mix(in srgb, var(--gold) 12
 
 table.data.league-table tr.lt-us td.lt-pos { color: var(--gold-deep); }
 
-table.data.league-table tr.lt-us:hover { background: color-mix(in srgb, var(--gold) 18%, transparent); }
+@media (hover: hover) and (pointer: fine) {
+  table.data.league-table tr.lt-us:hover { background: color-mix(in srgb, var(--gold) 18%, transparent); }
+}
 
 /* The standings are typed in by hand, so when they were last touched is part
    of reading them. */

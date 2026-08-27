@@ -55,7 +55,8 @@ export default function Layout() {
   const { session } = useAuth();
   // The bottom bar carries the five public tabs; on admin screens it would
   // only get in the way of the save buttons.
-  const isAdmin = useLocation().pathname.startsWith('/admin');
+  const { pathname } = useLocation();
+  const isAdmin = pathname.startsWith('/admin');
   return (
     <>
       <header className="site-header">
@@ -91,7 +92,12 @@ export default function Layout() {
           </nav>
         </div>
       </header>
-      <main className="page">
+      {/* Keyed so <main> remounts on a section change and the page-in fade in
+          layout.css actually fires. Without it the element persists for the
+          life of the tab and the fade only ever ran once, on first paint.
+          Pathname, not location.key: a ?q= change is the user typing in a
+          search box, and that must not refade the page under them. */}
+      <main className="page" key={pathname}>
         <Outlet />
       </main>
       <footer className="site-footer">

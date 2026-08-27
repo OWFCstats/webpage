@@ -19,7 +19,9 @@
    list-row equivalent of table.data tbody tr.scored-row. */
 .result-list li.scored { background: color-mix(in srgb, var(--gold) 8%, transparent); }
 
-.result-list li.scored:hover { background: color-mix(in srgb, var(--gold) 14%, transparent); }
+@media (hover: hover) and (pointer: fine) {
+  .result-list li.scored:hover { background: color-mix(in srgb, var(--gold) 14%, transparent); }
+}
 
 .result-row {
   display: grid;
@@ -28,7 +30,12 @@
   gap: var(--s3);
   min-height: 44px;
   padding: 0.55rem 0;
+  transition: background var(--dur-tint) ease;
 }
+
+/* Rows are the densest tap target on the site — a whole season of them, 44px
+   apart, read on a phone. The tint is what confirms which one took the tap. */
+.result-row:active { background: color-mix(in srgb, var(--gold) 12%, transparent); }
 
 /* Where the opponent is already named by the caller ("Earlier against X") —
    the same three remaining columns, without the empty gap the name left. */

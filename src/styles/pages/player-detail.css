@@ -92,7 +92,9 @@
   max-width: 92px;
 }
 
-.fg:hover { border-color: var(--gold); }
+@media (hover: hover) and (pointer: fine) {
+  .fg:hover { border-color: var(--gold); }
+}
 
 .fg-op {
   display: block;
@@ -191,7 +193,9 @@
 
 .mate-name { font-size: var(--t-small); font-weight: 600; }
 
-.mate-name:hover { color: var(--gold-deep); }
+@media (hover: hover) and (pointer: fine) {
+  .mate-name:hover { color: var(--gold-deep); }
+}
 
 .mate-count {
   margin-left: auto;
