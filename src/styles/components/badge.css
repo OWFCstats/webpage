@@ -87,8 +87,10 @@
   text-decoration: none;
 }
 
+/* The same edge every card surface firms to — see squad.css for why it stopped
+   being the grey --rule-firm. */
 @media (hover: hover) and (pointer: fine) {
-  .badge-card:hover { border-color: var(--rule-firm); }
+  .badge-card:hover { border-color: var(--gold-deep); }
 }
 
 .badge-card-head {

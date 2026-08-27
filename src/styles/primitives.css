@@ -29,12 +29,40 @@
    itself, which is why the label and table rules below could only be scoped by
    naming all five. Now a new board arrives with its ink already right. */
 .board {
+  position: relative;
+  overflow: hidden;
   background: var(--board);
   color: var(--on-board);
   border-radius: var(--r);
   border-bottom: 1px solid var(--gold);
   padding: var(--s5);
 }
+
+/* The gild: one sweep of light across the gold as a board arrives, and the
+   only ambient movement in the site. It earns the exception by being the
+   thing the surface is *for* — a board is an occasion, there are five of
+   them, and each one appears once per visit to its page. Transform only, so
+   it costs a composite and nothing else, and pointer-events:none so a sheen
+   lying over a link never eats the tap.
+
+   Not on .lb-lead: a leader's band is a row inside a card, not a page's
+   occasion, and six of them cascading down the leaderboard grid is a light
+   show rather than a moment (leaderboards.css turns it off). */
+.board::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(102deg, transparent 34%,
+    color-mix(in srgb, var(--gold-leaf) 24%, transparent) 50%, transparent 66%);
+  transform: translateX(-130%);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .board::before { animation: gild var(--dur-gild) var(--ease-out) 140ms both; }
+}
+
+@keyframes gild { to { transform: translateX(130%); } }
 
 .board h1, .board h2, .board h3 { color: var(--on-board); }
 
@@ -324,13 +352,32 @@ table.data th {
 }
 
 table.data th.sortable {
+  position: relative;
   cursor: pointer;
   user-select: none;
   transition: color var(--dur-tint) ease;
 }
 
+/* A sortable column offers itself by turning its own bottom rule gold, drawn
+   from the left rather than switched on. The header already has that rule —
+   this gilds the line that is there instead of adding a second one. */
+table.data th.sortable::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background: var(--gold);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur-tint) var(--ease-out);
+}
+
 @media (hover: hover) and (pointer: fine) {
   table.data th.sortable:hover { color: var(--ink); }
+
+  table.data th.sortable:hover::after { transform: scaleX(1); }
 }
 
 table.data th .arrow {
@@ -348,21 +395,66 @@ table.data tbody tr {
   transition: background var(--dur-tint) ease;
 }
 
+/* The margin tick: a gold rule drawn down the left edge of the row under the
+   pointer, the way a reader marks a page. It is what this site gets instead
+   of a row that lifts — nothing here leaves the plane of the paper, so
+   attention is a mark being made rather than a shadow being cast.
+
+   Below 700px the first cell is already sticky, which is its own positioning
+   context, so this relative only takes effect above that width. The sticky
+   rule wins on specificity either way — .table-wrap adds a class it doesn't
+   have — which is deliberate: a tick must never cost the frozen name column. */
+table.data tbody td:first-child { position: relative; }
+
+table.data tbody td:first-child::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 5px;
+  bottom: 5px;
+  width: 2px;
+  background: var(--gold);
+  transform: scaleY(0);
+  transition: transform var(--dur-tint) var(--ease-out);
+}
+
 @media (hover: hover) and (pointer: fine) {
   table.data tbody tr:hover {
     background: color-mix(in srgb, var(--gold) 7%, transparent);
   }
+
+  table.data tbody tr:hover td:first-child::before { transform: scaleY(1); }
 }
 
 table.data td.num, table.data th.num { text-align: right; }
 
 table.data a {
+  position: relative;
   font-weight: 600;
   transition: color var(--dur-tint) ease;
 }
 
+/* Drawn, not switched on. Safe here and nowhere else that a name appears: a
+   cell is nowrap, so the link is one unbroken box. On a name that can wrap —
+   a leaderboard's, a squad card's — the same pseudo-element would draw one
+   rule under the whole two-line block, so those keep a colour change only. */
+table.data a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur-tint) var(--ease-out);
+}
+
 @media (hover: hover) and (pointer: fine) {
   table.data a:hover { color: var(--gold-deep); }
+
+  table.data a:hover::after { transform: scaleX(1); }
 }
 
 /* ---- controls ---- */
@@ -409,6 +501,7 @@ textarea {
 }
 
 button, .btn {
+  position: relative;
   font: inherit;
   font-weight: 600;
   font-size: var(--t-small);
@@ -418,16 +511,78 @@ button, .btn {
   cursor: pointer;
   background: var(--gold);
   color: var(--board);
-  transition: filter var(--dur-tint) ease, transform var(--dur-press) var(--ease-out);
+  transition: background var(--dur-tint) ease, border-color var(--dur-tint) ease,
+    color var(--dur-tint) ease, transform var(--dur-press) var(--ease-out);
   display: inline-block;
 }
 
-/* Touch fires :hover on tap and then leaves it there until you tap something
-   else, so the brightness lift is desktop-only. The press below is what a
-   phone gets instead, and it's the more useful of the two. */
-@media (hover: hover) and (pointer: fine) {
-  button:hover, .btn:hover { filter: brightness(1.06); }
+/* The hairline a hover draws under the label. Inset from the button's own
+   edges so it reads as an underline on the word rather than a second border
+   on the box, and drawn from the left in the same 150ms every other state
+   change on the site settles in. */
+button::after, .btn::after {
+  content: '';
+  position: absolute;
+  left: 0.85rem;
+  right: 0.85rem;
+  bottom: 5px;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.5;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur-tint) var(--ease-out);
 }
+
+/* Touch fires :hover on tap and then leaves it there until you tap something
+   else, so this is desktop-only. The press below is what a phone gets
+   instead, and it's the more useful of the two.
+
+   The gold deepens rather than brightening: brightness(1.06) washed the
+   colour out towards white, which on a gold button is the one direction that
+   loses the metal. Ink getting darker under the pointer is what paper does. */
+@media (hover: hover) and (pointer: fine) {
+  /* :not(:disabled) on each, the same guard :active already uses below — a
+     disabled control must not answer the pointer at all, and gating it here
+     rather than undoing it afterwards is what keeps a disabled .secondary from
+     being handed the primary's gold by a later rule. */
+  button:hover:not(:disabled), .btn:hover {
+    background: color-mix(in srgb, var(--gold) 82%, var(--gold-deep));
+  }
+
+  button:hover:not(:disabled)::after, .btn:hover::after { transform: scaleX(1); }
+
+  button.secondary:hover:not(:disabled), .btn.secondary:hover {
+    background: var(--paper);
+    border-color: var(--gold-deep);
+    color: var(--gold-deep);
+  }
+
+  button.danger:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--loss) 8%, var(--paper));
+    border-color: var(--loss);
+  }
+}
+
+/* The hairline belongs to a button shaped like a label. Five in the site
+   aren't, and each already carries its own affordance, so a rule drawn inside
+   one is a stray mark rather than an offer: .pick-row is a full-width row with
+   a bottom border of its own and tints instead; .chip-btn is a pill, and a
+   hairline under a 999px radius reads as a crack in it; a segment has the
+   thumb; .more and .squad-more are links wearing a <button>. A disabled button
+   is not offering at all.
+
+   An opt-out list rather than a narrower selector, because "looks like a
+   label" has no expression in CSS — and because it is already the house
+   pattern here: .pick-row opts out of the press scale the same way, and says
+   so where it overrides (DESIGN.md → Motion). A new button that isn't
+   label-shaped joins this list. */
+.pick-row::after,
+.chip-btn::after,
+.seg button::after,
+.more::after,
+.squad-more::after,
+button:disabled::after { content: none; }
 
 /* A tap has nothing to acknowledge it — no hover, no cursor. Scaling the whole
    control down while the finger is down is that acknowledgement, and scale
@@ -566,6 +721,12 @@ button.small {
   color: var(--gold-leaf);
 }
 
+/* A chip takes the edge instead of the hairline it opts out of above — an
+   active one is already the darkest thing in the row and needs no offer. */
+@media (hover: hover) and (pointer: fine) {
+  .chip-btn:not(.active):hover { border-color: var(--gold); color: var(--ink); }
+}
+
 .season-new {
   display: flex;
   align-items: center;
@@ -660,6 +821,19 @@ dl.compare dd { margin: 0.1rem 0 0; font-size: var(--t-body); }
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+/* Reduced motion, per DESIGN.md → Motion: gentler, not nothing. The colour
+   changes all still run; only the travel goes, so a rule that draws simply
+   appears. Worth stating in CSS rather than leaving to the reader, because
+   the shots and check:layout harnesses both run with reduce *on* and would
+   otherwise be the only place these selectors are ever exercised. */
+@media (prefers-reduced-motion: reduce) {
+  button::after,
+  .btn::after,
+  table.data tbody td:first-child::before,
+  table.data th.sortable::after,
+  table.data a::after { transition: none; }
 }
 
 .tag.dark { background: var(--board-soft); color: var(--on-board-soft); }

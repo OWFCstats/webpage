@@ -554,6 +554,14 @@ Two things a board does *not* do:
   leader is one: `.lead-hero` sets `border-radius: 0`, and the board's own gold
   bottom border becomes the line between the leader and the chasers.
 
+A board also clips (`overflow: hidden`) and is its own positioning context,
+because the gild — see *Motion* — is a pseudo-element swept across it and has
+to be cut off at the edges. So nothing on a board may hang outside one. Nothing
+did before this: forcing `overflow: visible` back on changes page height by 0px
+at 375px on Home, Players and Records, and no descendant of a board overflows
+one. Every board has vertical padding of its own, so nothing could ever have
+margin-collapsed through it either.
+
 The gold edge is 1px, not the 3px the scoreboard used to carry. With five boards
 in the site rather than one dark section, a 3px rule on each read as five
 underlines; the masthead keeps its 3px because it is the frame, not an occasion.
@@ -1152,11 +1160,19 @@ the data table carry series identity there instead.
 
 Restrained. Motion marks a change the user caused, and nothing else.
 
-Every value comes from the five motion tokens in `tokens.css` — two curves and
-three durations — and nothing picks a number outside them. Both curves are the
+Every value comes from the six motion tokens in `tokens.css` — two curves and
+four durations — and nothing picks a number outside them. Both curves are the
 strong variants; the built-in CSS easings are too soft to read as deliberate.
 `ease-in` isn't among them, because starting slow delays the one frame the user
 is watching hardest.
+
+**The material is the metaphor.** This site is paper and gilded board, so its
+motion is what happens to printed matter: a rule is drawn, ink deepens, gold
+catches the light. Nothing leaves the plane — nothing lifts, casts a shadow, or
+grows under the pointer. That is a choice with a cost, and the cost is that
+hover here is quieter than the shadow-and-scale idiom most sites use. It buys
+the thing dropping shadows and 12px radii bought in the first place: a page
+that reads as a record rather than a dashboard.
 
 - **Only `transform` and `opacity` animate.** They skip layout and paint. The
   home stat bars animated `width`, which is all three, and scale now.
@@ -1175,9 +1191,38 @@ is watching hardest.
   on first paint — this file claimed a transition the site didn't have. Opacity
   only: a tab is tapped dozens of times in a sitting, and at that rate the 4px
   rise it used to carry was movement on every one.
-- **Hover changes colour or border, never size or position.** Press is the
-  exception, and only while held.
-- **No scroll-triggered reveals, no parallax, no ambient movement.**
+- **Hover changes colour, an edge, or a rule — never size or position.** Press
+  is the exception, and only while held. There are three edge treatments and a
+  hover picks one:
+  - **A rule drawn** under a thing that is offered — the hairline under a
+    button's label, a sortable column's own bottom border turning gold, a name
+    in a table cell. Drawn from the left with `scaleX`, never switched on.
+    Only where the text can't wrap: a cell is `nowrap`, so the link is one
+    unbroken box, but a name that wraps to two lines would get a single rule
+    under the whole block. Names that can wrap — a leaderboard's, a squad
+    card's — deepen in colour instead, and that's why.
+  - **A tick in the margin** beside a row, the way a reader marks a page:
+    2px of gold down the left edge of a table row (`primitives.css`) or a
+    result row (`result-list.css`). It is what this site has instead of a row
+    that lifts.
+  - **An edge firming up** on a thing that is a surface rather than a control.
+    Three take it and all three go `--gold-deep`: a squad card, a badge card,
+    a home stat tile. Two of them used to firm to the grey `--rule-firm`, which
+    made the rule unreadable at exactly the moment there was a rule. A chip is
+    the odd one out at `--gold`, because it is a control and its whole edge is
+    the affordance.
+- **A button's gold deepens; it does not brighten.** `brightness(1.06)` washed
+  the colour towards white, which on gold is the one direction that loses the
+  metal.
+- **No scroll-triggered reveals, no parallax, and one piece of ambient
+  movement.** The exception is **the gild**: a single sweep of light across a
+  board as it arrives, at `--dur-gild`. It earns it by being what the surface
+  is *for* — a board is an occasion, there are five of them, and each appears
+  once per visit to its page. It is off on `.lb-lead`, because a leader's band
+  is a row inside a card rather than a page's occasion, and six of them
+  cascading down the leaderboard grid is a light show. The bar for a second
+  exception is that it can name a surface whose whole purpose is the thing
+  that moves.
 - **Movement sits behind `prefers-reduced-motion: no-preference`; colour
   doesn't.** Reduced motion means gentler, not nothing — a press still tints and
   a state change still settles, and only the transforms go. Worth knowing that
