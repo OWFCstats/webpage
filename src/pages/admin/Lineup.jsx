@@ -3,12 +3,13 @@ import { Link, Navigate, useParams } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { useData } from '../../context/DataContext';
 import { Spinner } from '../../components/bits';
-import PlayerPicker from '../../components/PlayerPicker';
+import LineupSlot from '../../components/lineup/LineupSlot';
 import { formatDate } from '../../lib/format';
 
 // A matchday squad is usually 11 + subs; start with enough slots for that and
 // let the admin add more if needed.
 const DEFAULT_SLOTS = 15;
+
 
 const blankSlot = () => ({
   playerId: null,
@@ -75,6 +76,16 @@ function LineupInner({ match, players, existing }) {
 
   function update(index, patch) {
     setSlots((prev) => prev.map((s, i) => (i === index ? { ...s, ...patch } : s)));
+    setSaved(false);
+  }
+
+  /** One a game — the badge says so and the wizard already enforced it, but
+   *  this editor used a plain checkbox per slot, so a lineup could be saved
+   *  with eleven Men of the Match and every one of them counted towards the
+   *  award and the badge. Picking one clears the rest, as it does in the
+   *  wizard. */
+  function pickMotm(index, on) {
+    setSlots((prev) => prev.map((s, i) => ({ ...s, motm: on && i === index })));
     setSaved(false);
   }
 
@@ -155,57 +166,16 @@ function LineupInner({ match, players, existing }) {
               <span />
             </div>
             {slots.map((slot, i) => (
-              <div className="lineup-grid lineup-slot" key={i}>
-                <span className="slot-no">{i + 1}</span>
-                <PlayerPicker
-                  players={players}
-                  value={slot.playerId}
-                  taken={taken}
-                  onChange={(playerId) => update(i, { playerId })}
-                />
-                <select
-                  value={slot.dropout ? 'dropout' : slot.started ? 'started' : 'sub'}
-                  disabled={!slot.playerId}
-                  onChange={(e) => {
-                    const v = e.target.value;
-                    update(i, v === 'dropout'
-                      ? { dropout: true }
-                      : { dropout: false, started: v === 'started' });
-                  }}
-                  aria-label={`Slot ${i + 1} role`}
-                >
-                  <option value="started">Started</option>
-                  <option value="sub">Sub</option>
-                  <option value="dropout">Dropped out</option>
-                </select>
-                {['goals', 'assists', 'yellows', 'reds'].map((stat) => (
-                  <input
-                    key={stat}
-                    type="number"
-                    min="0"
-                    className="num"
-                    value={slot.dropout ? 0 : slot[stat]}
-                    disabled={!slot.playerId || slot.dropout}
-                    onChange={(e) => update(i, { [stat]: e.target.value })}
-                    aria-label={`Slot ${i + 1} ${stat}`}
-                  />
-                ))}
-                <input
-                  type="checkbox"
-                  checked={slot.dropout ? false : slot.motm}
-                  disabled={!slot.playerId || slot.dropout}
-                  onChange={(e) => update(i, { motm: e.target.checked })}
-                  aria-label={`Slot ${i + 1} man of the match`}
-                />
-                <button
-                  type="button"
-                  className="secondary small slot-remove"
-                  onClick={() => removeSlot(i)}
-                  aria-label={`Remove slot ${i + 1}`}
-                >
-                  ×
-                </button>
-              </div>
+              <LineupSlot
+                key={i}
+                index={i}
+                slot={slot}
+                players={players}
+                taken={taken}
+                onUpdate={(patch) => update(i, patch)}
+                onPickMotm={(on) => pickMotm(i, on)}
+                onRemove={() => removeSlot(i)}
+              />
             ))}
             <div className="form-actions">
               <button
@@ -221,7 +191,9 @@ function LineupInner({ match, players, existing }) {
 
         {error && <div className="notice error" style={{ marginTop: '0.8rem' }}>{error}</div>}
         {saved && <div className="notice ok" style={{ marginTop: '0.8rem' }}>Saved.</div>}
-        <div className="form-actions">
+        {/* Sticky on a phone, like the league grid's: fifteen slots is a long
+            way to scroll back up to a save. */}
+        <div className="form-actions lineup-actions">
           <button onClick={save} disabled={busy || players.length === 0}>
             {busy ? 'Saving…' : 'Save lineup & stats'}
           </button>

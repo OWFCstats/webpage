@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase';
 import { useData } from '../context/DataContext';
 import TeamPicker from './TeamPicker';
 import SeasonPicker from './SeasonPicker';
+import { fixtureFor } from '../lib/admin';
 import { seasonsOf } from '../lib/matches';
 
 /**
@@ -30,6 +31,11 @@ export default function WalkoverForm({ onDone, onCancel }) {
 
   const ready = (season || defaultSeason).trim() && date && opponentTeamId && winner;
 
+  // A walkover is usually awarded against a fixture that was already in the
+  // diary, so it fills that row in rather than adding a second one — the same
+  // rule the result wizard follows (see lib/admin.js).
+  const existing = fixtureFor(matches, { date, opponentTeamId, opponent });
+
   async function save() {
     setBusy(true);
     setError(null);
@@ -45,11 +51,16 @@ export default function WalkoverForm({ onDone, onCancel }) {
       goals_for: usGoals,
       goals_against: themGoals,
       own_goals_for: 0,
-      own_goals_against: 0,
       result: winner === 'us' ? 'W' : 'L',
       walkover: true,
     };
-    const { data, error: err } = await supabase.from('matches').insert(payload).select().single();
+    const { data, error: err } = existing
+      ? await supabase.from('matches').update(payload).eq('id', existing.id).select().single()
+      : await supabase
+          .from('matches')
+          .insert({ ...payload, own_goals_against: 0 })
+          .select()
+          .single();
     setBusy(false);
     if (err) {
       setError(err.message);
@@ -130,7 +141,8 @@ export default function WalkoverForm({ onDone, onCancel }) {
       {winner && (
         <p className="muted" style={{ marginTop: '0.6rem' }}>
           Will record as{' '}
-          <strong>{winner === 'us' ? '3–0' : '0–3'}</strong> ({winner === 'us' ? 'W' : 'L'}).
+          <strong>{winner === 'us' ? '3–0' : '0–3'}</strong> ({winner === 'us' ? 'W' : 'L'})
+          {existing ? ' against the fixture already in the diary.' : '.'}
         </p>
       )}
 

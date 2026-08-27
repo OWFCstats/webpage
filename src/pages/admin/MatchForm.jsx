@@ -48,10 +48,11 @@ function MatchFormInner({ match, isNew, matchId }) {
   const [form, setForm] = useState(() => toInputs(match, teams));
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
+  const [saved, setSaved] = useState(false);
 
   const seasons = seasonsOf(matches);
 
-  const set = (key) => (e) => setForm({ ...form, [key]: e.target.value });
+  const set = (key) => (e) => { setForm({ ...form, [key]: e.target.value }); setSaved(false); };
 
   const gf = form.goals_for === '' ? null : Number(form.goals_for);
   const ga = form.goals_against === '' ? null : Number(form.goals_against);
@@ -88,7 +89,12 @@ function MatchFormInner({ match, isNew, matchId }) {
     }
     // Wait for the reload so the lineup page can find the new match.
     await refresh();
-    navigate(`/admin/matches/${data.id}/lineup`);
+    // A new match has nowhere to go but its lineup — nobody has credit for it
+    // yet. An edit is usually a correction to one figure, so it stays where it
+    // is and says it saved, the way the lineup and report editors do; being
+    // thrown to the team sheet after fixing a scoreline is two taps back.
+    if (isNew) navigate(`/admin/matches/${data.id}/lineup`);
+    else setSaved(true);
   }
 
   async function remove() {
@@ -112,7 +118,7 @@ function MatchFormInner({ match, isNew, matchId }) {
             <SeasonPicker
               seasons={seasons}
               value={form.season}
-              onChange={(season) => setForm({ ...form, season })}
+              onChange={(season) => { setForm({ ...form, season }); setSaved(false); }}
             />
           </div>
           <label className="field">
@@ -128,7 +134,10 @@ function MatchFormInner({ match, isNew, matchId }) {
             <TeamPicker
               teams={teams}
               value={form.opponent_team_id}
-              onChange={(opponent_team_id, opponent) => setForm({ ...form, opponent_team_id, opponent })}
+              onChange={(opponent_team_id, opponent) => {
+                setForm({ ...form, opponent_team_id, opponent });
+                setSaved(false);
+              }}
             />
           </div>
           <label className="field">
@@ -173,10 +182,16 @@ function MatchFormInner({ match, isNew, matchId }) {
           Result: {played ? <strong>{result} ({gf}–{ga})</strong> : 'not played yet'}
         </p>
         {error && <div className="notice error">{error}</div>}
+        {saved && <div className="notice ok" style={{ marginTop: '0.8rem' }}>Saved.</div>}
         <div className="form-actions">
           <button type="submit" disabled={busy || !canSubmit}>
-            {isNew ? 'Create & pick lineup' : 'Save & go to lineup'}
+            {isNew ? 'Create & pick lineup' : busy ? 'Saving…' : 'Save changes'}
           </button>
+          {!isNew && (
+            <Link className="btn secondary" to={`/admin/matches/${matchId}/lineup`}>
+              Lineup &amp; stats
+            </Link>
+          )}
           <Link className="btn secondary" to="/admin/matches">Back</Link>
           {!isNew && <button type="button" className="danger" onClick={remove}>Delete match</button>}
         </div>

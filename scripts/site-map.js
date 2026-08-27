@@ -157,6 +157,48 @@ export const ROUTES = [
     name: 'Badge — a season trophy',
     budget: 'Records → any sub-page',
   },
+
+  // The write side. `admin: true` boots the page signed in via the fixture
+  // stub's own ?admin=1 (fixtures/README.md) — without it these all redirect
+  // to the login and measure nothing.
+  //
+  // It was outside this list until the admin review, and that is exactly how
+  // three of its pages came to hide columns on a phone while every public page
+  // was measured at six widths on every pull request: the match list hid 484px
+  // of its 738px at 375px, which put Edit, Lineup and Report off screen and
+  // left the lineup editor unreachable from the only page that links to it.
+  // A section the club uses on a phone every Saturday is not an exception to
+  // the rule it is the best example of. No budget: these are working screens
+  // whose length is the squad's, not a reader's — a fifteen-slot lineup is as
+  // long as it is.
+  { id: 'admin-home', route: '/admin', name: 'Admin — overview', admin: true },
+  { id: 'admin-new-result', route: '/admin/new-result', name: 'Admin — add result', admin: true },
+  { id: 'admin-players', route: '/admin/players', name: 'Admin — players', admin: true },
+  { id: 'admin-teams', route: '/admin/teams', name: 'Admin — teams', admin: true },
+  { id: 'admin-matches', route: '/admin/matches', name: 'Admin — matches', admin: true },
+  { id: 'admin-match-new', route: '/admin/matches/new', name: 'Admin — create match', admin: true },
+  {
+    id: 'admin-match-edit',
+    route: `/admin/matches/${match('2026-02-07', 'Wellington IX')}`,
+    name: 'Admin — edit match',
+    admin: true,
+  },
+  // The clean-sheet match, because it is the one with a full team sheet, a
+  // dropout and a red card — the widest a lineup row ever gets.
+  {
+    id: 'admin-lineup',
+    route: `/admin/matches/${match('2026-02-07', 'Wellington IX')}/lineup`,
+    name: 'Admin — lineup & stats',
+    admin: true,
+  },
+  {
+    id: 'admin-report',
+    route: `/admin/matches/${match('2026-02-07', 'Wellington IX')}/report`,
+    name: 'Admin — match report',
+    admin: true,
+  },
+  { id: 'admin-league', route: '/admin/league', name: 'Admin — league table', admin: true },
+  { id: 'admin-awards', route: '/admin/awards', name: 'Admin — awards', admin: true },
 ];
 
 // Both datasets get measured. pre-season is the one nobody has looked at, and

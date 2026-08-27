@@ -59,14 +59,60 @@
   color: var(--ink-soft);
 }
 
+/* Same device as .lg-stat: a caption per input, hidden while the header row
+   is doing that job. */
+.lineup-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.lineup-stat > .label { display: none; }
+
+.lineup-motm { align-items: center; }
+
+.lineup-actions { margin-top: 1.2rem; }
+
 @media (max-width: 860px) {
   .lineup-head { display: none; }
 
   .lineup-grid {
-    grid-template-columns: 26px 1fr 1fr 1fr;
-    row-gap: 0.35rem;
-    padding: 0.6rem 0;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.4rem 0.45rem;
+    padding: 0.7rem 0;
     border-bottom: 1px solid var(--rule);
+  }
+
+  /* Three lines with a job each: who, what they were, what they did. Left to
+     wrap on its own the nine cells landed in whatever order the columns ran
+     out, which put two of a player's four figures on the line below the
+     next player's name. */
+  .lineup-slot .picker { grid-area: 1 / 1 / 2 / 5; }
+  .lineup-slot .slot-role { grid-area: 2 / 1 / 3 / 3; }
+  .lineup-slot .lineup-motm { grid-area: 2 / 3 / 3 / 4; flex-direction: row; gap: 0.4rem; }
+  /* A line below the picker's own clear button, not beside it: two crosses
+     30px apart, one emptying the slot and one deleting it, is a trap. */
+  .lineup-slot .slot-remove { grid-area: 2 / 4 / 3 / 5; justify-self: end; }
+  .lineup-slot .lineup-stat:not(.lineup-motm) { grid-row: 3; }
+
+  /* The number is the row's index in a list whose order carries no meaning,
+     and the sheet's own summary line already counts the squad. It costs a
+     column the four figures need more. */
+  .lineup-slot .slot-no { display: none; }
+
+  .lineup-stat > .label { display: block; }
+
+  /* A fifteen-slot lineup is a long way from its save, which is why the
+     league grid's already follows the admin down. */
+  .lineup-actions {
+    position: sticky;
+    bottom: 0;
+    /* --paper, because that is what .sheet is painted in; --sheet is the
+       darker fill and would draw the bar as a band across the form. */
+    background: var(--paper);
+    border-top: 1px solid var(--rule);
+    padding: 0.8rem 0;
+    margin-top: 0.8rem;
   }
 }
 
@@ -178,6 +224,73 @@
   margin: var(--s7) auto;
 }
 
+/* ---- admin list ----
+   A record per row with its actions on it, in place of the tables three admin
+   pages used to hide columns from: at 375px the match list hid 484px of its
+   738px, which took Edit, Lineup and Report off screen entirely. See
+   docs/DESIGN.md -> Mobile. */
+.admin-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.admin-row {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+  padding: 0.65rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.admin-list li:last-child .admin-row { border-bottom: none; }
+
+.admin-row-lead { flex: none; }
+
+.admin-row-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.admin-row-title {
+  font-weight: 600;
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.admin-row-score {
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
+}
+
+.admin-row-meta {
+  font-size: var(--t-small);
+  color: var(--ink-soft);
+}
+
+.admin-row-actions {
+  display: flex;
+  gap: 0.35rem;
+  flex: none;
+}
+
+/* Below the breakpoint the actions take their own full-width line rather than
+   competing with the name for a row that can't hold both. */
+@media (max-width: 560px) {
+  .admin-row-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .admin-row-actions > * { flex: 1; text-align: center; }
+}
+
 /* ---- admin: attention list + wizard ---- */
 .admin-cta {
   display: flex;
@@ -202,6 +315,25 @@
 .attention li:last-child { border-bottom: none; }
 
 .attention .btn { flex: none; }
+
+/* The job that means the site is currently wrong, rather than merely late. */
+.attention li.job-result strong { color: var(--loss); }
+
+.admin-glance {
+  font-size: var(--t-small);
+  text-align: center;
+}
+
+.fixture-picked {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s4);
+  flex-wrap: wrap;
+  font-size: var(--t-small);
+}
+
+.fixture-picked .btn, .fixture-picked button { flex: none; }
 
 /* Capped and centred on phones (the cap is a no-op there — viewports are
    already narrower than it). Widens in steps as the viewport grows so the

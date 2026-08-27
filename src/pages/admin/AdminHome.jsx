@@ -1,23 +1,33 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useData } from '../../context/DataContext';
-import { formatDate } from '../../lib/format';
-import { isPlayed } from '../../lib/matches';
 import WalkoverForm from '../../components/WalkoverForm';
+import { formatDate, formatKickoff } from '../../lib/format';
+import { outstanding, todayISO } from '../../lib/admin';
+import { currentSeasonOf, fixtures } from '../../lib/matches';
 
 /**
- * Opens with what's outstanding, not with navigation. A match saved without a
- * lineup is broken data — no player gets credit for it — so the site nags
- * about it. A missing report is just optional colour and never nags. A
- * walkover is the one case with no lineup by design, so it's excluded from
- * that nag rather than satisfying it.
+ * Opens with what's outstanding, not with navigation.
+ *
+ * The list used to nag about one thing — a score with no lineup — which is
+ * real but is not what actually goes wrong. What goes wrong is a game being
+ * played and nobody entering it: the fixture stays on the site and Home counts
+ * down to a match that finished a fortnight ago. `lib/admin.js` owns the order
+ * these come in and why.
+ *
+ * What is no longer here: two cards linking to Players and Matches, which the
+ * nav directly above already does. A page whose job is "what needs doing"
+ * shouldn't spend its bottom half saying "or you could go somewhere else".
  */
 export default function AdminHome() {
-  const { players, matches, appearances } = useData();
+  const data = useData();
+  const { players, matches } = data;
   const [showWalkover, setShowWalkover] = useState(false);
 
-  const withLineup = new Set(appearances.map((a) => a.match_id));
-  const needLineup = matches.filter((m) => isPlayed(m) && !m.walkover && !withLineup.has(m.id));
+  const today = todayISO();
+  const jobs = outstanding(data, today);
+  const next = fixtures(matches).find((m) => m.date >= today) ?? null;
+  const season = currentSeasonOf(matches);
 
   return (
     <div className="section">
@@ -43,40 +53,37 @@ export default function AdminHome() {
         />
       )}
 
-      {needLineup.length > 0 && (
-        <div className="sheet section">
-          <h2>Needs attention</h2>
+      <div className="sheet section">
+        <h2>Needs attention</h2>
+        {jobs.length === 0 ? (
+          <div className="empty">
+            Nothing outstanding — every result has a lineup and a Man of the Match.
+            {next && (
+              <>
+                {' '}Next up is <strong>{next.opponent}</strong> on {formatDate(next.date)}
+                {next.kickoff_time ? `, ${formatKickoff(next.kickoff_time)}` : ''}.
+              </>
+            )}
+          </div>
+        ) : (
           <ul className="attention">
-            {needLineup.map((m) => (
-              <li key={m.id}>
+            {jobs.map((job) => (
+              <li key={`${job.kind}:${job.match?.id ?? job.to}`} className={`job-${job.kind}`}>
                 <span>
-                  <strong>vs {m.opponent}</strong> ({formatDate(m.date)}) has a
-                  score but no lineup — no player gets credit for it yet.
+                  <strong>{job.title}</strong>
+                  {job.match && ` (${formatDate(job.match.date)})`} {job.line}
                 </span>
-                <Link className="btn secondary small" to={`/admin/matches/${m.id}/lineup`}>
-                  Enter lineup
-                </Link>
+                <Link className="btn secondary small" to={job.to}>{job.action}</Link>
               </li>
             ))}
           </ul>
-        </div>
-      )}
-
-      <div className="grid cols-2 section">
-        <div className="sheet">
-          <h2>Players</h2>
-          <p className="muted">{players.length} in the squad list.</p>
-          <p><Link className="btn small secondary" to="/admin/players">Manage players</Link></p>
-        </div>
-        <div className="sheet">
-          <h2>Matches</h2>
-          <p className="muted">
-            {matches.length} recorded. Edit any match, its lineup or its report
-            from the match list.
-          </p>
-          <p><Link className="btn small secondary" to="/admin/matches">All matches</Link></p>
-        </div>
+        )}
       </div>
+
+      <p className="muted admin-glance">
+        {season ?? 'No season'} · {matches.length} match{matches.length === 1 ? '' : 'es'} ·{' '}
+        {players.length} in the squad list.
+      </p>
     </div>
   );
 }

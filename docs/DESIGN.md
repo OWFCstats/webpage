@@ -1227,8 +1227,33 @@ The design target, not a fallback. Every change gets checked at 375px first.
   it is the only place in the site that hides a column. The squad list uses the
   same breakpoint to drop its monogram, which is not a column — a stand-in for a
   photo is the one thing in that row that isn't data.
+- **The write side is measured, and it is not exempt from any of this.** Its
+  routes went into `scripts/site-map.js` in Phase 35; before that the admin
+  section was the one part of the site `check:layout` had never seen, and all
+  three of its tables were hiding columns at 375px — the match list hid **484px
+  of its 738px**, which put Edit, Lineup and Report off screen and left the
+  lineup editor unreachable from the only page that links to it. The teams
+  table hid 289px and the squad list 98px, both taking their actions with them.
+  This is the same failure as Records' season index (above), in the section the
+  club touches most, and it lasted longer for exactly one reason: nothing
+  looked.
+
+  The fix is the one this page already prescribes — restructure into rows.
+  `components/AdminList.jsx` is that shape, shared by the three pages that
+  needed it: a record per row, its actions on the row, and below 560px those
+  actions take their own full-width line. **A new admin screen listing records
+  uses it rather than `SortableTable`,** which is for reading, not for editing.
+- **An input under a hidden header row carries its own caption.** Both admin
+  grids drop their header on a phone. `LeagueGrid` captions every input against
+  that (`.lg-stat > .label`); the lineup editor did not, so entry on a phone was
+  four unlabelled number boxes and an unlabelled checkbox per player. It does
+  now (`.lineup-stat > .label`), on the same breakpoint device. If a header row
+  is the only thing naming a column, hiding it is hiding the label.
 - Admin data entry is a phone-first flow — it's used on a Saturday night at a
-  pub table. Sticky save, big inputs, one record per block. This is also why
+  pub table. Sticky save, big inputs, one record per block. Sticky save means
+  **both** long grids: the league table has followed the admin down since it was
+  built, the lineup editor didn't until Phase 35, and fifteen slots is the
+  longer of the two. This is also why
   the data centre's rates are really per-appearance figures rather than
   actual per-90-minutes ones: minutes would be eleven to sixteen numbers typed
   per match on a phone, and entry burden is what kills a volunteer-run stats
@@ -1268,6 +1293,7 @@ constraint, so it lives here.
 | Opponent detail | 2,000 |
 | Players → Squad | no cap on "Show all" — it's a roster, and every name belongs on it once asked for; the default view opens on the top 20 |
 | Players → Data centre | no cap — it's the reference table, and every player's row belongs on it |
+| Admin → any route | no cap — these are working screens, and their length is the squad's: a fifteen-slot lineup is fifteen slots long. Measured on every run all the same, because the invariants above still apply |
 
 Records is a reference document and earns length, which is why it splits into
 sub-pages rather than shrinking. Home doesn't. The opponent page is the same kind

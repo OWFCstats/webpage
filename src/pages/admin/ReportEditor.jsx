@@ -51,6 +51,7 @@ function ReportInner({ match }) {
       {saved && <div className="notice ok" style={{ marginTop: '0.8rem' }}>Saved.</div>}
       <div className="form-actions">
         <button onClick={save} disabled={busy}>{busy ? 'Saving…' : 'Save report'}</button>
+        <Link className="btn secondary" to={`/matchday/${match.id}`}>See it on the site</Link>
         <Link className="btn secondary" to="/admin/matches">Back to matches</Link>
       </div>
     </div>
