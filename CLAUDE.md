@@ -63,6 +63,14 @@ that list until Phase 35, which is how three of its pages came to hide columns
 on a phone while every reader-facing one was checked at six widths on every
 pull request.
 
+Being fetched on demand is also the one way a page can take the whole site down
+with it, so **the `<Suspense>` and `<ErrorBoundary>` those routes need live
+inside `components/Layout.jsx`**, around `<Outlet />` rather than around the
+router. Outside the frame they unmounted the masthead and the tab bar too —
+tapping *Add result* on a bad signal gave a spinner alone on empty paper, and a
+chunk that never arrived gave a blank document. See *The frame outlives the
+page* in `docs/DESIGN.md`.
+
 **One match is one row.** Fixtures are entered in advance, so every write path
 that records a result — the wizard and the walkover form — fills in the fixture
 already in the diary rather than inserting beside it (`lib/admin.js` →
