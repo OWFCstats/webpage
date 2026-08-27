@@ -173,8 +173,12 @@
   text-decoration: none;
 }
 
+/* --gold-deep rather than the firmer grey this used to take: three surfaces in
+   the site firm their edge on hover — this, .badge-card and .home-stat-tile —
+   and one of them going gold while two went grey made the rule unreadable.
+   Gold on all three (DESIGN.md → Motion). */
 @media (hover: hover) and (pointer: fine) {
-  .squad-card:hover { border-color: var(--rule-firm); }
+  .squad-card:hover { border-color: var(--gold-deep); }
 
   .squad-card:hover .who { color: var(--gold-deep); }
 }

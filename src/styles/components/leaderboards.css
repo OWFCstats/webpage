@@ -29,6 +29,12 @@
   overflow: hidden;
 }
 
+/* No gild here. .lb-lead carries .board, so it would inherit the sweep
+   primitives.css gives every board — but six of them cascading down this grid
+   is a light show, and a band inside a card was never one of the five
+   occasions the gild is for (DESIGN.md → Motion). */
+.lb-lead::before { content: none; }
+
 .lb-card h3 {
   margin: 0;
   padding: var(--s2) var(--s4) 6px;

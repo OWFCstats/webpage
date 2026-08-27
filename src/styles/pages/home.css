@@ -297,6 +297,14 @@ a.fixture-row:active { background: color-mix(in srgb, var(--gold) 12%, transpare
   border-radius: var(--r);
   padding: var(--s2);
   text-align: center;
+  transition: border-color var(--dur-tint) ease;
+}
+
+/* The tile's edge firms up under the pointer. It does not lift and it does
+   not grow: a stat tile is printed on the page, and three of them side by
+   side rising in turn would be the only thing on Home with a z-axis. */
+@media (hover: hover) and (pointer: fine) {
+  .home-stat-tile:hover { border-color: var(--gold-deep); }
 }
 
 .home-stat-tile b {

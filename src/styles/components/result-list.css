@@ -10,10 +10,37 @@
 }
 
 .result-list li {
+  position: relative;
   border-bottom: 1px solid var(--rule);
 }
 
 .result-list li:last-child { border-bottom: none; }
+
+/* The same margin tick a table row takes (primitives.css), because a result
+   row is the list-shaped version of one. It sits in the surrounding sheet's
+   padding rather than inside the row — every caller wraps this list in a
+   .sheet or a .home-widget, so -6px always lands on the surface — and so it
+   reads as a mark in the margin beside the row rather than a fourth column
+   added to it. The inline variant renders no <li> and takes none of this. */
+.result-list li::before {
+  content: '';
+  position: absolute;
+  left: -6px;
+  top: 5px;
+  bottom: 5px;
+  width: 2px;
+  background: var(--gold);
+  transform: scaleY(0);
+  transition: transform var(--dur-tint) var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .result-list li:hover::before { transform: scaleY(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .result-list li::before { transition: none; }
+}
 
 /* Games with a goal or an assist, so the eye lands on the good days — the
    list-row equivalent of table.data tbody tr.scored-row. */
