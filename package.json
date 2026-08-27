@@ -13,6 +13,7 @@
     "preview": "vite preview",
     "fixtures:build": "node fixtures/build.mjs",
     "badges": "node --import ./tests/register.mjs scripts/badges.mjs",
+    "backup": "node scripts/backup.mjs",
     "shots": "node scripts/shots.mjs",
     "check:layout": "node scripts/check-layout.mjs",
     "test": "node --import ./tests/register.mjs --test 'tests/**/*.test.js'"

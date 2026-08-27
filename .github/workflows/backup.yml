@@ -1,0 +1,59 @@
+# The second copy of the club's history.
+#
+# Everything the site knows lives in one free-tier Supabase project, and the
+# free tier has no automated backups. Nothing else in this repo would survive
+# a mistyped delete on the admin page — the fixture is one committed season,
+# not the database. So once a day this pulls every row and commits it
+# (scripts/backup.mjs), and the commit only happens when something changed.
+#
+# Daily rather than weekly for a second reason: Supabase pauses a free project
+# after about a week without requests, and nobody opens a football site in
+# June. One request a day keeps it awake — and when it fails, GitHub emails
+# whoever owns the repo, which is the only uptime alerting the site has.
+#
+# No `npm ci`: the script is plain fetch and node:fs, so the job needs nothing
+# from node_modules and finishes in seconds.
+
+name: Backup
+
+on:
+  schedule:
+    # 04:17 UTC — off the hour, where GitHub's scheduler is less congested and
+    # a run is less likely to be dropped.
+    - cron: '17 4 * * *'
+  workflow_dispatch:
+
+# The whole point is the commit.
+permissions:
+  contents: write
+
+concurrency:
+  group: backup
+  cancel-in-progress: false
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      # The same two secrets deploy.yml already uses. The publishable key can
+      # only read — every table is `for select using (true)` and writes need a
+      # logged-in admin — so a backup job can't damage what it is protecting.
+      - run: node scripts/backup.mjs
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
+      - name: commit if the club's data moved
+        run: |
+          if [ -z "$(git status --porcelain backups)" ]; then
+            echo 'No change since the last backup.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add backups
+          git commit -m "Back up the database ($(date -u +%Y-%m-%d))"
+          git push

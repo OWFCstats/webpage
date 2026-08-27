@@ -54,6 +54,36 @@ push to `main`. Before the first deploy:
 The build uses relative asset paths and hash-based routing, so the same build
 works on GitHub Pages and on a custom domain later — no URL is hardcoded.
 
+## Backups, and keeping the database awake
+
+`.github/workflows/backup.yml` runs `npm run backup` every day at 04:17 UTC. It
+reads all six tables through the public key and writes `backups/` — one JSON
+file per table plus `restore.sql`, which upserts the lot back — then commits,
+but only when something actually changed (or once a month regardless, so the
+scheduled workflow isn't disabled for repository inactivity).
+
+It exists because the free Supabase tier has no automated backups. It also
+solves two problems it wasn't built for:
+
+- **Pausing.** Supabase sleeps a free project after roughly a week with no
+  requests, and nobody opens a football site in June. A fetch a day keeps it up.
+- **Alerting.** If the fetch fails — paused project, rotated key, an outage —
+  the job fails and GitHub emails the repo owner. That is the only monitoring
+  the site has.
+
+To restore: open the Supabase SQL editor and run `backups/restore.sql`. It
+upserts on the primary key, so it repairs a partly-damaged database in place.
+For a clean point-in-time restore, empty the tables first — `season_awards`,
+`league_rows`, `appearances`, `matches`, `players`, `teams`, in that order — and
+then run it.
+
+Run it by hand any time from *Actions → Backup → Run workflow*, or locally with
+`node --env-file=.env.local scripts/backup.mjs`.
+
+If `main` is ever branch-protected, the commit step will start failing: either
+allow `github-actions[bot]` to bypass the rule, or point the job at a branch of
+its own. Nothing else in the workflow needs to change.
+
 ## How stats work
 
 Everything on the site is computed from the three tables at load time —

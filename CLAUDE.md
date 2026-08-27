@@ -87,7 +87,8 @@ not for what it currently shows.
 React 18 + Vite, React Router (hash routing), Supabase (Postgres + auth),
 Recharts. Deployed to GitHub Pages by `.github/workflows/deploy.yml` on push to
 `main`; `.github/workflows/check.yml` runs the tests, the layout invariants and
-a production build on every pull request.
+a production build on every pull request; `.github/workflows/backup.yml` dumps
+the database to `backups/` daily.
 
 ```sh
 npm install
@@ -99,6 +100,7 @@ npm test                # lib/ unit tests, over the fixture
 npm run check:layout    # the mobile invariants, as assertions
 npm run shots           # every route × width to shots/, with page heights
 npm run badges -- <dir> # ingest a drop of badge art: rename, optimise, commit
+npm run backup          # pull every row to backups/ — what CI runs daily
 ```
 
 No test needs a database. `fixtures/` holds the club's real 2025/26 season
@@ -124,15 +126,26 @@ src/
   styles/                  see docs/DESIGN.md
 supabase/                  schema.sql + one migration file per change
 fixtures/                  the committed season, the datasets, the Supabase stub
+backups/                   the database, dumped daily by CI: JSON + restore.sql
 scripts/                   the harness: shots, check:layout, the invariants
 tests/                     node --test over lib/, against the fixture
 docs/DESIGN.md             the design system — read before touching UI
 docs/ROADMAP.md            what's planned, in order
 ```
 
-`fixtures/`, `scripts/` and `tests/` are outside `src/` on purpose: nothing the
-site ships imports them, and the fixture stub reaches the app through one alias
-in `vite.config.js` rather than a flag anybody has to remember to unset.
+`fixtures/`, `scripts/`, `tests/` and `backups/` are outside `src/` on purpose:
+nothing the site ships imports them, and the fixture stub reaches the app
+through one alias in `vite.config.js` rather than a flag anybody has to
+remember to unset.
+
+**`backups/` is the club's history, not a fixture.** Everything the site knows
+lives in one free-tier Postgres instance with no automated backups, so the daily
+job in `.github/workflows/backup.yml` is the only second copy — six JSON files
+plus a `restore.sql` that upserts them back. CI writes it and nothing else does;
+a human editing a file in there is editing a record, not a config. The same run
+is the keepalive (Supabase pauses a free project after about a week idle) and
+the site's only alerting (a failed fetch fails the job and emails the owner),
+which is why it is daily rather than weekly.
 
 `src/assets/badges/` is inside `src/` so Vite hashes and emits the twenty-two
 drawings as cached assets rather than serving them unversioned: they are

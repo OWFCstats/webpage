@@ -3,6 +3,10 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
+    # The backup job commits to main daily-ish (.github/workflows/backup.yml).
+    # Nothing under backups/ reaches the bundle, so rebuilding the site for one
+    # would be a deploy that changes not a pixel.
+    paths-ignore: ['backups/**']
   workflow_dispatch:
 
 permissions:
