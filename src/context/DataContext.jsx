@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { supabase, supabaseConfigured } from '../lib/supabase';
+import { supabaseRead, supabaseConfigured } from '../lib/supabase';
 
 // The whole club dataset is a few hundred rows at most, so we load it in one
 // go and derive every stat client-side (see lib/matches.js, players.js,
@@ -7,6 +7,14 @@ import { supabase, supabaseConfigured } from '../lib/supabase';
 // after any write so public views stay current.
 
 const DataContext = createContext(null);
+
+// A first load that fails is usually a hiccup rather than an outage: a phone
+// waking on a bad signal, or a token the API rejects for a second. Two quiet
+// retries before saying anything is the difference between the stats and an
+// error note — and on the home-screen app there is no reload to fall back on.
+const RETRY_DELAYS = [600, 1500];
+
+const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export function DataProvider({ children }) {
   const [state, setState] = useState({
@@ -31,30 +39,37 @@ export function DataProvider({ children }) {
       return;
     }
     setState((s) => ({ ...s, loading: !hasLoaded.current, error: null }));
-    const [players, matches, appearances, teams, leagueRows, seasonAwards] = await Promise.all([
-      supabase.from('players').select('*').order('name'),
-      supabase.from('matches').select('*').order('date', { ascending: false }),
-      supabase.from('appearances').select('*'),
-      supabase.from('teams').select('*').order('name'),
-      supabase.from('league_rows').select('*'),
-      supabase.from('season_awards').select('*'),
-    ]);
-    const failed = [players, matches, appearances, teams, leagueRows, seasonAwards].find((r) => r.error);
-    if (failed) {
-      setState((s) => ({ ...s, loading: false, error: failed.error.message }));
-      return;
+
+    for (let attempt = 0; ; attempt++) {
+      const [players, matches, appearances, teams, leagueRows, seasonAwards] = await Promise.all([
+        supabaseRead.from('players').select('*').order('name'),
+        supabaseRead.from('matches').select('*').order('date', { ascending: false }),
+        supabaseRead.from('appearances').select('*'),
+        supabaseRead.from('teams').select('*').order('name'),
+        supabaseRead.from('league_rows').select('*'),
+        supabaseRead.from('season_awards').select('*'),
+      ]);
+      const failed = [players, matches, appearances, teams, leagueRows, seasonAwards].find((r) => r.error);
+      if (!failed) {
+        hasLoaded.current = true;
+        setState({
+          players: players.data,
+          matches: matches.data,
+          appearances: appearances.data,
+          teams: teams.data,
+          leagueRows: leagueRows.data,
+          seasonAwards: seasonAwards.data,
+          loading: false,
+          error: null,
+        });
+        return;
+      }
+      if (attempt >= RETRY_DELAYS.length) {
+        setState((s) => ({ ...s, loading: false, error: failed.error.message }));
+        return;
+      }
+      await wait(RETRY_DELAYS[attempt]);
     }
-    hasLoaded.current = true;
-    setState({
-      players: players.data,
-      matches: matches.data,
-      appearances: appearances.data,
-      teams: teams.data,
-      leagueRows: leagueRows.data,
-      seasonAwards: seasonAwards.data,
-      loading: false,
-      error: null,
-    });
   }, []);
 
   useEffect(() => {

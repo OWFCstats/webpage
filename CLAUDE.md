@@ -112,6 +112,15 @@ Public pages are read-only. Writes require a Supabase login and are enforced by
 Row Level Security, not by the UI. The publishable key is a public client key —
 data is protected by RLS, not by hiding it.
 
+**Reads and writes use two different clients.** `lib/supabase.js` exports
+`supabase`, which carries the admin's session, and `supabaseRead`, which sends
+the publishable key and nothing else; `DataContext` — which holds every read the
+site makes — uses the second. Every table is `for select using (true)`, so a
+read never needed a login, and sharing one client meant a just-refreshed token
+the API rejected ("JWT issued at future") turned the whole site into an error
+note until a manual reload. There is no reload on a phone's home screen, so
+`DataContext` also retries twice before it reports anything at all.
+
 ## Architecture
 
 ```

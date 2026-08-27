@@ -162,6 +162,11 @@ export const supabase = {
   },
 };
 
+// src/lib/supabase.js splits reads off onto their own client so a public page
+// never carries a login; the fixture has no auth to carry, so both names point
+// at the same in-memory tables.
+export const supabaseRead = supabase;
+
 // What the harness reads to pin the browser clock — see fixtures/datasets.js.
 export const fixtureNow = dataset.now;
 export const fixtureName = requested;
