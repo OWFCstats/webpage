@@ -99,6 +99,34 @@ shared breaks. URLs keep the `#` — that's hash routing, which is what lets a
 single-page app work on a static host, and changing it would break every link
 already shared.
 
+## Counting usage
+
+GitHub Pages is a file host with no server logs, so knowing whether the squad
+opened the site after Saturday's game takes a script in the page.
+`src/lib/analytics.js` is that, and it names no vendor — which counter to use is
+a signup decision. Two build-time variables configure it:
+
+```
+VITE_ANALYTICS_SRC     the script URL the provider gives you
+VITE_ANALYTICS_ATTR    its one data-attribute, as name=value (optional)
+```
+
+Set them as repository *variables* (not secrets — they end up in the bundle,
+which is the point) and `deploy.yml` passes them through. Unset, which is how
+the site ships today and how every local run and pull request builds, the module
+does nothing: no script, no requests, nothing in the bundle.
+
+`analytics.js` has the exact pair for Cloudflare Web Analytics, Plausible,
+GoatCounter and Umami at the top. Cloudflare and GoatCounter are free at this
+size; all four are cookieless, which is why there's no consent banner here.
+
+The one thing worth knowing: the site is on hash routing, so a section change is
+a `#/players` change. Most counters watch `history.pushState`, which React
+Router does call — but the ones with a manual counter get told explicitly from
+`Layout.jsx`, so the numbers say which sections get opened rather than just that
+somebody landed on Home. Production builds only: the layout harness drives every
+route at six widths twice per run, and those aren't visits.
+
 ## Backups, and keeping the database awake
 
 `.github/workflows/backup.yml` runs `npm run backup` every day at 04:17 UTC. It

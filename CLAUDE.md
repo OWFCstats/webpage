@@ -193,10 +193,13 @@ A component that gains a second page moves up — that's what happened to
 **`lib/` is split by domain, not by size.** Formatting, matches, players,
 awards, league, charts, tokens. A helper goes where its subject lives.
 
-`lib/tokens.js` is the one that isn't about football: it reads the design
+Two modules in there aren't about football. `lib/tokens.js` reads the design
 tokens out of `styles/tokens.css` for the charts and sparklines, which put
-colours in SVG attributes where `var()` doesn't work. No colour is ever written
-down in JS.
+colours in SVG attributes where `var()` doesn't work — no colour is ever
+written down in JS. `lib/analytics.js` is the usage counter, and it names no
+vendor: which counter is a signup decision, so it takes a script URL and one
+data-attribute as build-time variables and does nothing at all when they are
+unset, which is every local run and every pull request.
 
 ## Conventions
 

@@ -41,6 +41,11 @@ jobs:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
           SITE_URL: ${{ vars.SITE_URL }}
+          # Also variables, not secrets: a usage counter's script URL and site
+          # key are public by construction — they ship in the bundle. Unset,
+          # src/lib/analytics.js compiles to nothing.
+          VITE_ANALYTICS_SRC: ${{ vars.VITE_ANALYTICS_SRC }}
+          VITE_ANALYTICS_ATTR: ${{ vars.VITE_ANALYTICS_ATTR }}
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
