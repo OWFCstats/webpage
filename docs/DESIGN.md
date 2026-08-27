@@ -163,6 +163,13 @@ not, so a failed fetch opened the wizard over empty arrays — a diary with no
 fixtures in it and a squad with nobody in it, and no clue why. Add result reads
 the error now. The rest of the write side is still to do.
 
+**Reporting trouble is the last resort, not the first.** `DataContext` retries a
+failed load twice — 600ms, then 1.5s — before it sets `error` at all, because
+most first-load failures are a second old: a phone waking on a bad signal, or a
+token the API briefly refused. Saved to a home screen the site has no address
+bar, so an error note there is not a prompt to reload, it is the end of the
+visit.
+
 ### A result is a row, not a sentence
 
 ```
