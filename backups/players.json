@@ -1,0 +1,345 @@
+[
+  {
+    "id": "36a15ee7-6d03-4b87-9146-d4c68e88ca7b",
+    "name": "Alberto",
+    "position": "MID",
+    "status": "active",
+    "created_at": "2026-07-28T14:09:26.44542+00:00"
+  },
+  {
+    "id": "6fbec745-da76-4df7-91cd-a11c844f7420",
+    "name": "Alex Hannon",
+    "position": "DEF",
+    "status": "active",
+    "created_at": "2026-07-28T14:09:26.44542+00:00"
+  },
+  {
+    "id": "6627d8ec-64ba-4d39-aa84-4b7498e85435",
+    "name": "Alex Wessely",
+    "position": "FWD",
+    "status": "active",
+    "created_at": "2026-07-28T14:09:26.44542+00:00"
+  },
+  {
+    "id": "a6445076-0dc3-42cb-aae8-8a43c1f48f1a",
+    "name": "Artem Naydenov",
+    "position": "MID",
+    "status": "active",
+    "created_at": "2026-07-28T14:09:26.44542+00:00"
+  },
+  {
+    "id": "1811f772-3cb7-4ce4-bd2f-c3b359cb8432",
+    "name": "Ben",
+    "position": "MID",
+    "status": "active",
+    "created_at": "2026-07-28T14:09:26.44542+00:00"
+  },
+  {
+    "id": "f1a86811-a052-4044-8ac4-f476283f6eda",
+    "name": "Bertie Morgan",
+    "position": "MID",
+    "status": "active",
+    "created_at": "2026-07-28T14:09:26.44542+00:00"
+  },
+  {
+    "id": "e63b32df-5f95-4522-8b91-9c4d5d40f61a",
+    "name": "Callum Aungier",
+    "position": "FWD",
+    "status": "active",
+    "created_at": "2026-07-28T14:09:26.44542+00:00"
+  },
+  {
+    "id": "0257641c-7a04-48e0-98e8-e8759275c991",
+    "name": "Cam",
+    "position": "MID",
+    "status": "active",
+    "created_at": "2026-07-28T14:09:26.44542+00:00"
+  },
+  {
+    "id": "39447313-ad42-46a9-8eeb-bc0f56916e5d",
+    "name": "Charlie Middleton",
+    "position": "DEF",
+    "status": "active",
+    "created_at": "2026-07-28T14:09:26.44542+00:00"
+  },
+  {
+    "id": "f67c4a3c-4f6f-41fe-aa9a-142bb7e6e87a",
+    "name": "Danny Wessely",
+    "position": "DEF",
+    "status": "active",
+    "created_at": "2026-07-28T14:09:26.44542+00:00"
+  },
+  {
+    "id": "c4ffcc42-df0d-4911-8843-7dec359d34be",
+    "name": "David Pugh",
+    "position": "MID",
+    "status": "active",
+    "created_at": "2026-07-28T14:09:26.44542+00:00"
+  },
+  {
+    "id": "b9ed2734-11d1-4d2e-a946-b102fa955772",
+    "name": "Dhaneal Nagra",
+    "position": "FWD",
+    "status": "active",
+    "created_at": "2026-07-28T14:09:26.44542+00:00"
+  },
+  {
+    "id": "76794163-1369-4fc9-ac30-ba3c188a879c",
+    "name": "Dom Bonham-Lloyd",
+    "position": "MID",
+    "status": "active",
+    "created_at": "2026-07-28T14:09:26.44542+00:00"
+  },
+  {
+    "id": "d622343a-bf30-4c2a-89da-883d124a55ba",
+    "name": "Ed Bagley",
+    "position": "MID",
+    "status": "active",
+    "created_at": "2026-07-28T14:09:26.44542+00:00"
+  },
+  {
+    "id": "1ab53540-059d-4328-a6e2-1ac6c994ac82",
+    "name": "Frazer Marsden",
+    "position": "MID",
+    "status": "active",
+    "created_at": "2026-07-28T14:09:26.44542+00:00"
+  },
+  {
+    "id": "021eddc4-8a0a-46e1-8405-66cf75021dbf",
+    "name": "Gideon",
+    "position": "MID",
+    "status": "active",
+    "created_at": "2026-07-28T14:09:26.44542+00:00"
+  },
+  {
+    "id": "b091641d-8c8b-4f44-bae0-7b7078da2750",
+    "name": "Gus Hill",
+    "position": "MID",
+    "status": "active",
+    "created_at": "2026-07-28T14:09:26.44542+00:00"
+  },
+  {
+    "id": "631e28d0-375f-421d-b42d-0d590e2ba0f1",
+    "name": "Harry Cain",
+    "position": "GK",
+    "status": "active",
+    "created_at": "2026-07-28T14:09:26.44542+00:00"
+  },
+  {
+    "id": "7d697665-5d3a-4c98-8f02-2301d629cc14",
+    "name": "Hector Elrington",
+    "position": "MID",
+    "status": "active",
+    "created_at": "2026-07-28T14:09:26.44542+00:00"
+  },
+  {
+    "id": "42d87c3a-926c-42f1-86cb-e22ba5ecd648",
+    "name": "Henry Gadd",
+    "position": "DEF",
+    "status": "active",
+    "created_at": "2026-07-28T14:09:26.44542+00:00"
+  },
+  {
+    "id": "284db1a6-3396-45bd-ab9e-81e5af4648f9",
+    "name": "Henry McCreery",
+    "position": "MID",
+    "status": "active",
+    "created_at": "2026-07-28T14:09:26.44542+00:00"
+  },
+  {
+    "id": "2cb2c5a0-d51a-4f08-aa00-3883a22e2e5f",
+    "name": "Hugh Grindon",
+    "position": "MID",
+    "status": "active",
+    "created_at": "2026-07-28T14:09:26.44542+00:00"
+  },
+  {
+    "id": "334fa9e4-25c9-4b93-b5fc-dba9004ad81f",
+    "name": "Jack Perry",
+    "position": "MID",
+    "status": "active",
+    "created_at": "2026-07-28T14:09:26.44542+00:00"
+  },
+  {
+    "id": "80acf6c9-d53e-42f2-9161-79dff78bc545",
+    "name": "Jack Reid",
+    "position": "DEF",
+    "status": "active",
+    "created_at": "2026-07-28T14:09:26.44542+00:00"
+  },
+  {
+    "id": "afbbe66e-afdf-4744-bf3e-1184af3eb5b7",
+    "name": "Jacob Kasaska",
+    "position": "MID",
+    "status": "active",
+    "created_at": "2026-07-28T14:09:26.44542+00:00"
+  },
+  {
+    "id": "7e9322d3-cc09-42be-9bf4-a1d7fb20724b",
+    "name": "Jake Aungier",
+    "position": "MID",
+    "status": "active",
+    "created_at": "2026-07-28T14:09:26.44542+00:00"
+  },
+  {
+    "id": "8cad1b81-ceb8-4965-817a-06a8ac21d181",
+    "name": "Joe Britz",
+    "position": "MID",
+    "status": "active",
+    "created_at": "2026-07-28T14:09:26.44542+00:00"
+  },
+  {
+    "id": "24c0980a-576b-4e84-97ae-7414f1442fc8",
+    "name": "Joe Gibbons",
+    "position": "DEF",
+    "status": "active",
+    "created_at": "2026-07-28T14:09:26.44542+00:00"
+  },
+  {
+    "id": "782d55df-0c3f-4277-892f-85de84b1accc",
+    "name": "Joe Henry",
+    "position": "MID",
+    "status": "active",
+    "created_at": "2026-07-28T14:09:26.44542+00:00"
+  },
+  {
+    "id": "c6b4bf14-c88d-4ce1-9164-72a84d9b8ef5",
+    "name": "Lewis",
+    "position": "MID",
+    "status": "active",
+    "created_at": "2026-07-28T14:09:26.44542+00:00"
+  },
+  {
+    "id": "2bb936b0-1444-4b48-aaed-9fb936a4e8f5",
+    "name": "Lucas Feather",
+    "position": "MID",
+    "status": "active",
+    "created_at": "2026-07-28T14:09:26.44542+00:00"
+  },
+  {
+    "id": "83189d45-71e9-427e-8886-b9847b2edda4",
+    "name": "Max Burke",
+    "position": "MID",
+    "status": "active",
+    "created_at": "2026-07-28T14:09:26.44542+00:00"
+  },
+  {
+    "id": "5936ead5-bffe-475b-9382-64ccc6cb9635",
+    "name": "Maxwell Aitkin",
+    "position": "MID",
+    "status": "active",
+    "created_at": "2026-07-28T14:09:26.44542+00:00"
+  },
+  {
+    "id": "cc213091-df8b-4030-acc4-b7c94072d32d",
+    "name": "Nick Britton",
+    "position": "MID",
+    "status": "active",
+    "created_at": "2026-07-28T14:09:26.44542+00:00"
+  },
+  {
+    "id": "7d2f8ae7-32bc-468a-a4c6-f738fb9cfd5b",
+    "name": "Oli Woodall",
+    "position": "MID",
+    "status": "active",
+    "created_at": "2026-07-28T14:09:26.44542+00:00"
+  },
+  {
+    "id": "2b532d6b-3741-4c2b-a02f-7328508ed71f",
+    "name": "Ollie Robertson",
+    "position": "GK",
+    "status": "active",
+    "created_at": "2026-07-28T14:09:26.44542+00:00"
+  },
+  {
+    "id": "ea8b8d9a-8308-4f37-9561-fa69bafbaae7",
+    "name": "Olly Feather",
+    "position": "DEF",
+    "status": "active",
+    "created_at": "2026-07-28T14:09:26.44542+00:00"
+  },
+  {
+    "id": "30cc5ad5-d20b-4a00-b886-9a2a8922ec76",
+    "name": "Owen Gibbons",
+    "position": "FWD",
+    "status": "active",
+    "created_at": "2026-07-28T14:00:47.000721+00:00"
+  },
+  {
+    "id": "f0e0ee29-83c3-41ef-91c2-6f8b04b3adac",
+    "name": "Petscheck",
+    "position": "MID",
+    "status": "active",
+    "created_at": "2026-07-28T14:09:26.44542+00:00"
+  },
+  {
+    "id": "76b8d60e-5cbe-4a85-8c54-621513bf8044",
+    "name": "Richard Byers",
+    "position": "DEF",
+    "status": "active",
+    "created_at": "2026-07-28T14:09:26.44542+00:00"
+  },
+  {
+    "id": "e99edf53-0e74-4d70-a68e-f10946b0e2dc",
+    "name": "Sam Abbs",
+    "position": "MID",
+    "status": "active",
+    "created_at": "2026-07-28T14:09:26.44542+00:00"
+  },
+  {
+    "id": "8d049204-0c82-4b52-8381-55be1845320d",
+    "name": "Sam Cooke",
+    "position": "MID",
+    "status": "active",
+    "created_at": "2026-07-28T14:09:26.44542+00:00"
+  },
+  {
+    "id": "2ced7ee6-20ef-4edc-aa36-68d70a023e84",
+    "name": "Seb Moseley",
+    "position": "DEF",
+    "status": "active",
+    "created_at": "2026-07-28T14:09:26.44542+00:00"
+  },
+  {
+    "id": "2262d92d-bee2-415a-9a3a-6cb1f7b608aa",
+    "name": "Tobias Scalabrini",
+    "position": "MID",
+    "status": "active",
+    "created_at": "2026-07-28T14:09:26.44542+00:00"
+  },
+  {
+    "id": "12c65343-1056-4ab7-8e34-71719546be60",
+    "name": "Tom Simeon",
+    "position": "FWD",
+    "status": "active",
+    "created_at": "2026-07-28T14:09:26.44542+00:00"
+  },
+  {
+    "id": "5a424794-81ae-4345-b717-d88f3d8bf2d9",
+    "name": "Will Line",
+    "position": "FWD",
+    "status": "active",
+    "created_at": "2026-07-28T14:09:26.44542+00:00"
+  },
+  {
+    "id": "04eeb03d-8e60-475d-89ff-5ca8f7b10b29",
+    "name": "Will MC",
+    "position": "MID",
+    "status": "active",
+    "created_at": "2026-07-28T14:09:26.44542+00:00"
+  },
+  {
+    "id": "5f8c1d7d-e738-4bb3-9b9f-eb06c1e93ca8",
+    "name": "Will Miller",
+    "position": "MID",
+    "status": "active",
+    "created_at": "2026-07-28T14:09:26.44542+00:00"
+  },
+  {
+    "id": "b05722bb-328b-433b-a36c-631dee750e86",
+    "name": "William Gadd",
+    "position": "DEF",
+    "status": "active",
+    "created_at": "2026-07-28T14:09:26.44542+00:00"
+  }
+]
