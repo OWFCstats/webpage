@@ -1,10 +1,15 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { supabaseRead, supabaseConfigured } from '../lib/supabase';
+import { fetchAllPages } from '../lib/paging';
 
-// The whole club dataset is a few hundred rows at most, so we load it in one
-// go and derive every stat client-side (see lib/matches.js, players.js,
-// awards.js, league.js and charts.js). refresh() is called by admin pages
-// after any write so public views stay current.
+// Every read the site makes, in one place. The whole dataset is small enough to
+// hold in memory and derive every stat from client-side (see lib/matches.js,
+// players.js, awards.js, league.js and charts.js). refresh() is called by admin
+// pages after any write so public views stay current.
+//
+// "Small" is not the same as "bounded": each read is paged, because PostgREST
+// answers at most 1,000 rows and `appearances` passes that around season six.
+// See lib/paging.js.
 
 const DataContext = createContext(null);
 
@@ -15,6 +20,19 @@ const DataContext = createContext(null);
 const RETRY_DELAYS = [600, 1500];
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+/**
+ * One table, every row, paged — see `lib/paging.js` for why any of this is
+ * necessary.
+ *
+ * `order` receives the query and adds the sort. It has to end on something
+ * unique, because paging an order that has ties lets rows move between pages;
+ * `id` does that job for five of the six, and `appearances` gets it from the
+ * `unique (match_id, player_id)` constraint the table already carries.
+ */
+const readAll = (table, order) =>
+  fetchAllPages((from, to) =>
+    order(supabaseRead.from(table).select('*')).range(from, to));
 
 export function DataProvider({ children }) {
   const [state, setState] = useState({
@@ -42,12 +60,12 @@ export function DataProvider({ children }) {
 
     for (let attempt = 0; ; attempt++) {
       const [players, matches, appearances, teams, leagueRows, seasonAwards] = await Promise.all([
-        supabaseRead.from('players').select('*').order('name'),
-        supabaseRead.from('matches').select('*').order('date', { ascending: false }),
-        supabaseRead.from('appearances').select('*'),
-        supabaseRead.from('teams').select('*').order('name'),
-        supabaseRead.from('league_rows').select('*'),
-        supabaseRead.from('season_awards').select('*'),
+        readAll('players', (q) => q.order('name').order('id')),
+        readAll('matches', (q) => q.order('date', { ascending: false }).order('id')),
+        readAll('appearances', (q) => q.order('match_id').order('player_id')),
+        readAll('teams', (q) => q.order('name').order('id')),
+        readAll('league_rows', (q) => q.order('season').order('id')),
+        readAll('season_awards', (q) => q.order('season').order('id')),
       ]);
       const failed = [players, matches, appearances, teams, leagueRows, seasonAwards].find((r) => r.error);
       if (!failed) {

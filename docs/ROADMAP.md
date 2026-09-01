@@ -47,31 +47,41 @@ page-by-page review against the club's real 2025/26 season.
 | 20 | The Matchday scoreboard | Each score attached to its own team row; the pitch address moved to the fixture; page 1,857px → 1,812px |
 | 21 | Player detail and the opponent page | 3,127px → 2,241px; the head-to-head table stopped hiding 36px at 320px |
 | 22 | The data centre | `/players/data` — every player, every stat, the one deliberate side-scroll |
-| 23 | Home, the cosmetic pass | The last result positions by venue with a badge marking which side is us; the momentum chart gained gridlines, value labels, an area fill and the list's own height, plus a "Charts" button |
+| 23 | Home, the cosmetic pass | The last result reads by venue with a badge marking which side is us; the momentum chart gained gridlines, value labels and a flat fill, plus a *Charts* button |
 | 24 | Players, the second pass | `seasonPools`, the closed archive banner, five small tables became one wide reference table |
-| 25 | Matchday: the season ladder | `seasonLadder` + `SeasonLadder.jsx`: the stepper, jump strip, form chips and next-fixture card became one object, every game a rung with its running goal difference; the budget moved to 2,300 |
-| 26 | Matchday: the match panel | `MotmPlate.jsx` and `TeamSheet.jsx` replace the monogram card and squad pills; the scoreboard gained a head row (competition, matchday number, W/D/L) and one condensed meta line; `BallMark` and a gold star are the only two marks a name carries; `WorthNoting` deleted, its ordinals now the team sheet's own App column |
-| 27 | Matchday: head to head, and the report | `HeadToHead.jsx` (`lib/league.js`'s `twoRows`) replaces `ComparisonCard.jsx`: every meeting this season on `ResultList`'s inline variant, then a six-row mirrored-bar tape where the opponent has a league row this season, the old two-figure comparison where it doesn't; `MatchReport.jsx` clamps to its first ~300 characters (`lib/format.js`'s `clampReport`) with the rest behind one control. Real new content, not a wash: the default route rose to 2,456px against its 2,300 budget, purely from the tape — see `DESIGN.md` → *Page length* |
-| 28 | Matchday: the desktop rail | Above 900px, `.matchday-rail` in `styles/pages/matchday.css` turns the page into a 344px/1fr grid, the season on the left and the match beside it. Built with `display: contents` on `SeasonLadder`'s wrapping elements so one tree served both layouts; **superseded by Phase 31**, which is where the mechanism is now written down. Below 900px is unchanged |
-| 29 | Season, the ladder | `SeasonLadder` moved to `components/` and reused on Season in place of `ResultsTable` and `UpcomingFixtures` — a ~40px rung against the ~80px row, every game and both fixtures still on the page; 3,224px → 2,490px, 734px back but 290 short of the 2,200 budget — see *Decisions* → *Open* |
-| 31 | Matchday: the rail, corrected | Phase 28's `display: contents` put the match panel in the *open rung's own grid row*, so that rung stretched to the panel's height — a 40px rung became a thousand-pixel gold slab, and the rest of the season was pushed below the whole match instead of continuing under it. The rail and the match are two ordinary boxes again; Matchday reads the 900px breakpoint with `useIsNarrow` and places the panel, because CSS can restyle a box but not reparent one. Above 1200px the match splits into the two columns the approved flat always had — squad left, comparison and report right — which no phase had ever asked for. `MatchReport`'s clamp state moved up to its caller, so a resize across 900px no longer collapses an open report. 375px is untouched (2,456 / 2,746 / 3,150px); 1400px goes 2,336 → 1,183px on the default route. Out of order on purpose: a defect in shipped work, not new scope |
-| 32 | The new badge art | Twenty-two drawings in, one per badge per tier, `<img>` rather than inlined; out went the four metal ramps as paint, `recolour`, `toneRange`, `metalRamp`, the paper/board bands, the `on` prop and the medallion. `npm run badges -- <dir>` ingests a drop — rename, `svgo` at one decimal, 1.8 MB → 807 KB with nothing visible changing. The icon-contrast invariant learned to fetch and score an SVG `<img>`, and to score a shaded badge on separation from its ground (2:1 on the mean) rather than on the share of its ink that happens to be dark — the three drawings the medallion existed for score 1.31–1.78, this set's worst is 2.12 |
-| 33 | The cosmetic pass the art paid for | Player badges 24 → 34 in the hero and 30–34 → 40 on the shelf, with the shelf's first column fixed at 40px so four labels start in one place; squad tiles 21 + a disc → 26 of drawing; the roster opens on **cards** (`?layout=list` is the address the team sheet carries now); Records' career cards 44 → 52, stackables 34 → 48 (the hat-trick is 1.57 wide and was reading as the smaller badge), trophy strip 40 → 64 in a band that grew to hold it; the badge page's four tiers 28 → 40, which is the one place all four drawings are set side by side. Player detail 2,241 → 2,279px, squad tiles 2,138 → 2,057 |
-| 35 | The admin review | The write side, page by page. **Add result stopped inserting blind**: it opens on the fixtures already in the diary and fills one in (`lib/admin.js` → `fixtureFor`), so the same game can't exist twice — it did, and Home showed one match as both the last result and "kick-off in 8 days", losing the fixture's kick-off time and venue with it. The walkover form does the same. **The three admin tables became `AdminList`** — the match list was hiding 484px of its 738px at 375px with all three of its actions off screen; teams hid 289px, the squad 98px. **The admin routes went into `site-map.js`**, which is why none of that had ever been measured. Plus: MOTM is one a game in the lineup editor too (it was a plain checkbox per slot, so eleven could be saved and all eleven counted); the lineup grid captions its inputs and its save follows you down, both of which the league grid already did; Edit on the squad list carries you to the form instead of changing one 4,994px above the tap; login honours the address it bounced you from; Overview leads on what is outstanding — a fixture played but not entered first, then lineups, MOTM, a stale table, an unvoted season — and dropped two cards that restated the nav |
-| 34 | The trophy cabinet | `/records/honours` stopped being a list of four label/name rows a season. One green band, a shelf per season, the year top-left and the four trophies across it at 72px with the winner under each and their mark — carrying a `unit`, since "9" under a boot is a shirt number until it says "9 goals" — under the name. 2×2 on a phone, four across from 520px. A season nobody has won yet keeps its four drawings, drained, under *Not awarded*: that is the season the reader is about to play. 961 → 1,155px against a 2,000 budget |
-| 37 | The motion pass | Motion tokens in `tokens.css` — two strong curves and a duration per job, which Phase 38 took to four — and every transition on the site rewritten to pick from them; the old set was five ad-hoc values and no curve at all. **Press feedback, which the site had none of**: a phone has no hover, so compact controls scale to 0.97 under the finger and full-width rows tint instead. **All 30 `:hover` rules gated behind `(hover: hover) and (pointer: fine)`** — ungated, every one of them was a highlight that stuck to whatever you last tapped. Two animations that had never once run were found and fixed: `page-in` only ever fired on first paint because `<main>` never remounted (keyed on the pathname now, opacity only), and the home stat bars' `width` transition can't fire on first render at all — they scale from `@starting-style` now, off the layout and paint path. Plus the column picker opens from its own corner rather than appearing, the season archive settles instead of snapping, and the spinner went 0.8s → 0.6s. `DESIGN.md` → *Motion* is rewritten around the rules rather than the four things that used to move |
-| 38 | The gild | Motion got a material: this site is paper and gilded board, so hover is what happens to printed matter rather than the shadow-and-scale idiom. Three edge treatments, one per kind of thing — **a rule drawn** under what is offered (a button's label, a sortable column's own border, a name in a nowrap cell), **a tick in the margin** beside a row (2px of gold, what this site has instead of a row that lifts), **an edge firming up** on a surface (a stat tile, a chip). Plus **the gild**, one sweep of light across a board as it arrives at the new `--dur-gild`, and the site's only ambient movement — off on `.lb-lead`, since six cascading down the leaderboard grid is a light show and a band inside a card was never one of the five occasions. A button's gold now deepens rather than brightening, because `brightness(1.06)` washes gold towards white. Chosen from three directions built behind a picker; the two rejected ones were a depth pass (lift, shadow, scale) and a significance pass (motion only on names and figures). The masthead rule-wipe the direction started with was cut on the frequency rule: a flourish on the one control tapped dozens of times a sitting |
-| 39 | The second copy | `scripts/backup.mjs` + `.github/workflows/backup.yml`: every row of all six tables to `backups/` daily — JSON per table plus a `restore.sql` that upserts them back — committed only when the data moved, or monthly regardless so GitHub doesn't disable the schedule for inactivity. The free Supabase tier has no automated backups, so until this the club's history existed once. The same daily run does two jobs nobody had: it keeps the project from pausing (a week idle sleeps a free project, and nobody opens a football site in June), and a failed fetch fails the job and emails the owner, which is the site's only alerting. Paged at 1,000 rows because PostgREST caps a response there and `appearances` is the table that will pass it. `deploy.yml` ignores `backups/**` so a data commit doesn't redeploy an unchanged bundle |
-| 40 | The link, and the icon | The site spreads by being pasted into the squad's group chat, and it had no `og:image` — a grey rectangle with a URL in it. `npm run og` renders the masthead at 1200x630 plus the 192 / 512 / 180px home-screen icons, in Chromium against `tokens.css` and the site's own faces, so no colour is written down twice; `public/manifest.webmanifest` makes *Add to Home Screen* open Home full-screen with the crest as its icon. `theme-color` went from a near-black nobody chose to `--board`, which is what the status bar wears above the masthead. A scraper needs an absolute URL, so `vite.config.js` substitutes `%SITE_URL%` into `index.html` before Vite's own HTML pass (which `decodeURI`s every href and throws on a bare `%`) — the one absolute URL in a build that is otherwise entirely relative, defaulting to the Pages address and overridden by a repository variable the day there is a domain |
-| 41 | Counting who turns up | GitHub Pages has no server logs, so the site had no idea whether anybody opened it after a game. `lib/analytics.js` — a cookieless counter, named by two build-time variables rather than by a vendor, because which counter is a signup decision: unset, which is every local run and every pull request, it compiles to nothing and makes no requests. `Layout.jsx` counts each section change explicitly, since on `<HashRouter>` a counter left to notice `pushState` on its own would report that the squad opened Home and read nothing. Production only, or the layout harness would file a hundred visits a pull request |
+| 25 | Matchday: the season ladder | `seasonLadder` + `SeasonLadder.jsx`: the stepper, jump strip, form chips and next-fixture card became one ladder, a rung a game with its running goal difference; the budget moved to 2,300 |
+| 26 | Matchday: the match panel | `MotmPlate.jsx` and `TeamSheet.jsx` replaced the monogram card and squad pills; a scorer's drawn ball and a gold star are the only two marks a name carries; `WorthNoting` deleted |
+| 27 | Matchday: head to head, and the report | `HeadToHead.jsx` replaced `ComparisonCard.jsx`, with a six-row mirrored-bar tape where the opponent has a league row; `MatchReport` clamps to ~300 characters behind one control |
+| 28 | Matchday: the desktop rail | Above 900px the ladder became a rail with the match beside it — **superseded by Phase 31**, which is where the mechanism is written down now |
+| 29 | Season, the ladder | `SeasonLadder` moved to `components/` and replaced `ResultsTable` and `UpcomingFixtures` on Season; 3,224px → 2,494px, still short of the 2,200 budget |
+| 31 | Matchday: the rail, corrected | Phase 28's `display: contents` stretched the open rung to the whole panel's height; the rail and the match are two ordinary boxes placed by `useIsNarrow` now, and above 1200px the match splits into two columns |
+| 32 | The new badge art | Twenty-two drawings, one per badge per tier, served as `<img>`; out went `recolour`, the four metal ramps as paint and the medallion. `npm run badges -- <dir>` ingests a drop: 1.8 MB → 807 KB |
+| 33 | The cosmetic pass the art paid for | Every badge drawn bigger now the art carries a frame — 24→34 in the hero, 30→40 on the shelf, 21→26 on a squad tile, 40→64 for a trophy — and the roster opens on cards, with `?layout=list` for the team sheet |
+| 35 | The admin review | The write side, page by page: `fixtureFor` stops a result inserting beside the fixture it belongs to, `AdminList` replaced three tables that hid their own actions at 375px, MOTM became one a game in the lineup editor, and the admin routes went into `site-map.js` |
+| 34 | The trophy cabinet | `/records/honours` became a cabinet: one green band, a shelf a season, four trophies at 72px with the winner and their mark under each, 2×2 on a phone and four across from 520px |
+| 37 | The motion pass | Every transition rewritten onto motion tokens; press feedback, which the site had none of; all 30 `:hover` rules gated behind `(hover: hover) and (pointer: fine)`; and two animations that had never once run, fixed |
+| 38 | The gild | Hover became what happens to printed matter: three edge treatments — a rule drawn, a tick in the margin, an edge firming up — and the gild, one sweep of light across a board as it arrives |
+| 39 | The second copy | `scripts/backup.mjs` + `backup.yml`: all six tables to `backups/` daily, JSON plus a `restore.sql` that upserts them back. Also the keepalive and the site's only alerting. Paged at 1,000 rows, which Phase 43 taught the site itself |
+| 40 | The link, and the icon | `npm run og` renders the share card and the home-screen icons in Chromium against `tokens.css`; `manifest.webmanifest` makes *Add to Home Screen* open Home full-screen; `%SITE_URL%` is the build's one absolute URL |
+| 41 | Counting who turns up | `lib/analytics.js` — a cookieless counter named by two build-time variables rather than by a vendor, compiling to nothing when they are unset. Phase 45 fixes what it counts |
+| 42 | The docs, reconciled | `CLAUDE.md`, `DESIGN.md` and this file had drifted from the code and from each other — four `> **Phase N.**` markers naming closed phases among them. Corrected, and the release sequence written in as the plan of record |
+| 43 | The appearances ceiling | `lib/paging.js`: every read `DataContext` makes pages to exhaustion with a total order, so the site stops truncating at PostgREST's 1,000 rows around season six. The fixture stub answers `.range()` now, and eight tests hold it |
 
 **The detail behind any closed phase is in its commit** — `git log --grep="Phase
-20"` finds it, and forty-five commits name their phase. That is what makes
-condensing this file safe rather than lossy. Phases 32–34 are the one exception
-to one-phase-one-commit: they arrived as a single drop of artwork and landed
-together, because 33 and 34 are decisions about drawings that only exist after
-32 — sizes, a greyed placeholder, a shelf of trophies. One commit names all
-three, so the grep still finds each of them.
+20"` finds it, because every phase commit names its phase in its own subject.
+That is what makes condensing this table safe rather than lossy. A count used to
+sit here instead of that sentence, and it was wrong by fourteen, which is the
+argument for writing down the mechanism rather than a tally.
+
+Phases 32–34 are the one exception to one-phase-one-commit: they arrived as a
+single drop of artwork and landed together, because 33 and 34 are decisions
+about drawings that only exist after 32 — sizes, a greyed placeholder, a shelf
+of trophies. One commit names all three, so the grep still finds each of them.
+
+**Phases 25–41 were condensed late, not as they landed.** Sixteen rows
+were still carrying their full instructions, 13,000 characters where the rule
+says one line each, which is the cost this file exists to avoid. Condense a
+phase in the commit that closes it.
 
 Two rulings from that half still bind everywhere: **everything is derived,
 nothing is stored twice**, and **a component that gains a second page moves up to
@@ -81,9 +91,10 @@ nothing is stored twice**, and **a component that gains a second page moves up t
 
 ## Now — the release
 
-**Deadline: Friday 4 September 2026.** Six phases in order, then a launch
-checklist. Nothing here is new scope: every item is a defect or an unfinished
-step the pre-release review found, and the review is the "why" behind each one.
+**Deadline: Friday 4 September 2026.** Phases 42 and 43 are done. Four phases
+left, in order, then a launch checklist. Nothing here is new scope: every item
+is a defect or an unfinished step the pre-release review found, and the review
+is the "why" behind each one.
 Anything that improves the site rather than readying it is under *Next*.
 
 Three of the steps belong to the club rather than the code, and two are already
@@ -92,43 +103,6 @@ sign-in — that second one matters as much, because RLS grants writes to any
 `authenticated` role and an anonymous sign-in creates one. **A GoatCounter
 account exists**; its two values go in as part of Phase 45. **The domain
 `oldwellingtoniansfc.com` is registered** at Porkbun, and its DNS is Phase 47.
-
-### Phase 42 — The docs, reconciled
-
-The three files had drifted from the code and from each other. Corrected here:
-the motion-token count (Phase 37's row said five and three durations; Phase 38
-took it to six and four), Phase 8's "longest 247 lines" (the longest page is now
-`AddResult.jsx` at 295), Season's measured height, `DESIGN.md`'s `.sheet`/`.board`
-call-site counts and its "six places render a scoreline" (five), and the claim
-that the `.ms-*` rules went with `MilestoneStrip` — `.milestones` is still in
-`primitives.css`. **And four `> **Phase N.**` markers in `DESIGN.md` named
-phases that closed long ago** — 14, 16, 18 and 22 — so that file's own rule
-("where a section carries a blockquote naming a phase, that part is decided but
-not built yet") was telling every reader four shipped things were still pending.
-Those blocks are gone rather than unquoted: each duplicated either the section
-it introduced or its one-line row in *Done*, which is what condensing a closed
-phase means. Two rules that existed only as a code comment are written down
-for the first time: **no `localStorage` or `sessionStorage`, anywhere**, and
-**a read that can grow past a thousand rows has to page**. `check.yml`'s header
-comment, which still said `check:layout` was expected to be red on `main`, is
-corrected in the same commit — it has been green since Phase 10.
-
-**Done means** no claim in `CLAUDE.md`, `DESIGN.md` or this file contradicts the
-code, and the sequence below is the plan of record.
-
-### Phase 43 — The appearances ceiling
-
-`DataContext` reads `appearances` with `select('*')` and no `.limit()`, no
-`.range()` and no `.order()`. `scripts/backup.mjs` already pages at 1,000
-because PostgREST caps a response there; the site never learned the same
-lesson. 155 rows after one season puts the cap around season six, and with no
-order the thousand rows that come back are arbitrary — so every derived figure
-on the site goes quietly wrong rather than visibly breaking. This is the one
-item on the list that is silent data corruption on a timer.
-
-**Done means** every table the site reads pages until exhausted, `appearances`
-has a deterministic order, and a test proves a dataset over a thousand rows
-comes back whole.
 
 ### Phase 44 — The front door
 
