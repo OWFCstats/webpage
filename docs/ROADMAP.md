@@ -32,7 +32,7 @@ page-by-page review against the club's real 2025/26 season.
 | 5 | Build the plate | Tiered badges, honours board, Player of the Season |
 | 6 | Players page | Leaderboard first, squad as a team sheet |
 | 7 | Charts | Linear lines, flat fills, direct labels |
-| 8 | Page components | Every page reads as a layout, longest 247 lines |
+| 8 | Page components | Every page reads as a layout; `CLAUDE.md`'s ~250-line guideline dates from here. Two files have since passed it — see Phase 51 |
 | 9 | Let the repo see itself | Committed fixture, `npm run shots`, `npm run check:layout`, unit tests, CI on every PR |
 | 10 | The current season, and the result row | `currentSeasonOf` (most recent season with a *result*); `ResultList.jsx` is the one scoreline primitive, six call sites |
 | 11 | The palette and the display face | Racing green ground, aged brass, Libre Caslon Display, the four metal ramps |
@@ -59,7 +59,7 @@ page-by-page review against the club's real 2025/26 season.
 | 33 | The cosmetic pass the art paid for | Player badges 24 → 34 in the hero and 30–34 → 40 on the shelf, with the shelf's first column fixed at 40px so four labels start in one place; squad tiles 21 + a disc → 26 of drawing; the roster opens on **cards** (`?layout=list` is the address the team sheet carries now); Records' career cards 44 → 52, stackables 34 → 48 (the hat-trick is 1.57 wide and was reading as the smaller badge), trophy strip 40 → 64 in a band that grew to hold it; the badge page's four tiers 28 → 40, which is the one place all four drawings are set side by side. Player detail 2,241 → 2,279px, squad tiles 2,138 → 2,057 |
 | 35 | The admin review | The write side, page by page. **Add result stopped inserting blind**: it opens on the fixtures already in the diary and fills one in (`lib/admin.js` → `fixtureFor`), so the same game can't exist twice — it did, and Home showed one match as both the last result and "kick-off in 8 days", losing the fixture's kick-off time and venue with it. The walkover form does the same. **The three admin tables became `AdminList`** — the match list was hiding 484px of its 738px at 375px with all three of its actions off screen; teams hid 289px, the squad 98px. **The admin routes went into `site-map.js`**, which is why none of that had ever been measured. Plus: MOTM is one a game in the lineup editor too (it was a plain checkbox per slot, so eleven could be saved and all eleven counted); the lineup grid captions its inputs and its save follows you down, both of which the league grid already did; Edit on the squad list carries you to the form instead of changing one 4,994px above the tap; login honours the address it bounced you from; Overview leads on what is outstanding — a fixture played but not entered first, then lineups, MOTM, a stale table, an unvoted season — and dropped two cards that restated the nav |
 | 34 | The trophy cabinet | `/records/honours` stopped being a list of four label/name rows a season. One green band, a shelf per season, the year top-left and the four trophies across it at 72px with the winner under each and their mark — carrying a `unit`, since "9" under a boot is a shirt number until it says "9 goals" — under the name. 2×2 on a phone, four across from 520px. A season nobody has won yet keeps its four drawings, drained, under *Not awarded*: that is the season the reader is about to play. 961 → 1,155px against a 2,000 budget |
-| 37 | The motion pass | Five motion tokens in `tokens.css` — two strong curves, three durations named for the job — and every transition on the site rewritten to pick from them; the old set was five ad-hoc values and no curve at all. **Press feedback, which the site had none of**: a phone has no hover, so compact controls scale to 0.97 under the finger and full-width rows tint instead. **All 30 `:hover` rules gated behind `(hover: hover) and (pointer: fine)`** — ungated, every one of them was a highlight that stuck to whatever you last tapped. Two animations that had never once run were found and fixed: `page-in` only ever fired on first paint because `<main>` never remounted (keyed on the pathname now, opacity only), and the home stat bars' `width` transition can't fire on first render at all — they scale from `@starting-style` now, off the layout and paint path. Plus the column picker opens from its own corner rather than appearing, the season archive settles instead of snapping, and the spinner went 0.8s → 0.6s. `DESIGN.md` → *Motion* is rewritten around the rules rather than the four things that used to move |
+| 37 | The motion pass | Motion tokens in `tokens.css` — two strong curves and a duration per job, which Phase 38 took to four — and every transition on the site rewritten to pick from them; the old set was five ad-hoc values and no curve at all. **Press feedback, which the site had none of**: a phone has no hover, so compact controls scale to 0.97 under the finger and full-width rows tint instead. **All 30 `:hover` rules gated behind `(hover: hover) and (pointer: fine)`** — ungated, every one of them was a highlight that stuck to whatever you last tapped. Two animations that had never once run were found and fixed: `page-in` only ever fired on first paint because `<main>` never remounted (keyed on the pathname now, opacity only), and the home stat bars' `width` transition can't fire on first render at all — they scale from `@starting-style` now, off the layout and paint path. Plus the column picker opens from its own corner rather than appearing, the season archive settles instead of snapping, and the spinner went 0.8s → 0.6s. `DESIGN.md` → *Motion* is rewritten around the rules rather than the four things that used to move |
 | 38 | The gild | Motion got a material: this site is paper and gilded board, so hover is what happens to printed matter rather than the shadow-and-scale idiom. Three edge treatments, one per kind of thing — **a rule drawn** under what is offered (a button's label, a sortable column's own border, a name in a nowrap cell), **a tick in the margin** beside a row (2px of gold, what this site has instead of a row that lifts), **an edge firming up** on a surface (a stat tile, a chip). Plus **the gild**, one sweep of light across a board as it arrives at the new `--dur-gild`, and the site's only ambient movement — off on `.lb-lead`, since six cascading down the leaderboard grid is a light show and a band inside a card was never one of the five occasions. A button's gold now deepens rather than brightening, because `brightness(1.06)` washes gold towards white. Chosen from three directions built behind a picker; the two rejected ones were a depth pass (lift, shadow, scale) and a significance pass (motion only on names and figures). The masthead rule-wipe the direction started with was cut on the frequency rule: a flourish on the one control tapped dozens of times a sitting |
 | 39 | The second copy | `scripts/backup.mjs` + `.github/workflows/backup.yml`: every row of all six tables to `backups/` daily — JSON per table plus a `restore.sql` that upserts them back — committed only when the data moved, or monthly regardless so GitHub doesn't disable the schedule for inactivity. The free Supabase tier has no automated backups, so until this the club's history existed once. The same daily run does two jobs nobody had: it keeps the project from pausing (a week idle sleeps a free project, and nobody opens a football site in June), and a failed fetch fails the job and emails the owner, which is the site's only alerting. Paged at 1,000 rows because PostgREST caps a response there and `appearances` is the table that will pass it. `deploy.yml` ignores `backups/**` so a data commit doesn't redeploy an unchanged bundle |
 | 40 | The link, and the icon | The site spreads by being pasted into the squad's group chat, and it had no `og:image` — a grey rectangle with a URL in it. `npm run og` renders the masthead at 1200x630 plus the 192 / 512 / 180px home-screen icons, in Chromium against `tokens.css` and the site's own faces, so no colour is written down twice; `public/manifest.webmanifest` makes *Add to Home Screen* open Home full-screen with the crest as its icon. `theme-color` went from a near-black nobody chose to `--board`, which is what the status bar wears above the masthead. A scraper needs an absolute URL, so `vite.config.js` substitutes `%SITE_URL%` into `index.html` before Vite's own HTML pass (which `decodeURI`s every href and throws on a bare `%`) — the one absolute URL in a build that is otherwise entirely relative, defaulting to the Pages address and overridden by a repository variable the day there is a domain |
@@ -79,32 +79,190 @@ nothing is stored twice**, and **a component that gains a second page moves up t
 
 ---
 
-## Now
+## Now — the release
 
-### Phase 36 — Losing a form on a phone
+**Deadline: Friday 4 September 2026.** Six phases in order, then a launch
+checklist. Nothing here is new scope: every item is a defect or an unfinished
+step the pre-release review found, and the review is the "why" behind each one.
+Anything that improves the site rather than readying it is under *Next*.
 
-Nothing on the write side warns before it drops what you typed. The wizard holds
-four steps in memory and writes nothing until the last one, so a stray tap on the
-bottom bar loses the lot; the lineup editor, the league grid and the report
-editor are the same. `beforeunload` covers a reload and a closed tab and not the
-tap that actually does it — in-app navigation needs `useBlocker`, which
-React Router only gives a data router, and this app is on `<HashRouter>`. So
-this is a routing change first and a dialogue second, which is why Phase 35
-left it rather than half-doing it.
+Three of the steps belong to the club rather than the code, and two are already
+done. **Self-signup is off** in the Supabase dashboard, and so is anonymous
+sign-in — that second one matters as much, because RLS grants writes to any
+`authenticated` role and an anonymous sign-in creates one. **A GoatCounter
+account exists**; its two values go in as part of Phase 45. **The domain
+`oldwellingtoniansfc.com` is registered** at Porkbun, and its DNS is Phase 47.
 
-**Done means** leaving a half-filled form asks first, at 375px, on every write
-page — or a written argument here for why the wizard should save a draft
-instead.
+### Phase 42 — The docs, reconciled
 
-### Phase 30 — The cosmetic review: Players and Records
+The three files had drifted from the code and from each other. Corrected here:
+the motion-token count (Phase 37's row said five and three durations; Phase 38
+took it to six and four), Phase 8's "longest 247 lines" (the longest page is now
+`AddResult.jsx` at 295), Season's measured height, `DESIGN.md`'s `.sheet`/`.board`
+call-site counts and its "six places render a scoreline" (five), and the claim
+that the `.ms-*` rules went with `MilestoneStrip` — `.milestones` is still in
+`primitives.css`. **And four `> **Phase N.**` markers in `DESIGN.md` named
+phases that closed long ago** — 14, 16, 18 and 22 — so that file's own rule
+("where a section carries a blockquote naming a phase, that part is decided but
+not built yet") was telling every reader four shipped things were still pending.
+Those blocks are gone rather than unquoted: each duplicated either the section
+it introduced or its one-line row in *Done*, which is what condensing a closed
+phase means. Two rules that existed only as a code comment are written down
+for the first time: **no `localStorage` or `sessionStorage`, anywhere**, and
+**a read that can grow past a thousand rows has to page**. `check.yml`'s header
+comment, which still said `check:layout` was expected to be red on `main`, is
+corrected in the same commit — it has been green since Phase 10.
 
-Still open, and now partly answered: Phase 33 is the badge half of the Players
-and Records findings. What Phase 30 still owns is everything on those two pages
-that isn't a badge. Screenshot at 375px and 1400px, list the findings, one branch
-per page.
+**Done means** no claim in `CLAUDE.md`, `DESIGN.md` or this file contradicts the
+code, and the sequence below is the plan of record.
 
-**Done means** two short phases appended above with real findings, or a line here
-saying a page had none.
+### Phase 43 — The appearances ceiling
+
+`DataContext` reads `appearances` with `select('*')` and no `.limit()`, no
+`.range()` and no `.order()`. `scripts/backup.mjs` already pages at 1,000
+because PostgREST caps a response there; the site never learned the same
+lesson. 155 rows after one season puts the cap around season six, and with no
+order the thousand rows that come back are arbitrary — so every derived figure
+on the site goes quietly wrong rather than visibly breaking. This is the one
+item on the list that is silent data corruption on a timer.
+
+**Done means** every table the site reads pages until exhausted, `appearances`
+has a deterministic order, and a test proves a dataset over a thousand rows
+comes back whole.
+
+### Phase 44 — The front door
+
+Home is the only page where a player's name is not a link: `LastResult.jsx`
+renders the scorers and the MOTM as `<strong>` while ten other components link
+theirs. `CLAUDE.md` says the first screen owes the squad "the last result
+and a name", and it currently shows the name and makes it untappable. Home also
+has no `<h1>` — three `<h2>`s and no top-level heading, on the page that gets
+pasted into the group chat and indexed.
+
+**Done means** every name on Home links to its player page, Home has an `<h1>`,
+and `check:layout` is still green.
+
+### Phase 45 — What the counter counts
+
+`lib/analytics.js` is plumbed and unconfigured. Three things are wrong with it
+before it is switched on. It sends raw pathnames, and player ids are UUIDs, so
+the dashboard fills with 49 unreadable rows carrying counts of one to three
+each. Cloudflare is the first provider in its own documented list and
+`countView` has no branch for it, which delivers exactly the landing-page-only
+failure the module's docstring says it exists to prevent. And a view fired
+before the deferred script has loaded is dropped in silence, which is likeliest
+on the connection this site is designed for.
+
+Underneath those: what it measures is not what `CLAUDE.md` asks for. A section
+counter says Players got opened. The question that decides whether the badge
+system works is whether a player opened **their own** page, and came back to it.
+
+**Done means** id routes collapse to template paths, there is one named event
+for a player page and one for a badge page, the documented provider list matches
+what `countView` can actually serve, a queue holds views fired before the script
+lands, and GoatCounter's two values are set as repository variables.
+
+### Phase 46 — The offline shell
+
+`manifest.webmanifest` declares `display: standalone`, so the site installs as
+an app with no address bar. There is no service worker, so on a bad signal that
+app shows the browser's own offline page with no way back — worse than the error
+note *The frame outlives the page* was written for, on the exact connection the
+whole site is designed around.
+
+**Network-first, shell only.** A cache-first worker on a static host is how a
+squad ends up stranded on a build from three weeks ago, and the club has no way
+to tell them to clear it.
+
+**Done means** the installed app opens offline to its own frame with a "no
+connection" note in the page column, a fresh deploy is picked up on the next
+visit rather than pinned, and nothing a login touches is cached.
+
+### Phase 47 — The address
+
+`oldwellingtoniansfc.com`, registered at Porkbun. `SITE_URL` is unset, so
+`og:image` and `<link rel="canonical">` both resolve against
+`https://owfcstats.github.io/webpage`. The trap is that setting the domain
+without setting the variable breaks nothing visible: every page loads, and only
+the link preview and the canonical are wrong, with nothing in CI to catch it.
+
+The README runbook for this landed with Phase 42 and names the real domain and
+Porkbun's own DNS screen, so what is left is the doing.
+
+**Done means** the DNS records are in at Porkbun, `public/CNAME` holds the
+domain, Pages has it with Enforce HTTPS ticked, the `SITE_URL` repository
+variable is set and a deploy has run with it, and a link pasted into WhatsApp
+previews with the crest.
+
+### Launch — a checklist, not a phase
+
+Once 42–47 are in. Do these in order and stop at the first one that fails.
+
+1. Deploy from `main`; the Actions run is green.
+2. Paste the link into a chat with yourself; the card renders with the crest.
+3. Open the site; GoatCounter registers a visit. Open Players; it registers a
+   second.
+4. Add to Home Screen, open it from there, then turn wifi off and open it again.
+5. Enter a result through the wizard on a real phone; it lands on Matchday.
+6. Send it to the squad.
+
+---
+
+## Next — after launch, in this order
+
+One line each. A phase gets written out in full when it is picked up, not
+before — that is what keeps this file short.
+
+1. **Phase 48 — This is me.** A player taps their own name once and the site
+   remembers it in a cookie, then Home carries their apps, their next badge and
+   how far off it. No login, no account, no row: a preference, not
+   authentication, and the distinction is in `DESIGN.md`. The largest single
+   gain available for the personal-progress half of the vision, and it needs no
+   schema change. **Done means** a returning visitor sees their own figures on
+   Home without navigating, and clearing the cookie loses nothing but the pick.
+2. **Phase 36 — Losing a form on a phone.** Nothing on the write side warns
+   before it drops what you typed. The wizard holds four steps in memory and
+   writes on the last one, so a stray tap on the bottom bar loses the lot; the
+   lineup editor, the league grid and the report editor are the same.
+   `beforeunload` covers a reload and a closed tab, not the tap that actually
+   does it — in-app navigation needs `useBlocker`, which React Router only gives
+   a data router, and this app is on `<HashRouter>`. A routing change first and a
+   dialogue second, which is why Phase 35 left it. **Done means** leaving a
+   half-filled form asks first, at 375px, on every write page — or an argument
+   here for saving a draft instead.
+3. **Phase 49 — Sharing a link from inside the app.** `navigator.share` on a
+   match, a player and a badge. The site's whole distribution model is being
+   pasted into the group chat, it has an `og:image` built for that, and
+   installed to a home screen there is no address bar to copy from.
+4. **Phase 50 — A season's fixtures in one screen.** `MatchForm` takes one match
+   at a time at six fields each, so a sixteen-game season is about a hundred
+   fields on a phone. Wanted before next season, not this one.
+5. **Phase 51 — The cleanup pass.** Dead CSS (`.milestones`, `.show-all`,
+   `.badge-num`, `.admin-bar`, `.fixture-location`, `.scored-row`);
+   `owfchomedashboard.patch`, 1,093 lines at the repo root patching a
+   `src/styles.css` that Phase 1 deleted; the ranking line duplicated between
+   `league.js` and `LeagueTable.jsx`; four `lib/` exports used only inside their
+   own module; `SeasonCharts.jsx` at 374 lines and `AddResult.jsx` at 295
+   against the ~250 guideline; and `starts` coming off the player page, per
+   `DESIGN.md` → *A figure that cannot differ is not a figure*.
+6. **Phase 52 — The budgets, settled.** Home, Matchday and Season are all over,
+   and two of the three have been open since Phase 27. Decide
+   each one: move the number with an argument the way Phase 25 did, or cut a
+   section. See *Decisions* → *Open*, which this phase closes.
+7. **Phase 30 — The cosmetic review: Players and Records.** Partly answered —
+   Phase 33 was the badge half. What is left is everything on those two pages
+   that isn't a badge. Screenshot at 375px and 1400px, list the findings, one
+   branch per page. **Done means** two short phases appended with real findings,
+   or a line saying a page had none.
+8. **Phase 53 — Availability for the next fixture.** The one genuinely missing
+   feature, and the only thing on this list that would make the site a tool
+   rather than a record. Needs a public write path, which the current
+   "every write requires an admin login" model has no room for, so it is a
+   schema and RLS decision before it is a UI one. Do not start it as a UI job.
+9. **Phase 54 — About, and how to join.** A paragraph and a way to get in touch.
+   Parked for a year on "needs a photo worth showing"; that was the wrong test,
+   because words with no photo beat the nothing that is there now, and this is
+   the only thing serving the community third of the vision.
 
 ---
 
@@ -116,11 +274,11 @@ view. *Now* is `npm run shots` on the `mid-season` fixture at 375px.
 
 | Page | Now | Budget | Owner |
 | --- | --- | --- | --- |
-| Home | 2,047 | 1,600 | **unowned** — 447 over; Phase 23's badge, label and button cost 165px of it |
-| Matchday — latest | 2,456 | 2,300 | **unowned** — 156 over; head to head's tape, real content the old card didn't carry. The rail doesn't move this: the budget is stated at 375px and the rail is a >=900px-only change |
-| Matchday — clean sheet (12 named, a report, clamped / open) | 2,746 / 3,150 | 2,300 | **unowned** — 446 over clamped; the clamp bounds it, it doesn't fit it. Same as above, untouched by 28 or 31 |
+| Home | 2,047 | 1,600 | **Phase 52** — 447 over; Phase 23's badge, label and button cost 165px of it |
+| Matchday — latest | 2,456 | 2,300 | **Phase 52** — 156 over; head to head's tape, real content the old card didn't carry. The rail doesn't move this: the budget is stated at 375px and the rail is a >=900px-only change |
+| Matchday — clean sheet (12 named, a report, clamped / open) | 2,746 / 3,150 | 2,300 | **Phase 52** — 446 over clamped; the clamp bounds it, it doesn't fit it. Same as above, untouched by 28 or 31 |
 | Matchday — walkover (no team sheet) | 1,533 | 2,300 | within |
-| Season | 2,490 | 2,200 | **unowned** — 290 over; Phase 29's `SeasonLadder` reuse took 734px back, see *Decisions* → *Open* |
+| Season | 2,494 | 2,200 | **Phase 52** — 290 over; Phase 29's `SeasonLadder` reuse took 734px back, see *Decisions* → *Open* |
 | Season → charts | 1,909 | 2,200 | met (18) |
 | Players → Leaderboards | 1,296 | 1,400 | met (14, 24) |
 | Records → badges / honours / all-time | 1,729 / 1,155 / 1,807 | 2,000 | met (16); badges +62 and honours +194 for the bigger trophies (32–34) |
@@ -129,9 +287,11 @@ view. *Now* is `npm run shots` on the `mid-season` fixture at 375px.
 | Players → Squad | 2,057 cards (default) / 1,671 list | no cap — it's a roster | measured, not capped (17, 24, 33); the tiles lost 81px to the medallion coming off, despite the drawings growing |
 | Players → Data centre | 2,584 | no cap — it's the reference table | measured, not capped (22, 24) |
 
-Home is the one page with no phase against it. Add one when someone is willing to
-cut a section rather than shave one, because `LeagueTable` and `RecentForm` alone
-are most of the page and neither shrinks without breaking a rule.
+Home had no phase against it for eleven phases. **Phase 52 owns all four rows**,
+and it owns them as a decision rather than a shave: `LeagueTable` and
+`RecentForm` alone are most of Home and neither shrinks without breaking a rule,
+so closing that gap means cutting a section or moving the number. Same for the
+other three.
 
 ---
 
@@ -149,8 +309,8 @@ are most of the page and neither shrinks without breaking a rule.
    stops the panel stacking under the ladder at all — but it doesn't reach
    this number: the budget is stated at 375px and the rail only applies above
    900px, so the gap is exactly what Phase 27 left it (see *Settled* below).
-   Still open, and still nobody's — a phase that takes it needs to choose
-   between the two.
+   **Phase 52 owns this**, and taking it means choosing between the two rather
+   than leaving it open a twelfth time.
 
 2. Season's remaining 290px. Phase 29 reused `SeasonLadder` in place of the
    shared result row and the separate upcoming-fixtures block, which took the
@@ -196,7 +356,6 @@ are most of the page and neither shrinks without breaking a rule.
 
 Named so they don't get lost.
 
-- **About us** — needs a photo worth showing.
 - **Player photos** — blocked on collecting 30 headshots; initials are fine.
 - **Final league positions per season** — the Records season index has a footnote
   waiting for standings entered per season.

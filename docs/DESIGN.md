@@ -61,8 +61,11 @@ that are about *what a page says*, and the system below now covers them too.
 | 24 badge plates of which 19 said "Nobody yet", with unearned silver identical to unearned gold | Three classes of badge; only one is tiered | 15 |
 | Ten drawings recoloured into forty badges through four metal ramps, with a dark disc behind the light ones | Twenty-two drawings, one per badge per tier, served as images | 32 |
 
-`.card` is gone. Fifty call sites are `.sheet` and five are `.board`, and the
-judgement that split them is the rule under *Surfaces* below. **There is no
+`.card` is gone. Most surfaces in the site are `.sheet` and a handful are
+`.board`, and the judgement that split them is the rule under *Surfaces* below.
+The exact tally is deliberately not written down here: it was "fifty and five"
+for three phases after it had stopped being true, and a number no one updates is
+worse than no number. **There is no
 third surface.** The plate was one — a box every badge was cut from — and
 Phase 15 replaced it with a drawing that needs no box at all, which is what lets
 the same badge sit in a hero band, in a card and in a list.
@@ -84,26 +87,6 @@ case.
 ## Structure
 
 Three decisions about what a page shows, before any decision about how it looks.
-
-> **Phase 16.** Records runs on the sub-navigation mechanism now too:
-> `/records` (Badges), `/records/honours` and `/records/all-time` are real
-> addresses, and the five sections that used to stack on one 4,841px page are
-> three sub-pages, none over 2,000px. The mechanism itself landed in Phase 13,
-> on Players; the result row and the season rule below landed in Phase 10.
->
-> **Phase 18.** Season splits too: `/season` (results and standings) and
-> `/season/charts` are real addresses, both under the same 2,200px budget.
-> Every section on the site now gains depth through a real sub-page rather
-> than a toggle squeezed into a corner of one.
->
-> **Phase 22.** Players gains its third sub-page, `/players/data` — every
-> player, every stat, the columns the old "Full table" toggle held before
-> Phase 17 deleted it. It stayed behind a fourth address of its own,
-> `?stat=`, one per stat group, for the same reason the squad's `?layout=`
-> does: a group the harness never visits is a name column it never checks.
-> **A later pass replaced the five groups with one wide table** — see *The
-> boards* and *Mobile* — so `?stat=` and the address it lived behind are both
-> gone; only `/players/data` and its `?season=` filter remain.
 
 ### Sections do not grow; they gain depth
 
@@ -170,6 +153,65 @@ token the API briefly refused. Saved to a home screen the site has no address
 bar, so an error note there is not a prompt to reload, it is the end of the
 visit.
 
+### An installed app has to open with no signal
+
+> **Phase 46.** The service worker below is decided and not built yet.
+
+`public/manifest.webmanifest` sets `display: standalone`, so the site installs
+to a home screen and opens with no browser chrome. That is the shortest route
+the squad has to it, and it is also a promise the site cannot currently keep:
+with no service worker, an installed app on a bad signal shows the browser's
+own offline page. Inside a standalone window that page has no address bar, no
+back button and no reload the reader can find. The section above worries about
+an error note being the end of the visit; this is worse, because the frame the
+section is about never renders at all.
+
+So the site caches its own shell — the document, the bundle, the CSS, the
+crest and the fonts — and serves that when the network fails, with the "no
+connection" note in the page column where the spinner and `ErrorNote` already
+go. The frame outliving the page is the same rule, one layer down.
+
+**Network-first, and this is not a preference.** A cache-first worker on a
+static host with no server is how a squad ends up pinned to a build from three
+weeks ago, and the club has no channel for telling thirty people to clear a
+site's storage. Every navigation tries the network and falls back to the cache;
+the cache is refreshed on the way past. Nothing a login touches is cached at
+all, because a shared phone in a pub is a realistic way for this site to be
+read.
+
+### What the site remembers, and what it doesn't
+
+> **Phase 48.** The "me" pick below is decided and not built yet.
+
+Two kinds of state, and conflating them is the mistake this section exists to
+prevent.
+
+**The admin session is authentication.** A Supabase login, a token, and write
+access to every table enforced by RLS. It lives in cookies rather than
+`localStorage` (see `lib/cookieStorage.js`) and it is the only thing on the site
+that grants anybody the right to change anything.
+
+**A reader's own name is a preference.** A player taps their name once and the
+site keeps that player's id on their phone. No account, no password, no row in
+the database, and nothing sent to the server. Home can then lead with their own
+figures — apps this season, the next badge and how far off it — which is what
+turns the front page from a club noticeboard into something addressed to the
+person holding the phone.
+
+It is worth being blunt about what that preference is not. It is not secure and
+does not need to be: every figure on this site is already public and read-only,
+so the worst case is picking the wrong name and seeing the wrong stats
+highlighted, which is fixed by picking again. It is per-device, so the same
+player on a phone and a laptop picks twice. Clearing site data loses it. All
+three are acceptable, because the alternative is thirty accounts and thirty
+forgotten passwords for a read-only stats site, and that is the version of this
+feature that never gets used.
+
+**No `localStorage`, no `sessionStorage`, anywhere.** Cookies only, through the
+adapter in `lib/cookieStorage.js`. The rule predates this section and existed
+only as a comment in that file, which is how it nearly got broken by the
+feature above. A "me" pick is a cookie for the same reason a session is.
+
 ### A result is a row, not a sentence
 
 ```
@@ -179,9 +221,9 @@ visit.
 
 Opponent, our score always first, venue as a letter, W/D/L as a chip, all on one
 `grid-template-columns` shared by every row. This is a primitive, not a page
-style, built as `components/ResultList.jsx`: six places render a scoreline and
-all six read from it, plus a compact inline variant for the one that sits
-inside another card's own row rather than a list of its own. Written as prose
+style, built as `components/ResultList.jsx`: every scoreline that is a list row
+reads from it, plus a compact inline variant for the ones that sit inside
+another card's own row rather than a list of their own. Written as prose
 it wraps mid-name and puts our own club's name in every row of the season.
 
 ### A scoreboard attaches the score to the team
@@ -939,10 +981,39 @@ series* above is the rule that governs those.
 ### Live progress — removed
 
 The milestone progress bars are gone, along with `MilestoneStrip`,
-`playerMilestones`, `nextMilestone` and the `.ms-*` rules. Five bars on a
+`playerMilestones`, `nextMilestone` and the `.ms-*` rules. **`.milestones`
+itself outlived them** in `primitives.css`, unreferenced, because this
+paragraph claimed a cleanup that had not finished — Phase 51 removes it. The
+lesson is the one under *CSS structure*: a rule with no call site is only found
+by looking, and a doc that says it is gone stops anyone looking. Five bars on a
 player's page pushed the things worth looking at below the fold, and "8 to go"
 belongs on the unearned badge: a bar says how far along you are, a badge says
 what you get.
+
+### A figure that cannot differ is not a figure
+
+> **Phase 51.** The removal below is decided and not built yet.
+
+`starts` is on the player page twice — a tile in `StatGrid` with its own rank
+and its own "vs squad avg" caption, and a column in `SeasonTable` — and it is
+identical to `appearances` for every player who has ever played. Not by
+coincidence: the wizard is the normal way a result is entered and it writes
+`started: true` for everyone, so of 155 real appearance rows, zero have
+`started` false. The data centre spotted this and dropped the column, saying so
+in its own header comment. The player page kept it.
+
+So on the one page a player opens to see their own progress, one of eight
+headline tiles restates the tile two cells earlier and produces a second
+identical ranking. **It comes off the player page.** The alternative — a bench
+toggle in the wizard so the field means something — was considered and rejected
+for now: it adds a tap per player to the weekly flow to record something nobody
+has asked for, and entry burden is what kills a volunteer-run stats site. The
+column stays in the schema and in the full lineup editor, where an admin who
+wants the distinction can still set it.
+
+The general rule: **before adding a figure, ask what would make it differ from
+the one beside it.** If the answer is "nothing the club actually enters", it is
+not a figure, it is a repetition with a rank on it.
 
 ## Leaderboards and the squad
 
@@ -953,16 +1024,6 @@ club's whole history by default**, filterable to one season for the reader
 who wants it. **Records stays the one all-time board**, built from the same
 card component as Leaderboards so the two can't drift on what a stat means,
 even though they now disagree about scope by design.
-
-> **Phase 14.** The card format below landed, on both pages — Players and
-> Records each run the whole set of six now, and Players' season picker lost
-> "All time" the same commit. **Phase 17** built the squad view below: every
-> name on the page, and the tiles that put the badges on it. **A later pass**
-> replaced Players' single-season picker with the current-season-plus-archive
-> shape described here, made Squad and the data centre all-time by default,
-> cut the per-card footer, and rebuilt the data centre as one wide table —
-> Phase 24 in `docs/ROADMAP.md`, and `git log --grep="Phase 24"` for the
-> reasoning.
 
 ### The boards
 
@@ -1432,7 +1493,7 @@ stats already carries. Home is still over. Season closed most of its gap:
 Phase 29 replaced the shared result row and the separate upcoming-fixtures
 block with `SeasonLadder` — Phase 25's component, reused rather than copied —
 a ~40px rung against the ~80px row, with every game still on the page. That
-took Season from 3,224px to 2,490px, 734px back, but not the full 1,024px the
+took Season from 3,224px to 2,494px, 734px back, but not the full 1,024px the
 2,200 budget asked for: the rest is the full league table and the aside
 (season at a glance, the appearances leaderboard), neither of which Phase 29's
 brief covered cutting. The remaining 290px is `ROADMAP.md` → *Decisions* →
@@ -1602,3 +1663,12 @@ growing past ~80 lines means something in it should have been a primitive.
 - **No stored aggregates.** Still true and still the load-bearing rule:
   everything is derived. The two exceptions are league standings and the voted
   Player of the Season, and there is not a third.
+- **No accounts for readers.** The only login on the site is the admin's. A
+  player identifying themselves is a cookie on their own phone, not a user
+  record — see *What the site remembers*. Thirty accounts and thirty forgotten
+  passwords for a read-only stats site is the version nobody uses.
+- **No offline editing.** The service worker in *An installed app has to open
+  with no signal* caches the shell so the site opens and shows what it last
+  read. It does not queue writes. A result typed into a dead connection and
+  replayed later is a whole conflict model for a flow that takes four steps
+  once a week, and the admin can wait for a bar.
