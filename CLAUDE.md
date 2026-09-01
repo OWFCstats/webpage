@@ -86,7 +86,9 @@ not for what it currently shows.
 
 React 18 + Vite, React Router (hash routing), Supabase (Postgres + auth),
 Recharts. Deployed to GitHub Pages by `.github/workflows/deploy.yml` on push to
-`main`; `.github/workflows/check.yml` runs the tests, the layout invariants and
+`main`, at `oldwellingtoniansfc.com` (registered at Porkbun; the DNS, the
+`CNAME` file and the `SITE_URL` variable are Phase 47, and `README.md` has the
+runbook); `.github/workflows/check.yml` runs the tests, the layout invariants and
 a production build on every pull request; `.github/workflows/backup.yml` dumps
 the database to `backups/` daily.
 
@@ -111,6 +113,15 @@ of it exists. See `fixtures/README.md`.
 Public pages are read-only. Writes require a Supabase login and are enforced by
 Row Level Security, not by the UI. The publishable key is a public client key —
 data is protected by RLS, not by hiding it.
+
+**A read that can grow has to page.** PostgREST caps a response at 1,000 rows.
+`scripts/backup.mjs` knows this and pages; `DataContext` does not, and
+`appearances` is the table that reaches the cap first — 155 rows after one
+season, so around season six. It is also read with no `.order()`, so the
+thousand rows that come back would be arbitrary. That is not a table that breaks
+loudly; it is every derived figure on the site going quietly wrong. Phase 43
+fixes it. Anything added later that reads a table which grows per match, per
+appearance or per season pages the same way.
 
 **Reads and writes use two different clients.** `lib/supabase.js` exports
 `supabase`, which carries the admin's session, and `supabaseRead`, which sends
@@ -172,6 +183,14 @@ to find at a stable address rather than a hashed one. `npm run og` redraws all
 four against `styles/tokens.css` and the site's own faces; nothing in CI runs
 it, so re-run it when the crest or the palette changes.
 
+**Cookies only — no `localStorage`, no `sessionStorage`, anywhere.**
+`lib/cookieStorage.js` is the adapter that keeps supabase-js off `localStorage`,
+and the same rule covers anything the site remembers about a reader. There are
+two kinds of client state and they must not be confused: the admin's session is
+authentication and grants writes, while a reader picking their own name is a
+preference on their own phone with no account behind it. `docs/DESIGN.md` →
+*What the site remembers* is the ruling.
+
 **Everything is derived, nothing is stored twice.** Player totals, records,
 form, badges, points, goal difference — all computed from `players`, `matches`,
 `appearances` and `teams` at load time. A stored total can drift from the rows
@@ -183,7 +202,11 @@ Don't add a third exception without a reason that good.
 **A page file should read as a layout.** Sections, and the data it feeds them.
 When a page defines its own presentational sub-components inline it has stopped
 being a page — move them to `components/`. Anything over ~250 lines is telling
-you something.
+you something. Two files are over it today and both are on Phase 51's list:
+`components/season/SeasonCharts.jsx` at 374 and `pages/admin/AddResult.jsx` at
+295. Phase 8's row in the roadmap used to record "longest 247 lines", which is
+the kind of measurement that goes stale quietly, so the rule is written as a
+threshold now and the exceptions are named.
 
 The one thing that isn't a section and does belong in a page: a keyed inner
 component behind a load guard (`<LineupInner key={matchId} …>`). Its job is to
@@ -208,7 +231,11 @@ colours in SVG attributes where `var()` doesn't work — no colour is ever
 written down in JS. `lib/analytics.js` is the usage counter, and it names no
 vendor: which counter is a signup decision, so it takes a script URL and one
 data-attribute as build-time variables and does nothing at all when they are
-unset, which is every local run and every pull request.
+unset, which is every local run and every pull request. **What it has to
+measure is whether a player opened their own page**, not how many sections got
+opened — the first is the test this file's job 1 states, and a section counter
+cannot answer it. So id routes are counted as template paths rather than raw
+UUIDs, and a player page and a badge page each fire a named event. Phase 45.
 
 ## Conventions
 
@@ -253,6 +280,11 @@ it.
 
 Before adding a feature, check `docs/ROADMAP.md`. If it's not there and it's
 not small, it goes there first.
+
+**The site has not been sent to the squad yet.** `docs/ROADMAP.md` → *Now* is
+the release sequence and the order is deliberate: Phases 42–47, then a launch
+checklist, then everything under *Next*. A change that isn't one of those is
+almost certainly not the next thing to do.
 
 **When a phase lands, condense it.** Its row in the roadmap's *Done* table is one
 line; its instructions are deleted in the same commit that closes it. The detail

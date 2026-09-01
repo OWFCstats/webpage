@@ -4,9 +4,11 @@
 # layout invariants unless a human remembered to — and three rounds of
 # measurement drifted precisely because no job held them (ROADMAP → Phase 9).
 #
-# check:layout is expected to be RED on main until Phase 10 lands. It names the
-# bugs it is failing on and which phase owns each one; a failure that isn't on
-# scripts/expected-failures.js is a regression.
+# check:layout is GREEN on main and has been since Phase 10. Every known failure
+# names the phase that owns it on scripts/expected-failures.js — down to two
+# entries, both the crest bitmap, whose ink can't be read for contrast — and
+# anything not on that list is a regression. A stale entry that has stopped
+# failing also fails the run, so a fix can't forget to delete its own entry.
 #
 # Node 22, not 20: @supabase/supabase-js declares node >=22, `--test` only takes
 # a glob from 22 on, and the JSON import attribute in fixtures/ wants a recent

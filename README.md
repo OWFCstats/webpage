@@ -11,9 +11,14 @@ and is enforced by Row Level Security, not just the UI.
    of [`supabase/schema.sql`](supabase/schema.sql) and run it. It creates the
    `players`, `matches`, `appearances`, `teams` and `league_rows` tables and the
    RLS policies (public `select`, writes only for authenticated users).
-2. **Auth** — in *Authentication → Sign In / Up*, turn **off** "Allow new users
-   to sign up" (any authenticated user can write, so accounts must be created
-   by you). Then add each admin under *Authentication → Users → Add user*.
+2. **Auth** — in *Authentication → Sign In / Up*, turn **off** both "Allow new
+   users to sign up" **and** "Allow anonymous sign-ins". Writes are granted to
+   any `authenticated` role, and an anonymous sign-in creates one, so either
+   left on hands the club's whole database to anybody who finds the site. Then
+   add each admin by hand under *Authentication → Users → Add user*. This is
+   the only thing standing between a public URL and a stranger rewriting the
+   record; it is a dashboard setting and no code enforces it, so check it
+   rather than assuming it.
 3. **Local env** — copy `.env.example` to `.env.local` and fill in the
    project URL and publishable key (Dashboard → Settings → API). `.env*` is
    git-ignored; the publishable key is a public client key — data is protected
@@ -52,7 +57,7 @@ push to `main`. Before the first deploy:
    `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY`.
 
 The build uses relative asset paths and hash-based routing, so the same build
-works on GitHub Pages and on a custom domain later — no URL is hardcoded.
+works on GitHub Pages and on the custom domain — no URL is hardcoded.
 
 ## The link preview, and the home screen
 
@@ -72,32 +77,45 @@ browser that already knows where it is — so `vite.config.js` substitutes
 `%SITE_URL%` at build time. It is the one absolute URL in the build. Unset it
 falls back to the GitHub Pages address; see below.
 
-## A custom domain
+## The domain
 
-Optional — the site works on `owfcstats.github.io/webpage/`. What a domain buys
-is an address people can remember and one that survives ever moving off GitHub
-Pages. Nothing in the build hardcodes a URL, so it is configuration, not a
-change:
+The site's address is **`oldwellingtoniansfc.com`**, registered at Porkbun.
+Nothing in the build hardcodes a URL, so this is configuration rather than a
+change. Steps, in order:
 
-1. Register the domain (~£10/year).
-2. At the registrar's DNS, for an apex domain like `owfc.co.uk`, add GitHub's
-   four `A` records (and the matching `AAAA` records if you want IPv6) — take
-   the current addresses from GitHub's own *Managing a custom domain* page
-   rather than from here, they are the one value in this file that could go
-   stale. For `www`, a single `CNAME` to `owfcstats.github.io` instead.
-3. Repo *Settings → Pages → Custom domain*, enter it, save, wait for the DNS
-   check, then tick **Enforce HTTPS**. The certificate is free and automatic.
-4. Add a `public/CNAME` file containing just the domain. With an
-   Actions-based deploy the setting above lives in repo config rather than in
-   the branch, and this keeps it in the artifact too.
-5. Set the `SITE_URL` repository *variable* (*Settings → Secrets and variables
-   → Actions → Variables*) to `https://your-domain`, and re-run the deploy so
-   the link preview points at the new address.
+1. **Porkbun → your domain → DNS Records.** Add GitHub's four apex `A` records
+   for `oldwellingtoniansfc.com`, plus the four `AAAA` records if you want IPv6.
+   Then a `CNAME` record for the `www` host pointing at `owfcstats.github.io`.
+   Take the actual IP addresses from GitHub's own *Managing a custom domain for
+   your GitHub Pages site* page rather than from here — they are the one value in
+   this file that could go stale, and a wrong one fails the DNS check with no
+   clue why.
+2. **Repo → Settings → Pages → Custom domain.** Enter `oldwellingtoniansfc.com`,
+   save, wait for the DNS check to pass (minutes to a few hours), then tick
+   **Enforce HTTPS**. The certificate is free and automatic.
+3. **Add `public/CNAME`** containing just `oldwellingtoniansfc.com`. With an
+   Actions-based deploy the setting in step 2 lives in repo config rather than in
+   the branch, and this keeps the domain in the built artifact too.
+4. **Set the `SITE_URL` repository variable** (*Settings → Secrets and variables
+   → Actions → Variables*) to `https://oldwellingtoniansfc.com`, then re-run the
+   deploy.
 
-The old `github.io` address keeps redirecting, so nothing anyone has already
-shared breaks. URLs keep the `#` — that's hash routing, which is what lets a
-single-page app work on a static host, and changing it would break every link
-already shared.
+**Step 4 is the one that bites, because skipping it breaks nothing visible.**
+`SITE_URL` is the only absolute URL in the build, and it feeds `og:image` and
+`<link rel="canonical">`. Set the domain without setting the variable and every
+page still loads perfectly; the only symptoms are that a pasted link fetches its
+preview image from the old `github.io` origin and that the canonical tag points
+search engines somewhere else. Nothing in CI catches it. So after the deploy,
+paste the link into a chat with yourself and look at the card.
+
+**Do this before telling the squad to install the site.** An installed app is
+pinned to the origin it was installed from, and the admin's session cookie is
+scoped to that origin too. The `github.io` address keeps redirecting so nothing
+already shared breaks, but installing from one origin and then moving is how you
+end up supporting two.
+
+URLs keep the `#` — that is hash routing, which is what lets a single-page app
+work on a static host, and changing it would break every link already shared.
 
 ## Counting usage
 
@@ -116,9 +134,18 @@ which is the point) and `deploy.yml` passes them through. Unset, which is how
 the site ships today and how every local run and pull request builds, the module
 does nothing: no script, no requests, nothing in the bundle.
 
-`analytics.js` has the exact pair for Cloudflare Web Analytics, Plausible,
-GoatCounter and Umami at the top. Cloudflare and GoatCounter are free at this
-size; all four are cookieless, which is why there's no consent banner here.
+**GoatCounter is the counter this club uses.** It is free at this size,
+cookieless, and the one provider in the list whose manual `count()` this code
+already calls correctly.
+
+`analytics.js` lists four providers at the top and one of them is a trap:
+**Cloudflare Web Analytics cannot work here.** Its beacon exposes no manual
+counter, so `countView` has no branch for it, and choosing it would count the
+landing page and nothing else — exactly the failure the module says it exists
+to prevent. Plausible has the opposite problem: the SRC listed is
+`script.hash.js`, which already fires a pageview on `hashchange`, so combining
+it with the manual call would count every navigation twice. Phase 45 cuts the
+list down to what `countView` can serve. Until it lands, use GoatCounter.
 
 The one thing worth knowing: the site is on hash routing, so a section change is
 a `#/players` change. Most counters watch `history.pushState`, which React
