@@ -22,15 +22,15 @@ import { seasonTrend } from '../lib/charts';
 import { meSummary } from '../lib/me';
 
 export default function Home() {
-  const { players, matches, appearances, seasonAwards, loading, error } = useData();
+  const { players, matches, appearances, loading, error } = useData();
   const { meId, pickMe, forgetMe } = useMe();
 
   // A pick the squad list no longer contains — a player deleted, or a cookie
   // from a previous club — falls back to the question rather than to an error.
   const me = players.find((p) => p.id === meId) ?? null;
   const mine = useMemo(
-    () => (me ? meSummary(me, players, matches, appearances, seasonAwards) : null),
-    [me, players, matches, appearances, seasonAwards],
+    () => (me ? meSummary(me, matches, appearances) : null),
+    [me, matches, appearances],
   );
 
   const view = useMemo(() => {
