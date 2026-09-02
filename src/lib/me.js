@@ -11,7 +11,6 @@
 import { cookieStorage } from './cookieStorage';
 import { currentSeasonOf, isPlayed } from './matches';
 import { playerTotals } from './players';
-import { nextCareerBadge, playerBadges } from './awards';
 
 /** The cookie. Named here and nowhere else — `scripts/site-map.js` keeps the
  *  harness's copy and `tests/me.test.js` holds the two together. */
@@ -32,28 +31,13 @@ export function clearMe() {
   cookieStorage.removeItem(ME_COOKIE);
 }
 
-/** The next badge as one flat row — `badge.next.next.metal` is what the
- *  unflattened shape reads like at the call site. */
-function flatten(badge) {
-  if (!badge) return null;
-  return {
-    key: badge.key,
-    label: badge.label,
-    metal: badge.metal,
-    need: badge.next.need,
-    to: badge.next.metal,
-  };
-}
-
 /**
- * What Home says to the person holding the phone: this season's figures, and
- * the next badge with how far off it is.
+ * What Home says to the person holding the phone: this season's figures.
  *
- * The two halves are scoped differently on purpose. The figures are *this
- * season*, because that is what the rest of Home is and a card that quietly
- * used career totals would disagree with the page around it. The badge is
- * career, because a badge is — its own drawing says so, and "4 to silver"
- * against a season total would be a different, wrong number.
+ * The figures are *this season*, because that is what the rest of Home is and
+ * a card that quietly used career totals would disagree with the page around
+ * it. Career totals and badges live one tap away, on the player's own page —
+ * this card is a season snapshot, not the whole shelf.
  *
  * `played` is how many games the club has played in the season, which is the
  * only thing that makes an appearance count mean anything: 7 is a good record
@@ -61,16 +45,14 @@ function flatten(badge) {
  * Home's own `<h1>` already names it — a second copy on the card would be the
  * page saying the season twice.
  */
-export function meSummary(player, players, matches, appearances, seasonAwards = []) {
+export function meSummary(player, matches, appearances) {
   const season = currentSeasonOf(matches);
   const seasonMatches = season ? matches.filter((m) => m.season === season) : [];
   const totals = playerTotals([player], seasonMatches, appearances)[0];
-  const badges = playerBadges(player, players, matches, appearances, seasonAwards);
   return {
     played: seasonMatches.filter(isPlayed).length,
     apps: totals.appearances,
     goals: totals.goals,
     assists: totals.assists,
-    next: flatten(nextCareerBadge(badges)),
   };
 }

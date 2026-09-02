@@ -20,6 +20,7 @@ import {
   clubBadges,
   clubRecords,
   heldBadges,
+  nextCareerBadge,
   playerBadges,
   seasonRecords,
   squadBadges,
@@ -294,4 +295,34 @@ test('a player who was picked and never played has an empty shelf', () => {
   // once it has a year in it.
   const boot = heldBadges(all.get(named('Tom Simeon').id)).find((b) => b.key === 'golden-boot');
   assert.equal(boot.mark, '2025/26');
+});
+
+const family = (key, count, tiers) => ({
+  key,
+  label: key,
+  next: count < tiers.at(-1) ? { need: tiers.find((t) => t > count) - count } : null,
+});
+
+test('the next badge is the nearest rung, not the first family in the list', () => {
+  // Appearances is four away, goals one. The board lists appearances first.
+  const badges = {
+    career: [family('appearances', 21, [1, 10, 25, 50]), family('goals', 4, [1, 5, 15, 30])],
+  };
+  assert.equal(nextCareerBadge(badges).key, 'goals');
+});
+
+test('a tie goes to board order — the one they are actually about to earn', () => {
+  const badges = {
+    career: [family('appearances', 9, [1, 10, 25, 50]), family('goals', 4, [1, 5, 15, 30])],
+  };
+  assert.equal(nextCareerBadge(badges).key, 'appearances');
+});
+
+test('every career badge at diamond has no next rung, and says so with null', () => {
+  const badges = { career: [family('appearances', 50, [1, 10, 25, 50])] };
+  assert.equal(nextCareerBadge(badges), null);
+});
+
+test('a player with no shelf at all — no rows — has no next badge either', () => {
+  assert.equal(nextCareerBadge({ career: [] }), null);
 });

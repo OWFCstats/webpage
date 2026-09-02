@@ -362,43 +362,8 @@ a.fixture-row:active { background: color-mix(in srgb, var(--gold) 12%, transpare
   .home-me-ask:hover { background: none; color: var(--gold-deep); }
 }
 
-/* The badge and what it costs, in the same row shape the next fixture takes:
-   a drawing, two lines and the whole thing one tap target. */
-.home-me-next {
-  display: flex;
-  align-items: center;
-  gap: var(--s3);
-  min-height: 44px;
-  border-radius: var(--r);
-  transition: background var(--dur-tint) ease;
-}
-
-.home-me-next-what {
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-  min-width: 0;
-}
-
-.home-me-next-what strong {
-  color: var(--ink);
-  transition: color var(--dur-tint) ease;
-}
-
-.home-me-next:active { background: color-mix(in srgb, var(--gold) 12%, transparent); }
-
-@media (hover: hover) and (pointer: fine) {
-  .home-me-next:hover .home-me-next-what strong { color: var(--gold-deep); }
-}
-
-.home-me-body {
-  display: flex;
-  flex-direction: column;
-  gap: var(--s3);
-}
-
-/* A state, not a paragraph: no appearances yet, or every career badge already
-   at diamond. Both are one line and neither wants a paragraph's margins. */
+/* A state, not a paragraph: no appearances yet this season. One line, and it
+   doesn't want a paragraph's margins. */
 .home-me-none { margin: 0; }
 
 /* ---- season stats widget ---- */
@@ -507,15 +472,6 @@ a.fixture-row:active { background: color-mix(in srgb, var(--gold) 12%, transpare
      same three, and unscoped this handed its grid a 42% width in a column
      where it means nothing. */
   .home-stats-body .home-stat-tiles { flex: none; width: 42%; }
-
-  /* Your season takes the same shape and the same 42%: three tiles this wide
-     and nothing beside them left a 1,400px page carrying three 440px boxes with
-     one number each. The badge takes the rest. */
-  .home-me-body { flex-direction: row; align-items: center; gap: var(--s6); }
-
-  .home-me-body .home-stat-tiles { flex: none; width: 42%; }
-
-  .home-me-body .home-me-next { flex: 1; min-width: 0; }
 
   .home-bars { flex: 1; }
 }
