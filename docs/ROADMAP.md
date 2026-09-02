@@ -69,6 +69,7 @@ page-by-page review against the club's real 2025/26 season.
 | 44 | The front door | Home's scorers and MOTM link to their player pages — the last component of eleven that rendered a name without one — and the season line it already carried is its `<h1>`. Both rules are now general: `DESIGN.md` → *A name is a link* and *One `<h1>` a page* |
 | 45 | What the counter counts | The site files every view and the script none (`no_onload`): the script's own view was `/` on every route of a hash-routed site, which inflated Home and lost the arrival that matters, a player page pasted into the group chat. UUID routes collapse to `/players/:playerId`, readable keys don't, a player page and a badge page fire named events, and views taken before the deferred script lands are held rather than dropped. `Boolean(src)` had been quietly defeating the "nothing in the bundle" promise since Phase 41 — esbuild won't fold a call to a global — so `check.yml` greps `dist/` for a vendor name now, beside the grep that keeps the fixture out |
 | 46 | The offline shell | `public/sw.js` — network-first, shell only, same-origin GETs. An installed app on a dead signal used to get the browser's own offline page, with no address bar to escape it; it opens to its own frame and a "no connection" note now. A changed `index.html` empties the cache, so a deploy replaces the previous build rather than stacking on it, and `DataContext` re-reads on `online` because a home-screen app has no reload |
+| 47 | The address | `oldwellingtoniansfc.com` at Porkbun: four apex `A` records, four `AAAA`, `www` at `owfcstats.github.io`, the domain in Pages with Enforce HTTPS. `public/CNAME` became the one place it is written down — `vite.config.js` reads it for `%SITE_URL%`, so the `SITE_URL` repository variable that used to hold the same domain a second time is gone. The trap was that the two could disagree in silence: every page loaded and only the link preview and the canonical were wrong. `check.yml` asserts the file reaches `dist/`, that the built `og:image` and canonical are on that domain, and that no placeholder survived |
 
 **The detail behind any closed phase is in its commit** — `git log --grep="Phase
 20"` finds it, because every phase commit names its phase in its own subject.
@@ -94,48 +95,30 @@ nothing is stored twice**, and **a component that gains a second page moves up t
 
 ## Now — the release
 
-**Deadline: Friday 4 September 2026.** Phases 42 to 46 are done. One phase left,
-then a launch checklist. Nothing here is new scope: every item is a defect or an
-unfinished step the pre-release review found, and the review is the "why" behind
-each one. Anything that improves the site rather than readying it is under
-*Next*.
+**Deadline: Friday 4 September 2026.** Phases 42 to 47 are done. What is left is
+the launch checklist, which is not a phase: it is done on the live site, in
+order, and it is the last thing between here and the squad.
 
-Three of the steps belong to the club rather than the code, and only the first
-is finished. **Self-signup is off** in the Supabase dashboard, and so is
-anonymous sign-in — that second one matters as much, because RLS grants writes
-to any `authenticated` role and an anonymous sign-in creates one. **A
-GoatCounter account exists**, and everything else about the counter landed in
-Phase 45; setting its two values as repository variables is step 1 of the launch
-checklist. **The domain `oldwellingtoniansfc.com` is registered** at Porkbun,
-and its DNS is Phase 47 — the one phase still open.
-
-### Phase 47 — The address
-
-`oldwellingtoniansfc.com`, registered at Porkbun. `SITE_URL` is unset, so
-`og:image` and `<link rel="canonical">` both resolve against
-`https://owfcstats.github.io/webpage`. The trap is that setting the domain
-without setting the variable breaks nothing visible: every page loads, and only
-the link preview and the canonical are wrong, with nothing in CI to catch it.
-
-The README runbook for this landed with Phase 42 and names the real domain and
-Porkbun's own DNS screen. `public/CNAME` is in, verified reaching `dist/CNAME`
-on a build — with an Actions-based deploy the Pages setting lives in repo config
-rather than the branch, and a deploy whose artifact has no `CNAME` can clear it.
-What is left is DNS and the variable.
-
-**Done means** the DNS records are in at Porkbun, Pages has the domain with
-Enforce HTTPS ticked, the `SITE_URL` repository variable is set and a deploy has
-run with it, and a link pasted into WhatsApp previews with the crest.
+The three steps that belong to the club rather than the code are all in.
+**Self-signup is off** in the Supabase dashboard, and so is anonymous sign-in —
+that second one matters as much, because RLS grants writes to any
+`authenticated` role and an anonymous sign-in creates one. **The domain is
+live** at `oldwellingtoniansfc.com`, which was Phase 47. **A GoatCounter account
+exists**, and everything else about the counter landed in Phase 45; setting its
+two values as repository variables is step 1 below, and the only one of the
+three still worth checking rather than assuming.
 
 ### Launch — a checklist, not a phase
 
-Once 42–47 are in. Do these in order and stop at the first one that fails.
+42–47 are in. Do these in order and stop at the first one that fails.
 
 1. Set `VITE_ANALYTICS_SRC` and `VITE_ANALYTICS_ATTR` as repository variables
    from the club's GoatCounter account — README → *Counting usage* has both
    values. The code is done; these are the switch.
 2. Deploy from `main`; the Actions run is green.
-3. Paste the link into a chat with yourself; the card renders with the crest.
+3. Paste `https://oldwellingtoniansfc.com` into a chat with yourself; the card
+   renders with the crest. CI holds the origin the card is fetched from now, so
+   what this is checking is the image itself and the certificate.
 4. Open the site cold; GoatCounter shows **one** view of `/` — two means
    `no_onload` isn't taking. Open a player page from the leaderboard; it shows
    `/players/:playerId` and a `player-page` event, and no UUID anywhere.

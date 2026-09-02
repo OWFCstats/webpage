@@ -100,9 +100,10 @@ not for what it currently shows.
 
 React 18 + Vite, React Router (hash routing), Supabase (Postgres + auth),
 Recharts. Deployed to GitHub Pages by `.github/workflows/deploy.yml` on push to
-`main`, at `oldwellingtoniansfc.com` (registered at Porkbun; the DNS, the
-`CNAME` file and the `SITE_URL` variable are Phase 47, and `README.md` has the
-runbook); `.github/workflows/check.yml` runs the tests, the layout invariants and
+`main`, at `oldwellingtoniansfc.com` (registered at Porkbun; `public/CNAME` is
+the one place that domain is written down — the deploy ships it, `vite.config.js`
+reads it for the build's one absolute URL, and `check.yml` asserts both, which is
+Phase 47 and `README.md` → *The domain* has the runbook); `.github/workflows/check.yml` runs the tests, the layout invariants and
 a production build on every pull request; `.github/workflows/backup.yml` dumps
 the database to `backups/` daily.
 

@@ -99,3 +99,40 @@ jobs:
             echo 'the worker is never registered — src/lib/offline.js folded away'
             exit 1
           fi
+      # And the domain came out right. Both halves of this used to be checked by
+      # hand and neither one fails visibly: a dist/ with no CNAME hands the
+      # custom domain back to github.io on the next deploy, and an og:image on
+      # the wrong origin only shows up in a pasted link's preview. vite.config.js
+      # reads the domain straight out of public/CNAME, so this asserts the file
+      # is shipped, is the domain the build used, and left no placeholder behind
+      # (ROADMAP → Phase 47). No SITE_URL here, which is what production does.
+      - name: the domain shipped, and the build used it
+        run: |
+          domain=$(cat public/CNAME 2>/dev/null | tr -d '[:space:]')
+          shipped=$(cat dist/CNAME 2>/dev/null | tr -d '[:space:]')
+          test -n "$domain" || { echo 'public/CNAME is missing or empty — see README → The domain'; exit 1; }
+          # A bare hostname, or the checks below compare one typo against itself
+          # and pass: a scheme or a trailing slash in there builds an og:image on
+          # https://https://… and Pages rejects the domain outright.
+          case "$domain" in
+            *[!a-zA-Z0-9.-]* | .* | -* | *..*)
+              echo "public/CNAME is '$domain', which is not a bare hostname"
+              exit 1
+              ;;
+          esac
+          if [ "$domain" != "$shipped" ]; then
+            echo "dist/CNAME is '$shipped', not '$domain' — this deploy would drop the custom domain"
+            exit 1
+          fi
+          if grep -q '%SITE_URL%' dist/index.html; then
+            echo 'a %SITE_URL% placeholder survived the build — the transformIndexHtml hook did not run'
+            exit 1
+          fi
+          if ! grep -q "content=\"https://$domain/og.png\"" dist/index.html; then
+            echo "og:image is not on https://$domain — a pasted link previews from the wrong origin"
+            exit 1
+          fi
+          if ! grep -q "href=\"https://$domain/\"" dist/index.html; then
+            echo "the canonical is not https://$domain/ — search engines get sent elsewhere"
+            exit 1
+          fi
