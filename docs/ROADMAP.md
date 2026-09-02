@@ -161,12 +161,14 @@ without setting the variable breaks nothing visible: every page loads, and only
 the link preview and the canonical are wrong, with nothing in CI to catch it.
 
 The README runbook for this landed with Phase 42 and names the real domain and
-Porkbun's own DNS screen, so what is left is the doing.
+Porkbun's own DNS screen. `public/CNAME` is in, verified reaching `dist/CNAME`
+on a build — with an Actions-based deploy the Pages setting lives in repo config
+rather than the branch, and a deploy whose artifact has no `CNAME` can clear it.
+What is left is DNS and the variable.
 
-**Done means** the DNS records are in at Porkbun, `public/CNAME` holds the
-domain, Pages has it with Enforce HTTPS ticked, the `SITE_URL` repository
-variable is set and a deploy has run with it, and a link pasted into WhatsApp
-previews with the crest.
+**Done means** the DNS records are in at Porkbun, Pages has the domain with
+Enforce HTTPS ticked, the `SITE_URL` repository variable is set and a deploy has
+run with it, and a link pasted into WhatsApp previews with the crest.
 
 ### Launch — a checklist, not a phase
 
