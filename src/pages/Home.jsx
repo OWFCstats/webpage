@@ -1,11 +1,13 @@
 import { useMemo } from 'react';
 import { useData } from '../context/DataContext';
+import { useMe } from '../context/MeContext';
 import { ErrorNote, Spinner } from '../components/bits';
 import LeagueTable from '../components/LeagueTable';
 import LastResult from '../components/home/LastResult';
 import NextFixture from '../components/home/NextFixture';
 import RecentForm from '../components/home/RecentForm';
 import SeasonStats from '../components/home/SeasonStats';
+import YourSeason from '../components/home/YourSeason';
 import {
   currentSeasonOf,
   fixtures,
@@ -17,9 +19,19 @@ import {
   seasonSummary,
 } from '../lib/matches';
 import { seasonTrend } from '../lib/charts';
+import { meSummary } from '../lib/me';
 
 export default function Home() {
-  const { players, matches, appearances, loading, error } = useData();
+  const { players, matches, appearances, seasonAwards, loading, error } = useData();
+  const { meId, pickMe, forgetMe } = useMe();
+
+  // A pick the squad list no longer contains — a player deleted, or a cookie
+  // from a previous club — falls back to the question rather than to an error.
+  const me = players.find((p) => p.id === meId) ?? null;
+  const mine = useMemo(
+    () => (me ? meSummary(me, players, matches, appearances, seasonAwards) : null),
+    [me, players, matches, appearances, seasonAwards],
+  );
 
   const view = useMemo(() => {
     const currentSeason = currentSeasonOf(matches);
@@ -72,6 +84,17 @@ export default function Home() {
       </h1>
 
       <LastResult match={lastMatch} ctx={lastCtx} />
+
+      {/* Second, under the result: the first screen owes the squad the last
+          result and a name, and this is the section that makes one of those
+          names the reader's own. */}
+      <YourSeason
+        players={players}
+        player={me}
+        summary={mine}
+        onPick={pickMe}
+        onForget={forgetMe}
+      />
 
       <LeagueTable season={currentSeason} />
 

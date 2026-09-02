@@ -217,10 +217,18 @@ consequences worth knowing:
   alone — `/records/badges/appearances` and `/opponents/old-stoics` say
   something a template path would throw away.
 
-A player page and a badge page also fire a named event, `player-page` and
-`badge-page`. A path count answers "was Players opened"; the question this site
-exists to answer is whether a player looked up their own goals, and only an
-event named for it survives the next redesign of the nav.
+A player page and a badge page also fire a named event. A path count answers
+"was Players opened"; the question this site exists to answer is whether a
+player looked up their own goals, and only an event named for it survives the
+next redesign of the nav. Three events, and no id goes with any of them:
+
+- **`player-page`** — somebody else's page.
+- **`my-page`** — the reader's own, which the site can tell apart because they
+  have picked their name (`lib/me.js`, a cookie on their phone and nothing
+  more). Together these two are every player-page view; the path row does not
+  split.
+- **`me-pick`** — a name being picked. It is the ceiling on `my-page`: nobody
+  who has not picked one can ever fire that event, so read the two together.
 
 ### Adding a provider takes a branch, not just a variable
 

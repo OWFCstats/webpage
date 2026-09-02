@@ -70,6 +70,7 @@ page-by-page review against the club's real 2025/26 season.
 | 45 | What the counter counts | The site files every view and the script none (`no_onload`): the script's own view was `/` on every route of a hash-routed site, which inflated Home and lost the arrival that matters, a player page pasted into the group chat. UUID routes collapse to `/players/:playerId`, readable keys don't, a player page and a badge page fire named events, and views taken before the deferred script lands are held rather than dropped. `Boolean(src)` had been quietly defeating the "nothing in the bundle" promise since Phase 41 — esbuild won't fold a call to a global — so `check.yml` greps `dist/` for a vendor name now, beside the grep that keeps the fixture out |
 | 46 | The offline shell | `public/sw.js` — network-first, shell only, same-origin GETs. An installed app on a dead signal used to get the browser's own offline page, with no address bar to escape it; it opens to its own frame and a "no connection" note now. A changed `index.html` empties the cache, so a deploy replaces the previous build rather than stacking on it, and `DataContext` re-reads on `online` because a home-screen app has no reload |
 | 47 | The address | `oldwellingtoniansfc.com` at Porkbun: four apex `A` records, four `AAAA`, `www` at `owfcstats.github.io`, the domain in Pages with Enforce HTTPS. `public/CNAME` became the one place it is written down — `vite.config.js` reads it for `%SITE_URL%`, so the `SITE_URL` repository variable that used to hold the same domain a second time is gone. The trap was that the two could disagree in silence: every page loaded and only the link preview and the canonical were wrong. `check.yml` asserts the file reaches `dist/`, that the built `og:image` and canonical are on that domain, and that no placeholder survived |
+| 48 | This is me | One cookie, `owfc.me`, holding one player id, and Home's second section becomes the reader's own: this season's apps, goals and assists, and the nearest career badge with what it costs. A preference and not a session — no account, no row, nothing sent anywhere — which is the distinction `DESIGN.md` → *What the site remembers* exists to keep. The offer is made twice, on Home and as *This is me* on a player's own page, and it is what finally lets the counter tell a reader's own page from somebody else's (`my-page` against `player-page`, plus `me-pick`), which Phase 45 wrote down as unanswerable until this landed. It costs Home 74px unpicked and 222px picked, and Phase 52 owns what comes off in exchange |
 
 **The detail behind any closed phase is in its commit** — `git log --grep="Phase
 20"` finds it, because every phase commit names its phase in its own subject.
@@ -95,8 +96,10 @@ nothing is stored twice**, and **a component that gains a second page moves up t
 
 ## Now — the release
 
-**Deadline: Friday 4 September 2026.** Phases 42 to 47 are done. What is left is
-the launch checklist, which is not a phase: it is done on the live site, in
+**Deadline: Friday 4 September 2026.** Phases 42 to 48 are done — 48 was the
+first row of *Next* and was taken early, before the checklist rather than after
+it, because it ships in the same build and its own end-to-end check belongs in
+the list below. What is left is the launch checklist, which is not a phase: it is done on the live site, in
 order, and it is the last thing between here and the squad.
 
 The three steps that belong to the club rather than the code are all in.
@@ -110,7 +113,7 @@ three still worth checking rather than assuming.
 
 ### Launch — a checklist, not a phase
 
-42–47 are in. Do these in order and stop at the first one that fails.
+42–48 are in. Do these in order and stop at the first one that fails.
 
 1. Set `VITE_ANALYTICS_SRC` and `VITE_ANALYTICS_ATTR` as repository variables
    from the club's GoatCounter account — README → *Counting usage* has both
@@ -122,9 +125,12 @@ three still worth checking rather than assuming.
 4. Open the site cold; GoatCounter shows **one** view of `/` — two means
    `no_onload` isn't taking. Open a player page from the leaderboard; it shows
    `/players/:playerId` and a `player-page` event, and no UUID anywhere.
-5. Add to Home Screen, open it from there, then turn wifi off and open it again.
-6. Enter a result through the wizard on a real phone; it lands on Matchday.
-7. Send it to the squad.
+5. Pick your own name on Home, reload, and it is still there; open your page
+   from it and the event is `my-page`, not `player-page`. That is Phase 48 end
+   to end — the cookie, the card and the split it exists to make countable.
+6. Add to Home Screen, open it from there, then turn wifi off and open it again.
+7. Enter a result through the wizard on a real phone; it lands on Matchday.
+8. Send it to the squad.
 
 ---
 
@@ -133,14 +139,7 @@ three still worth checking rather than assuming.
 One line each. A phase gets written out in full when it is picked up, not
 before — that is what keeps this file short.
 
-1. **Phase 48 — This is me.** A player taps their own name once and the site
-   remembers it in a cookie, then Home carries their apps, their next badge and
-   how far off it. No login, no account, no row: a preference, not
-   authentication, and the distinction is in `DESIGN.md`. The largest single
-   gain available for the personal-progress half of the vision, and it needs no
-   schema change. **Done means** a returning visitor sees their own figures on
-   Home without navigating, and clearing the cookie loses nothing but the pick.
-2. **Phase 36 — Losing a form on a phone.** Nothing on the write side warns
+1. **Phase 36 — Losing a form on a phone.** Nothing on the write side warns
    before it drops what you typed. The wizard holds four steps in memory and
    writes on the last one, so a stray tap on the bottom bar loses the lot; the
    lineup editor, the league grid and the report editor are the same.
@@ -150,14 +149,14 @@ before — that is what keeps this file short.
    dialogue second, which is why Phase 35 left it. **Done means** leaving a
    half-filled form asks first, at 375px, on every write page — or an argument
    here for saving a draft instead.
-3. **Phase 49 — Sharing a link from inside the app.** `navigator.share` on a
+2. **Phase 49 — Sharing a link from inside the app.** `navigator.share` on a
    match, a player and a badge. The site's whole distribution model is being
    pasted into the group chat, it has an `og:image` built for that, and
    installed to a home screen there is no address bar to copy from.
-4. **Phase 50 — A season's fixtures in one screen.** `MatchForm` takes one match
+3. **Phase 50 — A season's fixtures in one screen.** `MatchForm` takes one match
    at a time at six fields each, so a sixteen-game season is about a hundred
    fields on a phone. Wanted before next season, not this one.
-5. **Phase 51 — The cleanup pass.** Dead CSS (`.milestones`, `.show-all`,
+4. **Phase 51 — The cleanup pass.** Dead CSS (`.milestones`, `.show-all`,
    `.badge-num`, `.admin-bar`, `.fixture-location`, `.scored-row`);
    `owfchomedashboard.patch`, 1,093 lines at the repo root patching a
    `src/styles.css` that Phase 1 deleted; the ranking line duplicated between
@@ -168,21 +167,21 @@ before — that is what keeps this file short.
    route left with no `<h1>` — `/matchday` with a match open, where the nearest
    line to promote sits in `.sb-head`'s flex row and needs a margin reset,
    which is why Phase 44 left it (`DESIGN.md` → *One `<h1>` a page*).
-6. **Phase 52 — The budgets, settled.** Home, Matchday and Season are all over,
+5. **Phase 52 — The budgets, settled.** Home, Matchday and Season are all over,
    and two of the three have been open since Phase 27. Decide
    each one: move the number with an argument the way Phase 25 did, or cut a
    section. See *Decisions* → *Open*, which this phase closes.
-7. **Phase 30 — The cosmetic review: Players and Records.** Partly answered —
+6. **Phase 30 — The cosmetic review: Players and Records.** Partly answered —
    Phase 33 was the badge half. What is left is everything on those two pages
    that isn't a badge. Screenshot at 375px and 1400px, list the findings, one
    branch per page. **Done means** two short phases appended with real findings,
    or a line saying a page had none.
-8. **Phase 53 — Availability for the next fixture.** The one genuinely missing
+7. **Phase 53 — Availability for the next fixture.** The one genuinely missing
    feature, and the only thing on this list that would make the site a tool
    rather than a record. Needs a public write path, which the current
    "every write requires an admin login" model has no room for, so it is a
    schema and RLS decision before it is a UI one. Do not start it as a UI job.
-9. **Phase 54 — About, and how to join.** A paragraph and a way to get in touch.
+8. **Phase 54 — About, and how to join.** A paragraph and a way to get in touch.
    Parked for a year on "needs a photo worth showing"; that was the wrong test,
    because words with no photo beat the nothing that is there now, and this is
    the only thing serving the community third of the vision.
@@ -197,7 +196,7 @@ view. *Now* is `npm run shots` on the `mid-season` fixture at 375px.
 
 | Page | Now | Budget | Owner |
 | --- | --- | --- | --- |
-| Home | 2,042 | 1,600 | **Phase 52** — 442 over; Phase 23's badge, label and button cost 165px of it, and Phase 44's `<h1>` gave 5px back |
+| Home — unpicked / a name picked / picked, no apps this season | 2,116 / 2,264 / 2,252 | 1,600 | **Phase 52** — 516 over unpicked and 664 over picked; Phase 23's badge, label and button cost 165px, Phase 44's `<h1>` gave 5px back, and Phase 48 cost 74 and 222. Three rows because they are three states of one page, and only the first is what a stranger sees |
 | Matchday — latest | 2,456 | 2,300 | **Phase 52** — 156 over; head to head's tape, real content the old card didn't carry. The rail doesn't move this: the budget is stated at 375px and the rail is a >=900px-only change |
 | Matchday — clean sheet (12 named, a report, clamped / open) | 2,746 / 3,150 | 2,300 | **Phase 52** — 446 over clamped; the clamp bounds it, it doesn't fit it. Same as above, untouched by 28 or 31 |
 | Matchday — walkover (no team sheet) | 1,533 | 2,300 | within |
@@ -205,7 +204,7 @@ view. *Now* is `npm run shots` on the `mid-season` fixture at 375px.
 | Season → charts | 1,909 | 2,200 | met (18) |
 | Players → Leaderboards | 1,296 | 1,400 | met (14, 24) |
 | Records → badges / honours / all-time | 1,729 / 1,155 / 1,807 | 2,000 | met (16); badges +62 and honours +194 for the bigger trophies (32–34) |
-| Player detail | 2,279 | 2,400 | met (21); +38 for the 40px shelf (33) |
+| Player detail | 2,333 | 2,400 | met (21); +38 for the 40px shelf (33) and +54 for Phase 48's *This is me* |
 | Opponent detail | 1,259 | 2,000 | met (21) |
 | Players → Squad | 2,057 cards (default) / 1,671 list | no cap — it's a roster | measured, not capped (17, 24, 33); the tiles lost 81px to the medallion coming off, despite the drawings growing |
 | Players → Data centre | 2,584 | no cap — it's the reference table | measured, not capped (22, 24) |
@@ -215,6 +214,17 @@ and it owns them as a decision rather than a shave: `LeagueTable` and
 `RecentForm` alone are most of Home and neither shrinks without breaking a rule,
 so closing that gap means cutting a section or moving the number. Same for the
 other three.
+
+Phase 48 made Home's row worse on purpose and the phase said so rather than
+finding a shave to hide it: `DESIGN.md` → *Home, addressed to the reader* is the
+argument for the 222px, and the two states are listed separately because they
+are not the same page — the reader who costs the most is the one this site is
+for, and the stranger the budget was written for still sees a single row. That
+does not settle anything. **It is now the strongest reason Phase 52 has to cut a
+section rather than move a number**, and *Season stats* is the section to look
+at first: it is the club's season in figures, at the bottom of the page, under
+*Recent form*, which is the club's season in results, on a page whose own `<h1>`
+already names the season and which links to *Full season* three times.
 
 ---
 

@@ -564,10 +564,10 @@ button::after, .btn::after {
   }
 }
 
-/* The hairline belongs to a button shaped like a label. Five in the site
+/* The hairline belongs to a button shaped like a label. Six in the site
    aren't, and each already carries its own affordance, so a rule drawn inside
-   one is a stray mark rather than an offer: .pick-row is a full-width row with
-   a bottom border of its own and tints instead; .chip-btn is a pill, and a
+   one is a stray mark rather than an offer: .pick-row and .home-me-ask are
+   full-width rows and tint or recolour instead; .chip-btn is a pill, and a
    hairline under a 999px radius reads as a crack in it; a segment has the
    thumb; .more and .squad-more are links wearing a <button>. A disabled button
    is not offering at all.
@@ -578,6 +578,7 @@ button::after, .btn::after {
    so where it overrides (DESIGN.md → Motion). A new button that isn't
    label-shaped joins this list. */
 .pick-row::after,
+.home-me-ask::after,
 .chip-btn::after,
 .seg button::after,
 .more::after,

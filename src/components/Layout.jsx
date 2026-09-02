@@ -1,6 +1,7 @@
 import { Suspense, useEffect } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useMe } from '../context/MeContext';
 import { countView, startAnalytics } from '../lib/analytics';
 import ErrorBoundary from './ErrorBoundary';
 import { Crest, Spinner } from './bits';
@@ -56,6 +57,7 @@ const ICONS = {
 
 export default function Layout() {
   const { session } = useAuth();
+  const { meId } = useMe();
   // The bottom bar carries the five public tabs; on admin screens it would
   // only get in the way of the save buttons.
   const { pathname } = useLocation();
@@ -72,7 +74,10 @@ export default function Layout() {
     // the group chat. Pathname, not location.key, for the same reason <main>
     // is keyed on it below: a ?q= change is somebody typing in a search box,
     // and that isn't a second visit.
-    countView(pathname);
+    countView(pathname, meId);
+    // Pathname alone: `meId` is read for the split between a reader's own page
+    // and somebody else's, but picking a name is not a second visit to the page
+    // you picked it on, so it must not re-file the view.
   }, [pathname]);
 
   return (

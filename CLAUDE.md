@@ -32,7 +32,7 @@ one of these, that's a sign it doesn't belong yet.
 
 | Section | Owns | Sub-pages |
 | --- | --- | --- |
-| **Home** | What's happening now, led by the last result with its MOTM named on the same surface. League position, form, next fixture. | — |
+| **Home** | What's happening now, led by the last result with its MOTM named on the same surface, then the reader's own season if they have picked a name. League position, form, next fixture. | — |
 | **Matchday** | One match at a time: scoreboard, squad, report, and the archive stepper across the season. | — |
 | **Season** | One season as a whole. | Season · Charts |
 | **Players** | The leaderboards, the squad, and the numbers. Individual player pages hang off it. | Leaderboards · Squad · Data centre |
@@ -155,7 +155,8 @@ note until a manual reload. There is no reload on a phone's home screen, so
 src/
   main.jsx, App.jsx        routing, providers
   assets/badges/           the club’s badge drawings — one SVG per badge per tier
-  context/                 AuthContext (session), DataContext (one load, shared)
+  context/                 AuthContext (session), DataContext (one load, shared),
+                           MeContext (which player the reader says they are)
   lib/                     derivation and helpers — no JSX
   components/              presentational; shared at the top, one dir per page
   pages/                   one file per route; layout and data wiring only
@@ -209,6 +210,15 @@ authentication and grants writes, while a reader picking their own name is a
 preference on their own phone with no account behind it. `docs/DESIGN.md` →
 *What the site remembers* is the ruling.
 
+The second of those is Phase 48 and it is one cookie, `owfc.me`, holding one
+player id. `lib/me.js` owns the cookie and the derivation, `context/MeContext.jsx`
+holds it for the app, and the offer is made in two places — Home's question and
+*This is me* on a player's own page. Nothing about it reaches the server: no
+row, no column, no query. It is also the one thing that makes the counter able
+to tell a reader's own page from somebody else's (`my-page` against
+`player-page` — see `lib/analytics.js`), which is the question this file's job 1
+actually asks.
+
 **Everything is derived, nothing is stored twice.** Player totals, records,
 form, badges, points, goal difference — all computed from `players`, `matches`,
 `appearances` and `teams` at load time. A stored total can drift from the rows
@@ -261,7 +271,10 @@ script files none (`no_onload`), including the first, since a link pasted into
 the group chat is how a player reaches their own page; UUID routes are counted
 as template paths and readable keys are left alone; a player page and a badge
 page each fire a named event; and views taken before the deferred script lands
-are held rather than dropped. Phase 45.
+are held rather than dropped. Phase 45. Phase 48 finished the sentence: a player
+page now fires `my-page` when it is the reader's own and `player-page` when it
+is somebody else's, and picking a name fires `me-pick`, which is the only figure
+that says whether any of it is being used.
 
 ## Conventions
 

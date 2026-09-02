@@ -199,8 +199,6 @@ load was killing the app.
 
 ### What the site remembers, and what it doesn't
 
-> **Phase 48.** The "me" pick below is decided and not built yet.
-
 Two kinds of state, and conflating them is the mistake this section exists to
 prevent.
 
@@ -210,11 +208,13 @@ access to every table enforced by RLS. It lives in cookies rather than
 that grants anybody the right to change anything.
 
 **A reader's own name is a preference.** A player taps their name once and the
-site keeps that player's id on their phone. No account, no password, no row in
-the database, and nothing sent to the server. Home can then lead with their own
+site keeps that player's id on their phone — one cookie, `owfc.me`, written
+through the same adapter (`lib/me.js`). No account, no password, no row in the
+database, and nothing sent to the server. Home then leads with their own
 figures — apps this season, the next badge and how far off it — which is what
 turns the front page from a club noticeboard into something addressed to the
-person holding the phone.
+person holding the phone. See *Home, addressed to the reader* below for what it
+says and *A name is a link* for where the tap is offered.
 
 It is worth being blunt about what that preference is not. It is not secure and
 does not need to be: every figure on this site is already public and read-only,
@@ -234,6 +234,46 @@ The service worker's cache is the one other thing the browser holds for this
 site, and it is not an exception to any of the above: it holds files the site
 serves — the document, the bundle, the fonts, the artwork — and not one thing
 about the reader. See *An installed app has to open with no signal*.
+
+### Home, addressed to the reader
+
+Home's second section is the reader's own, under the last result and above the
+standings — first screen, no navigating, which is the whole point of it.
+
+**It has three states and shows one.** Unpicked it is a single row asking one
+question, because most of the people who ever see it have never played for the
+club and a card of blanks is worse than a question; tapping it swaps in the
+player search. Picked it is this season's apps, goals and assists in the same
+three tiles the season stats use, and under them the nearest career badge with
+what it costs — *Assists · 1 to silver*.
+
+**The figures are the season and the badge is career, and that split is
+deliberate.** Everything else on Home is this season, so a card quietly showing
+career totals would disagree with the page around it; a badge, meanwhile, is a
+career thing and its own drawing says so, so "1 to silver" against a season
+total would be a different and wrong number. `lib/me.js` is where both are
+derived and its header comment is the same argument.
+
+**The drawing is the metal they hold, not the one they are chasing.** A
+full-colour silver crest over "1 to silver" would be showing somebody a badge
+they haven't earned. Same convention as the shelf on their own page, and the
+same reason the unearned one is drawn drained rather than hidden: a badge you
+can't see is not an incentive.
+
+**Two figures and a badge, and no more.** The obvious next thing is a rank, or a
+career total beside the season one, or the club's average to compare against —
+and all three are on the reader's own page, one tap away through the name, which
+is the heading and a link. Home's job here is to say "you, this season, and
+what's next" in one screen of a page that is already over its height budget. It
+costs 74px unpicked and 222px picked, which is real: `ROADMAP.md` → *Page
+budgets* carries the number and Phase 52 owns what comes off in exchange.
+
+**The offer is made twice: here, and on the player's own page.** The hero
+carries *This is me* — gold, because it is an offer — and once it is taken the
+name gains a gold *You* tag and the button becomes *Not me?*. A single toggle
+labelled *This is me* was tried first and abandoned: on a site where a gold
+button *is* the thing to press, no styling of that label reliably reads as
+"already claimed". The label says what the tap does; the tag says what is true.
 
 ### A result is a row, not a sentence
 
@@ -387,6 +427,11 @@ is half of that.
 Two names are deliberately not links, because the page they would go to is the
 page you are on: the club's own row in the league table, and the player whose
 page is already open.
+
+The reader's own name on Home is a link like any other, and it is the heading of
+that section rather than a line inside it — the one place on the front page that
+leads to the reader's own page, which is where everything the card has room for
+one line of is written out in full.
 
 ### One `<h1>` a page, and it names the page
 
@@ -1565,11 +1610,19 @@ took Season from 3,224px to 2,494px, 734px back, but not the full 1,024px the
 (season at a glance, the appearances leaderboard), neither of which Phase 29's
 brief covered cutting. The remaining 290px is `ROADMAP.md` → *Decisions* →
 *Open*.
-Home is 2,042px: Phase 19 took it from 2,113px to 1,882px (the result leading,
-the next-fixture card collapsing to a row, a redundant form-chip strip coming
-off Recent form), Phase 23's badge, "Goals" label and "Charts" button put 165px
-back, and Phase 44 gave 5px of that back — a `<p>`'s top margin, which is the
-whole cost of promoting that line to the `<h1>` the page had been missing.
+Home is 2,116px unpicked and 2,264px with a name picked: Phase 19 took it from
+2,113px to 1,882px (the result leading, the next-fixture card collapsing to a
+row, a redundant form-chip strip coming off Recent form), Phase 23's badge,
+"Goals" label and "Charts" button put 165px back, Phase 44 gave 5px of that back
+— a `<p>`'s top margin, the whole cost of promoting that line to the `<h1>` the
+page had been missing — and Phase 48 put 74px back for the question every reader
+sees and 222px for the card a player who has answered it does. That last number
+is the one worth arguing with, and *Home, addressed to the reader* is the
+argument: it is the only section on the page addressed to the person holding the
+phone, and this site's first job is making a player want to turn up. It does not
+excuse the gap. Both states are measured, and so is a third — a picked reader
+with no appearances this season — because the empty state is a different shape
+from the figures.
 `LeagueTable` and `RecentForm` alone are most of the page, and neither shrinks
 further without breaking the "all ten columns from 360px up" rule below or
 cutting Recent form's list under the five results `formOf` shows everywhere else

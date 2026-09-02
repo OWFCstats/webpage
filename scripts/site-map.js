@@ -21,14 +21,43 @@ const match = (date, opponent) => fixtureId(`match:${date}:${opponent}`);
 const player = (name) => fixtureId(`player:${name}`);
 
 /**
+ * The "me" cookie, so a route can be measured as a player who has picked their
+ * own name sees it. The name is `src/lib/me.js`'s — kept here rather than
+ * imported because that module reaches into `src/` through extensionless
+ * imports the harness has no loader for, and `tests/me.test.js` asserts the two
+ * still say the same thing.
+ */
+export const ME_COOKIE = 'owfc.me';
+
+/**
  * `budget` names a row of the *Page length* table in docs/DESIGN.md, which is
  * the authority for the numbers — the harness reads them out of the doc rather
  * than keeping a second copy. Null means the route has no budget of its own.
  * `charts` marks a route with a Recharts surface on it, which needs its
- * animation to finish before a screenshot means anything.
+ * animation to finish before a screenshot means anything, and `me` boots the
+ * page as a reader who has picked that player as their own name.
  */
 export const ROUTES = [
   { id: 'home', route: '/', name: 'Home', budget: 'Home' },
+  // Home as the squad sees it. `me` sets the cookie a reader's own pick lives
+  // in, which is the only difference between these two routes and the whole of
+  // Phase 48 on this page: the question becomes their season. Two of them,
+  // because the figures and the empty state are different shapes and a player
+  // who has not played this season is the commoner of the two in September.
+  {
+    id: 'home-me',
+    route: '/',
+    name: 'Home — a player who has picked their name',
+    budget: 'Home',
+    me: player('Owen Gibbons'),
+  },
+  {
+    id: 'home-me-unplayed',
+    route: '/',
+    name: 'Home — picked, no appearances this season',
+    budget: 'Home',
+    me: player('Alex Hannon'),
+  },
   { id: 'matchday', route: '/matchday', name: 'Matchday — latest', budget: 'Matchday' },
   {
     id: 'matchday-clean-sheet',
@@ -115,11 +144,16 @@ export const ROUTES = [
     budget: 'Player detail',
     charts: true,
   },
+  // Carries the cookie as well, so the "This is me" toggle is measured in both
+  // states across the three player routes: pressed here, unpressed on the two
+  // above. A reader who has picked a name and never played is also the state
+  // the hero has least content to hold up.
   {
     id: 'player-never-played',
     route: `/players/${player('Alex Hannon')}`,
-    name: 'Player detail — never played',
+    name: 'Player detail — never played, and the reader',
     budget: 'Player detail',
+    me: player('Alex Hannon'),
   },
   { id: 'opponent', route: '/opponents/old-stoics', name: 'Opponent detail', budget: 'Opponent detail' },
   // One route per Records sub-page: the 2,000px budget is per sub-page, so a

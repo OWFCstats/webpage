@@ -54,6 +54,30 @@
   flex-wrap: wrap;
 }
 
+/* "This is me", on a dark ground: gold while it is an offer, and quiet once
+   the answer is yes and all it does is undo — .secondary's paper ground is
+   wrong on a board, so the quiet version is drawn here rather than borrowed.
+   Small either way: this is an offer the page makes once, not the reason
+   anybody opened it. */
+.me-toggle {
+  margin-top: var(--s3);
+  padding: 0.3rem 0.65rem;
+}
+
+.player-hero .me-toggle.secondary {
+  background: none;
+  border-color: color-mix(in srgb, var(--on-board) 34%, transparent);
+  color: var(--on-board-soft);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .player-hero .me-toggle.secondary:hover {
+    background: none;
+    border-color: var(--gold-leaf);
+    color: var(--gold-leaf);
+  }
+}
+
 .player-hero .career-line {
   display: flex;
   gap: var(--s5);

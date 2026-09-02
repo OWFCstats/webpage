@@ -65,20 +65,27 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
  * is a question the dashboard can answer — a template path would throw that
  * answer away to fix a problem those routes don't have.
  *
- * The two events are this site's job 1 as a number. A path count says Players
- * got opened; it cannot say whether anybody looked up their own goals, which
- * is the question that decides whether the badges work. Phase 48 splits
- * `player-page` into a reader's own page and somebody else's, once the site
- * knows which name is theirs.
+ * The events are this site's job 1 as a number. A path count says Players got
+ * opened; it cannot say whether anybody looked up their own goals, which is the
+ * question that decides whether the badges work.
+ *
+ * `meId` is the reader's own pick (lib/me.js), and it is what splits a player
+ * page in two: `my-page` when it is theirs and `player-page` when it is
+ * somebody else's. The split is the point — every player page opened used to
+ * count the same, so a squad reading about each other and a squad checking
+ * their own goals were one number. The two are separate events rather than one
+ * with a flag, so the total is `player-page` + `my-page`. Nobody who has not
+ * picked a name ever fires `my-page`, which is the ceiling that pick rate sets
+ * on this whole measurement.
  */
-export function describeView(pathname) {
+export function describeView(pathname, meId = null) {
   const parts = pathname.split('/');
   const path = parts
     .map((part, i) => (UUID.test(part) ? (ID_PARAM[parts[i - 1]] ?? ':id') : part))
     .join('/');
 
   let event = null;
-  if (path === '/players/:playerId') event = 'player-page';
+  if (path === '/players/:playerId') event = meId && parts[2] === meId ? 'my-page' : 'player-page';
   else if (path.startsWith('/records/badges/')) event = 'badge-page';
   return { path, event };
 }
@@ -152,9 +159,19 @@ export function startAnalytics() {
  * the pathname the browser reports never moves. The counter is told explicitly
  * rather than trusted to notice.
  */
-export function countView(pathname) {
+export function countView(pathname, meId = null) {
   if (!enabled) return;
-  const { path, event } = describeView(pathname);
+  const { path, event } = describeView(pathname, meId);
   file(path, false);
   if (event) file(event, true);
+}
+
+/**
+ * One named event with no page behind it — something the reader did rather
+ * than somewhere they went. There is one: picking their own name, which is a
+ * tap on a page they were already counted as opening.
+ */
+export function countEvent(name) {
+  if (!enabled) return;
+  file(name, true);
 }
