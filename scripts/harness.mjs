@@ -11,6 +11,7 @@ import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright';
 import { createServer } from 'vite';
 import { DATASETS } from '../fixtures/datasets.js';
+import { ME_COOKIE } from './site-map.js';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 
@@ -79,6 +80,7 @@ export async function startHarness() {
       // to measure at all.
       page.fixtureUrl = (route, { admin = false } = {}) =>
         `${base}/?fixture=${datasetName}${admin ? '&admin=1' : ''}#${route}`;
+      page.fixtureBase = base;
       return page;
     },
   };
@@ -88,9 +90,17 @@ export async function startHarness() {
  *  clicks a match report's "Read the rest" control, if the route has one, so
  *  a route can be measured both clamped and open without a second page —
  *  see the `-open` entries in site-map.js. `admin` boots the page signed in,
- *  for the routes behind the login. */
-export async function visit(page, route, { charts = false, open = false, admin = false } = {}) {
+ *  for the routes behind the login. `me` is a player id, and boots the page as
+ *  a reader who has picked that name as their own. */
+export async function visit(page, route, { charts = false, open = false, admin = false, me = null } = {}) {
   page.fixtureProblems.length = 0;
+
+  // Set every time, cleared every time: one browser context serves every route
+  // in a dataset/width pass, so a cookie left behind by one route would follow
+  // the site around for the rest of the run.
+  await page.context().clearCookies({ name: ME_COOKIE });
+  if (me) await page.context().addCookies([{ name: ME_COOKIE, value: me, url: page.fixtureBase }]);
+
   const url = page.fixtureUrl(route, { admin });
   // Hash routing: a same-document hash change doesn't reload, so the route is
   // set on a fresh document every time. Slower, and it means one route can't

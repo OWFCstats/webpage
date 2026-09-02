@@ -23,6 +23,13 @@ switches dataset, and `?admin=1` boots signed in so the admin section is
 reachable without a password. Both go in the real query string, before the
 hash: `http://localhost:5173/?fixture=pre-season&admin=1#/season`.
 
+The reader's own name is not a switch here, because it isn't the stub's: it is
+an ordinary cookie the site writes when somebody picks (`owfc.me`, see
+`src/lib/me.js`), so by hand you just pick a name on Home. The harness sets it
+directly for the routes in `scripts/site-map.js` that carry a `me`, and clears
+it before every other route — one browser context serves a whole pass, and a
+cookie left behind would follow the site around for the rest of it.
+
 ## How it is wired
 
 `vite.config.js` aliases `lib/supabase` to `supabase-stub.js` when `FIXTURE` is

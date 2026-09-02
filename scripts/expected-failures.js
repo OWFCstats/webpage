@@ -20,6 +20,10 @@
 // The crest is the remaining pair of entries: its ink a bitmap can't be read
 // for, at the two places it renders — the masthead on every route, and —
 // since Phase 19 — the real thumbnail in Home's compact next-fixture row.
+// Both are scoped by element and not by route, because both render wherever
+// their component does and a route list would need extending every time a page
+// gains a second measured state.
+//
 // Phase 10's three bugs used to be deliberately absent so the run stayed red
 // until they were fixed; they are fixed, so the run is green and anything new
 // in it is a regression.
@@ -47,7 +51,6 @@ export const EXPECTED = [
   },
   {
     invariant: 'icon-unmeasurable',
-    route: 'home',
     match: 'a.fixture-row > img',
     owner: 'Phase 19',
     why:
@@ -56,6 +59,9 @@ export const EXPECTED = [
       + 'existed — a second bitmap render, not a second bug: the masthead\'s own '
       + 'entry above is scoped to a.brand, so this one needs its own line rather '
       + 'than a widened match. Same limitation, same fix if it\'s ever needed: '
-      + 'vector art, not a wider exemption here.',
+      + 'vector art, not a wider exemption here. Scoped to the row and not to a '
+      + 'route: it used to say route "home", which meant Phase 48 adding two '
+      + 'more states of that same page reported the same crest as two new bugs. '
+      + 'The finding is that the fixture row draws a bitmap, wherever it is.',
   },
 ];

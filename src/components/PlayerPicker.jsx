@@ -5,7 +5,17 @@ import { useEffect, useMemo, useRef, useState } from 'react';
  * typing filters the list. Players already picked elsewhere in the lineup are
  * listed but disabled, so a squad can't contain the same person twice.
  */
-export default function PlayerPicker({ players, value, taken, onChange, placeholder = 'Search player…' }) {
+export default function PlayerPicker({
+  players,
+  value,
+  taken,
+  onChange,
+  placeholder = 'Search player…',
+  // Off by default: an admin screen opens with several of these and focusing
+  // one would pop the keyboard over the rest of the form. Home's "which one
+  // are you" swaps this in on a tap, where the tap *was* the request to type.
+  autoFocus = false,
+}) {
   const selected = players.find((p) => p.id === value) ?? null;
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
@@ -69,6 +79,7 @@ export default function PlayerPicker({ players, value, taken, onChange, placehol
         onKeyDown={onKeyDown}
         aria-label="Select player"
         autoComplete="off"
+        autoFocus={autoFocus}
       />
       {selected && !open && (
         <button

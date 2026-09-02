@@ -1,4 +1,5 @@
-// lib/analytics.js — what the counter files, which is all of Phase 45. The
+// lib/analytics.js — what the counter files: Phase 45, and Phase 48's split of
+// a player page into the reader's own and somebody else's. The
 // dashboard is the only place these numbers are ever read, and nobody reads it
 // against a known set of visits, so a wrong path or a dropped view would look
 // exactly like a quiet Saturday.
@@ -78,6 +79,39 @@ test('a player id collapses to its route, and fires the player event', async () 
     path: '/players/:playerId',
     event: 'player-page',
   });
+});
+
+test('a reader\'s own page is a different event from somebody else\'s', async () => {
+  const { describeView } = await counter();
+  const other = '9a8b7c6d-5e4f-4a3b-8c2d-1e0f9a8b7c6d';
+  // The path is the same either way — the dashboard's own row for player pages
+  // shouldn't split in two — and only the event says whose page it was.
+  assert.deepEqual(describeView(`/players/${PLAYER}`, PLAYER), {
+    path: '/players/:playerId',
+    event: 'my-page',
+  });
+  assert.deepEqual(describeView(`/players/${other}`, PLAYER), {
+    path: '/players/:playerId',
+    event: 'player-page',
+  });
+  // Nobody who hasn't picked a name ever fires the first of those.
+  assert.equal(describeView(`/players/${PLAYER}`, null).event, 'player-page');
+});
+
+test('a pick is filed as an event with no page behind it', async () => {
+  const c = await counter();
+  c.startAnalytics();
+  c.scriptLands();
+  c.countEvent('me-pick');
+  assert.deepEqual(c.filed, [{ path: 'me-pick', event: true }]);
+});
+
+test('unconfigured, an event touches nothing either', async () => {
+  const c = await counter({ src: null, attr: null });
+  c.startAnalytics();
+  c.countEvent('me-pick');
+  assert.equal(c.appended, null);
+  assert.equal(globalThis.goatcounter, undefined);
 });
 
 test('a match id collapses under whichever route carries it', async () => {

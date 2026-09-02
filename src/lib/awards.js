@@ -401,6 +401,23 @@ export function playerBadges(player, players, matches, appearances, seasonAwards
 }
 
 /**
+ * The career badge one player is closest to, and what it costs — the whole of
+ * "how far off it" on Home.
+ *
+ * Class 1 only: an event badge has no next rung and a trophy is won at the end
+ * of a season rather than approached. Null when every career badge is at
+ * diamond, which is a state worth naming rather than a blank — four seasons of
+ * Saturdays and every rung climbed.
+ *
+ * Ties go to board order, because `sort` is stable and `career` arrives in it:
+ * with a debut and a first goal both one away, the appearance is the one the
+ * player is actually about to earn.
+ */
+export function nextCareerBadge(badges) {
+  return badges.career.filter((b) => b.next).sort((a, b) => a.next.need - b.next.need)[0] ?? null;
+}
+
+/**
  * Every player's shelf at once, keyed by id. The squad cards need one per name
  * on a single screen, and `playerBadges` walks the whole appearance log per
  * call — a pass over the season for every player in it. One pass, same shelves.

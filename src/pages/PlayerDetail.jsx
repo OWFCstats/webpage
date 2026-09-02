@@ -1,6 +1,7 @@
 import { lazy, Suspense, useMemo } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { useData } from '../context/DataContext';
+import { useMe } from '../context/MeContext';
 import { ErrorNote, Spinner } from '../components/bits';
 import BadgeShelf from '../components/player-detail/BadgeShelf';
 import FirstsTable from '../components/player-detail/FirstsTable';
@@ -24,6 +25,7 @@ const PlayerCareerChart = lazy(() => import('../components/player-detail/PlayerC
 export default function PlayerDetail() {
   const { playerId } = useParams();
   const { players, matches, appearances, teams, seasonAwards, loading, error } = useData();
+  const { meId, pickMe, forgetMe } = useMe();
   const [params, setParams] = useSearchParams();
   const view = params.get('view') === 'stats' ? 'stats' : 'overview';
 
@@ -56,7 +58,14 @@ export default function PlayerDetail() {
 
   return (
     <div>
-      <PlayerHero player={player} career={career} seasonsActive={seasonsActive} badges={badges} />
+      <PlayerHero
+        player={player}
+        career={career}
+        seasonsActive={seasonsActive}
+        badges={badges}
+        isMe={meId === player.id}
+        onToggleMe={() => (meId === player.id ? forgetMe() : pickMe(player.id))}
+      />
 
       {/* Badges first, above the view selector and above the stats: what a
           player has won and what's next is why they opened their own page. */}

@@ -1,6 +1,7 @@
-/* Home: the next fixture, the last result, standings, form and season
-   totals. The one page a visitor who has never played for the club sees
-   first. */
+/* Home: the last result, the reader's own season, standings, the next
+   fixture, form and season totals. The one page a visitor who has never played
+   for the club sees first — and, once they have picked their name, the one
+   page addressed to a player by name. */
 
 /* ---- home dashboard ---------------------------------------------------- */
 
@@ -289,6 +290,117 @@ a.fixture-row:active { background: color-mix(in srgb, var(--gold) 12%, transpare
    .board a, putting paper gold on a dark ground. */
 .home-result .more { color: var(--gold-leaf); display: inline-block; margin-top: var(--s2); }
 
+/* ---- your season: Home addressed to whoever is holding the phone ---- */
+
+/* Three states and never two at once — the question, the picker, or the
+   figures — so the section lays them out in a column and lets each one be as
+   tall as it is. Gap rather than margins: .home-widget-head brings its own
+   bottom margin and a <p> brings two, and reconciling those was three rules
+   where this is one. */
+.home-me {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s3);
+}
+
+.home-me .home-widget-head { margin-bottom: 0; }
+
+.home-me.asking { padding: var(--s2) var(--s4); }
+
+/* The one widget head that does not stack below 480px. The rule that stacks
+   the others is there because a heading and a note fight over 250px; this head
+   holds a name and a control four characters wide, and stacking it spent a
+   whole row of a page already over its budget on the button nobody came to
+   press. */
+.home-me .home-widget-head {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.home-me .home-widget-head button { flex: none; }
+
+.home-me h2 a { color: var(--ink); }
+
+@media (hover: hover) and (pointer: fine) {
+  .home-me h2 a:hover { color: var(--gold-deep); }
+}
+
+/* Unpicked, the question is the whole section, so the control is the whole row
+   rather than a gold button adrift in an empty sheet. Same shape as the
+   admin's .pick-row and the same two overrides for the same reason: a
+   full-width row shrinking under a thumb reads as the page flexing, and a
+   hairline drawn inside one is a stray mark rather than an offer (see the
+   opt-out list in primitives.css). */
+.home-me-ask {
+  width: 100%;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--s2);
+  padding: 0;
+  background: none;
+  border: none;
+  text-align: left;
+  font: inherit;
+  font-weight: 600;
+  color: var(--ink);
+  transition: color var(--dur-tint) ease;
+}
+
+.home-me-ask:active:not(:disabled) { transform: none; }
+
+.home-me-ask-more {
+  font-size: var(--t-small);
+  color: var(--gold-deep);
+  white-space: nowrap;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .home-me-ask:hover { background: none; color: var(--gold-deep); }
+}
+
+/* The badge and what it costs, in the same row shape the next fixture takes:
+   a drawing, two lines and the whole thing one tap target. */
+.home-me-next {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+  min-height: 44px;
+  border-radius: var(--r);
+  transition: background var(--dur-tint) ease;
+}
+
+.home-me-next-what {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.home-me-next-what strong {
+  color: var(--ink);
+  transition: color var(--dur-tint) ease;
+}
+
+.home-me-next:active { background: color-mix(in srgb, var(--gold) 12%, transparent); }
+
+@media (hover: hover) and (pointer: fine) {
+  .home-me-next:hover .home-me-next-what strong { color: var(--gold-deep); }
+}
+
+.home-me-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s3);
+}
+
+/* A state, not a paragraph: no appearances yet, or every career badge already
+   at diamond. Both are one line and neither wants a paragraph's margins. */
+.home-me-none { margin: 0; }
+
 /* ---- season stats widget ---- */
 .home-stats-body { display: flex; flex-direction: column; gap: var(--s4); }
 
@@ -391,7 +503,19 @@ a.fixture-row:active { background: color-mix(in srgb, var(--gold) 12%, transpare
 @media (min-width: 760px) {
   .home-stats-body { flex-direction: row; align-items: center; gap: var(--s6); }
 
-  .home-stat-tiles { flex: none; width: 42%; }
+  /* Scoped, because the tiles are a shared device now — Your season uses the
+     same three, and unscoped this handed its grid a 42% width in a column
+     where it means nothing. */
+  .home-stats-body .home-stat-tiles { flex: none; width: 42%; }
+
+  /* Your season takes the same shape and the same 42%: three tiles this wide
+     and nothing beside them left a 1,400px page carrying three 440px boxes with
+     one number each. The badge takes the rest. */
+  .home-me-body { flex-direction: row; align-items: center; gap: var(--s6); }
+
+  .home-me-body .home-stat-tiles { flex: none; width: 42%; }
+
+  .home-me-body .home-me-next { flex: 1; min-width: 0; }
 
   .home-bars { flex: 1; }
 }
