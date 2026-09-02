@@ -51,11 +51,11 @@ const matchesFilters = (row, filters) =>
 
 /**
  * A thenable query builder — the same shape the app chains onto: select /
- * insert / update / upsert / delete, then eq / in / order / single. Nothing
- * runs until it's awaited, which is also how supabase-js behaves.
+ * insert / update / upsert / delete, then eq / in / order / range / single.
+ * Nothing runs until it's awaited, which is also how supabase-js behaves.
  */
 function query(table) {
-  const state = { op: 'select', payload: null, filters: [], orders: [], single: false, onConflict: null };
+  const state = { op: 'select', payload: null, filters: [], orders: [], single: false, onConflict: null, range: null };
   const ok = (data) => ({ data, error: null, status: 200 });
 
   function run() {
@@ -96,6 +96,11 @@ function query(table) {
         return ascending ? cmp : -cmp;
       });
     }
+    // DataContext pages every read, so the stub has to answer a range or the
+    // whole app breaks in fixture mode. Applied after the sort, which is the
+    // order PostgREST does it in — a range over an unsorted table is the bug
+    // lib/paging.js warns about.
+    if (state.range) out = out.slice(state.range[0], state.range[1] + 1);
     return ok(state.single ? out[0] ?? null : out);
   }
 
@@ -116,6 +121,7 @@ function query(table) {
       state.orders.push({ column, ascending: options?.ascending !== false });
       return builder;
     },
+    range(from, to) { state.range = [from, to]; return builder; },
     single() { state.single = true; return builder; },
     maybeSingle() { state.single = true; return builder; },
     then(resolve, reject) { return Promise.resolve().then(run).then(resolve, reject); },
