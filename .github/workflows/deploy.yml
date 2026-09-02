@@ -31,16 +31,15 @@ jobs:
       # Set these in the repo: Settings → Secrets and variables → Actions →
       # Secrets: VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY.
       # The publishable key is a public client key; RLS protects the data.
-      # SITE_URL is a repository *variable*, not a secret — it is the public
-      # address of the site, and it only exists because a link preview's
-      # og:image has to be absolute. Unset, vite.config.js falls back to the
-      # GitHub Pages address; set it to the custom domain the day there is one
-      # (Settings -> Secrets and variables -> Actions -> Variables).
+      #
+      # The site's own address is not here: vite.config.js reads public/CNAME,
+      # the file this deploy already has to ship to keep the custom domain. It
+      # was a SITE_URL variable until Phase 47 and the two could disagree in
+      # silence — every page loaded and only the link preview was wrong.
       - run: npm run build
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
-          SITE_URL: ${{ vars.SITE_URL }}
           # Also variables, not secrets: a usage counter's script URL and site
           # key are public by construction — they ship in the bundle. Unset,
           # src/lib/analytics.js compiles to nothing.

@@ -78,8 +78,9 @@ as an icon and open the site full-screen on Home, with no browser chrome.
 
 The `og:image` and `og:url` tags need an absolute URL — a scraper isn't a
 browser that already knows where it is — so `vite.config.js` substitutes
-`%SITE_URL%` at build time. It is the one absolute URL in the build. Unset it
-falls back to the GitHub Pages address; see below.
+`%SITE_URL%` at build time. It is the one absolute URL in the build, and it is
+read out of `public/CNAME`: the domain is written down once, in the file the
+deploy already ships. See *The domain* below.
 
 ### The offline shell
 
@@ -113,40 +114,53 @@ anything on a connection that has stopped working.
 
 ## The domain
 
-The site's address is **`oldwellingtoniansfc.com`**, registered at Porkbun.
-Nothing in the build hardcodes a URL, so this is configuration rather than a
-change. Steps, in order:
+The site's address is **`oldwellingtoniansfc.com`**, registered at Porkbun. It
+is set up and live. Nothing in the build hardcodes a URL, so this was
+configuration rather than a change; what follows is the record of it, and what
+to do if the address ever moves.
 
-1. **Porkbun → your domain → DNS Records.** Add GitHub's four apex `A` records
-   for `oldwellingtoniansfc.com`, plus the four `AAAA` records if you want IPv6.
-   Then a `CNAME` record for the `www` host pointing at `owfcstats.github.io`.
-   Take the actual IP addresses from GitHub's own *Managing a custom domain for
-   your GitHub Pages site* page rather than from here — they are the one value in
-   this file that could go stale, and a wrong one fails the DNS check with no
-   clue why.
-2. **Repo → Settings → Pages → Custom domain.** Enter `oldwellingtoniansfc.com`,
-   save, wait for the DNS check to pass (minutes to a few hours), then tick
-   **Enforce HTTPS**. The certificate is free and automatic.
-3. **Add `public/CNAME`** containing just `oldwellingtoniansfc.com`. With an
-   Actions-based deploy the setting in step 2 lives in repo config rather than in
-   the branch, and this keeps the domain in the built artifact too.
-4. **Set the `SITE_URL` repository variable** (*Settings → Secrets and variables
-   → Actions → Variables*) to `https://oldwellingtoniansfc.com`, then re-run the
-   deploy.
+**`public/CNAME` is the domain.** One line, no scheme. Three things read it: the
+Pages deploy, which needs it in the artifact or a deploy can clear the custom
+domain; `vite.config.js`, which turns it into the `https://` origin it
+substitutes for `%SITE_URL%`; and the *the domain shipped* step in
+`.github/workflows/check.yml`, which fails a pull request whose build gets
+either of those wrong. Changing the address means editing that file and the DNS,
+and nothing else in the repository.
 
-**Step 4 is the one that bites, because skipping it breaks nothing visible.**
-`SITE_URL` is the only absolute URL in the build, and it feeds `og:image` and
-`<link rel="canonical">`. Set the domain without setting the variable and every
-page still loads perfectly; the only symptoms are that a pasted link fetches its
-preview image from the old `github.io` origin and that the canonical tag points
-search engines somewhere else. Nothing in CI catches it. So after the deploy,
-paste the link into a chat with yourself and look at the card.
+The DNS, at **Porkbun → your domain → DNS Records**:
 
-**Do this before telling the squad to install the site.** An installed app is
-pinned to the origin it was installed from, and the admin's session cookie is
-scoped to that origin too. The `github.io` address keeps redirecting so nothing
-already shared breaks, but installing from one origin and then moving is how you
-end up supporting two.
+- Four `A` records on the apex, one per GitHub Pages IPv4 address.
+- Four `AAAA` records on the apex, the same four servers over IPv6. Worth having
+  rather than optional: a phone on a mobile network with no IPv4 left resolves
+  `AAAA` or nothing.
+- A `CNAME` record for the `www` host pointing at `owfcstats.github.io`, which
+  is what makes `www.` reach the site too.
+
+Take the IP addresses from GitHub's own *Managing a custom domain for your GitHub
+Pages site* page rather than from here — they are the one value in this file that
+could go stale, and a wrong one fails the DNS check with no clue why.
+
+Then **Repo → Settings → Pages → Custom domain**: enter the domain, save, wait
+for the DNS check to pass (minutes to a few hours), and tick **Enforce HTTPS**.
+The certificate is free and automatic.
+
+There used to be a fourth step — a `SITE_URL` repository variable holding the
+same domain a second time — and it was the one that bit, because skipping it
+broke nothing visible: every page still loaded, and the only symptoms were a
+pasted link fetching its preview image from the old `github.io` origin and a
+canonical tag pointing search engines somewhere else. Reading `public/CNAME`
+instead removed the second copy, and CI now asserts the built `og:image` and
+canonical are on that domain, so the failure is loud and lands on a pull request
+rather than on a link in the group chat. `SITE_URL` is still honoured if it is
+set in the environment, for building against some other address without editing
+the file the deploy reads; the repository variable is no longer used and can be
+deleted.
+
+**Move the squad before they install, not after.** An installed app is pinned to
+the origin it was installed from, and the admin's session cookie is scoped to
+that origin too. The `github.io` address keeps redirecting so nothing already
+shared breaks, but installing from one origin and then moving is how you end up
+supporting two.
 
 URLs keep the `#` — that is hash routing, which is what lets a single-page app
 work on a static host, and changing it would break every link already shared.

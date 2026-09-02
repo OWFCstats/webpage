@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 // Fixture mode: `npm run dev:fixture` (and the shots / layout harness) serve
@@ -24,11 +25,21 @@ const stub = fileURLToPath(new URL('./fixtures/supabase-stub.js', import.meta.ur
 // og:image is fetched by WhatsApp's scraper, not by a browser that already
 // knows where it is, and a relative one is simply dropped.
 //
-// So it comes in at build time. The default is the GitHub Pages address; a
-// custom domain means setting the SITE_URL repository variable in
-// .github/workflows/deploy.yml and re-running the deploy — one value in one
-// place, and no page has to know about it.
-const siteUrl = (process.env.SITE_URL || 'https://owfcstats.github.io/webpage').replace(/\/+$/, '');
+// It comes from public/CNAME, which is the custom domain and is already in git
+// because an Actions deploy has to put it in the artifact (Phase 47). That
+// makes the domain one value in one place, reviewable in a diff. It used to be
+// a SITE_URL repository variable instead, and the two could disagree without
+// breaking anything visible: every page still loaded and only the link preview
+// and the canonical pointed at the old github.io origin. Reading the file the
+// deploy already depends on means there is nothing left to keep in step.
+//
+// SITE_URL still wins if it is set, for building against some other address
+// without editing a file the deploy reads. Last resort is the Pages address,
+// which is what a checkout with no CNAME is served from.
+const cname = fileURLToPath(new URL('./public/CNAME', import.meta.url));
+const domain = existsSync(cname) ? readFileSync(cname, 'utf8').split('\n')[0].trim() : '';
+const fallback = domain ? `https://${domain}` : 'https://owfcstats.github.io/webpage';
+const siteUrl = (process.env.SITE_URL || fallback).replace(/\/+$/, '');
 
 const siteUrlPlugin = {
   name: 'owfc-site-url',
