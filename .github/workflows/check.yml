@@ -76,3 +76,14 @@ jobs:
             echo 'fixture data found in dist/ — the resolve.alias leaked into the build'
             exit 1
           fi
+      # Nor did the usage counter. src/lib/analytics.js promises to compile to
+      # nothing when VITE_ANALYTICS_SRC is unset, which a pull request never
+      # sets — and one `Boolean()` call quietly broke that promise for four
+      # phases because nothing checked it (ROADMAP → Phase 45). It is the same
+      # kind of claim as the one above and it gets the same kind of grep.
+      - name: the usage counter is not in the bundle
+        run: |
+          if grep -rqE 'goatcounter|no_onload' dist; then
+            echo 'counter strings found in dist/ — the `enabled` guard stopped folding away'
+            exit 1
+          fi

@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useRef } from 'react';
+import { Suspense, useEffect } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { countView, startAnalytics } from '../lib/analytics';
@@ -63,19 +63,15 @@ export default function Layout() {
 
   // Usage counting, if a counter is configured — see lib/analytics.js, which
   // does nothing at all when one isn't. It lives here because this is the one
-  // component every route renders inside, and because the thing worth knowing
-  // is which sections get opened, not just that somebody landed.
-  const landed = useRef(false);
+  // component every route renders inside.
   useEffect(() => {
     startAnalytics();
-    // The counter files the first view itself as it loads; this effect is for
-    // the moves after it. Pathname, not location.key, for the same reason
-    // <main> is keyed on it below: a ?q= change is somebody typing in a search
-    // box, and that isn't a second visit.
-    if (!landed.current) {
-      landed.current = true;
-      return;
-    }
+    // Every view, the first one included: the script is told not to count
+    // anything itself, because on a hash-routed site the view it would take is
+    // `/` whether the reader landed on Home or on a player page shared into
+    // the group chat. Pathname, not location.key, for the same reason <main>
+    // is keyed on it below: a ?q= change is somebody typing in a search box,
+    // and that isn't a second visit.
     countView(pathname);
   }, [pathname]);
 

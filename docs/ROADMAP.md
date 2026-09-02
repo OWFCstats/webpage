@@ -63,10 +63,11 @@ page-by-page review against the club's real 2025/26 season.
 | 38 | The gild | Hover became what happens to printed matter: three edge treatments — a rule drawn, a tick in the margin, an edge firming up — and the gild, one sweep of light across a board as it arrives |
 | 39 | The second copy | `scripts/backup.mjs` + `backup.yml`: all six tables to `backups/` daily, JSON plus a `restore.sql` that upserts them back. Also the keepalive and the site's only alerting. Paged at 1,000 rows, which Phase 43 taught the site itself |
 | 40 | The link, and the icon | `npm run og` renders the share card and the home-screen icons in Chromium against `tokens.css`; `manifest.webmanifest` makes *Add to Home Screen* open Home full-screen; `%SITE_URL%` is the build's one absolute URL |
-| 41 | Counting who turns up | `lib/analytics.js` — a cookieless counter named by two build-time variables rather than by a vendor, compiling to nothing when they are unset. Phase 45 fixes what it counts |
+| 41 | Counting who turns up | `lib/analytics.js` — a cookieless counter named by two build-time variables rather than by a vendor, compiling to nothing when they are unset. Phase 45 fixed what it counts |
 | 42 | The docs, reconciled | `CLAUDE.md`, `DESIGN.md` and this file had drifted from the code and from each other — four `> **Phase N.**` markers naming closed phases among them. Corrected, and the release sequence written in as the plan of record |
 | 43 | The appearances ceiling | `lib/paging.js`: every read `DataContext` makes pages to exhaustion with a total order, so the site stops truncating at PostgREST's 1,000 rows around season six. The fixture stub answers `.range()` now, and eight tests hold it |
 | 44 | The front door | Home's scorers and MOTM link to their player pages — the last component of eleven that rendered a name without one — and the season line it already carried is its `<h1>`. Both rules are now general: `DESIGN.md` → *A name is a link* and *One `<h1>` a page* |
+| 45 | What the counter counts | The site files every view and the script none (`no_onload`): the script's own view was `/` on every route of a hash-routed site, which inflated Home and lost the arrival that matters, a player page pasted into the group chat. UUID routes collapse to `/players/:playerId`, readable keys don't, a player page and a badge page fire named events, and views taken before the deferred script lands are held rather than dropped. `Boolean(src)` had been quietly defeating the "nothing in the bundle" promise since Phase 41 — esbuild won't fold a call to a global — so `check.yml` greps `dist/` for a vendor name now, beside the grep that keeps the fixture out |
 
 **The detail behind any closed phase is in its commit** — `git log --grep="Phase
 20"` finds it, because every phase commit names its phase in its own subject.
@@ -92,38 +93,20 @@ nothing is stored twice**, and **a component that gains a second page moves up t
 
 ## Now — the release
 
-**Deadline: Friday 4 September 2026.** Phases 42, 43 and 44 are done. Three
-phases left, in order, then a launch checklist. Nothing here is new scope: every
-item is a defect or an unfinished step the pre-release review found, and the
-review is the "why" behind each one. Anything that improves the site rather than
+**Deadline: Friday 4 September 2026.** Phases 42 to 45 are done. Two phases
+left, in order, then a launch checklist. Nothing here is new scope: every item
+is a defect or an unfinished step the pre-release review found, and the review
+is the "why" behind each one. Anything that improves the site rather than
 readying it is under *Next*.
 
-Three of the steps belong to the club rather than the code, and two are already
-done. **Self-signup is off** in the Supabase dashboard, and so is anonymous
-sign-in — that second one matters as much, because RLS grants writes to any
-`authenticated` role and an anonymous sign-in creates one. **A GoatCounter
-account exists**; its two values go in as part of Phase 45. **The domain
-`oldwellingtoniansfc.com` is registered** at Porkbun, and its DNS is Phase 47.
-
-### Phase 45 — What the counter counts
-
-`lib/analytics.js` is plumbed and unconfigured. Three things are wrong with it
-before it is switched on. It sends raw pathnames, and player ids are UUIDs, so
-the dashboard fills with 49 unreadable rows carrying counts of one to three
-each. Cloudflare is the first provider in its own documented list and
-`countView` has no branch for it, which delivers exactly the landing-page-only
-failure the module's docstring says it exists to prevent. And a view fired
-before the deferred script has loaded is dropped in silence, which is likeliest
-on the connection this site is designed for.
-
-Underneath those: what it measures is not what `CLAUDE.md` asks for. A section
-counter says Players got opened. The question that decides whether the badge
-system works is whether a player opened **their own** page, and came back to it.
-
-**Done means** id routes collapse to template paths, there is one named event
-for a player page and one for a badge page, the documented provider list matches
-what `countView` can actually serve, a queue holds views fired before the script
-lands, and GoatCounter's two values are set as repository variables.
+Three of the steps belong to the club rather than the code, and only the first
+is finished. **Self-signup is off** in the Supabase dashboard, and so is
+anonymous sign-in — that second one matters as much, because RLS grants writes
+to any `authenticated` role and an anonymous sign-in creates one. **A
+GoatCounter account exists**, and everything else about the counter landed in
+Phase 45; setting its two values as repository variables is step 1 of the launch
+checklist. **The domain `oldwellingtoniansfc.com` is registered** at Porkbun,
+and its DNS is Phase 47.
 
 ### Phase 46 — The offline shell
 
@@ -163,13 +146,17 @@ run with it, and a link pasted into WhatsApp previews with the crest.
 
 Once 42–47 are in. Do these in order and stop at the first one that fails.
 
-1. Deploy from `main`; the Actions run is green.
-2. Paste the link into a chat with yourself; the card renders with the crest.
-3. Open the site; GoatCounter registers a visit. Open Players; it registers a
-   second.
-4. Add to Home Screen, open it from there, then turn wifi off and open it again.
-5. Enter a result through the wizard on a real phone; it lands on Matchday.
-6. Send it to the squad.
+1. Set `VITE_ANALYTICS_SRC` and `VITE_ANALYTICS_ATTR` as repository variables
+   from the club's GoatCounter account — README → *Counting usage* has both
+   values. The code is done; these are the switch.
+2. Deploy from `main`; the Actions run is green.
+3. Paste the link into a chat with yourself; the card renders with the crest.
+4. Open the site cold; GoatCounter shows **one** view of `/` — two means
+   `no_onload` isn't taking. Open a player page from the leaderboard; it shows
+   `/players/:playerId` and a `player-page` event, and no UUID anywhere.
+5. Add to Home Screen, open it from there, then turn wifi off and open it again.
+6. Enter a result through the wizard on a real phone; it lands on Matchday.
+7. Send it to the squad.
 
 ---
 

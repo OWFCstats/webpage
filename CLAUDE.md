@@ -230,14 +230,22 @@ awards, league, charts, tokens. A helper goes where its subject lives.
 Two modules in there aren't about football. `lib/tokens.js` reads the design
 tokens out of `styles/tokens.css` for the charts and sparklines, which put
 colours in SVG attributes where `var()` doesn't work — no colour is ever
-written down in JS. `lib/analytics.js` is the usage counter, and it names no
-vendor: which counter is a signup decision, so it takes a script URL and one
-data-attribute as build-time variables and does nothing at all when they are
-unset, which is every local run and every pull request. **What it has to
-measure is whether a player opened their own page**, not how many sections got
-opened — the first is the test this file's job 1 states, and a section counter
-cannot answer it. So id routes are counted as template paths rather than raw
-UUIDs, and a player page and a badge page each fire a named event. Phase 45.
+written down in JS. `lib/analytics.js` is the usage counter. Its
+*configuration* names no vendor — which counter is a signup decision, so it
+takes a script URL and one data-attribute as build-time variables and compiles
+to nothing when they are unset, which is every local run and every pull
+request. Its *counting* has to name one, because a hash-routed site on a static
+host serves every route under one pathname and only a manual `count(path)` can
+say which route a reader is on; GoatCounter is the branch it has.
+
+**What it has to measure is whether a player opened their own page**, not how
+many sections got opened — the first is the test this file's job 1 states, and
+a section counter cannot answer it. So the site files every view itself and the
+script files none (`no_onload`), including the first, since a link pasted into
+the group chat is how a player reaches their own page; UUID routes are counted
+as template paths and readable keys are left alone; a player page and a badge
+page each fire a named event; and views taken before the deferred script lands
+are held rather than dropped. Phase 45.
 
 ## Conventions
 

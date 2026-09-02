@@ -55,6 +55,10 @@ push to `main`. Before the first deploy:
 1. Repo *Settings → Pages* → Source: **GitHub Actions**.
 2. Repo *Settings → Secrets and variables → Actions* → add two secrets:
    `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY`.
+3. Same screen, *Variables* tab → add `VITE_ANALYTICS_SRC` and
+   `VITE_ANALYTICS_ATTR` from the club's GoatCounter account — the two values
+   are under *Counting usage* below. Skipping this breaks nothing; the site
+   just never tells you whether anybody opened it.
 
 The build uses relative asset paths and hash-based routing, so the same build
 works on GitHub Pages and on the custom domain — no URL is hardcoded.
@@ -121,8 +125,11 @@ work on a static host, and changing it would break every link already shared.
 
 GitHub Pages is a file host with no server logs, so knowing whether the squad
 opened the site after Saturday's game takes a script in the page.
-`src/lib/analytics.js` is that, and it names no vendor — which counter to use is
-a signup decision. Two build-time variables configure it:
+`src/lib/analytics.js` is that script's whole footprint. It is cookieless: no
+personal data, no consent banner, nothing that would make the site worth
+avoiding.
+
+Two build-time variables configure it:
 
 ```
 VITE_ANALYTICS_SRC     the script URL the provider gives you
@@ -130,29 +137,63 @@ VITE_ANALYTICS_ATTR    its one data-attribute, as name=value (optional)
 ```
 
 Set them as repository *variables* (not secrets — they end up in the bundle,
-which is the point) and `deploy.yml` passes them through. Unset, which is how
-the site ships today and how every local run and pull request builds, the module
-does nothing: no script, no requests, nothing in the bundle.
+which is the point) under *Settings → Secrets and variables → Actions →
+Variables*, and `deploy.yml` passes them through. Unset — every local run and
+every pull request — the module compiles to nothing: no script, no requests, no
+vendor name anywhere in the bundle.
 
-**GoatCounter is the counter this club uses.** It is free at this size,
-cookieless, and the one provider in the list whose manual `count()` this code
-already calls correctly.
+**GoatCounter is the counter this club uses**, free at this size and cookieless.
+Its two values:
 
-`analytics.js` lists four providers at the top and one of them is a trap:
-**Cloudflare Web Analytics cannot work here.** Its beacon exposes no manual
-counter, so `countView` has no branch for it, and choosing it would count the
-landing page and nothing else — exactly the failure the module says it exists
-to prevent. Plausible has the opposite problem: the SRC listed is
-`script.hash.js`, which already fires a pageview on `hashchange`, so combining
-it with the manual call would count every navigation twice. Phase 45 cuts the
-list down to what `countView` can serve. Until it lands, use GoatCounter.
+```
+VITE_ANALYTICS_SRC     https://gc.zgo.at/count.js
+VITE_ANALYTICS_ATTR    data-goatcounter=https://<your-code>.goatcounter.com/count
+```
 
-The one thing worth knowing: the site is on hash routing, so a section change is
-a `#/players` change. Most counters watch `history.pushState`, which React
-Router does call — but the ones with a manual counter get told explicitly from
-`Layout.jsx`, so the numbers say which sections get opened rather than just that
-somebody landed on Home. Production builds only: the layout harness drives every
-route at six widths twice per run, and those aren't visits.
+### The site counts every view; the script counts none
+
+This is a hash-routed app, so `#/players` and `#/records` are one pathname as
+far as the browser is concerned, and `<link rel="canonical">` pins even that to
+`/`. A counter left to its own devices therefore files every arrival against
+`/` and reports that the squad opened Home and read nothing — including the
+arrival that matters most, a player page pasted into the group chat.
+
+So `startAnalytics` sets GoatCounter's `no_onload` before loading count.js, and
+`Layout.jsx` calls `countView` for every route including the first. Two
+consequences worth knowing:
+
+- **The first view of every visit is fired before the deferred script exists.**
+  `analytics.js` holds views until count.js loads and files them in order —
+  bounded at twenty, and dropped if the script errors, which is what an ad
+  blocker looks like.
+- **Ids never reach the dashboard.** Every id in the database is a UUID, so a
+  raw pathname would fill the dashboard with a row per player and a row per
+  match, each counting one or two visits. `describeView` collapses them to
+  `/players/:playerId`, `/matchday/:matchId` and so on. Readable keys are left
+  alone — `/records/badges/appearances` and `/opponents/old-stoics` say
+  something a template path would throw away.
+
+A player page and a badge page also fire a named event, `player-page` and
+`badge-page`. A path count answers "was Players opened"; the question this site
+exists to answer is whether a player looked up their own goals, and only an
+event named for it survives the next redesign of the nav.
+
+### Adding a provider takes a branch, not just a variable
+
+The configuration names no vendor, but the counting has to: only a provider
+with a manual `count(path)` can be told which hash route the reader is on, and
+that call differs per vendor. `countView` has one branch, for GoatCounter.
+Two providers were listed in this file until Phase 45 and neither can do the
+job:
+
+- **Cloudflare Web Analytics** exposes no manual counter at all. Choosing it
+  would count the landing page and nothing else.
+- **Plausible's** `script.hash.js` counts a `hashchange` itself, so the manual
+  call would double every move. Its `script.manual.js` is the variant to
+  investigate if the club ever switches.
+
+So a third provider means reading its manual-pageview API, adding a branch, and
+checking whether it counts anything on its own — not just changing a variable.
 
 ## Backups, and keeping the database awake
 
