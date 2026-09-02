@@ -59,11 +59,17 @@ export default function Home() {
 
   return (
     <div className="home">
-      {currentSeason && (
-        <p className="label home-season-note">
-          Season {currentSeason}{seasonIsFinal ? ' · final' : ''}
-        </p>
-      )}
+      {/* Home's top-level heading, and the only one it needs. It says the
+          season rather than the club because the masthead already says the
+          club (see home.css) — so this line, which was always the page's
+          title, is now marked up as one. Unconditional: with players entered
+          but no match yet there is no season to name, and a page with no h1
+          at all is what this replaced. */}
+      <h1 className="label home-season-note">
+        {currentSeason
+          ? `Season ${currentSeason}${seasonIsFinal ? ' · final' : ''}`
+          : 'Old Wellingtonians FC'}
+      </h1>
 
       <LastResult match={lastMatch} ctx={lastCtx} />
 
