@@ -11,9 +11,15 @@ import '@fontsource/archivo-narrow/latin-600.css';
 import '@fontsource/archivo-narrow/latin-700.css';
 import './styles/index.css';
 import App from './App';
+import { registerServiceWorker } from './lib/offline';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <App />
   </React.StrictMode>,
 );
+
+// The offline shell — public/sw.js. Here rather than in a component because it
+// is the document's business, not any page's, and it must run exactly once per
+// load; StrictMode double-invokes an effect.
+registerServiceWorker();

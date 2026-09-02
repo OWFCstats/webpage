@@ -22,8 +22,12 @@ export function Crest() {
   );
 }
 
+/** The message is a whole sentence, not a fragment: `DataContext` is the only
+ *  thing that produces one, and one of the things it has to say is "no
+ *  connection", which a hardcoded "Couldn't load data:" can't lead into. See
+ *  `lib/offline.js` → `describeLoadFailure`. */
 export function ErrorNote({ message }) {
-  return <div className="notice error">Couldn’t load data: {message}</div>;
+  return <div className="notice error">{message}</div>;
 }
 
 export function FormBadges({ matches }) {

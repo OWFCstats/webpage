@@ -81,6 +81,36 @@ browser that already knows where it is — so `vite.config.js` substitutes
 `%SITE_URL%` at build time. It is the one absolute URL in the build. Unset it
 falls back to the GitHub Pages address; see below.
 
+### The offline shell
+
+`public/sw.js` is a service worker, registered by `src/lib/offline.js` on
+production builds only. It exists because an installed app has no address bar:
+without it, a phone with no signal got the browser's own offline page and no way
+back. With it the app opens to the masthead, the tab bar and a "no connection"
+note where the stats go, and re-reads by itself when the signal returns.
+
+It is **network-first** — every request tries the network and only falls back to
+what it last had — so a deploy is picked up on the next visit and nobody can end
+up pinned to an old build. It caches the site's own files only; every request to
+Supabase is cross-origin and never goes through it, so no club data and no login
+is stored on the phone.
+
+Two things worth knowing when supporting a phone:
+
+- **The cache fills as the reader passes through it**, not from a list built at
+  deploy time. So the first-ever visit installs the worker and the *next* one is
+  the one that works with no signal — which installing to a home screen and
+  opening it already is.
+- **Nothing needs clearing.** If a phone ever does look stuck on an old page,
+  the honest fix is still a reload with a signal, and a worker at a stable
+  address is what lets a bad one be replaced by a deploy rather than by asking
+  thirty people to clear their site data.
+
+`tests/sw.test.js` drives the worker in a fake browser — network-first, the
+same-origin rule, the shell served for any URL, and a new build evicting the
+old. It is the one part of the site nobody can eyeball, because it only does
+anything on a connection that has stopped working.
+
 ## The domain
 
 The site's address is **`oldwellingtoniansfc.com`**, registered at Porkbun.

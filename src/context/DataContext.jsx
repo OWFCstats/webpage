@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { supabaseRead, supabaseConfigured } from '../lib/supabase';
 import { fetchAllPages } from '../lib/paging';
+import { describeLoadFailure } from '../lib/offline';
 
 // Every read the site makes, in one place. The whole dataset is small enough to
 // hold in memory and derive every stat from client-side (see lib/matches.js,
@@ -83,7 +84,7 @@ export function DataProvider({ children }) {
         return;
       }
       if (attempt >= RETRY_DELAYS.length) {
-        setState((s) => ({ ...s, loading: false, error: failed.error.message }));
+        setState((s) => ({ ...s, loading: false, error: describeLoadFailure(failed.error.message) }));
         return;
       }
       await wait(RETRY_DELAYS[attempt]);
@@ -93,6 +94,18 @@ export function DataProvider({ children }) {
   useEffect(() => {
     refresh();
   }, [refresh]);
+
+  // The way out of a failed load, on a phone that has no reload. Saved to a
+  // home screen there is no address bar and no pull-to-refresh, so an error
+  // note used to be the end of the visit — the reader had to kill the app.
+  // Bound only while the note is up, which is what keeps a flaky signal from
+  // re-reading six tables every time it flickers.
+  useEffect(() => {
+    if (!state.error) return undefined;
+    const retry = () => refresh();
+    globalThis.addEventListener('online', retry);
+    return () => globalThis.removeEventListener('online', retry);
+  }, [state.error, refresh]);
 
   return (
     <DataContext.Provider value={{ ...state, refresh }}>
