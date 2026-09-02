@@ -77,10 +77,12 @@ const CARD = `<!doctype html>
 </div>`;
 
 // A maskable icon is masked to whatever shape the phone likes, and only the
-// middle 80% is guaranteed to survive it. The crest sits at 62% of the square,
-// which clears that on every shape. White rather than the club's green because
-// crest.png is already drawn on white — a green surround just framed that
-// white square inside a bigger one instead of reading as a single icon.
+// middle 80% is guaranteed to survive it. The crest sits at 81% of the square
+// — outside that safe zone, but crest.png already carries its own white
+// margin around the artwork, so the drawing itself still clears 80% even
+// though the image element doesn't. White rather than the club's green
+// because crest.png is already drawn on white — a green surround just framed
+// that white square inside a bigger one instead of reading as a single icon.
 const icon = (size) => `<!doctype html>
 <link rel="stylesheet" href="${TOKENS}">
 <style>
@@ -90,7 +92,7 @@ const icon = (size) => `<!doctype html>
     background: #fff;
     display: grid; place-items: center;
   }
-  img { width: ${Math.round(size * 0.62)}px; height: ${Math.round(size * 0.62)}px; object-fit: contain; }
+  img { width: ${Math.round(size * 0.81)}px; height: ${Math.round(size * 0.81)}px; object-fit: contain; }
 </style>
 <img src="${CREST}" alt="">`;
 
