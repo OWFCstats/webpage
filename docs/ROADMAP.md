@@ -66,6 +66,7 @@ page-by-page review against the club's real 2025/26 season.
 | 41 | Counting who turns up | `lib/analytics.js` — a cookieless counter named by two build-time variables rather than by a vendor, compiling to nothing when they are unset. Phase 45 fixes what it counts |
 | 42 | The docs, reconciled | `CLAUDE.md`, `DESIGN.md` and this file had drifted from the code and from each other — four `> **Phase N.**` markers naming closed phases among them. Corrected, and the release sequence written in as the plan of record |
 | 43 | The appearances ceiling | `lib/paging.js`: every read `DataContext` makes pages to exhaustion with a total order, so the site stops truncating at PostgREST's 1,000 rows around season six. The fixture stub answers `.range()` now, and eight tests hold it |
+| 44 | The front door | Home's scorers and MOTM link to their player pages — the last component of eleven that rendered a name without one — and the season line it already carried is its `<h1>`. Both rules are now general: `DESIGN.md` → *A name is a link* and *One `<h1>` a page* |
 
 **The detail behind any closed phase is in its commit** — `git log --grep="Phase
 20"` finds it, because every phase commit names its phase in its own subject.
@@ -91,11 +92,11 @@ nothing is stored twice**, and **a component that gains a second page moves up t
 
 ## Now — the release
 
-**Deadline: Friday 4 September 2026.** Phases 42 and 43 are done. Four phases
-left, in order, then a launch checklist. Nothing here is new scope: every item
-is a defect or an unfinished step the pre-release review found, and the review
-is the "why" behind each one.
-Anything that improves the site rather than readying it is under *Next*.
+**Deadline: Friday 4 September 2026.** Phases 42, 43 and 44 are done. Three
+phases left, in order, then a launch checklist. Nothing here is new scope: every
+item is a defect or an unfinished step the pre-release review found, and the
+review is the "why" behind each one. Anything that improves the site rather than
+readying it is under *Next*.
 
 Three of the steps belong to the club rather than the code, and two are already
 done. **Self-signup is off** in the Supabase dashboard, and so is anonymous
@@ -103,18 +104,6 @@ sign-in — that second one matters as much, because RLS grants writes to any
 `authenticated` role and an anonymous sign-in creates one. **A GoatCounter
 account exists**; its two values go in as part of Phase 45. **The domain
 `oldwellingtoniansfc.com` is registered** at Porkbun, and its DNS is Phase 47.
-
-### Phase 44 — The front door
-
-Home is the only page where a player's name is not a link: `LastResult.jsx`
-renders the scorers and the MOTM as `<strong>` while ten other components link
-theirs. `CLAUDE.md` says the first screen owes the squad "the last result
-and a name", and it currently shows the name and makes it untappable. Home also
-has no `<h1>` — three `<h2>`s and no top-level heading, on the page that gets
-pasted into the group chat and indexed.
-
-**Done means** every name on Home links to its player page, Home has an `<h1>`,
-and `check:layout` is still green.
 
 ### Phase 45 — What the counter counts
 
@@ -219,8 +208,11 @@ before — that is what keeps this file short.
    `src/styles.css` that Phase 1 deleted; the ranking line duplicated between
    `league.js` and `LeagueTable.jsx`; four `lib/` exports used only inside their
    own module; `SeasonCharts.jsx` at 374 lines and `AddResult.jsx` at 295
-   against the ~250 guideline; and `starts` coming off the player page, per
-   `DESIGN.md` → *A figure that cannot differ is not a figure*.
+   against the ~250 guideline; `starts` coming off the player page, per
+   `DESIGN.md` → *A figure that cannot differ is not a figure*; and the one
+   route left with no `<h1>` — `/matchday` with a match open, where the nearest
+   line to promote sits in `.sb-head`'s flex row and needs a margin reset,
+   which is why Phase 44 left it (`DESIGN.md` → *One `<h1>` a page*).
 6. **Phase 52 — The budgets, settled.** Home, Matchday and Season are all over,
    and two of the three have been open since Phase 27. Decide
    each one: move the number with an argument the way Phase 25 did, or cut a
@@ -250,7 +242,7 @@ view. *Now* is `npm run shots` on the `mid-season` fixture at 375px.
 
 | Page | Now | Budget | Owner |
 | --- | --- | --- | --- |
-| Home | 2,047 | 1,600 | **Phase 52** — 447 over; Phase 23's badge, label and button cost 165px of it |
+| Home | 2,042 | 1,600 | **Phase 52** — 442 over; Phase 23's badge, label and button cost 165px of it, and Phase 44's `<h1>` gave 5px back |
 | Matchday — latest | 2,456 | 2,300 | **Phase 52** — 156 over; head to head's tape, real content the old card didn't carry. The rail doesn't move this: the budget is stated at 375px and the rail is a >=900px-only change |
 | Matchday — clean sheet (12 named, a report, clamped / open) | 2,746 / 3,150 | 2,300 | **Phase 52** — 446 over clamped; the clamp bounds it, it doesn't fit it. Same as above, untouched by 28 or 31 |
 | Matchday — walkover (no team sheet) | 1,533 | 2,300 | within |

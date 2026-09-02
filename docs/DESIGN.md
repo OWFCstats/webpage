@@ -351,6 +351,50 @@ figure to zero — four of Home's five sections became empty states in the month
 newcomer is most likely to be sent the link. A season being over is a thing to
 label (`2025/26 · final`), not a reason to show nothing.
 
+### A name is a link
+
+Every player's name the site renders links to their player page. No exceptions,
+and it is not a decoration: a name is the one thing on the site a player is
+looking for, and the badges, the totals and the ranks that make turning up worth
+something all live one tap behind it. Ten components got this right and
+Home's `LastResult` didn't — on the first screen, where `CLAUDE.md` says what
+the squad is owed is the last result *and a name*. A name that can't be tapped
+is half of that.
+
+Two names are deliberately not links, because the page they would go to is the
+page you are on: the club's own row in the league table, and the player whose
+page is already open.
+
+### One `<h1>` a page, and it names the page
+
+A route has one, and it says what the page is. Home had none — three `<h2>`s
+under nothing, on the page that gets pasted into the group chat and indexed —
+because the line that had always been its title was marked up as a `<p>`.
+Promoting that line was the whole fix.
+
+Home's `<h1>` names the **season**, not the club, and that is the general rule
+rather than an exception: the masthead says the club on every route, so a page
+heading that says it again is the eyebrow problem in a different font (see *The
+block*). Phase 19 settled this once already — *Home leads with the result, not a
+repeated club name* — which is why the fix was promoting that line and not
+adding a heading above it. Where a page has no season to name,
+`Old Wellingtonians FC` is the fallback, as on Matchday before a season starts.
+
+A heading is not obliged to be the display face. Home's takes `.label` and drops
+`h1::after`'s gilded rule, because marking up a heading correctly should not
+move the page: the first screen belongs to the result underneath it, and Home is
+the page furthest over its length budget.
+
+**One route still doesn't meet this: `/matchday` with a match open.** Its two
+empty branches both have an `<h1>`, but `Scoreboard` carries no heading at all,
+so the played-match page — what Home's own result links to, and every row of
+every result list — has none.
+It is not the same one-line fix Home's was: the nearest line is the `.label`
+inside `.sb-head`'s flex row, which needs a margin reset to be promoted without
+shifting the row, on the page 156px over its own budget. That is a Matchday
+decision rather than a front-door one, so it is listed under *Next* in the
+roadmap instead of being taken here.
+
 ## Colour
 
 Every colour lives in `styles/tokens.css` as a custom property. A hex literal in
@@ -1498,14 +1542,16 @@ took Season from 3,224px to 2,494px, 734px back, but not the full 1,024px the
 (season at a glance, the appearances leaderboard), neither of which Phase 29's
 brief covered cutting. The remaining 290px is `ROADMAP.md` → *Decisions* →
 *Open*.
-Home is 2,047px: Phase 19 took it from 2,113px to 1,882px (the result leading,
+Home is 2,042px: Phase 19 took it from 2,113px to 1,882px (the result leading,
 the next-fixture card collapsing to a row, a redundant form-chip strip coming
-off Recent form) and Phase 23's badge, "Goals" label and "Charts" button put
-165px back. `LeagueTable` and `RecentForm` alone are most of the page, and
-neither shrinks further without breaking the "all ten columns from 360px up"
-rule below or cutting Recent form's list under the five results `formOf` shows
-everywhere else on the site — so no phase owns Home's gap today, and closing it
-means cutting a section rather than shaving one. `check:layout`
+off Recent form), Phase 23's badge, "Goals" label and "Charts" button put 165px
+back, and Phase 44 gave 5px of that back — a `<p>`'s top margin, which is the
+whole cost of promoting that line to the `<h1>` the page had been missing.
+`LeagueTable` and `RecentForm` alone are most of the page, and neither shrinks
+further without breaking the "all ten columns from 360px up" rule below or
+cutting Recent form's list under the five results `formOf` shows everywhere else
+on the site — so **Phase 52 owns Home's gap**, and it owns it as a decision
+rather than a shave: closing it means cutting a section. `check:layout`
 prints the gap on every run without failing on it: the phase that owns each page
 closes its own where it can, and a check
 that went red for eleven phases would stop being read.

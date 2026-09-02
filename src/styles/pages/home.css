@@ -5,8 +5,13 @@
 /* ---- home dashboard ---------------------------------------------------- */
 
 /* The club's name is said once, in the masthead — this is the only line on
-   the page naming the season instead of repeating it. */
+   the page naming the season instead of repeating it, and since Phase 44 it
+   is Home's <h1>: it was already the page's title, it just wasn't marked up
+   as one. It keeps .label over the display face, and drops h1::after's gilded
+   rule, because the treatment stays what it was — the first screen belongs to
+   the result under it, and Home is the page furthest over its height budget. */
 .home-season-note { margin-bottom: var(--s3); }
+.home-season-note::after { content: none; }
 
 /* Each widget stands in its own row now: the result leads, at full size,
    and nothing else on the page needs to be paired against it. */
@@ -273,7 +278,12 @@ a.fixture-row:active { background: color-mix(in srgb, var(--gold) 12%, transpare
   color: var(--on-board-soft);
 }
 
-.hr-line strong { color: var(--on-board); }
+/* The names carry the weight the <strong> used to: they are what the footer
+   is for, and .board a's gild alone would leave them the same weight as the
+   label beside them. The gold is .board a's — a link on a dark ground is gold
+   everywhere — and inline links in prose take no press tint anywhere on the
+   site, so there isn't one here either. */
+.hr-line a { font-weight: 600; }
 
 /* .home-widget .more is two classes deep and would otherwise out-specify
    .board a, putting paper gold on a dark ground. */

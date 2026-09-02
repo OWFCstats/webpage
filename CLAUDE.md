@@ -115,13 +115,15 @@ Row Level Security, not by the UI. The publishable key is a public client key �
 data is protected by RLS, not by hiding it.
 
 **A read that can grow has to page.** PostgREST caps a response at 1,000 rows.
-`scripts/backup.mjs` knows this and pages; `DataContext` does not, and
-`appearances` is the table that reaches the cap first — 155 rows after one
-season, so around season six. It is also read with no `.order()`, so the
-thousand rows that come back would be arbitrary. That is not a table that breaks
-loudly; it is every derived figure on the site going quietly wrong. Phase 43
-fixes it. Anything added later that reads a table which grows per match, per
-appearance or per season pages the same way.
+Every read `DataContext` makes goes through `lib/paging.js`, which fetches to
+exhaustion under a total order — a unique tiebreaker on every query, since
+paging an order that has ties lets rows move between pages. `scripts/backup.mjs`
+pages the same way. `appearances` is the table that would have hit the cap
+first — 155 rows after one season, so around season six — and it was read with
+no `.order()` at all, so the thousand rows that came back would have been
+arbitrary: not a table that breaks loudly, but every derived figure on the site
+going quietly wrong. Phase 43 closed it. Anything added later that reads a table
+which grows per match, per appearance or per season pages the same way.
 
 **Reads and writes use two different clients.** `lib/supabase.js` exports
 `supabase`, which carries the admin's session, and `supabaseRead`, which sends
