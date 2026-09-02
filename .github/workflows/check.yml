@@ -87,3 +87,15 @@ jobs:
             echo 'counter strings found in dist/ — the `enabled` guard stopped folding away'
             exit 1
           fi
+      # The offline shell, on the other hand, has to be there — both halves of
+      # it. `sw.js` is served whole from public/ rather than built, so moving
+      # it would break silently, and the registration is behind a PROD guard of
+      # exactly the kind that folded the counter away above. Neither failure
+      # shows up anywhere but on a phone with no signal.
+      - name: the offline shell shipped
+        run: |
+          test -f dist/sw.js || { echo 'dist/sw.js is missing — see public/sw.js'; exit 1; }
+          if ! grep -rq 'updateViaCache' dist/assets; then
+            echo 'the worker is never registered — src/lib/offline.js folded away'
+            exit 1
+          fi

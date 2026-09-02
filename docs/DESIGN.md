@@ -155,29 +155,47 @@ visit.
 
 ### An installed app has to open with no signal
 
-> **Phase 46.** The service worker below is decided and not built yet.
-
 `public/manifest.webmanifest` sets `display: standalone`, so the site installs
 to a home screen and opens with no browser chrome. That is the shortest route
-the squad has to it, and it is also a promise the site cannot currently keep:
-with no service worker, an installed app on a bad signal shows the browser's
-own offline page. Inside a standalone window that page has no address bar, no
-back button and no reload the reader can find. The section above worries about
-an error note being the end of the visit; this is worse, because the frame the
-section is about never renders at all.
+the squad has to it, and it used to be a promise the site couldn't keep: with no
+service worker, an installed app on a bad signal showed the browser's own
+offline page. Inside a standalone window that page has no address bar, no back
+button and no reload the reader can find. The section above worries about an
+error note being the end of the visit; this was worse, because the frame the
+section is about never rendered at all.
 
-So the site caches its own shell — the document, the bundle, the CSS, the
-crest and the fonts — and serves that when the network fails, with the "no
-connection" note in the page column where the spinner and `ErrorNote` already
-go. The frame outliving the page is the same rule, one layer down.
+So the site caches its own shell — the document, the bundle, the CSS, the fonts,
+the crest, the badge drawings — and serves that when the network fails, with the
+"no connection" note in the page column where the spinner and `ErrorNote`
+already go. The frame outliving the page is the same rule, one layer down.
+`public/sw.js` is the whole of it and its header is the design; `lib/offline.js`
+registers it, in a production build only.
 
 **Network-first, and this is not a preference.** A cache-first worker on a
 static host with no server is how a squad ends up pinned to a build from three
 weeks ago, and the club has no channel for telling thirty people to clear a
-site's storage. Every navigation tries the network and falls back to the cache;
-the cache is refreshed on the way past. Nothing a login touches is cached at
-all, because a shared phone in a pub is a realistic way for this site to be
-read.
+site's storage. Every request tries the network and only falls back to the
+cache; a response that arrives refreshes the cache on the way past. The cache
+fills as the reader passes through it rather than from a list built at deploy
+time, so the visit that can open with no signal is the second one — which
+installing to a home screen and opening it already is.
+
+**Same-origin GETs only, and that is the whole exclusion rule.** Every read and
+write of club data, and the login behind them, is a cross-origin request to
+Supabase, so no row, no token and no session can reach the cache — not because a
+list of paths says so, but because those requests are never handled. A shared
+phone in a pub is a realistic way for this site to be read.
+
+**A new deploy evicts the old one.** `index.html` names its assets by content
+hash, so a document that differs from the cached one *is* a new build, and the
+worker empties the cache before storing it. Without that the cache keeps a copy
+of every build the club has ever pushed; nothing breaks, but the site's storage
+grows by itself on every push to `main`.
+
+**And the error note is no longer a dead end.** `DataContext` listens for
+`online` while it is showing one, and re-reads when the signal comes back. There
+is no reload on a home-screen app, so before that the only way out of a failed
+load was killing the app.
 
 ### What the site remembers, and what it doesn't
 
@@ -211,6 +229,11 @@ feature that never gets used.
 adapter in `lib/cookieStorage.js`. The rule predates this section and existed
 only as a comment in that file, which is how it nearly got broken by the
 feature above. A "me" pick is a cookie for the same reason a session is.
+
+The service worker's cache is the one other thing the browser holds for this
+site, and it is not an exception to any of the above: it holds files the site
+serves — the document, the bundle, the fonts, the artwork — and not one thing
+about the reader. See *An installed app has to open with no signal*.
 
 ### A result is a row, not a sentence
 
@@ -1713,8 +1736,9 @@ growing past ~80 lines means something in it should have been a primitive.
   player identifying themselves is a cookie on their own phone, not a user
   record — see *What the site remembers*. Thirty accounts and thirty forgotten
   passwords for a read-only stats site is the version nobody uses.
-- **No offline editing.** The service worker in *An installed app has to open
-  with no signal* caches the shell so the site opens and shows what it last
-  read. It does not queue writes. A result typed into a dead connection and
-  replayed later is a whole conflict model for a flow that takes four steps
-  once a week, and the admin can wait for a bar.
+- **No offline editing, and no offline data.** The service worker in *An
+  installed app has to open with no signal* caches the shell, so the site opens
+  to its own frame and says it has no connection. It does not cache a single row
+  and it does not queue writes. A result typed into a dead connection and
+  replayed later is a whole conflict model for a flow that takes four steps once
+  a week, and the admin can wait for a bar.

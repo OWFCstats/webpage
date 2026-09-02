@@ -68,6 +68,7 @@ page-by-page review against the club's real 2025/26 season.
 | 43 | The appearances ceiling | `lib/paging.js`: every read `DataContext` makes pages to exhaustion with a total order, so the site stops truncating at PostgREST's 1,000 rows around season six. The fixture stub answers `.range()` now, and eight tests hold it |
 | 44 | The front door | Home's scorers and MOTM link to their player pages — the last component of eleven that rendered a name without one — and the season line it already carried is its `<h1>`. Both rules are now general: `DESIGN.md` → *A name is a link* and *One `<h1>` a page* |
 | 45 | What the counter counts | The site files every view and the script none (`no_onload`): the script's own view was `/` on every route of a hash-routed site, which inflated Home and lost the arrival that matters, a player page pasted into the group chat. UUID routes collapse to `/players/:playerId`, readable keys don't, a player page and a badge page fire named events, and views taken before the deferred script lands are held rather than dropped. `Boolean(src)` had been quietly defeating the "nothing in the bundle" promise since Phase 41 — esbuild won't fold a call to a global — so `check.yml` greps `dist/` for a vendor name now, beside the grep that keeps the fixture out |
+| 46 | The offline shell | `public/sw.js` — network-first, shell only, same-origin GETs. An installed app on a dead signal used to get the browser's own offline page, with no address bar to escape it; it opens to its own frame and a "no connection" note now. A changed `index.html` empties the cache, so a deploy replaces the previous build rather than stacking on it, and `DataContext` re-reads on `online` because a home-screen app has no reload |
 
 **The detail behind any closed phase is in its commit** — `git log --grep="Phase
 20"` finds it, because every phase commit names its phase in its own subject.
@@ -93,11 +94,11 @@ nothing is stored twice**, and **a component that gains a second page moves up t
 
 ## Now — the release
 
-**Deadline: Friday 4 September 2026.** Phases 42 to 45 are done. Two phases
-left, in order, then a launch checklist. Nothing here is new scope: every item
-is a defect or an unfinished step the pre-release review found, and the review
-is the "why" behind each one. Anything that improves the site rather than
-readying it is under *Next*.
+**Deadline: Friday 4 September 2026.** Phases 42 to 46 are done. One phase left,
+then a launch checklist. Nothing here is new scope: every item is a defect or an
+unfinished step the pre-release review found, and the review is the "why" behind
+each one. Anything that improves the site rather than readying it is under
+*Next*.
 
 Three of the steps belong to the club rather than the code, and only the first
 is finished. **Self-signup is off** in the Supabase dashboard, and so is
@@ -106,23 +107,7 @@ to any `authenticated` role and an anonymous sign-in creates one. **A
 GoatCounter account exists**, and everything else about the counter landed in
 Phase 45; setting its two values as repository variables is step 1 of the launch
 checklist. **The domain `oldwellingtoniansfc.com` is registered** at Porkbun,
-and its DNS is Phase 47.
-
-### Phase 46 — The offline shell
-
-`manifest.webmanifest` declares `display: standalone`, so the site installs as
-an app with no address bar. There is no service worker, so on a bad signal that
-app shows the browser's own offline page with no way back — worse than the error
-note *The frame outlives the page* was written for, on the exact connection the
-whole site is designed around.
-
-**Network-first, shell only.** A cache-first worker on a static host is how a
-squad ends up stranded on a build from three weeks ago, and the club has no way
-to tell them to clear it.
-
-**Done means** the installed app opens offline to its own frame with a "no
-connection" note in the page column, a fresh deploy is picked up on the next
-visit rather than pinned, and nothing a login touches is cached.
+and its DNS is Phase 47 — the one phase still open.
 
 ### Phase 47 — The address
 

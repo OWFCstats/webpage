@@ -71,6 +71,20 @@ tapping *Add result* on a bad signal gave a spinner alone on empty paper, and a
 chunk that never arrived gave a blank document. See *The frame outlives the
 page* in `docs/DESIGN.md`.
 
+**The frame has to survive no signal at all, which is `public/sw.js`.** The site
+installs to a home screen with no address bar, so without a worker a dead
+connection gave the browser's own offline page — the frame never rendered.
+`sw.js` is network-first and caches nothing but the shell: every request tries
+the network and only falls back, a response refreshes the cache on the way past,
+and a changed `index.html` empties the cache because it means a new build. It
+handles same-origin GETs only, which is what keeps every Supabase row, token and
+session out of it without a list of paths to maintain. `lib/offline.js`
+registers it in a production build only — the layout harness drives the real
+pages through the dev server, and a worker there would serve one run the
+previous one's site — and decides what a failed read says, because "no
+connection" and "permission denied for table appearances" are not the same
+sentence. See *An installed app has to open with no signal* in `docs/DESIGN.md`.
+
 **One match is one row.** Fixtures are entered in advance, so every write path
 that records a result — the wizard and the walkover form — fills in the fixture
 already in the diary rather than inserting beside it (`lib/admin.js` →
@@ -179,11 +193,12 @@ drawings as cached assets rather than serving them unversioned: they are
 key in `lib/awards.js` and its address under `/records/badges/`; nothing else
 goes in that directory. `npm run badges -- <dir>` is how a fresh drop of art gets
 renamed, optimised and written there. `public/` stays for what the browser
-fetches whole and unversioned: the crest, the share card (`og.png`) and the
-home-screen icons, which a WhatsApp scraper and a phone's installer both have
-to find at a stable address rather than a hashed one. `npm run og` redraws all
-four against `styles/tokens.css` and the site's own faces; nothing in CI runs
-it, so re-run it when the crest or the palette changes.
+fetches whole and unversioned: the crest, the share card (`og.png`), the
+home-screen icons and `sw.js`, which a WhatsApp scraper, a phone's installer and
+a service worker's own scope each have to find at a stable address rather than a
+hashed one. `npm run og` redraws the four images against `styles/tokens.css` and
+the site's own faces; nothing in CI runs it, so re-run it when the crest or the
+palette changes.
 
 **Cookies only — no `localStorage`, no `sessionStorage`, anywhere.**
 `lib/cookieStorage.js` is the adapter that keeps supabase-js off `localStorage`,
