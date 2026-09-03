@@ -289,6 +289,10 @@
 
 /* ---- the badge's own page ---- */
 
+/* The way back, above the hero: the same muted line .card-foot draws, with the
+   margin on the other side of it. */
+.badge-back { margin: 0 0 var(--s2); }
+
 .badge-hero {
   display: flex;
   align-items: center;

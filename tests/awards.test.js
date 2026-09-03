@@ -175,7 +175,16 @@ test('bronze is one, so everyone who has been picked holds something', () => {
   const totals = playerTotals(mid.players, mid.matches, mid.appearances);
   const picked = totals.filter((r) => r.appearances > 0).length;
   const appearances = board.career.find((b) => b.key === 'appearances');
-  assert.equal(appearances.tiers[0].holders, picked, 'a debut is a badge');
+  assert.equal(appearances.holders, picked, 'a debut is a badge');
+  // A player holds one tier, so the rungs partition the holders rather than
+  // each counting everyone who passed through: a name on two rungs of the
+  // same badge reads as two players.
+  assert.equal(
+    appearances.tiers.reduce((total, t) => total + t.holders, 0),
+    picked,
+    'the rungs add up to the holders — nobody stands on two',
+  );
+  assert.ok(appearances.tiers[1].holders > 0);
   assert.equal(appearances.top, 'silver', 'the board wears the best metal anyone holds');
   // Clean sheets stays and stays hard: it is the one badge the club may hold
   // none of, and an empty rung keeps its place rather than being trimmed.
@@ -221,6 +230,17 @@ test('a badge page lists every tier, its holders and who is closest', () => {
   assert.deepEqual(page.tiers.map((t) => t.metal), METALS);
   assert.ok(page.tiers[0].count > page.tiers[1].count);
   assert.equal(page.tiers[2].count, 0, 'a tier nobody has reached is still named');
+  // The bug this closed: a silver holder was listed under bronze as well,
+  // because reaching silver means passing 1 appearance too. A player holds
+  // the best tier they have reached and only that one.
+  const listed = page.tiers.flatMap((t) => t.holders.map((h) => h.player.id));
+  assert.equal(new Set(listed).size, listed.length, 'no name on two rungs');
+  const silver = badgeDetail('assists', mid.players, mid.matches, mid.appearances, mid.season_awards);
+  assert.equal(silver.tiers[1].count, 1);
+  assert.ok(
+    !silver.tiers[0].holders.some((h) => h.player.id === silver.tiers[1].holders[0].player.id),
+    'the club playmaker is on silver, not on both',
+  );
   assert.ok(page.chasing.length > 0);
   assert.ok(
     page.chasing.every((row) => row.need > 0 && row.count > 0),
