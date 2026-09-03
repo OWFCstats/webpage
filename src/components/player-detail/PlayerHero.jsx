@@ -30,9 +30,9 @@ export default function PlayerHero({ player, career, seasonsActive, badges, isMe
           {player.position && <span className="tag dark">{player.position}</span>}
           {player.status === 'inactive' && <span className="tag dark">inactive</span>}
           {/* The state, said in the same device the other two facts about this
-              player use. The control below is the action, and the two are
-              separate on purpose: a single toggle labelled "This is me" and
-              filled gold reads as an offer on a site where gold *is* the
+              player use. The control in the corner is the action, and the two
+              are separate on purpose: a single toggle labelled "This is me"
+              and filled gold reads as an offer on a site where gold *is* the
               offer, whichever way round it is drawn. */}
           {isMe && <span className="tag gold">You</span>}
           <span>
@@ -67,26 +67,27 @@ export default function PlayerHero({ player, career, seasonsActive, badges, isMe
             ))}
           </div>
         )}
-        {/* Last in the band, under the badges rather than between them and the
-            name: a player opens their own page for what they have won, and the
-            offer to claim the page is an offer, not the content. It is where
-            they are most likely to be standing when they think "this is me",
-            which is the whole reason it is here and not only on Home.
-
-            The label says what the tap does, both ways round, because there is
-            no reading of "This is me" in gold that means "already claimed" on
-            a site where a gold button is the thing to press. The state is the
-            tag beside the name instead. What either way sets is a cookie on
-            this phone and nothing else — DESIGN.md → *What the site remembers,
-            and what it doesn't*. */}
-        <button
-          type="button"
-          className={isMe ? 'me-toggle secondary' : 'me-toggle'}
-          onClick={onToggleMe}
-        >
-          {isMe ? 'Not me?' : 'This is me'}
-        </button>
       </div>
+      {/* In the board's top-right corner, and after the name in reading order:
+          a player opens their own page for what they have won, and the offer to
+          claim the page is an offer, not the content. Under the badges it sat
+          between the two things they came for — the shelf and the career line —
+          and pushed both down a row on a phone. The corner is the one place on
+          this band that holds nothing at any width.
+
+          The label says what the tap does, both ways round, because there is
+          no reading of "This is me" in gold that means "already claimed" on
+          a site where a gold button is the thing to press. The state is the
+          tag beside the name instead. What either way sets is a cookie on
+          this phone and nothing else — DESIGN.md → *What the site remembers,
+          and what it doesn't*. */}
+      <button
+        type="button"
+        className={isMe ? 'me-toggle secondary' : 'me-toggle'}
+        onClick={onToggleMe}
+      >
+        {isMe ? 'Not me?' : 'This is me'}
+      </button>
       <div className="career-line">
         <div><span className="v">{career.appearances}</span><span className="label">Apps</span></div>
         <div><span className="v">{career.goals}</span><span className="label">Goals</span></div>

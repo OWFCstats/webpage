@@ -58,9 +58,16 @@
    the answer is yes and all it does is undo — .secondary's paper ground is
    wrong on a board, so the quiet version is drawn here rather than borrowed.
    Small either way: this is an offer the page makes once, not the reason
-   anybody opened it. */
+   anybody opened it.
+
+   In the corner rather than in the flow, inset to the board's own padding so
+   it lines up with the edge the crest and the figures line up with. In the
+   flow it took a row of its own between the badge shelf and the career line —
+   the two things a player came for — and pushed the figures down the page. */
 .me-toggle {
-  margin-top: var(--s3);
+  position: absolute;
+  top: var(--s5);
+  right: var(--s5);
   padding: 0.3rem 0.65rem;
 }
 
@@ -78,10 +85,14 @@
   }
 }
 
+/* padding-right keeps the toggle's corner clear: at this width the career line
+   is what reaches the board's right edge. On a phone it has dropped to a row of
+   its own and the name is what runs long instead — see the query below. */
 .player-hero .career-line {
   display: flex;
   gap: var(--s5);
   flex-wrap: wrap;
+  padding-right: 9rem;
 }
 
 .player-hero .career-line > div { text-align: center; }
@@ -286,5 +297,19 @@
 
   .player-hero .crest { width: 46px; height: 46px; font-size: var(--t-body); }
 
-  .player-hero .career-line { gap: var(--s4); width: 100%; justify-content: space-between; }
+  /* .board drops to --s4 of padding here, and the toggle follows it. */
+  .me-toggle { top: var(--s4); right: var(--s4); }
+
+  /* Only the name: the badge row below it clears the toggle's own height, and
+     reserving against the whole column would wrap the badges too. 7rem is the
+     toggle at its widest ("This is me"), its inset, and a gap — any more and a
+     two-word name wraps at 375px, which costs more height than the move saved. */
+  .player-hero .who h1 { padding-right: 7rem; }
+
+  .player-hero .career-line {
+    gap: var(--s4);
+    width: 100%;
+    justify-content: space-between;
+    padding-right: 0;
+  }
 }
