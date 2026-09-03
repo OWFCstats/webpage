@@ -464,6 +464,19 @@ function holdersOf(rows, stat, threshold) {
 }
 
 /**
+ * Rows standing on one rung: a player holds a single tier, the best they have
+ * reached, so bronze stops counting a name the day it reaches silver. Passing
+ * through bronze is how silver is earned and needs no second entry — printing
+ * both put the same player on two rungs of the same badge, which reads as two
+ * players. This is the same tier a shelf gives them (`careerBadge`), counted
+ * from the club's end.
+ */
+function tierHolders(rows, family, index) {
+  return holdersOf(rows, family.stat, family.tiers[index])
+    .filter((r) => tierIndex(r[family.stat], family.tiers) === index);
+}
+
+/**
  * The badge board: every badge in the club and how far it has got. A career
  * badge reports its four tiers and who holds each, which is the story — where
  * the gold stops says more about a young club than a list of names does.
@@ -476,14 +489,17 @@ export function clubBadges(players, matches, appearances, seasonAwards = []) {
       const tiers = family.tiers.map((threshold, i) => ({
         metal: METALS[i],
         threshold,
-        holders: holdersOf(rows, family.stat, threshold).length,
+        holders: tierHolders(rows, family, i).length,
       }));
       const held = tiers.filter((t) => t.holders > 0);
-      const leader = holdersOf(rows, family.stat, family.tiers[0])[0] ?? null;
+      // Everyone who holds the badge at any metal — the rungs added up, since a
+      // rung now counts only who stands on it — and the best of them.
+      const all = holdersOf(rows, family.stat, family.tiers[0]);
+      const leader = all[0] ?? null;
       return {
         ...family,
         tiers,
-        holders: tiers[0].holders,
+        holders: all.length,
         // The best metal anyone in the club holds, which is what the board's
         // icon wears. Null while nobody holds the badge at all.
         top: held.length > 0 ? held[held.length - 1].metal : null,
@@ -560,7 +576,7 @@ export function badgeDetail(key, players, matches, appearances, seasonAwards = [
   }
 
   const tiers = family.tiers.map((threshold, i) => {
-    const holders = holdersOf(rows, family.stat, threshold);
+    const holders = tierHolders(rows, family, i);
     const { shown, more } = capped(holders);
     return {
       metal: METALS[i],

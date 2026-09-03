@@ -46,6 +46,14 @@ export default function BadgeDetail() {
 
   return (
     <div>
+      {/* The way out, above the crest rather than under the last tier. A badge
+          page is often the first page a reader lands on — a link in the group
+          chat — and the way back into the club's badges has to be visible
+          before any scrolling, not after it. */}
+      <p className="muted badge-back">
+        <Link className="more" to="/records">← Every badge in the club</Link>
+      </p>
+
       <div className="board badge-hero">
         <BadgeIcon badge={badge.key} metal={heroMetal(view)} size={72} />
         <div>
@@ -63,10 +71,6 @@ export default function BadgeDetail() {
         )}
         {badge.class === 'trophy' && <TrophyYears badge={badge} wins={view.wins} roll={view.roll} />}
       </div>
-
-      <p className="muted card-foot">
-        <Link className="more" to="/records">← Every badge in the club</Link>
-      </p>
     </div>
   );
 }

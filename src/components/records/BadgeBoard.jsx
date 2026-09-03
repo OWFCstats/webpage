@@ -35,6 +35,12 @@ function eventLine(badge) {
  * twenty-four plates — the ladder this replaced printed every category three
  * times and said "Nobody yet" nineteen times over.
  *
+ * A rung counts who is standing on it, not who has ever passed through it: a
+ * player holds one metal, so the four rungs add up to the holder count in the
+ * card's head rather than each repeating it (`DESIGN.md` → *A badge has its own
+ * page*). Which is why a low rung can grey out while a higher one has metal on
+ * it — everybody who reached it has moved up.
+ *
  * A badge nobody in the club holds draws its **bronze** artwork, greyed — the
  * rung somebody is next in line for rather than a silhouette or a prize three
  * tiers away. `badge.top` being null is what says so, and `BadgeIcon` does the

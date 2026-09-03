@@ -981,6 +981,30 @@ Three rulings inside that table:
 next one. A badge that can be linked into the group chat is worth more than a
 badge that can only be looked at, and this club's distribution is WhatsApp.
 
+**A player holds one tier — the best one they have reached — and appears on
+that rung only.** Reaching silver is what leaves bronze behind: you cannot get
+there without passing through it, so bronze does not also claim the name. The
+page and the board both listed a name on every rung it had ever cleared, which
+put the club's one silver playmaker under bronze and silver at once and read as
+two players. `tierHolders` in `lib/awards.js` is the whole of the rule, and it
+is the same tier a player's own shelf shows them (`careerBadge`), counted from
+the club's end — the shelf always got this right and only the club's two views
+of it did not.
+
+Two consequences worth stating, because they look like bugs and aren't:
+
+- **A rung is no longer the badge's total.** "48 holders" on a board card is
+  the rungs added up, so `clubBadges` counts it separately; a rung counts who
+  is standing on it.
+- **A lower rung can empty while a higher one has metal on it**, once everybody
+  who reached bronze has moved up. It says *all moved up* rather than *nobody
+  yet* — the second would read as never reached.
+
+**The way back sits above the hero, not under the last tier.** This is often
+the first page a reader lands on, because the address is what gets pasted into
+the group chat, and a way out that needs a scroll to find is a way out a player
+doesn't know exists. It is the same muted line the page used to end with.
+
 ### The trophy cabinet
 
 `/records/honours`. One green band, a shelf per season ruled off from the next,
