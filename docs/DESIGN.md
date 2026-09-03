@@ -269,11 +269,14 @@ costs 74px unpicked and 222px picked, which is real: `ROADMAP.md` → *Page
 budgets* carries the number and Phase 52 owns what comes off in exchange.
 
 **The offer is made twice: here, and on the player's own page.** The hero
-carries *This is me* — gold, because it is an offer — and once it is taken the
-name gains a gold *You* tag and the button becomes *Not me?*. A single toggle
-labelled *This is me* was tried first and abandoned: on a site where a gold
-button *is* the thing to press, no styling of that label reliably reads as
-"already claimed". The label says what the tap does; the tag says what is true.
+carries *This is me* in its top-right corner — gold, because it is an offer,
+and in the corner because a row of its own put it between the badge shelf and
+the career line, which are the two things a player came for — and once it is
+taken the name gains a gold *You* tag and the button becomes *Not me?*. A
+single toggle labelled *This is me* was tried first and abandoned: on a site
+where a gold button *is* the thing to press, no styling of that label reliably
+reads as "already claimed". The label says what the tap does; the tag says what
+is true.
 
 ### A result is a row, not a sentence
 

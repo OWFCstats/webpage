@@ -204,7 +204,7 @@ view. *Now* is `npm run shots` on the `mid-season` fixture at 375px.
 | Season → charts | 1,909 | 2,200 | met (18) |
 | Players → Leaderboards | 1,296 | 1,400 | met (14, 24) |
 | Records → badges / honours / all-time | 1,729 / 1,155 / 1,807 | 2,000 | met (16); badges +62 and honours +194 for the bigger trophies (32–34) |
-| Player detail | 2,333 | 2,400 | met (21); +38 for the 40px shelf (33) and +54 for Phase 48's *This is me* |
+| Player detail | 2,287 | 2,400 | met (21); +38 for the 40px shelf (33) and +8 for Phase 48's *This is me*, which used to cost 54 and now sits in the hero's top-right corner rather than a row of its own |
 | Opponent detail | 1,259 | 2,000 | met (21) |
 | Players → Squad | 2,057 cards (default) / 1,671 list | no cap — it's a roster | measured, not capped (17, 24, 33); the tiles lost 81px to the medallion coming off, despite the drawings growing |
 | Players → Data centre | 2,584 | no cap — it's the reference table | measured, not capped (22, 24) |
