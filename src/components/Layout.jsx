@@ -1,6 +1,5 @@
 import { Suspense, useEffect } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
 import { useMe } from '../context/MeContext';
 import { countView, startAnalytics } from '../lib/analytics';
 import ErrorBoundary from './ErrorBoundary';
@@ -56,7 +55,6 @@ const ICONS = {
 };
 
 export default function Layout() {
-  const { session } = useAuth();
   const { meId } = useMe();
   // The bottom bar carries the five public tabs; on admin screens it would
   // only get in the way of the save buttons.
@@ -106,11 +104,14 @@ export default function Layout() {
                 {item.label}
               </NavLink>
             ))}
+            {/* Always "Admin", logged in or not. It read "Log in" to a
+                visitor, which a tester took as a wall in front of the site
+                rather than the club's own back door. */}
             <NavLink
               to="/admin"
               className={({ isActive }) => (isActive ? 'active' : undefined)}
             >
-              {session ? 'Admin' : 'Log in'}
+              Admin
             </NavLink>
           </nav>
         </div>
@@ -138,7 +139,7 @@ export default function Layout() {
         Old Wellingtonians FC · est. on the pitch, settled in the bar
       </footer>
       {/* Phones get the five sections at thumb height; the header keeps only
-          the brand and Admin / Log in. Hidden on desktop via CSS. */}
+          the brand and Admin. Hidden on desktop via CSS. */}
       {!isAdmin && (
         <nav className="tab-bar" aria-label="Primary">
           {NAV.map((item) => (
