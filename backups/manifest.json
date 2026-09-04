@@ -1,17 +1,17 @@
 {
-  "generated_at": "2026-08-28T16:36:41.016Z",
+  "generated_at": "2026-09-04T08:50:05.228Z",
   "tables": {
     "teams": {
       "rows": 14,
-      "digest": "ff3a428143320fab"
+      "digest": "7443b3c47b4f8f90"
     },
     "players": {
       "rows": 49,
       "digest": "9afd455e35a00a93"
     },
     "matches": {
-      "rows": 16,
-      "digest": "9b84b05bf8c99bd4"
+      "rows": 17,
+      "digest": "9dd750699cef4cad"
     },
     "appearances": {
       "rows": 155,

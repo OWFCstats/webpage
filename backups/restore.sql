@@ -7,10 +7,10 @@
 -- first (delete from season_awards, league_rows, appearances, matches,
 -- players, teams — that order) and then running this.
 --
--- Taken 2026-08-28T16:36:41.016Z
+-- Taken 2026-09-04T08:50:05.228Z
 
 insert into public.teams ("id", "name", "short_name", "slug", "is_club", "pitch_name", "pitch_address", "postcode", "map_url", "notes", "created_at") values
-  ('02f0dbf5-04d6-4c07-a931-2a1b9e38670f', 'Old Bradfieldians II', null, 'old-bradfieldians-ii', false, null, null, null, null, null, '2026-08-13T13:45:35.91997+00:00'),
+  ('02f0dbf5-04d6-4c07-a931-2a1b9e38670f', 'Old Bradfieldians II', null, 'old-bradfieldians-ii', false, 'Kings House Sports Ground', 'RIVERSIDE DRIVE, LONDON W4 2SP', 'W4 2SP', 'https://www.google.com/maps/place/King''s+House+School+Sports+Ground/@51.476538,-0.2561366,737m/data=!3m2!1e3!4b1!4m6!3m5!1s0x48760e5e5e9b00d7:0xc0aef9bb62cccf41!8m2!3d51.476538!4d-0.2535617!16s%2Fg%2F11bwdwbq9y?entry=ttu&g_ep=EgoyMDI2MDgzMS4wIKXMDSoASAFQAw%3D%3D', null, '2026-08-13T13:45:35.91997+00:00'),
   ('ef40cc79-680a-4fd5-8830-cd9d4373b356', 'Old Cheltonians', null, 'old-cheltonians', false, null, null, null, null, null, '2026-08-13T09:36:58.150673+00:00'),
   ('3a0e5ea8-51b5-4422-ac9e-234a1bc1ab1e', 'Old Cranleighans', null, 'old-cranleighans', false, null, null, null, null, null, '2026-08-13T13:38:18.837204+00:00'),
   ('6cd9ce1b-dc06-4489-9bcb-da43b4fb8881', 'Old Harrovians III', null, 'old-harrovians-iii', false, null, null, null, null, null, '2026-08-13T13:45:56.704806+00:00'),
@@ -19,11 +19,11 @@ insert into public.teams ("id", "name", "short_name", "slug", "is_club", "pitch_
   ('82a990d4-7b76-44b8-9c49-18b7f026dfe7', 'Old Merchant Taylors II', null, 'old-merchant-taylors-ii', false, null, null, null, null, null, '2026-08-13T13:46:16.075829+00:00'),
   ('eccf9c51-e927-46b6-8827-ff01705b3da9', 'Old Oundelians', null, 'old-oundelians', false, null, null, null, null, null, '2026-08-13T09:36:58.150673+00:00'),
   ('2e1dbdbc-41c4-4539-822e-d5a4079b24cf', 'Old Salopians II', null, 'old-salopians-ii', false, null, null, null, null, null, '2026-08-13T09:36:58.150673+00:00'),
-  ('06276e0c-90ab-42f1-8462-31e9a24d8fbc', 'Old St Edwardians', null, 'old-st-edwardians', false, null, null, null, null, null, '2026-08-13T13:46:30.915078+00:00'),
+  ('06276e0c-90ab-42f1-8462-31e9a24d8fbc', 'Old St Edwardians', null, 'old-st-edwardians', false, 'Barn Elms Sports Centre', 'Queen Elizabeth Walk, London SW13 0DG, United Kingdom', 'SW13 0DG', 'https://www.google.com/maps/@51.47567,-0.230192,184m/data=!3m1!1e3?entry=ttu&g_ep=EgoyMDI2MDgzMS4wIKXMDSoASAFQAw%3D%3D', null, '2026-08-13T13:46:30.915078+00:00'),
   ('35b12114-fb3a-4a52-b2e6-58d1862cbf2d', 'Old Stoics', null, 'old-stoics', false, null, null, null, null, null, '2026-08-13T09:36:58.150673+00:00'),
-  ('b7fa946a-7605-46d4-8450-ac5cb334b85e', 'Old Wellingtonians', null, 'old-wellingtonians', true, 'Kings House Sports Ground', 'King''s House School Sports Ground Riverside Drive ​Chiswick', 'W4 2SH', null, null, '2026-08-13T09:36:58.150673+00:00'),
+  ('b7fa946a-7605-46d4-8450-ac5cb334b85e', 'Old Wellingtonians', null, 'old-wellingtonians', true, 'Kings House Sports Ground', 'Riverside Dr, Chiswick, London W4 2SP, United Kingdom', 'W4 2SH', 'https://www.google.com/maps/place/King''s+House+School+Sports+Ground/@51.476538,-0.2561366,737m/data=!3m2!1e3!4b1!4m6!3m5!1s0x48760e5e5e9b00d7:0xc0aef9bb62cccf41!8m2!3d51.476538!4d-0.2535617!16s%2Fg%2F11bwdwbq9y?entry=ttu&g_ep=EgoyMDI2MDgzMS4wIKXMDSoASAFQAw%3D%3D', null, '2026-08-13T09:36:58.150673+00:00'),
   ('f4d6f0de-5112-42d1-a9f6-b84f83eb606a', 'Old Worthians', null, 'old-worthians', false, null, null, null, null, null, '2026-08-13T09:36:58.150673+00:00'),
-  ('29d2493b-36b3-45c2-9643-a0b1a5f4708d', 'Wellington XI', null, 'wellington-xi', false, null, null, null, null, null, '2026-08-13T09:36:58.150673+00:00')
+  ('29d2493b-36b3-45c2-9643-a0b1a5f4708d', 'Wellington 1st XI', null, 'wellington-1st-xi', false, 'Turf', 'Duke''s Ride, Berkshire, Crowthorne RG45 7PU, United Kingdom', 'RG45 7PU', 'https://www.google.com/maps/place/Wellington+College/@51.3679052,-0.8155996,739m/data=!3m2!1e3!4b1!4m6!3m5!1s0x487681c98c9fd583:0x3f942f25a4912667!8m2!3d51.3679052!4d-0.8130247!16zL20vMDJtdzZj?entry=ttu&g_ep=EgoyMDI2MDgzMS4wIKXMDSoASAFQAw%3D%3D', null, '2026-08-13T09:36:58.150673+00:00')
 on conflict (id) do update set
   "name" = excluded."name",
   "short_name" = excluded."short_name",
@@ -108,7 +108,8 @@ insert into public.matches ("id", "season", "date", "opponent", "competition", "
   ('52ba61ba-9252-47d7-9261-13468f14e1e9', '2025/26', '2026-04-18', 'Old Cranleighans', 'League', 0, 3, 0, 0, 'L', null, '2026-08-11T18:37:24.558262+00:00', 'A', true, '3a0e5ea8-51b5-4422-ac9e-234a1bc1ab1e', null),
   ('94a740bd-2720-4701-a854-199bc2634cd0', '2025/26', '2026-04-25', 'Old Stoics', 'League', 2, 3, 0, 0, 'L', null, '2026-07-28T14:09:26.44542+00:00', 'H', false, '35b12114-fb3a-4a52-b2e6-58d1862cbf2d', null),
   ('ccec6dce-12f0-41aa-8cec-35ab10518923', '2026/27', '2026-09-05', 'Wellington XI', 'Friendly', null, null, 0, 0, null, null, '2026-07-29T08:29:05.676338+00:00', 'A', false, '29d2493b-36b3-45c2-9643-a0b1a5f4708d', null),
-  ('f9b23669-2a06-4c7d-886f-42fb7aff7a54', '2026/27', '2026-09-12', 'Old Bradfieldians II', 'League', null, null, 0, 0, null, null, '2026-08-13T14:20:18.973888+00:00', 'H', false, '02f0dbf5-04d6-4c07-a931-2a1b9e38670f', null)
+  ('f9b23669-2a06-4c7d-886f-42fb7aff7a54', '2026/27', '2026-09-12', 'Old Bradfieldians II', 'League', null, null, 0, 0, null, null, '2026-08-13T14:20:18.973888+00:00', 'H', false, '02f0dbf5-04d6-4c07-a931-2a1b9e38670f', null),
+  ('73f89756-5eb3-47b5-b25b-31f2193b9470', '2026/27', '2026-09-26', 'Old St Edwardians', 'League', null, null, 0, 0, null, null, '2026-09-03T14:07:54.9505+00:00', 'A', false, '06276e0c-90ab-42f1-8462-31e9a24d8fbc', '12:00:00')
 on conflict (id) do update set
   "season" = excluded."season",
   "date" = excluded."date",
