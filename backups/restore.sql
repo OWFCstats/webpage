@@ -7,7 +7,7 @@
 -- first (delete from season_awards, league_rows, appearances, matches,
 -- players, teams — that order) and then running this.
 --
--- Taken 2026-09-04T08:50:05.228Z
+-- Taken 2026-09-06T08:39:27.669Z
 
 insert into public.teams ("id", "name", "short_name", "slug", "is_club", "pitch_name", "pitch_address", "postcode", "map_url", "notes", "created_at") values
   ('02f0dbf5-04d6-4c07-a931-2a1b9e38670f', 'Old Bradfieldians II', null, 'old-bradfieldians-ii', false, 'Kings House Sports Ground', 'RIVERSIDE DRIVE, LONDON W4 2SP', 'W4 2SP', 'https://www.google.com/maps/place/King''s+House+School+Sports+Ground/@51.476538,-0.2561366,737m/data=!3m2!1e3!4b1!4m6!3m5!1s0x48760e5e5e9b00d7:0xc0aef9bb62cccf41!8m2!3d51.476538!4d-0.2535617!16s%2Fg%2F11bwdwbq9y?entry=ttu&g_ep=EgoyMDI2MDgzMS4wIKXMDSoASAFQAw%3D%3D', null, '2026-08-13T13:45:35.91997+00:00'),
@@ -63,6 +63,7 @@ insert into public.players ("id", "name", "position", "status", "created_at") va
   ('80acf6c9-d53e-42f2-9161-79dff78bc545', 'Jack Reid', 'DEF', 'active', '2026-07-28T14:09:26.44542+00:00'),
   ('afbbe66e-afdf-4744-bf3e-1184af3eb5b7', 'Jacob Kasaska', 'MID', 'active', '2026-07-28T14:09:26.44542+00:00'),
   ('7e9322d3-cc09-42be-9bf4-a1d7fb20724b', 'Jake Aungier', 'MID', 'active', '2026-07-28T14:09:26.44542+00:00'),
+  ('5b4dbffb-91e0-421c-9f9d-8e5691f19fac', 'Jake Simmance', 'DEF', 'active', '2026-09-05T20:56:23.96323+00:00'),
   ('8cad1b81-ceb8-4965-817a-06a8ac21d181', 'Joe Britz', 'MID', 'active', '2026-07-28T14:09:26.44542+00:00'),
   ('24c0980a-576b-4e84-97ae-7414f1442fc8', 'Joe Gibbons', 'DEF', 'active', '2026-07-28T14:09:26.44542+00:00'),
   ('782d55df-0c3f-4277-892f-85de84b1accc', 'Joe Henry', 'MID', 'active', '2026-07-28T14:09:26.44542+00:00'),
@@ -107,7 +108,7 @@ insert into public.matches ("id", "season", "date", "opponent", "competition", "
   ('dca7de05-51bb-47c6-96b7-e0f2ebdfe15a', '2025/26', '2026-02-21', 'Old Salopians', 'League', 1, 1, 0, 0, 'D', null, '2026-07-28T14:09:26.44542+00:00', 'A', false, '2e1dbdbc-41c4-4539-822e-d5a4079b24cf', null),
   ('52ba61ba-9252-47d7-9261-13468f14e1e9', '2025/26', '2026-04-18', 'Old Cranleighans', 'League', 0, 3, 0, 0, 'L', null, '2026-08-11T18:37:24.558262+00:00', 'A', true, '3a0e5ea8-51b5-4422-ac9e-234a1bc1ab1e', null),
   ('94a740bd-2720-4701-a854-199bc2634cd0', '2025/26', '2026-04-25', 'Old Stoics', 'League', 2, 3, 0, 0, 'L', null, '2026-07-28T14:09:26.44542+00:00', 'H', false, '35b12114-fb3a-4a52-b2e6-58d1862cbf2d', null),
-  ('ccec6dce-12f0-41aa-8cec-35ab10518923', '2026/27', '2026-09-05', 'Wellington XI', 'Friendly', null, null, 0, 0, null, null, '2026-07-29T08:29:05.676338+00:00', 'A', false, '29d2493b-36b3-45c2-9643-a0b1a5f4708d', null),
+  ('ccec6dce-12f0-41aa-8cec-35ab10518923', '2026/27', '2026-09-05', 'Wellington XI', 'Friendly', 0, 4, 0, 0, 'L', null, '2026-07-29T08:29:05.676338+00:00', 'A', false, '29d2493b-36b3-45c2-9643-a0b1a5f4708d', '13:00:00'),
   ('f9b23669-2a06-4c7d-886f-42fb7aff7a54', '2026/27', '2026-09-12', 'Old Bradfieldians II', 'League', null, null, 0, 0, null, null, '2026-08-13T14:20:18.973888+00:00', 'H', false, '02f0dbf5-04d6-4c07-a931-2a1b9e38670f', null),
   ('73f89756-5eb3-47b5-b25b-31f2193b9470', '2026/27', '2026-09-26', 'Old St Edwardians', 'League', null, null, 0, 0, null, null, '2026-09-03T14:07:54.9505+00:00', 'A', false, '06276e0c-90ab-42f1-8462-31e9a24d8fbc', '12:00:00')
 on conflict (id) do update set
@@ -257,6 +258,17 @@ insert into public.appearances ("id", "match_id", "player_id", "started", "goals
   ('935119f6-9241-46c0-b46a-5e444d852030', 'c03ccb90-87b7-4b04-977d-adf3a75418f2', '83189d45-71e9-427e-8886-b9847b2edda4', true, 0, 0, 0, 0, false, false),
   ('0cef49d3-0fef-4dee-8bb6-1aef686cf30e', 'c03ccb90-87b7-4b04-977d-adf3a75418f2', 'b05722bb-328b-433b-a36c-631dee750e86', true, 0, 0, 0, 0, false, false),
   ('2b1d8fb0-afa0-4602-abc1-049dc1a0833f', 'c03ccb90-87b7-4b04-977d-adf3a75418f2', 'b9ed2734-11d1-4d2e-a946-b102fa955772', true, 0, 1, 0, 0, false, false),
+  ('2172c06b-78e8-4ba2-8afd-c8e689ccaead', 'ccec6dce-12f0-41aa-8cec-35ab10518923', '12c65343-1056-4ab7-8e34-71719546be60', true, 0, 0, 0, 0, false, false),
+  ('6bedc511-ac2b-408f-82e6-54174ec4740e', 'ccec6dce-12f0-41aa-8cec-35ab10518923', '2cb2c5a0-d51a-4f08-aa00-3883a22e2e5f', true, 0, 0, 0, 0, false, false),
+  ('c9aa6d9d-1787-4ded-a63b-a406a3739cb8', 'ccec6dce-12f0-41aa-8cec-35ab10518923', '334fa9e4-25c9-4b93-b5fc-dba9004ad81f', true, 0, 0, 0, 0, false, false),
+  ('5e1e82c6-1ce8-4e50-9e11-0b57425e5c2b', 'ccec6dce-12f0-41aa-8cec-35ab10518923', '39447313-ad42-46a9-8eeb-bc0f56916e5d', true, 0, 0, 0, 0, false, false),
+  ('d0603516-ee4c-4995-b6eb-6c5c6fb7a8e1', 'ccec6dce-12f0-41aa-8cec-35ab10518923', '5a424794-81ae-4345-b717-d88f3d8bf2d9', true, 0, 0, 0, 0, false, false),
+  ('034333ea-c35b-41f9-8f5e-fa6bfddd2940', 'ccec6dce-12f0-41aa-8cec-35ab10518923', '5b4dbffb-91e0-421c-9f9d-8e5691f19fac', true, 0, 0, 0, 0, false, false),
+  ('2e254e08-5ff8-48fc-ac37-2be609c0de2e', 'ccec6dce-12f0-41aa-8cec-35ab10518923', '76794163-1369-4fc9-ac30-ba3c188a879c', true, 0, 0, 0, 0, false, false),
+  ('06360fd7-067d-4faa-b455-56be01e1450c', 'ccec6dce-12f0-41aa-8cec-35ab10518923', '76b8d60e-5cbe-4a85-8c54-621513bf8044', true, 0, 0, 0, 0, false, false),
+  ('ec8690e9-7fb4-4aee-8bbe-940aff060fd5', 'ccec6dce-12f0-41aa-8cec-35ab10518923', '83189d45-71e9-427e-8886-b9847b2edda4', true, 0, 0, 0, 0, false, false),
+  ('f6e062d8-532d-4a99-953d-ebccd3b6158f', 'ccec6dce-12f0-41aa-8cec-35ab10518923', '8cad1b81-ceb8-4965-817a-06a8ac21d181', true, 0, 0, 0, 0, false, false),
+  ('394f4699-193b-430c-b8aa-aecebe38bfc0', 'ccec6dce-12f0-41aa-8cec-35ab10518923', 'c4ffcc42-df0d-4911-8843-7dec359d34be', true, 0, 0, 0, 0, false, false),
   ('4960c4c6-4a23-4659-818f-8a6384571a35', 'd2972331-d10c-495b-ad38-f409f8e0f4e4', '12c65343-1056-4ab7-8e34-71719546be60', true, 0, 0, 0, 0, false, false),
   ('2e28d18d-6680-40cc-8dca-8468cfc6250c', 'd2972331-d10c-495b-ad38-f409f8e0f4e4', '1811f772-3cb7-4ce4-bd2f-c3b359cb8432', true, 0, 0, 0, 0, false, false),
   ('70a99fae-f396-4e93-ab4d-2827b4a0f811', 'd2972331-d10c-495b-ad38-f409f8e0f4e4', '2cb2c5a0-d51a-4f08-aa00-3883a22e2e5f', true, 0, 0, 0, 0, false, false),

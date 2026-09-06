@@ -257,17 +257,17 @@
     "date": "2026-09-05",
     "opponent": "Wellington XI",
     "competition": "Friendly",
-    "goals_for": null,
-    "goals_against": null,
+    "goals_for": 0,
+    "goals_against": 4,
     "own_goals_for": 0,
     "own_goals_against": 0,
-    "result": null,
+    "result": "L",
     "report": null,
     "created_at": "2026-07-29T08:29:05.676338+00:00",
     "venue": "A",
     "walkover": false,
     "opponent_team_id": "29d2493b-36b3-45c2-9643-a0b1a5f4708d",
-    "kickoff_time": null
+    "kickoff_time": "13:00:00"
   },
   {
     "id": "f9b23669-2a06-4c7d-886f-42fb7aff7a54",
