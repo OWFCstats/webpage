@@ -203,14 +203,14 @@ view. *Now* is `npm run shots` on the `mid-season` fixture at 375px.
 
 | Page | Now | Budget | Owner |
 | --- | --- | --- | --- |
-| Home — unpicked / a name picked / picked, no apps this season | 2,116 / 2,264 / 2,252 | 1,600 | **Phase 52** — 516 over unpicked and 664 over picked; Phase 23's badge, label and button cost 165px, Phase 44's `<h1>` gave 5px back, and Phase 48 cost 74 and 222. Three rows because they are three states of one page, and only the first is what a stranger sees |
+| Home — unpicked / a name picked / picked, no apps this season | 2,116 / 2,202 / 2,189 | 1,600 | **Phase 52** — 516 over unpicked and 602 over picked; Phase 23's badge, label and button cost 165px and Phase 44's `<h1>` gave 5px back. The two picked figures were 2,264 and 2,252 here and measure 62px shorter on both sides of Phase 55, so the drift is older than that branch and nothing has been found that accounts for it — which also leaves Phase 48's stated cost of 222px picked unreconciled (2,116 to 2,202 is 86px between the two states). **Phase 52 re-measures all three before it decides anything**, since a budget argued from a stale figure is the thing this table exists to prevent. Three rows because they are three states of one page, and only the first is what a stranger sees |
 | Matchday — latest | 2,456 | 2,300 | **Phase 52** — 156 over; head to head's tape, real content the old card didn't carry. The rail doesn't move this: the budget is stated at 375px and the rail is a >=900px-only change |
 | Matchday — clean sheet (12 named, a report, clamped / open) | 2,746 / 3,150 | 2,300 | **Phase 52** — 446 over clamped; the clamp bounds it, it doesn't fit it. Same as above, untouched by 28 or 31 |
 | Matchday — walkover (no team sheet) | 1,533 | 2,300 | within |
 | Season | 2,494 | 2,200 | **Phase 52** — 290 over; Phase 29's `SeasonLadder` reuse took 734px back, see *Decisions* → *Open* |
 | Season → charts | 1,909 | 2,200 | met (18) |
 | Players → Leaderboards | 1,296 | 1,400 | met (14, 24) |
-| Records → badges / honours / all-time | 1,729 / 1,155 / 1,807 | 2,000 | met (16); badges +62 and honours +194 for the bigger trophies (32–34) |
+| Records → badges / honours / all-time | 1,729 / 1,069 / 1,807 | 2,000 | met (16); badges +62 for the bigger trophies (32–34). Honours was 1,155 and is 1,069 because Phase 55 leaves the season being played with no winners under its four trophies — 1,626 on `pre-season`, which is the same page with two seasons on the shelf and both published, and the taller of the two states |
 | Player detail | 2,287 | 2,400 | met (21); +38 for the 40px shelf (33) and +8 for Phase 48's *This is me*, which used to cost 54 and now sits in the hero's top-right corner rather than a row of its own |
 | Opponent detail | 1,259 | 2,000 | met (21) |
 | Players → Squad | 2,057 cards (default) / 1,671 list | no cap — it's a roster | measured, not capped (17, 24, 33); the tiles lost 81px to the medallion coming off, despite the drawings growing |
@@ -224,7 +224,8 @@ other three.
 
 Phase 48 made Home's row worse on purpose and the phase said so rather than
 finding a shave to hide it: `DESIGN.md` → *Home, addressed to the reader* is the
-argument for the 222px, and the two states are listed separately because they
+argument for that cost — the figure itself is one of the three Phase 52 has to
+re-measure, per the row above — and the two states are listed separately because they
 are not the same page — the reader who costs the most is the one this site is
 for, and the stranger the budget was written for still sees a single row. That
 does not settle anything. **It is now the strongest reason Phase 52 has to cut a
