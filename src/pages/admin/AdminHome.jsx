@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useData } from '../../context/DataContext';
 import WalkoverForm from '../../components/WalkoverForm';
-import { formatDate, formatKickoff } from '../../lib/format';
-import { outstanding, todayISO } from '../../lib/admin';
+import { formatDate, formatKickoff, todayISO } from '../../lib/format';
+import { outstanding } from '../../lib/admin';
 import { currentSeasonOf, fixtures } from '../../lib/matches';
 
 /**

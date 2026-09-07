@@ -16,6 +16,15 @@ export function formatKickoff(time) {
   return `${hour12}:${String(m).padStart(2, '0')}${period}`;
 }
 
+/** Today as a `date` column stores it, so the two can be compared as strings.
+ *  Local rather than UTC: at 00:30 in British Summer Time the UTC date is still
+ *  yesterday, and "was this fixture played yet" would answer for the wrong day.
+ *  `now` is a parameter so the harness can pin it and a test can assert on it. */
+export function todayISO(now = new Date()) {
+  const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+  return local.toISOString().slice(0, 10);
+}
+
 /** Days until a fixture, or null once it's in the past. */
 export function daysUntil(iso) {
   const today = new Date();

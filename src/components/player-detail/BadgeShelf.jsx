@@ -9,12 +9,26 @@ import BadgeIcon from '../BadgeIcon';
  *  frame, a field and a highlight now, and at 24 none of that was visible. */
 const SIZE = 40;
 
-/** A trophy is shown as the years it was won in: two Golden Boots is the same
- *  trophy twice, and a "×2" would imply the second one is bigger. */
-function Held({ badge, mark }) {
+/** A stackable and a repeated trophy both carry a count rather than a bigger
+ *  badge — two Golden Boots is the same trophy twice, and a tier would imply the
+ *  second one is worth more than the first. A trophy won once names its season
+ *  instead, which is the better fact while there is only one of them; a year
+ *  list grows without limit and this club intends to be here in ten years.
+ *
+ *  `label` is the whole stack's accessible name and its tooltip, so it can carry
+ *  every season a repeat was won in: the mark has 40px of column to print in and
+ *  the label has no width at all. It replaces the drawing's own `alt` rather
+ *  than sitting beside it, which is what keeps a two-badge row from being read
+ *  as four things. */
+function Held({ badge, mark, label }) {
   return (
-    <Link className="badge-stack" to={`/records/badges/${badge.key}`}>
-      <BadgeIcon badge={badge.key} metal="gold" size={SIZE} alt={badge.label} />
+    <Link
+      className="badge-stack"
+      to={`/records/badges/${badge.key}`}
+      aria-label={label}
+      title={label}
+    >
+      <BadgeIcon badge={badge.key} metal="gold" size={SIZE} alt="" />
       <span className="times">{mark}</span>
     </Link>
   );
@@ -54,10 +68,20 @@ export default function BadgeShelf({ badges }) {
       {events.length + trophies.length > 0 && (
         <div className="badge-row section">
           {events.map((badge) => (
-            <Held key={badge.key} badge={badge} mark={`×${badge.count}`} />
+            <Held
+              key={badge.key}
+              badge={badge}
+              mark={`×${badge.count}`}
+              label={`${badge.label} ×${badge.count}`}
+            />
           ))}
           {trophies.map((badge) => (
-            <Held key={badge.key} badge={badge} mark={badge.seasons.join(', ')} />
+            <Held
+              key={badge.key}
+              badge={badge}
+              mark={badge.seasons.length === 1 ? badge.seasons[0] : `×${badge.seasons.length}`}
+              label={`${badge.label} — ${badge.seasons.join(', ')}`}
+            />
           ))}
         </div>
       )}

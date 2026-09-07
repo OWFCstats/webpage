@@ -26,6 +26,20 @@
   margin: 0 0 var(--s4);
 }
 
+/* The season being played now, said on the year rather than under each trophy:
+   the four captions below already say when the honours land, and the reader
+   needs to know which shelf is the live one before reading any of them. Baseline
+   rather than centre — the year is display-face at title size and the tag is a
+   micro label, so centring it hangs the tag off the year's cap height. */
+.hc-year .hc-open {
+  margin-left: var(--s3);
+  vertical-align: 0.15em;
+  /* The year is the display face at title size with its tracking pulled in;
+     a chip is neither, so both are said again here rather than inherited. */
+  font-family: var(--font-text);
+  letter-spacing: normal;
+}
+
 /* Two up on a phone, four across from 520px. Four at 375px gives a column 78px,
    and a 78px trophy with a name under it is the list this replaced with extra
    steps; two gives each one about 160px, which is a 72px trophy, a name on one
@@ -121,10 +135,12 @@
 
 .hc-shared { font-style: italic; }
 
-/* Nobody has won it yet — every award of a season the moment its fixtures are
-   entered. The drawing above is drained by `.badge-icon.unheld`; this is the
-   words, in the same caption ink as a mark so the shelf keeps its shape whether
-   a trophy has been handed out or not. */
+/* No name under the trophy, for either of the two reasons there can be: the
+   season is still being played (*End of season*, and its year carries the *In
+   play* tag) or it has finished and this one went to nobody (*Not awarded*).
+   The drawing above is drained by `.badge-icon.unheld`; this is the words, in
+   the same caption ink as a mark so the shelf keeps its shape whether a trophy
+   has been handed out or not. */
 .hc-none {
   font-family: var(--font-data);
   font-size: var(--t-small);

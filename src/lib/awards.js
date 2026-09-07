@@ -3,7 +3,7 @@
 
 import { playedMatches, resultOf, isCleanSheet, seasonsOf, seasonSummary, isPlayed } from './matches';
 import { playerTotals } from './players';
-import { monthYear } from './format';
+import { monthYear, todayISO } from './format';
 
 /**
  * Longest streak of consecutive matches satisfying `ok`, over an oldest-first
@@ -167,7 +167,12 @@ export const EVENT_BADGES = [
  * Class 3 — season honours. Trophies, one per season, gold, and they are
  * exactly the honours board's rows, so the board and the badge shelf cannot
  * drift. They do not tier and do not stack into a bigger version: two Golden
- * Boots is the same trophy twice, shown as a year list.
+ * Boots is the same trophy twice, and a repeat carries `×n` rather than its own
+ * artwork — see `heldBadges` below and `DESIGN.md` → *Winning one twice*.
+ *
+ * **They are also end-of-season awards**, which three of them being derived
+ * makes easy to forget: a leader exists from the first whistle. `honoursSettled`
+ * below is what stops one being handed out in September.
  *
  * Player of the Season leads because it's the one the players vote on — and
  * the only one no formula produces, which is why it needs a row in
@@ -226,6 +231,67 @@ export function badgeByKey(key) {
   return BADGES.find((b) => b.key === key) ?? null;
 }
 
+// ---------------------------------------------------------------------------
+// When a season's honours go up
+// ---------------------------------------------------------------------------
+
+/**
+ * The date a season's honours go up on their own: 1 July after it ends.
+ *
+ * A season is labelled by the two years it spans, so `2025/26` ends in 2026 and
+ * 1 July is a week or so clear of the last Saturday anyone plays — the club's
+ * 2025/26 finished on 20 June. Null for a label those first four digits aren't
+ * a year in, which `honoursSettled` treats as history rather than as a season
+ * in play: a label nobody can read is one somebody typed in years ago, and
+ * hiding its honours for ever is the failure that loses a season quietly.
+ */
+export function honoursDate(season) {
+  const start = Number(String(season).slice(0, 4));
+  return Number.isInteger(start) && start > 1900 ? `${start + 1}-07-01` : null;
+}
+
+/**
+ * Has this season finished, as far as its honours are concerned?
+ *
+ * **The four season honours are end-of-season awards and three of them are
+ * derived, which means they have a winner from the first whistle.** After one
+ * game of 2026/27 every player who turned up had one appearance, so all eleven
+ * of them led the column and all eleven held The Dependable. That is not a
+ * rendering fault: an award for most appearances in a season is meaningless
+ * until the season has none left to play.
+ *
+ * Two conditions, and both have to hold:
+ *
+ * - **The date has come round.** `honoursDate` above.
+ * - **Nothing is left in the diary.** A fixture entered for the season and not
+ *   yet played means it isn't over, whatever the calendar says — a cup final in
+ *   July is a real thing and the club's own season end moves by a fortnight
+ *   either way. This only ever bites after 1 July, so the ordinary state of
+ *   mid-season — every entered fixture played, next month's not entered yet —
+ *   can't settle a season by accident.
+ *
+ * A row in `season_status` overrides both, in either direction: the club wants
+ * the trophies up on the night of the dinner, and a season sometimes has to be
+ * pulled back after a result went in wrong. No row is "follow the rule", which
+ * is where every season starts and where nearly all of them stay.
+ */
+export function honoursSettled(season, matches, { seasonStatus = [], today = todayISO() } = {}) {
+  const override = seasonStatus.find((r) => r.season === season);
+  if (override) return Boolean(override.honours_published);
+  const from = honoursDate(season);
+  if (!from) return true;
+  if (today < from) return false;
+  return !matches.some((m) => m.season === season && !isPlayed(m));
+}
+
+/** The four honours of a season still being played: named, and won by nobody.
+ *  Empty rather than flagged, because every surface that draws a trophy already
+ *  reads `leaders` — a flag would have to be checked in six places and the one
+ *  that forgot would print eleven Dependables again. */
+function unsettledAwards() {
+  return SEASON_AWARDS.map((a) => ({ ...a, value: null, note: null, leaders: [] }));
+}
+
 /**
  * Everyone level at the top of one stat, and the mark they share. Empty when
  * nothing was recorded — nobody leads a column of zeroes, and picking a name
@@ -259,24 +325,34 @@ function votedAward(seasonAwards, playerById, season, key) {
  * competitions played in it, and the four trophies. Ties are kept whole on
  * the derived three — two players on nine goals both won the boot, and the
  * rows can't say which of them mattered more.
+ *
+ * **A season still being played hands out nothing.** `honoursSettled` above is
+ * the rule and `settled` says which side of it a season is on, so the cabinet
+ * can draw the shelf a reader is about to fill rather than hide the season
+ * altogether. `options` carries the `season_status` rows and, for a test, the
+ * day to judge it on.
  */
-export function seasonRecords(players, matches, appearances, seasonAwards = []) {
+export function seasonRecords(players, matches, appearances, seasonAwards = [], options = {}) {
   const playerById = new Map(players.map((p) => [p.id, p]));
   return seasonsOf(matches).map((season) => {
     const seasonMatches = matches.filter((m) => m.season === season);
     const totals = playerTotals(players, seasonMatches, appearances);
+    const settled = honoursSettled(season, matches, options);
     return {
       season,
+      settled,
       summary: seasonSummary(seasonMatches),
       competitions: [
         ...new Set(seasonMatches.filter(isPlayed).map((m) => m.competition)),
       ].sort(),
-      awards: SEASON_AWARDS.map((a) => ({
-        ...a,
-        ...(a.voted
-          ? votedAward(seasonAwards, playerById, season, a.key)
-          : leadersIn(totals, a.stat)),
-      })),
+      awards: settled
+        ? SEASON_AWARDS.map((a) => ({
+          ...a,
+          ...(a.voted
+            ? votedAward(seasonAwards, playerById, season, a.key)
+            : leadersIn(totals, a.stat)),
+        }))
+        : unsettledAwards(),
     };
   });
 }
@@ -360,11 +436,13 @@ function careerBadge(row, family) {
 /**
  * Every season each trophy was won in, newest first, keyed by badge. Read off
  * `seasonRecords` rather than worked out again, which is what stops the
- * honours board and the trophy shelf ever disagreeing.
+ * honours board and the trophy shelf ever disagreeing — including about a
+ * season still being played, whose four awards arrive with nobody on them and
+ * fall out on the line below.
  */
-function trophySeasons(players, matches, appearances, seasonAwards) {
+function trophySeasons(players, matches, appearances, seasonAwards, options) {
   const won = new Map(SEASON_AWARDS.map((a) => [a.key, []]));
-  for (const season of seasonRecords(players, matches, appearances, seasonAwards)) {
+  for (const season of seasonRecords(players, matches, appearances, seasonAwards, options)) {
     for (const award of season.awards) {
       if (award.leaders.length === 0) continue;
       won.get(award.key).push({ season: season.season, players: award.leaders, value: award.value });
@@ -394,10 +472,10 @@ function shelf(row, won) {
 }
 
 /** One player's shelf — the player page's own call. */
-export function playerBadges(player, players, matches, appearances, seasonAwards = []) {
+export function playerBadges(player, players, matches, appearances, seasonAwards = [], options = {}) {
   const row = badgeRows(players, matches, appearances).find((r) => r.player.id === player.id);
   if (!row) return { career: [], events: [], trophies: [] };
-  return shelf(row, trophySeasons(players, matches, appearances, seasonAwards));
+  return shelf(row, trophySeasons(players, matches, appearances, seasonAwards, options));
 }
 
 /**
@@ -422,8 +500,8 @@ export function nextCareerBadge(badges) {
  * on a single screen, and `playerBadges` walks the whole appearance log per
  * call — a pass over the season for every player in it. One pass, same shelves.
  */
-export function squadBadges(players, matches, appearances, seasonAwards = []) {
-  const won = trophySeasons(players, matches, appearances, seasonAwards);
+export function squadBadges(players, matches, appearances, seasonAwards = [], options = {}) {
+  const won = trophySeasons(players, matches, appearances, seasonAwards, options);
   return new Map(
     badgeRows(players, matches, appearances).map((row) => [row.player.id, shelf(row, won)]),
   );
@@ -431,11 +509,17 @@ export function squadBadges(players, matches, appearances, seasonAwards = []) {
 
 /**
  * The badges a player actually holds, in the board's own order, each carrying
- * the metal it is drawn in and the mark that says how it was earned — the tier
- * for a career badge, the count for a stackable, the seasons for a trophy. Only
- * Class 1 tiers, so the other two arrive gold whoever holds them. The mark is
- * how a row of drawings says out loud what it is: a squad tile prints none of
- * them, and names all of them in the row's own label.
+ * the metal it is drawn in, a `count` of how many times it has been earned, and
+ * the mark that says so — the tier for a career badge, `×n` for a stackable,
+ * the season for a trophy won once. Only Class 1 tiers, so the other two arrive
+ * gold whoever holds them.
+ *
+ * **A trophy won more than once carries a count, not a bigger badge.** The mark
+ * is the season while there is one season to name and `×n` from two wins up: a
+ * year list grows without limit and this club intends to be here in ten years,
+ * where "2025/26, 2027/28, 2029/30, 2030/31" under a 26px drawing is not a mark.
+ * Which seasons is a fact the honours cabinet and the trophy's own page both
+ * hold season by season, one tap away — `DESIGN.md` → *Winning one twice*.
  *
  * Held only, unlike the shelf on a player's own page: that page argues a badge
  * you can't see is not an incentive, and it is right, but a squad's worth of
@@ -452,7 +536,12 @@ export function heldBadges(badges) {
       .map((b) => ({ ...b, metal: 'gold', mark: `×${b.count}` })),
     ...badges.trophies
       .filter((b) => b.seasons.length > 0)
-      .map((b) => ({ ...b, metal: 'gold', mark: b.seasons.join(', ') })),
+      .map((b) => ({
+        ...b,
+        metal: 'gold',
+        count: b.seasons.length,
+        mark: b.seasons.length === 1 ? b.seasons[0] : `×${b.seasons.length}`,
+      })),
   ];
 }
 
@@ -481,9 +570,9 @@ function tierHolders(rows, family, index) {
  * badge reports its four tiers and who holds each, which is the story — where
  * the gold stops says more about a young club than a list of names does.
  */
-export function clubBadges(players, matches, appearances, seasonAwards = []) {
+export function clubBadges(players, matches, appearances, seasonAwards = [], options = {}) {
   const rows = badgeRows(players, matches, appearances);
-  const won = trophySeasons(players, matches, appearances, seasonAwards);
+  const won = trophySeasons(players, matches, appearances, seasonAwards, options);
   return {
     career: CAREER_BADGES.map((family) => {
       const tiers = family.tiers.map((threshold, i) => ({
@@ -540,13 +629,13 @@ function capped(rows) {
  * the page a badge can be linked into the group chat with. Null for a key
  * nothing is drawn for, which is what the route turns into a not-found.
  */
-export function badgeDetail(key, players, matches, appearances, seasonAwards = []) {
+export function badgeDetail(key, players, matches, appearances, seasonAwards = [], options = {}) {
   const family = badgeByKey(key);
   if (!family) return null;
   const rows = badgeRows(players, matches, appearances);
 
   if (family.class === 'trophy') {
-    const wins = trophySeasons(players, matches, appearances, seasonAwards).get(family.key);
+    const wins = trophySeasons(players, matches, appearances, seasonAwards, options).get(family.key);
     // A trophy held twice is the same trophy twice, so the roll counts seasons
     // rather than stacking into a bigger badge.
     const roll = new Map();

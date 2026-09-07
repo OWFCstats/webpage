@@ -18,10 +18,17 @@ const SIZE = 72;
  * unit: "9" under a boot is a shirt number until it says "9 goals". The voted
  * award has no arithmetic behind it, so it says so — printing a figure there
  * would imply a formula picked the winner.
+ *
+ * **A season still being played is a different nought from a season nobody won
+ * anything in**, which is why an unsettled shelf says *End of season* rather
+ * than *Not awarded*: the first is a date, the second reads as a verdict, and
+ * three of these four have a leader from the first whistle that this shelf is
+ * deliberately not printing. Four words rather than a sentence, because the
+ * column they sit in is 160px wide.
  */
-function Winners({ award }) {
+function Winners({ award, settled }) {
   if (award.leaders.length === 0) {
-    return <span className="hc-none">Not awarded</span>;
+    return <span className="hc-none">{settled ? 'Not awarded' : 'End of season'}</span>;
   }
   return (
     <>
@@ -57,6 +64,13 @@ function Winners({ award }) {
  * the gap in it look worth filling. Entering next season's fixtures is what puts
  * a season on this page, which is why the shim exists at all.
  *
+ * **The season being played now is drained too, and its year says why.** These
+ * are end-of-season awards and three of them are derived, so they have a leader
+ * from game one — after one game of 2026/27 all eleven players who turned up
+ * held The Dependable. `lib/awards.js` hands this shelf nobody until the season
+ * settles; the *In play* tag beside the year is what stops that reading as a
+ * cabinet that forgot to fill itself in.
+ *
  * Gold under Player of the Season and nothing under the other three — the same
  * hairline device the list carried, kept because it marks the one name the
  * players chose from the three the arithmetic did, and because a caption saying
@@ -74,7 +88,10 @@ export default function HonoursBoard({ seasons }) {
     <div className="board honours-cabinet">
       {seasons.map((s) => (
         <section className="hc-season" key={s.season}>
-          <h3 className="hc-year">{s.season}</h3>
+          <h3 className="hc-year">
+            {s.season}
+            {!s.settled && <span className="tag dark hc-open">In play</span>}
+          </h3>
           <ol className="hc-shelf">
             {s.awards.map((a) => (
               <li className={`hc-trophy${a.voted ? ' voted' : ''}`} key={a.key}>
@@ -86,7 +103,7 @@ export default function HonoursBoard({ seasons }) {
                   />
                   <span className="hc-award">{a.label}</span>
                 </Link>
-                <Winners award={a} />
+                <Winners award={a} settled={s.settled} />
               </li>
             ))}
           </ol>

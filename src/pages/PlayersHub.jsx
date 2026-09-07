@@ -21,7 +21,7 @@ const VIEWS = [
 ];
 
 export default function PlayersHub({ view }) {
-  const { players, matches, appearances, seasonAwards, loading, error } = useData();
+  const { players, matches, appearances, seasonAwards, seasonStatus, loading, error } = useData();
   const [params, setParams] = useSearchParams();
 
   const seasons = seasonsOf(matches);
@@ -69,8 +69,8 @@ export default function PlayersHub({ view }) {
   const badges = useMemo(
     () => (loading || view !== 'squad'
       ? null
-      : squadBadges(players, matches, appearances, seasonAwards)),
-    [loading, view, players, matches, appearances, seasonAwards],
+      : squadBadges(players, matches, appearances, seasonAwards, { seasonStatus })),
+    [loading, view, players, matches, appearances, seasonAwards, seasonStatus],
   );
 
   // /players?view=squad was the address before the two views had paths of

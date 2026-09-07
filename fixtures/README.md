@@ -61,6 +61,13 @@ Two datasets:
   *result*, not a row (Phase 10), so this dataset still renders 2025/26 rather
   than going blank — this is how that stays checked.
 
+The two also sit on either side of **when a season's honours go up** (Phase 55,
+`honoursSettled` in `src/lib/awards.js`). On `mid-season`'s 20 March 2026 the
+season is still being played, so the cabinet names its four trophies and gives
+them to nobody; by `pre-season`'s 15 August the honours are up and the trophies
+are on players' shelves. Both states are screenshotted and measured, which is
+why no third dataset was needed for it.
+
 Each dataset carries its own `now`, and the harness pins the browser clock to
 it — the fixture countdown reads the clock, and a measurement that changes with
 the day it was taken isn't one.
@@ -84,6 +91,7 @@ to the reason it's there:
 | Teams | The import has none, and without them no opponent page resolves |
 | League standings | Hand-entered in the real thing. Our own row is computed from the dataset's own league results, so the fixture can't contradict itself |
 | Player of the Season | The one award no formula produces |
+| A published-honours row | `season_status`, on `pre-season` only: the club pressing "publish the honours" at the dinner. It agrees with the date rule there, and it is what exercises the table's read path and the admin switch at all |
 | Two match reports | Roughly the club's own hit rate, and Matchday needs both branches |
 
 Six of the 53 players never appear, which is real: the club's rotating squad is

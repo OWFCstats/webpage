@@ -9,7 +9,8 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { DATASETS } from '../fixtures/datasets.js';
-import { fixtureFor, fixturesToFill, outstanding, todayISO } from '../src/lib/admin.js';
+import { fixtureFor, fixturesToFill, outstanding } from '../src/lib/admin.js';
+import { todayISO } from '../src/lib/format.js';
 
 const mid = DATASETS['mid-season'].data;
 const TODAY = '2026-03-20';
@@ -128,6 +129,37 @@ test('a finished season with no Player of the Season is outstanding; the current
   const jobs = outstanding({ ...base, matches: [old, now], appearances: apps }, TODAY);
   assert.deepEqual(jobs.map((j) => j.kind), ['award']);
   assert.match(jobs[0].title, /2024\/25/);
+});
+
+test('the vote is nagged for when its honours go up, not when the season stops being current', () => {
+  // Phase 55: the cabinet publishes a season's honours on the rule in
+  // lib/awards.js, and this nag now follows the same one. A season that has
+  // stopped being the current one but whose shelf is not up yet is not
+  // outstanding — there is nothing for the vote to appear on.
+  const last = match({ id: 'last', season: '2025/26', date: '2026-06-20', goals_for: 1, goals_against: 0 });
+  const first = match({ id: 'first', season: '2026/27', date: '2026-08-20', goals_for: 0, goals_against: 4 });
+  const apps = [
+    { match_id: 'last', player_id: 'p1', motm: true },
+    { match_id: 'first', player_id: 'p1', motm: true },
+  ];
+  const rows = { ...base, matches: [last, first], appearances: apps };
+
+  assert.deepEqual(
+    outstanding(rows, '2026-06-25').map((j) => j.kind),
+    [],
+    '2025/26 is over but its honours have not gone up yet',
+  );
+  assert.deepEqual(outstanding(rows, '2026-08-25').map((j) => j.kind), ['award']);
+
+  // And an admin holding the season back holds the nag back with it: nagging
+  // about a shelf nobody can see is nagging about nothing.
+  assert.deepEqual(
+    outstanding(
+      { ...rows, seasonStatus: [{ season: '2025/26', honours_published: false }] },
+      '2026-08-25',
+    ).map((j) => j.kind),
+    [],
+  );
 });
 
 test('the real season leaves nothing outstanding — the nag has to stay quiet when it should', () => {

@@ -178,7 +178,7 @@ remember to unset.
 
 **`backups/` is the club's history, not a fixture.** Everything the site knows
 lives in one free-tier Postgres instance with no automated backups, so the daily
-job in `.github/workflows/backup.yml` is the only second copy — six JSON files
+job in `.github/workflows/backup.yml` is the only second copy — seven JSON files
 plus a `restore.sql` that upserts them back. CI writes it and nothing else does;
 a human editing a file in there is editing a record, not a config. The same run
 is the keepalive (Supabase pauses a free project after about a week idle) and
@@ -222,10 +222,23 @@ actually asks.
 **Everything is derived, nothing is stored twice.** Player totals, records,
 form, badges, points, goal difference — all computed from `players`, `matches`,
 `appearances` and `teams` at load time. A stored total can drift from the rows
-it summarises; a derived one can't. The exceptions are deliberate and few:
-league standings (`league_rows`) need other clubs' results, which we don't
-have, and hand-picked awards need a human. Both are typed in by an admin.
-Don't add a third exception without a reason that good.
+it summarises; a derived one can't. The exceptions are deliberate and few, and
+each one is a fact about the world our own rows cannot hold: league standings
+(`league_rows`) need other clubs' results, which we don't have; a hand-picked
+award needs a human; and **whether a season has ended** (`season_status`) is a
+calendar question, which is Phase 55. All three are typed in by an admin. Don't
+add a fourth without a reason that good.
+
+The third is the smallest and is mostly not typed in at all. **An end-of-season
+award needs the season to have ended**, and three of the four are derived —
+which means they have a leader from the first whistle. After one friendly of
+2026/27 every player who turned up had one appearance, so all eleven led the
+column and all eleven held The Dependable. `honoursSettled` in `lib/awards.js`
+is the rule: a season's honours go up on 1 July after it ends, and not while a
+fixture for it is still in the diary. `season_status` overrides that in either
+direction and holds no row for a season following the rule, which is every
+season until somebody presses the switch. See *Winning one twice* and *When the
+honours go up* in `docs/DESIGN.md`.
 
 **A page file should read as a layout.** Sections, and the data it feeds them.
 When a page defines its own presentational sub-components inline it has stopped
@@ -320,10 +333,12 @@ it.
 Before adding a feature, check `docs/ROADMAP.md`. If it's not there and it's
 not small, it goes there first.
 
-**The site has not been sent to the squad yet.** `docs/ROADMAP.md` → *Now* is
-the release sequence and the order is deliberate: Phases 42–47, then a launch
-checklist, then everything under *Next*. A change that isn't one of those is
-almost certainly not the next thing to do.
+**The squad has it.** They played the first game of 2026/27 on 5 September 2026
+and reported a bug on the honours the same weekend, which is Phase 55. So the
+order in `docs/ROADMAP.md` → *Now* is no longer the whole of what to do next:
+**something the squad has actually hit outranks anything on the *Next* list**,
+and a phase from that list is still the answer when nothing is broken. Whatever
+remains unticked in the launch checklist is done on the live site, in order.
 
 **When a phase lands, condense it.** Its row in the roadmap's *Done* table is one
 line; its instructions are deleted in the same commit that closes it. The detail

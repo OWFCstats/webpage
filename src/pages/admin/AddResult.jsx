@@ -10,9 +10,8 @@ import WhichMatch from '../../components/add-result/WhichMatch';
 import WalkoverForm from '../../components/WalkoverForm';
 import WizardActions from '../../components/add-result/WizardActions';
 import WizardSteps from '../../components/add-result/WizardSteps';
-import {
-  blankResultForm, fixtureFor, fixturesToFill, resultFormFrom, todayISO,
-} from '../../lib/admin';
+import { blankResultForm, fixtureFor, fixturesToFill, resultFormFrom } from '../../lib/admin';
+import { todayISO } from '../../lib/format';
 import { latestResult, seasonsOf } from '../../lib/matches';
 
 /**

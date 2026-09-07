@@ -23,12 +23,14 @@ const VIEWS = [
 /** Each sub-page derives only what it shows. The badge pass walks every
  *  appearance in date order, and there is no reason to do that on the page
  *  showing the season index. */
-function derive(view, { players, matches, appearances, seasonAwards }) {
-  if (view === 'honours') return { seasons: seasonRecords(players, matches, appearances, seasonAwards) };
+function derive(view, { players, matches, appearances, seasonAwards, seasonStatus }) {
+  if (view === 'honours') {
+    return { seasons: seasonRecords(players, matches, appearances, seasonAwards, { seasonStatus }) };
+  }
   if (view === 'all-time') {
     return { records: clubRecords(matches), allTime: playerTotals(players, matches, appearances) };
   }
-  return { badges: clubBadges(players, matches, appearances, seasonAwards) };
+  return { badges: clubBadges(players, matches, appearances, seasonAwards, { seasonStatus }) };
 }
 
 /**
@@ -37,11 +39,13 @@ function derive(view, { players, matches, appearances, seasonAwards }) {
  * this is what sits above both, and it is all time. Players is this season.
  */
 export default function Records({ view }) {
-  const { players, matches, appearances, seasonAwards, loading, error } = useData();
+  const { players, matches, appearances, seasonAwards, seasonStatus, loading, error } = useData();
 
   const data = useMemo(
-    () => (loading ? null : derive(view, { players, matches, appearances, seasonAwards })),
-    [loading, view, players, matches, appearances, seasonAwards],
+    () => (loading
+      ? null
+      : derive(view, { players, matches, appearances, seasonAwards, seasonStatus })),
+    [loading, view, players, matches, appearances, seasonAwards, seasonStatus],
   );
 
   if (loading) return <Spinner />;
