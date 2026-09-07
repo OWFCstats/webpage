@@ -25,11 +25,13 @@ function heroMetal(view) {
  */
 export default function BadgeDetail() {
   const { badgeKey } = useParams();
-  const { players, matches, appearances, seasonAwards, loading, error } = useData();
+  const { players, matches, appearances, seasonAwards, seasonStatus, loading, error } = useData();
 
   const view = useMemo(
-    () => (loading ? null : badgeDetail(badgeKey, players, matches, appearances, seasonAwards)),
-    [loading, badgeKey, players, matches, appearances, seasonAwards],
+    () => (loading
+      ? null
+      : badgeDetail(badgeKey, players, matches, appearances, seasonAwards, { seasonStatus })),
+    [loading, badgeKey, players, matches, appearances, seasonAwards, seasonStatus],
   );
 
   if (loading) return <Spinner />;

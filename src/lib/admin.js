@@ -2,7 +2,8 @@
 // result belongs to. Nothing here is stored — it is the same rows every public
 // page reads, asked a different question.
 
-import { currentSeasonOf, isPlayed, latestResult, playedMatches } from './matches.js';
+import { currentSeasonOf, isPlayed, latestResult, seasonsOf } from './matches.js';
+import { honoursSettled } from './awards.js';
 
 /**
  * The fixture a result is about to be entered against, if the club already put
@@ -56,7 +57,7 @@ export function fixturesToFill(matches, today) {
  * test can assert on it.
  */
 export function outstanding(
-  { matches, appearances, leagueRows, seasonAwards },
+  { matches, appearances, leagueRows, seasonAwards, seasonStatus = [] },
   today,
 ) {
   const withLineup = new Set(appearances.map((a) => a.match_id));
@@ -125,15 +126,21 @@ export function outstanding(
     }
   }
 
-  // Player of the Season, once a season has stopped being the current one.
-  // Nagging about the season still being played would nag all year.
+  // Player of the Season, once a season's honours have settled — the same rule
+  // the cabinet publishes on (`honoursSettled` in lib/awards.js), so the nag
+  // starts the day the shelf goes up rather than on its own definition of
+  // finished. Nagging while a season is still being played would nag all year,
+  // and nagging a season whose honours are held back would nag about a shelf
+  // nobody can see.
   const voted = new Set(
     seasonAwards.filter((r) => r.award_key === 'player-of-the-season').map((r) => r.season),
   );
-  const finished = [...new Set(playedMatches(matches).map((m) => m.season))].filter(
-    (s) => s !== season,
+  // `seasonsOf` rather than a fresh Set, so the newest unvoted season is the
+  // first thing nagged about rather than whichever row came back first.
+  const settled = seasonsOf(matches).filter(
+    (s) => honoursSettled(s, matches, { seasonStatus, today }),
   );
-  for (const s of finished) {
+  for (const s of settled) {
     if (voted.has(s)) continue;
     jobs.push({
       kind: 'award',
@@ -174,9 +181,3 @@ export const resultFormFrom = (f) => ({
   competition: f.competition ?? 'League',
   venue: f.venue ?? '',
 });
-
-/** Today as the `date` column stores it, so the two can be compared as strings. */
-export function todayISO(now = new Date()) {
-  const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
-  return local.toISOString().slice(0, 10);
-}

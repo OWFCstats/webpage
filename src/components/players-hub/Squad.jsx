@@ -96,12 +96,18 @@ function SquadCard({ row, badges }) {
           </span>
         ))}
       </span>
-      {/* No count and no year list beside a badge: those are what a shelf is
-          for, and a tile this narrow spends its room on the drawings. The tier
-          is in the drawing now — a bronze crest and a diamond one are two
+      {/* No year list and no tier caption beside a badge: those are what a shelf
+          is for, and a tile this narrow spends its room on the drawings. The
+          tier is in the drawing now — a bronze crest and a diamond one are two
           different shapes — so a card says which one somebody holds without a
           word for it. 26px is what four across costs; squad.css has the
-          arithmetic. */}
+          arithmetic.
+
+          The one thing a drawing cannot say is that there are two of it, so a
+          badge earned more than once — three hat-tricks, two Golden Boots —
+          carries its count. Only from the second: at one win nothing is added
+          and the shelf's arithmetic is untouched, which is every tile on the
+          page today. */}
       {held.length > 0 ? (
         // One label for the row rather than six: the drawings are the content
         // here, and `role="img"` is what lets a screen reader be told there is a
@@ -109,10 +115,17 @@ function SquadCard({ row, badges }) {
         <span
           className="badge-row squad-card-badges"
           role="img"
-          aria-label={`Badges: ${held.map((b) => `${b.label} ${b.mark}`).join(', ')}`}
+          aria-label={`Badges: ${held.map((b) => `${b.label} ${b.mark}`).join('; ')}`}
         >
           {held.map((b) => (
-            <BadgeIcon key={b.key} badge={b.key} metal={b.metal} size={26} />
+            b.class !== 'career' && b.count > 1 ? (
+              <span key={b.key} className="badge-stack">
+                <BadgeIcon badge={b.key} metal={b.metal} size={26} />
+                <span className="times">×{b.count}</span>
+              </span>
+            ) : (
+              <BadgeIcon key={b.key} badge={b.key} metal={b.metal} size={26} />
+            )
           ))}
         </span>
       ) : (

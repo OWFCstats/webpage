@@ -250,7 +250,7 @@ checking whether it counts anything on its own — not just changing a variable.
 ## Backups, and keeping the database awake
 
 `.github/workflows/backup.yml` runs `npm run backup` every day at 04:17 UTC. It
-reads all six tables through the public key and writes `backups/` — one JSON
+reads all seven tables through the public key and writes `backups/` — one JSON
 file per table plus `restore.sql`, which upserts the lot back — then commits,
 but only when something actually changed (or once a month regardless, so the
 scheduled workflow isn't disabled for repository inactivity).
@@ -266,9 +266,9 @@ solves two problems it wasn't built for:
 
 To restore: open the Supabase SQL editor and run `backups/restore.sql`. It
 upserts on the primary key, so it repairs a partly-damaged database in place.
-For a clean point-in-time restore, empty the tables first — `season_awards`,
-`league_rows`, `appearances`, `matches`, `players`, `teams`, in that order — and
-then run it.
+For a clean point-in-time restore, empty the tables first — `season_status`,
+`season_awards`, `league_rows`, `appearances`, `matches`, `players`, `teams`, in
+that order — and then run it.
 
 Run it by hand any time from *Actions → Backup → Run workflow*, or locally with
 `node --env-file=.env.local scripts/backup.mjs`.

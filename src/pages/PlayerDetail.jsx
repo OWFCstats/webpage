@@ -24,7 +24,7 @@ const PlayerCareerChart = lazy(() => import('../components/player-detail/PlayerC
 
 export default function PlayerDetail() {
   const { playerId } = useParams();
-  const { players, matches, appearances, teams, seasonAwards, loading, error } = useData();
+  const { players, matches, appearances, teams, seasonAwards, seasonStatus, loading, error } = useData();
   const { meId, pickMe, forgetMe } = useMe();
   const [params, setParams] = useSearchParams();
   const view = params.get('view') === 'stats' ? 'stats' : 'overview';
@@ -35,8 +35,10 @@ export default function PlayerDetail() {
     [player, players, matches, appearances],
   );
   const badges = useMemo(
-    () => (player ? playerBadges(player, players, matches, appearances, seasonAwards) : null),
-    [player, players, matches, appearances, seasonAwards],
+    () => (player
+      ? playerBadges(player, players, matches, appearances, seasonAwards, { seasonStatus })
+      : null),
+    [player, players, matches, appearances, seasonAwards, seasonStatus],
   );
 
   if (loading) return <Spinner />;

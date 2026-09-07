@@ -50,8 +50,10 @@ export default function PlayerHero({ player, career, seasonsActive, badges, isMe
             aria-label={`Badges: ${[
               ...metals.map((b) => `${b.label} ${b.metal}`),
               ...events.map((b) => `${b.label} ×${b.count}`),
-              ...trophies.map((b) => `${b.label} ${b.seasons.join(', ')}`),
-            ].join(', ')}`}
+              ...trophies.map((b) => `${b.label} — ${b.seasons.join(', ')}`),
+              // Semicolons: a trophy's own mark is a comma list of seasons now,
+              // so a comma between badges would run the two together.
+            ].join('; ')}`}
           >
             {metals.map((badge) => (
               <BadgeIcon key={badge.key} badge={badge.key} metal={badge.metal} size={SIZE} />
@@ -62,8 +64,19 @@ export default function PlayerHero({ player, career, seasonsActive, badges, isMe
                 <span className="times">×{badge.count}</span>
               </span>
             ))}
+            {/* A repeat carries a count, the same way a stackable does — two
+                Golden Boots is the same trophy twice, and a drawing alone can't
+                say there are two of them. Only from the second win: "×1" is
+                noise, and one win is the ordinary case. */}
             {trophies.map((badge) => (
-              <BadgeIcon key={badge.key} badge={badge.key} metal="gold" size={SIZE} />
+              badge.seasons.length > 1 ? (
+                <span key={badge.key} className="badge-stack">
+                  <BadgeIcon badge={badge.key} metal="gold" size={SIZE} />
+                  <span className="times">×{badge.seasons.length}</span>
+                </span>
+              ) : (
+                <BadgeIcon key={badge.key} badge={badge.key} metal="gold" size={SIZE} />
+              )
             ))}
           </div>
         )}

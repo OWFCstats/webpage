@@ -320,6 +320,22 @@ const SEASON_AWARDS = [
   },
 ];
 
+// The club pressing "publish the honours" on the night of the end-of-season
+// dinner: the one row `season_status` exists for. It agrees with the default
+// rule here — by 15 August 2026 the date has come round anyway — and it is in
+// the dataset so the read path, the row shape and the admin switch are all
+// exercised by something rather than by nothing. `mid-season` deliberately has
+// no rows at all, which is the ordinary state and the one this whole mechanism
+// was added for: a season still being played hands out no honours.
+const SEASON_STATUS = [
+  {
+    id: fixtureId('status:2025/26'),
+    season: '2025/26',
+    honours_published: true,
+    updated_at: '2026-06-20T22:15:00.000Z',
+  },
+];
+
 // ---------------------------------------------------------------------------
 // The two datasets
 // ---------------------------------------------------------------------------
@@ -342,6 +358,9 @@ export const DATASETS = {
       teams: TEAMS,
       league_rows: leagueRows(played2526, '2025/26', 5),
       season_awards: SEASON_AWARDS,
+      // Nothing: 2025/26 is still being played on 20 March, so its four
+      // honours are named on the cabinet's shelf and won by nobody yet.
+      season_status: [],
     },
   },
   'pre-season': {
@@ -354,6 +373,7 @@ export const DATASETS = {
       teams: TEAMS,
       league_rows: leagueRows(played2526, '2025/26', 5),
       season_awards: SEASON_AWARDS,
+      season_status: SEASON_STATUS,
     },
   },
 };

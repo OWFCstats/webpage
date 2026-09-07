@@ -961,11 +961,10 @@ says "9 goals", which is why each derived award declares a `unit` in
 would imply the arithmetic picked the winner.
 
 They do not tier and they do not stack into a bigger version: **winning two
-Golden Boots is the same trophy held twice**, shown as a year list. A "3× Golden
-Boot" tier would imply the third is worth more than the first, and it isn't. So
-there is no bronze Player of the Season and no diamond boot: a trophy is gold,
-and all four are drawn on the same brass plinth so a cabinet of them reads as
-one set.
+Golden Boots is the same trophy held twice**. A "3× Golden Boot" tier would
+imply the third is worth more than the first, and it isn't. So there is no
+bronze Player of the Season and no diamond boot: a trophy is gold, and all four
+are drawn on the same brass plinth so a cabinet of them reads as one set.
 
 Three rulings inside that table:
 
@@ -977,6 +976,95 @@ Three rulings inside that table:
 - **Most MOTM is not a season honour.** It usually goes to the same player as
   Player of the Season, so it was a second trophy for one performance. It
   survives as the Class 2 star, which is where a repeated event belongs.
+
+### Winning one twice
+
+**A trophy held more than once carries a count, and the seasons are named
+wherever there is a line to name them.** The count is `×2`, the same mark a
+Class 2 stackable wears, because it is the one thing a drawing cannot say: two
+Golden Boots and one are the same picture. It is not a tier and never gets its
+own artwork — see the paragraph above.
+
+Where each surface lands, and why:
+
+| Surface | What a repeat shows |
+| --- | --- |
+| The trophy cabinet, `/records/honours` | Every win, on its own season's shelf. This is the record and it needs nothing added |
+| A trophy's own page, `/records/badges/:key` | The year list, and a roll counting seasons — "3 seasons · 2025/26, 2027/28, 2029/30" |
+| A player's shelf | `×n` from the second win; one win keeps its season, which is the better fact while there is one of them. Every season is in the stack's `aria-label` and its tooltip |
+| The hero, and a squad tile | `×n` from the second win, nothing at one |
+
+**The compact surfaces stopped at a year list because a year list grows.** One
+season under a 40px badge is a mark; four is "2025/26, 2027/28, 2029/30,
+2030/31" under a 26px drawing on a 117px tile, which is not. This club intends
+to be here in ten years — that is job 2 in `CLAUDE.md` — so the mark had to be
+something that reads the same in year one and year ten, and the seasons had to
+live where there is a column for them. There are two such places and both
+already existed.
+
+**The tile shows a count only from the second.** Its own rule is drawings and
+nothing else, and the arithmetic behind it is exact: four across at 26px plus
+their gaps is 116px of the 117.5px a tile's content box has at 375px
+(`squad.css`). At one win nothing is added and that arithmetic is untouched,
+which is every tile on the page today; a repeat costs about 17px and wraps the
+shelf to a second row, which it already does for anyone holding more than four
+badges. Seventeen pixels for "this player has won it three times" is the best
+trade on the tile.
+
+### When the honours go up
+
+**An end-of-season award needs the season to have ended.** Three of the four are
+derived from our own rows, which means they have a leader from the first
+whistle: one friendly into 2026/27, every player who turned up had one
+appearance, so all eleven led the column and all eleven held The Dependable. The
+squad saw it, which is how this was found.
+
+`honoursSettled` in `lib/awards.js` is the whole rule, and it is two conditions
+that both have to hold:
+
+- **1 July after the season ends.** A season is labelled by the two years it
+  spans, so `2025/26` settles on 1 July 2026 — a week or so clear of the last
+  Saturday anyone plays. The club's 2025/26 finished on 20 June.
+- **Nothing left in the diary.** An entered fixture with no result means the
+  season isn't over, whatever the calendar says. A cup final in July is a real
+  thing. This only ever bites after 1 July, so mid-season's ordinary state —
+  every entered fixture played, next month's not entered yet — cannot settle a
+  season by accident.
+
+**A row in `season_status` overrides both, in either direction, and there is no
+row for a season following the rule.** Two cases need it and neither is a
+calendar question: the club wanting the trophies up on the night of the dinner,
+and a season that has to be pulled back after a result went in wrong. Admin →
+Awards is where the switch is, three ways — *Automatic*, *Published now*, *Held
+back* — with the date it goes up on written under it, because an admin choosing
+*Published now* needs to be told it happens on its own in a fortnight and there
+is nowhere else on the site that could tell them. It is a `<select>` and not the
+site's segmented control: three honest labels in a `.seg` want about 276px of a
+375px phone's 311px and more than a 320px one has, `.seg` neither wraps nor
+scrolls, and a native picker is the better control on the phone this page is
+filled in on anyway.
+
+**An unsettled season hands out nobody rather than carrying a flag.** Six
+surfaces draw a trophy and the one that forgot to check a flag would print
+eleven Dependables again, so `seasonRecords` gives an unsettled season its four
+awards with `leaders: []` — every one of those surfaces already reads `leaders`,
+and the fix reaches all six through one line. The cabinet is the only thing told
+which side of the rule a season is on, because it is the only thing that needs
+to say so.
+
+**The cabinet says which shelf is live.** The season being played now keeps its
+place with four drained drawings, the way a season nobody has won yet does — but
+its year carries an *In play* tag and its trophies say *End of season* rather
+than *Not awarded*. The first is a date and the second is a verdict, and a
+cabinet that passed a verdict on a season still being played would read as
+broken. The race itself is not shown here: Players → Leaderboards is the current
+season's goals, assists and appearances at full size, and a second copy of it
+under a trophy would be the same thing said twice.
+
+The nag on the admin home follows the same rule (`outstanding` in `lib/admin.js`).
+Player of the Season is asked for the day its shelf goes up — not, as it used to
+be, the day the season stops being the current one, which could be six weeks
+earlier or, in a summer with no fixtures entered, months later.
 
 ### A badge has its own page
 
@@ -1028,12 +1116,14 @@ decoration:
   78px, and 78px of trophy with "Hugh Grindon" under it is the list again with
   extra steps. Two gives each about 160px: a 72px trophy, a name on one line and
   its mark under it.
-- **A season nobody has won yet is still on the shelf**, four drained drawings
-  with *Not awarded* under each. That is not an empty state — it is the season
-  the reader is about to play, and the cabinet's job is to make the gap look
-  worth filling. Entering next season's fixtures is what puts a season on this
-  page, which is the same rule as *The current season is the most recent season
-  with a result*, seen from the other end.
+- **A season nobody has won anything in yet is still on the shelf**, four
+  drained drawings. That is not an empty state — it is the season the reader is
+  about to play, and the cabinet's job is to make the gap look worth filling.
+  Entering next season's fixtures is what puts a season on this page, which is
+  the same rule as *The current season is the most recent season with a result*,
+  seen from the other end. What the drawings say under them depends on which
+  nought it is: *End of season* while the season is being played, *Not awarded*
+  once it is over and this one went to nobody. See *When the honours go up*.
 
 One board, not one per season: the cabinet is the band and a season is a shelf
 inside it, which is both what a cabinet looks like and what keeps this page to a
@@ -1321,7 +1411,10 @@ that. So:
   carrying four silhouettes is two hundred grey drawings and reads as absence.
   A tile says what somebody has; the page it links to says what is next. A
   player picked but never played holds nothing, and that tile says so.
-- **No count and no year list** beside a drawing. Those are what a shelf is for.
+- **No year list and no tier caption** beside a drawing. Those are what a shelf
+  is for. The one exception is a badge earned more than once — three hat-tricks,
+  two Golden Boots — which carries `×n` from the second, because a drawing
+  cannot say there are two of it. See *Winning one twice*.
 - **Career-wide badges, and — by default — career-wide figures too**, now that
   the roster defaults to all-time. A season filter narrows the figures without
   touching the badges, since a career badge has no season; the note under the
@@ -1810,8 +1903,10 @@ growing past ~80 lines means something in it should have been a primitive.
   label choice for a familiar shorthand, not new data collection, and the
   table's footnote says so. See *Mobile*.
 - **No stored aggregates.** Still true and still the load-bearing rule:
-  everything is derived. The two exceptions are league standings and the voted
-  Player of the Season, and there is not a third.
+  everything is derived. There are three exceptions and each one is a fact about
+  the world our rows cannot hold: league standings, the voted Player of the
+  Season, and — from Phase 55 — whether a season has ended (`season_status`,
+  and only where an admin overrides the calendar). There is not a fourth.
 - **No accounts for readers.** The only login on the site is the admin's. A
   player identifying themselves is a cookie on their own phone, not a user
   record — see *What the site remembers*. Thirty accounts and thirty forgotten

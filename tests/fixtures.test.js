@@ -12,6 +12,7 @@ import { DATASETS } from '../fixtures/datasets.js';
 import season2526 from '../fixtures/2025-26.json' with { type: 'json' };
 import { isCleanSheet, isPlayed, seasonsOf } from '../src/lib/matches.js';
 import { playerTotals } from '../src/lib/players.js';
+import { honoursSettled } from '../src/lib/awards.js';
 
 const named = (players, name) => players.find((p) => p.name === name);
 
@@ -101,6 +102,36 @@ test('mid-season: two fixtures ahead, one season', () => {
   const { matches } = DATASETS['mid-season'].data;
   assert.equal(matches.filter((m) => !isPlayed(m)).length, 2);
   assert.deepEqual(seasonsOf(matches), ['2025/26']);
+});
+
+test('the two datasets sit either side of the honours going up', () => {
+  // Phase 55: an end-of-season award needs the season to have ended, so the
+  // fixture has to hold both states or the cabinet is only ever screenshotted
+  // in one of them. mid-season is 20 March and 2025/26 is still being played;
+  // pre-season is 15 August and carries the published row an admin writes at
+  // the dinner. No third dataset was added for it, and this is what says so.
+  const mid = DATASETS['mid-season'];
+  assert.deepEqual(mid.data.season_status, []);
+  assert.equal(
+    honoursSettled('2025/26', mid.data.matches, { today: mid.now.slice(0, 10) }),
+    false,
+  );
+
+  const pre = DATASETS['pre-season'];
+  const row = pre.data.season_status.find((r) => r.season === '2025/26');
+  assert.ok(row, 'pre-season has no published-honours row');
+  assert.equal(row.honours_published, true);
+  const today = pre.now.slice(0, 10);
+  const on = { today, seasonStatus: pre.data.season_status };
+  assert.equal(honoursSettled('2025/26', pre.data.matches, on), true);
+  assert.equal(
+    honoursSettled('2026/27', pre.data.matches, on),
+    false,
+    'a season whose fixtures are entered and unplayed has no honours',
+  );
+  // The row agrees with the date rule here rather than fighting it, so what it
+  // is exercising is the table and the read path, not a disagreement.
+  assert.equal(honoursSettled('2025/26', pre.data.matches, { today }), true);
 });
 
 test('pre-season: the newest season has rows and no results', () => {

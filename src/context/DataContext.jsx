@@ -11,6 +11,11 @@ import { describeLoadFailure } from '../lib/offline';
 // "Small" is not the same as "bounded": each read is paged, because PostgREST
 // answers at most 1,000 rows and `appearances` passes that around season six.
 // See lib/paging.js.
+//
+// Seven tables, and `season_status` is the odd one: it is usually empty. It
+// carries an admin's override of when a season's honours go up, and no row
+// means "follow the rule in lib/awards.js" — which is where every season
+// starts and where nearly all of them stay.
 
 const DataContext = createContext(null);
 
@@ -28,7 +33,7 @@ const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
  *
  * `order` receives the query and adds the sort. It has to end on something
  * unique, because paging an order that has ties lets rows move between pages;
- * `id` does that job for five of the six, and `appearances` gets it from the
+ * `id` does that job for six of the seven, and `appearances` gets it from the
  * `unique (match_id, player_id)` constraint the table already carries.
  */
 const readAll = (table, order) =>
@@ -43,6 +48,7 @@ export function DataProvider({ children }) {
     teams: [],
     leagueRows: [],
     seasonAwards: [],
+    seasonStatus: [],
     loading: true,
     error: null,
   });
@@ -60,15 +66,17 @@ export function DataProvider({ children }) {
     setState((s) => ({ ...s, loading: !hasLoaded.current, error: null }));
 
     for (let attempt = 0; ; attempt++) {
-      const [players, matches, appearances, teams, leagueRows, seasonAwards] = await Promise.all([
+      const [players, matches, appearances, teams, leagueRows, seasonAwards, seasonStatus] = await Promise.all([
         readAll('players', (q) => q.order('name').order('id')),
         readAll('matches', (q) => q.order('date', { ascending: false }).order('id')),
         readAll('appearances', (q) => q.order('match_id').order('player_id')),
         readAll('teams', (q) => q.order('name').order('id')),
         readAll('league_rows', (q) => q.order('season').order('id')),
         readAll('season_awards', (q) => q.order('season').order('id')),
+        readAll('season_status', (q) => q.order('season').order('id')),
       ]);
-      const failed = [players, matches, appearances, teams, leagueRows, seasonAwards].find((r) => r.error);
+      const failed = [players, matches, appearances, teams, leagueRows, seasonAwards, seasonStatus]
+        .find((r) => r.error);
       if (!failed) {
         hasLoaded.current = true;
         setState({
@@ -78,6 +86,7 @@ export function DataProvider({ children }) {
           teams: teams.data,
           leagueRows: leagueRows.data,
           seasonAwards: seasonAwards.data,
+          seasonStatus: seasonStatus.data,
           loading: false,
           error: null,
         });
@@ -99,7 +108,7 @@ export function DataProvider({ children }) {
   // home screen there is no address bar and no pull-to-refresh, so an error
   // note used to be the end of the visit — the reader had to kill the app.
   // Bound only while the note is up, which is what keeps a flaky signal from
-  // re-reading six tables every time it flickers.
+  // re-reading seven tables every time it flickers.
   useEffect(() => {
     if (!state.error) return undefined;
     const retry = () => refresh();

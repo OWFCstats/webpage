@@ -128,6 +128,25 @@ create table if not exists public.season_awards (
   updated_at timestamptz not null default now()
 );
 
+-- What an admin has said about a season that the match rows can't say. One
+-- thing today: whether its end-of-season honours are published. The default
+-- rule needs no row here and lives in src/lib/awards.js -- honours settle on
+-- 1 July after a season ends, and not while a fixture for it is still in the
+-- diary -- so a row exists only to override that, which is why the column is
+-- `not null` and clearing an override deletes the row.
+--
+-- Not called `seasons`: the list of seasons is derived from `matches`
+-- (seasonsOf in src/lib/matches.js) and a second thing wearing that name would
+-- be read as the list.
+create table if not exists public.season_status (
+  id                uuid primary key default gen_random_uuid(),
+  season            text not null,
+  -- True publishes this season's honours now; false holds them back.
+  honours_published boolean not null,
+  -- Set explicitly on every save by the admin page; no trigger.
+  updated_at        timestamptz not null default now()
+);
+
 create index if not exists appearances_match_id_idx  on public.appearances (match_id);
 create index if not exists appearances_player_id_idx on public.appearances (player_id);
 create index if not exists matches_season_idx        on public.matches (season);
@@ -155,6 +174,11 @@ create unique index if not exists season_awards_season_key_idx
   on public.season_awards (season, award_key);
 create index if not exists season_awards_season_idx on public.season_awards (season);
 
+-- One row per season: pressing the switch again replaces the answer rather than
+-- forking a second row.
+create unique index if not exists season_status_season_idx
+  on public.season_status (season);
+
 -- ---------------------------------------------------------------------------
 -- Row Level Security
 -- Public (anon) visitors: read-only. Logged-in (authenticated) admins: full write.
@@ -166,12 +190,14 @@ alter table public.appearances enable row level security;
 alter table public.teams       enable row level security;
 alter table public.league_rows enable row level security;
 alter table public.season_awards enable row level security;
+alter table public.season_status enable row level security;
 
 do $$
 declare
   t text;
 begin
-  foreach t in array array['players', 'matches', 'appearances', 'teams', 'league_rows', 'season_awards'] loop
+  foreach t in array array['players', 'matches', 'appearances', 'teams', 'league_rows', 'season_awards',
+                        'season_status'] loop
     execute format('drop policy if exists "Public read"  on public.%I', t);
     execute format('drop policy if exists "Admin insert" on public.%I', t);
     execute format('drop policy if exists "Admin update" on public.%I', t);

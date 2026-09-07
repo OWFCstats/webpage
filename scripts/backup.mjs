@@ -42,6 +42,7 @@ const TABLES = [
   { name: 'appearances', order: 'match_id.asc,player_id.asc' },
   { name: 'league_rows', order: 'season.asc,team_id.asc' },
   { name: 'season_awards', order: 'season.asc,award_key.asc' },
+  { name: 'season_status', order: 'season.asc' },
 ];
 
 // PostgREST caps a response at 1,000 rows. Appearances is the table that will
@@ -163,8 +164,8 @@ const restore = [
   '-- The blocks are ordered so foreign keys resolve, and each one upserts on',
   '-- the primary key: running this over a live database repairs and adds, it',
   '-- does not remove. A true point-in-time restore means emptying the tables',
-  '-- first (delete from season_awards, league_rows, appearances, matches,',
-  '-- players, teams — that order) and then running this.',
+  '-- first (delete from season_status, season_awards, league_rows, appearances,',
+  '-- matches, players, teams — that order) and then running this.',
   `--\n-- Taken ${now.toISOString()}`,
   '',
   ...dumped.map(({ name, rows }) => insertBlock(name, rows)),

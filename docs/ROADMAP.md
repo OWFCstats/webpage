@@ -71,6 +71,7 @@ page-by-page review against the club's real 2025/26 season.
 | 46 | The offline shell | `public/sw.js` — network-first, shell only, same-origin GETs. An installed app on a dead signal used to get the browser's own offline page, with no address bar to escape it; it opens to its own frame and a "no connection" note now. A changed `index.html` empties the cache, so a deploy replaces the previous build rather than stacking on it, and `DataContext` re-reads on `online` because a home-screen app has no reload |
 | 47 | The address | `oldwellingtoniansfc.com` at Porkbun: four apex `A` records, four `AAAA`, `www` at `owfcstats.github.io`, the domain in Pages with Enforce HTTPS. `public/CNAME` became the one place it is written down — `vite.config.js` reads it for `%SITE_URL%`, so the `SITE_URL` repository variable that used to hold the same domain a second time is gone. The trap was that the two could disagree in silence: every page loaded and only the link preview and the canonical were wrong. `check.yml` asserts the file reaches `dist/`, that the built `og:image` and canonical are on that domain, and that no placeholder survived |
 | 48 | This is me | One cookie, `owfc.me`, holding one player id, and Home's second section becomes the reader's own: this season's apps, goals and assists, and the nearest career badge with what it costs. A preference and not a session — no account, no row, nothing sent anywhere — which is the distinction `DESIGN.md` → *What the site remembers* exists to keep. The offer is made twice, on Home and as *This is me* on a player's own page, and it is what finally lets the counter tell a reader's own page from somebody else's (`my-page` against `player-page`, plus `me-pick`), which Phase 45 wrote down as unanswerable until this landed. It costs Home 74px unpicked and 222px picked, and Phase 52 owns what comes off in exchange |
+| 55 | Honours wait for the season to end | Found by the squad on the first Saturday of 2026/27: one friendly in, all eleven who turned up held The Dependable, because three of the four honours are derived and so have a leader from the first whistle. `honoursSettled` publishes a season on 1 July once its diary is empty, `season_status` overrides that either way, and an unsettled season's awards arrive with nobody on them — one line, all six surfaces. Plus the repeats rule: `×n` where a badge is drawn small, the seasons where there is a column for them |
 
 **The detail behind any closed phase is in its commit** — `git log --grep="Phase
 20"` finds it, because every phase commit names its phase in its own subject.
@@ -96,11 +97,17 @@ nothing is stored twice**, and **a component that gains a second page moves up t
 
 ## Now — the release
 
-**Deadline: Friday 4 September 2026.** Phases 42 to 48 are done — 48 was the
-first row of *Next* and was taken early, before the checklist rather than after
-it, because it ships in the same build and its own end-to-end check belongs in
-the list below. What is left is the launch checklist, which is not a phase: it is done on the live site, in
-order, and it is the last thing between here and the squad.
+**Deadline: Friday 4 September 2026 — and the squad has it.** They played the
+first game of 2026/27 on 5 September and reported a bug on the honours the same
+weekend, which is Phase 55 and is now in *Done*. Phases 42 to 48 are done — 48
+was the first row of *Next* and was taken early, before the checklist rather
+than after it, because it ships in the same build and its own end-to-end check
+belongs in the list below. What is left of the launch checklist is not a phase:
+it is done on the live site, in order.
+
+**A bug the squad has hit outranks everything under *Next*.** That is what
+Phase 55 was, and it is the rule from here: the list below is what to do when
+nothing is broken.
 
 The three steps that belong to the club rather than the code are all in.
 **Self-signup is off** in the Supabase dashboard, and so is anonymous sign-in —
