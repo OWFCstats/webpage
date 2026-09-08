@@ -1592,7 +1592,7 @@
     "assists": 0,
     "yellows": 0,
     "reds": 0,
-    "motm": false,
+    "motm": true,
     "dropout": false
   },
   {

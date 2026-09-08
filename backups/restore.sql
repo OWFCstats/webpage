@@ -4,10 +4,10 @@
 -- The blocks are ordered so foreign keys resolve, and each one upserts on
 -- the primary key: running this over a live database repairs and adds, it
 -- does not remove. A true point-in-time restore means emptying the tables
--- first (delete from season_awards, league_rows, appearances, matches,
--- players, teams — that order) and then running this.
+-- first (delete from season_status, season_awards, league_rows, appearances,
+-- matches, players, teams — that order) and then running this.
 --
--- Taken 2026-09-06T08:39:27.669Z
+-- Taken 2026-09-08T08:51:13.628Z
 
 insert into public.teams ("id", "name", "short_name", "slug", "is_club", "pitch_name", "pitch_address", "postcode", "map_url", "notes", "created_at") values
   ('02f0dbf5-04d6-4c07-a931-2a1b9e38670f', 'Old Bradfieldians II', null, 'old-bradfieldians-ii', false, 'Kings House Sports Ground', 'RIVERSIDE DRIVE, LONDON W4 2SP', 'W4 2SP', 'https://www.google.com/maps/place/King''s+House+School+Sports+Ground/@51.476538,-0.2561366,737m/data=!3m2!1e3!4b1!4m6!3m5!1s0x48760e5e5e9b00d7:0xc0aef9bb62cccf41!8m2!3d51.476538!4d-0.2535617!16s%2Fg%2F11bwdwbq9y?entry=ttu&g_ep=EgoyMDI2MDgzMS4wIKXMDSoASAFQAw%3D%3D', null, '2026-08-13T13:45:35.91997+00:00'),
@@ -261,7 +261,7 @@ insert into public.appearances ("id", "match_id", "player_id", "started", "goals
   ('2172c06b-78e8-4ba2-8afd-c8e689ccaead', 'ccec6dce-12f0-41aa-8cec-35ab10518923', '12c65343-1056-4ab7-8e34-71719546be60', true, 0, 0, 0, 0, false, false),
   ('6bedc511-ac2b-408f-82e6-54174ec4740e', 'ccec6dce-12f0-41aa-8cec-35ab10518923', '2cb2c5a0-d51a-4f08-aa00-3883a22e2e5f', true, 0, 0, 0, 0, false, false),
   ('c9aa6d9d-1787-4ded-a63b-a406a3739cb8', 'ccec6dce-12f0-41aa-8cec-35ab10518923', '334fa9e4-25c9-4b93-b5fc-dba9004ad81f', true, 0, 0, 0, 0, false, false),
-  ('5e1e82c6-1ce8-4e50-9e11-0b57425e5c2b', 'ccec6dce-12f0-41aa-8cec-35ab10518923', '39447313-ad42-46a9-8eeb-bc0f56916e5d', true, 0, 0, 0, 0, false, false),
+  ('5e1e82c6-1ce8-4e50-9e11-0b57425e5c2b', 'ccec6dce-12f0-41aa-8cec-35ab10518923', '39447313-ad42-46a9-8eeb-bc0f56916e5d', true, 0, 0, 0, 0, true, false),
   ('d0603516-ee4c-4995-b6eb-6c5c6fb7a8e1', 'ccec6dce-12f0-41aa-8cec-35ab10518923', '5a424794-81ae-4345-b717-d88f3d8bf2d9', true, 0, 0, 0, 0, false, false),
   ('034333ea-c35b-41f9-8f5e-fa6bfddd2940', 'ccec6dce-12f0-41aa-8cec-35ab10518923', '5b4dbffb-91e0-421c-9f9d-8e5691f19fac', true, 0, 0, 0, 0, false, false),
   ('2e254e08-5ff8-48fc-ac37-2be609c0de2e', 'ccec6dce-12f0-41aa-8cec-35ab10518923', '76794163-1369-4fc9-ac30-ba3c188a879c', true, 0, 0, 0, 0, false, false),
@@ -345,3 +345,5 @@ on conflict (id) do update set
   "player_id" = excluded."player_id",
   "note" = excluded."note",
   "updated_at" = excluded."updated_at";
+
+-- season_status: no rows
