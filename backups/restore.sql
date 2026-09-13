@@ -7,7 +7,7 @@
 -- first (delete from season_status, season_awards, league_rows, appearances,
 -- matches, players, teams — that order) and then running this.
 --
--- Taken 2026-09-10T08:56:08.575Z
+-- Taken 2026-09-13T09:32:33.067Z
 
 insert into public.teams ("id", "name", "short_name", "slug", "is_club", "pitch_name", "pitch_address", "postcode", "map_url", "notes", "created_at") values
   ('02f0dbf5-04d6-4c07-a931-2a1b9e38670f', 'Old Bradfieldians II', null, 'old-bradfieldians-ii', false, 'Kings House Sports Ground', 'RIVERSIDE DRIVE, LONDON W4 2SP', 'W4 2SP', 'https://www.google.com/maps/place/King''s+House+School+Sports+Ground/@51.476538,-0.2561366,737m/data=!3m2!1e3!4b1!4m6!3m5!1s0x48760e5e5e9b00d7:0xc0aef9bb62cccf41!8m2!3d51.476538!4d-0.2535617!16s%2Fg%2F11bwdwbq9y?entry=ttu&g_ep=EgoyMDI2MDgzMS4wIKXMDSoASAFQAw%3D%3D', null, '2026-08-13T13:45:35.91997+00:00'),
@@ -45,6 +45,7 @@ insert into public.players ("id", "name", "position", "status", "created_at") va
   ('f1a86811-a052-4044-8ac4-f476283f6eda', 'Bertie Morgan', 'MID', 'active', '2026-07-28T14:09:26.44542+00:00'),
   ('e63b32df-5f95-4522-8b91-9c4d5d40f61a', 'Callum Aungier', 'FWD', 'active', '2026-07-28T14:09:26.44542+00:00'),
   ('0257641c-7a04-48e0-98e8-e8759275c991', 'Cam', 'MID', 'active', '2026-07-28T14:09:26.44542+00:00'),
+  ('bd19fb0a-4186-43b8-9ab0-cf46f9c4c273', 'Carter Dodd', 'MID', 'active', '2026-09-13T07:12:37.359325+00:00'),
   ('39447313-ad42-46a9-8eeb-bc0f56916e5d', 'Charlie Middleton', 'DEF', 'active', '2026-07-28T14:09:26.44542+00:00'),
   ('f67c4a3c-4f6f-41fe-aa9a-142bb7e6e87a', 'Danny Wessely', 'DEF', 'active', '2026-07-28T14:09:26.44542+00:00'),
   ('c4ffcc42-df0d-4911-8843-7dec359d34be', 'David Pugh', 'MID', 'active', '2026-07-28T14:09:26.44542+00:00'),
@@ -54,6 +55,7 @@ insert into public.players ("id", "name", "position", "status", "created_at") va
   ('1ab53540-059d-4328-a6e2-1ac6c994ac82', 'Frazer Marsden', 'MID', 'active', '2026-07-28T14:09:26.44542+00:00'),
   ('021eddc4-8a0a-46e1-8405-66cf75021dbf', 'Gideon', 'MID', 'active', '2026-07-28T14:09:26.44542+00:00'),
   ('b091641d-8c8b-4f44-bae0-7b7078da2750', 'Gus Hill', 'MID', 'active', '2026-07-28T14:09:26.44542+00:00'),
+  ('6c2b3cb4-0ec3-49f9-9d67-2dfea26e713c', 'Guy Bryer', 'MID', 'active', '2026-09-13T07:13:07.927767+00:00'),
   ('631e28d0-375f-421d-b42d-0d590e2ba0f1', 'Harry Cain', 'GK', 'active', '2026-07-28T14:09:26.44542+00:00'),
   ('7d697665-5d3a-4c98-8f02-2301d629cc14', 'Hector Elrington', 'MID', 'active', '2026-07-28T14:09:26.44542+00:00'),
   ('42d87c3a-926c-42f1-86cb-e22ba5ecd648', 'Henry Gadd', 'DEF', 'active', '2026-07-28T14:09:26.44542+00:00'),
@@ -69,6 +71,7 @@ insert into public.players ("id", "name", "position", "status", "created_at") va
   ('782d55df-0c3f-4277-892f-85de84b1accc', 'Joe Henry', 'MID', 'active', '2026-07-28T14:09:26.44542+00:00'),
   ('c6b4bf14-c88d-4ce1-9164-72a84d9b8ef5', 'Lewis', 'MID', 'active', '2026-07-28T14:09:26.44542+00:00'),
   ('2bb936b0-1444-4b48-aaed-9fb936a4e8f5', 'Lucas Feather', 'MID', 'active', '2026-07-28T14:09:26.44542+00:00'),
+  ('10eafed3-5c60-4f94-a097-a23ab83a5fb6', 'Matt Summers', null, 'active', '2026-09-13T07:13:39.442721+00:00'),
   ('83189d45-71e9-427e-8886-b9847b2edda4', 'Max Burke', 'MID', 'active', '2026-07-28T14:09:26.44542+00:00'),
   ('5936ead5-bffe-475b-9382-64ccc6cb9635', 'Maxwell Aitkin', 'MID', 'active', '2026-07-28T14:09:26.44542+00:00'),
   ('cc213091-df8b-4030-acc4-b7c94072d32d', 'Nick Britton', 'MID', 'active', '2026-07-28T14:09:26.44542+00:00'),
@@ -77,6 +80,7 @@ insert into public.players ("id", "name", "position", "status", "created_at") va
   ('ea8b8d9a-8308-4f37-9561-fa69bafbaae7', 'Olly Feather', 'DEF', 'active', '2026-07-28T14:09:26.44542+00:00'),
   ('30cc5ad5-d20b-4a00-b886-9a2a8922ec76', 'Owen Gibbons', 'FWD', 'active', '2026-07-28T14:00:47.000721+00:00'),
   ('f0e0ee29-83c3-41ef-91c2-6f8b04b3adac', 'Petscheck', 'MID', 'active', '2026-07-28T14:09:26.44542+00:00'),
+  ('5ba2ba2c-8a09-44eb-91c6-599e4466aa7c', 'Refeya Davies', 'FWD', 'active', '2026-09-13T07:13:27.681771+00:00'),
   ('76b8d60e-5cbe-4a85-8c54-621513bf8044', 'Richard Byers', 'DEF', 'active', '2026-07-28T14:09:26.44542+00:00'),
   ('e99edf53-0e74-4d70-a68e-f10946b0e2dc', 'Sam Abbs', 'MID', 'active', '2026-07-28T14:09:26.44542+00:00'),
   ('8d049204-0c82-4b52-8381-55be1845320d', 'Sam Cooke', 'MID', 'active', '2026-07-28T14:09:26.44542+00:00'),
@@ -109,7 +113,7 @@ insert into public.matches ("id", "season", "date", "opponent", "competition", "
   ('52ba61ba-9252-47d7-9261-13468f14e1e9', '2025/26', '2026-04-18', 'Old Cranleighans', 'League', 0, 3, 0, 0, 'L', null, '2026-08-11T18:37:24.558262+00:00', 'A', true, '3a0e5ea8-51b5-4422-ac9e-234a1bc1ab1e', null),
   ('94a740bd-2720-4701-a854-199bc2634cd0', '2025/26', '2026-04-25', 'Old Stoics', 'League', 2, 3, 0, 0, 'L', null, '2026-07-28T14:09:26.44542+00:00', 'H', false, '35b12114-fb3a-4a52-b2e6-58d1862cbf2d', null),
   ('ccec6dce-12f0-41aa-8cec-35ab10518923', '2026/27', '2026-09-05', 'Wellington XI', 'Friendly', 0, 4, 0, 0, 'L', null, '2026-07-29T08:29:05.676338+00:00', 'A', false, '29d2493b-36b3-45c2-9643-a0b1a5f4708d', '13:00:00'),
-  ('f9b23669-2a06-4c7d-886f-42fb7aff7a54', '2026/27', '2026-09-12', 'Old Bradfieldians II', 'League', null, null, 0, 0, null, null, '2026-08-13T14:20:18.973888+00:00', 'H', false, '02f0dbf5-04d6-4c07-a931-2a1b9e38670f', null),
+  ('f9b23669-2a06-4c7d-886f-42fb7aff7a54', '2026/27', '2026-09-12', 'Old Bradfieldians II', 'League', 7, 1, 0, 0, 'W', null, '2026-08-13T14:20:18.973888+00:00', 'H', false, '02f0dbf5-04d6-4c07-a931-2a1b9e38670f', '10:00:00'),
   ('73f89756-5eb3-47b5-b25b-31f2193b9470', '2026/27', '2026-09-26', 'Old St Edwardians', 'League', null, null, 0, 0, null, null, '2026-09-03T14:07:54.9505+00:00', 'A', false, '06276e0c-90ab-42f1-8462-31e9a24d8fbc', '12:00:00')
 on conflict (id) do update set
   "season" = excluded."season",
@@ -294,7 +298,17 @@ insert into public.appearances ("id", "match_id", "player_id", "started", "goals
   ('38d6596a-f7a0-4c69-9e1a-52b788083d7a', 'dca7de05-51bb-47c6-96b7-e0f2ebdfe15a', '83189d45-71e9-427e-8886-b9847b2edda4', true, 0, 0, 0, 0, false, false),
   ('2a8ec1ea-22a0-4e4b-bf29-cdf365136e0a', 'dca7de05-51bb-47c6-96b7-e0f2ebdfe15a', 'afbbe66e-afdf-4744-bf3e-1184af3eb5b7', true, 0, 0, 0, 0, false, false),
   ('cbcfd8f4-5730-4bbe-968d-2c933c01e40f', 'dca7de05-51bb-47c6-96b7-e0f2ebdfe15a', 'e63b32df-5f95-4522-8b91-9c4d5d40f61a', true, 1, 0, 0, 0, false, false),
-  ('bcdb0cb5-4f0c-4a95-8c3e-bae316e344de', 'dca7de05-51bb-47c6-96b7-e0f2ebdfe15a', 'ea8b8d9a-8308-4f37-9561-fa69bafbaae7', true, 0, 0, 0, 0, false, false)
+  ('bcdb0cb5-4f0c-4a95-8c3e-bae316e344de', 'dca7de05-51bb-47c6-96b7-e0f2ebdfe15a', 'ea8b8d9a-8308-4f37-9561-fa69bafbaae7', true, 0, 0, 0, 0, false, false),
+  ('9a8111cb-7d7c-414e-95e6-34fca1894323', 'f9b23669-2a06-4c7d-886f-42fb7aff7a54', '10eafed3-5c60-4f94-a097-a23ab83a5fb6', true, 0, 0, 0, 0, false, false),
+  ('24b7b6c1-9790-45e7-8f70-eb9588106fa5', 'f9b23669-2a06-4c7d-886f-42fb7aff7a54', '5a424794-81ae-4345-b717-d88f3d8bf2d9', true, 2, 0, 0, 0, false, false),
+  ('6eb478e4-c51e-4dc5-80dd-3bab84592623', 'f9b23669-2a06-4c7d-886f-42fb7aff7a54', '5ba2ba2c-8a09-44eb-91c6-599e4466aa7c', true, 3, 0, 0, 0, true, false),
+  ('f80f43ad-139c-4f9b-bb49-a96d3eec506d', 'f9b23669-2a06-4c7d-886f-42fb7aff7a54', '6c2b3cb4-0ec3-49f9-9d67-2dfea26e713c', true, 0, 0, 0, 0, false, false),
+  ('dae16f16-be75-4dfe-b6b9-655e476e50c4', 'f9b23669-2a06-4c7d-886f-42fb7aff7a54', '76794163-1369-4fc9-ac30-ba3c188a879c', true, 0, 0, 0, 0, false, false),
+  ('987b5087-917a-4c1b-b07a-b24a063f739d', 'f9b23669-2a06-4c7d-886f-42fb7aff7a54', '83189d45-71e9-427e-8886-b9847b2edda4', true, 0, 0, 0, 0, false, false),
+  ('e544dce6-1ae0-4d19-95ba-94c2812b6cbe', 'f9b23669-2a06-4c7d-886f-42fb7aff7a54', 'b9ed2734-11d1-4d2e-a946-b102fa955772', true, 1, 0, 0, 0, false, false),
+  ('3afdb3b1-c36a-45b8-b338-8e9bda1decdd', 'f9b23669-2a06-4c7d-886f-42fb7aff7a54', 'bd19fb0a-4186-43b8-9ab0-cf46f9c4c273', true, 1, 0, 0, 0, false, false),
+  ('5b1bffc4-4c8a-4307-a23c-84d7ee5fcc28', 'f9b23669-2a06-4c7d-886f-42fb7aff7a54', 'c4ffcc42-df0d-4911-8843-7dec359d34be', true, 0, 0, 0, 0, false, false),
+  ('52521ddb-01e3-48ef-834f-d5079ef291e6', 'f9b23669-2a06-4c7d-886f-42fb7aff7a54', 'e63b32df-5f95-4522-8b91-9c4d5d40f61a', true, 0, 0, 0, 0, false, false)
 on conflict (id) do update set
   "match_id" = excluded."match_id",
   "player_id" = excluded."player_id",

@@ -56,6 +56,13 @@
     "created_at": "2026-07-28T14:09:26.44542+00:00"
   },
   {
+    "id": "bd19fb0a-4186-43b8-9ab0-cf46f9c4c273",
+    "name": "Carter Dodd",
+    "position": "MID",
+    "status": "active",
+    "created_at": "2026-09-13T07:12:37.359325+00:00"
+  },
+  {
     "id": "39447313-ad42-46a9-8eeb-bc0f56916e5d",
     "name": "Charlie Middleton",
     "position": "DEF",
@@ -117,6 +124,13 @@
     "position": "MID",
     "status": "active",
     "created_at": "2026-07-28T14:09:26.44542+00:00"
+  },
+  {
+    "id": "6c2b3cb4-0ec3-49f9-9d67-2dfea26e713c",
+    "name": "Guy Bryer",
+    "position": "MID",
+    "status": "active",
+    "created_at": "2026-09-13T07:13:07.927767+00:00"
   },
   {
     "id": "631e28d0-375f-421d-b42d-0d590e2ba0f1",
@@ -224,6 +238,13 @@
     "created_at": "2026-07-28T14:09:26.44542+00:00"
   },
   {
+    "id": "10eafed3-5c60-4f94-a097-a23ab83a5fb6",
+    "name": "Matt Summers",
+    "position": null,
+    "status": "active",
+    "created_at": "2026-09-13T07:13:39.442721+00:00"
+  },
+  {
     "id": "83189d45-71e9-427e-8886-b9847b2edda4",
     "name": "Max Burke",
     "position": "MID",
@@ -278,6 +299,13 @@
     "position": "MID",
     "status": "active",
     "created_at": "2026-07-28T14:09:26.44542+00:00"
+  },
+  {
+    "id": "5ba2ba2c-8a09-44eb-91c6-599e4466aa7c",
+    "name": "Refeya Davies",
+    "position": "FWD",
+    "status": "active",
+    "created_at": "2026-09-13T07:13:27.681771+00:00"
   },
   {
     "id": "76b8d60e-5cbe-4a85-8c54-621513bf8044",
