@@ -338,9 +338,22 @@ richer row should extend `ResultList` itself rather than starting a new
 component, the same way `showOpponent` and the `TBC` chip did here.
 
 The league snapshot and season stats cards are unchanged by this phase —
-only where they sit moved, onto the grid's right column — so Phase 60's
-form-column decision and any future numbers on *Season so far* still land on
-the components as they already are.
+only where they sit moved, onto the grid's right column — so any future
+numbers on *Season so far* still land on the components as they already are.
+
+**Phase 60 — no form column on the league table.** The mock-up draws five
+coloured chips on every row of the league snapshot; `ROADMAP.md`'s own finding
+that `league_rows` holds totals and not results rules that out — there is no
+way to derive another club's last five, so only our own row could ever carry
+the chips. Filling that one row and leaving the rest blank would be honest but
+would read as broken data, and the chips already exist: the form card
+(Phase 58) is the one place the site draws them, against our own position over
+our own last five results. The league table stays what it has always shown —
+position, W/D/L, GF/GA, GD, Pts, on both the snapshot and the full standings —
+and doesn't grow a column it can only ever fill for one row. This holds
+however much of the division's data ever gets typed in: the constraint is what
+`league_rows` stores per club (aggregate totals), not what's missing from it
+yet.
 
 ### A result is a row, not a sentence
 
