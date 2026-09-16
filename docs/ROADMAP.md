@@ -259,10 +259,20 @@ All-time exists to be the one place every season combines, so *All seasons* on
 Season must mean season-by-season comparison, not all-time totals, or the two
 pages say the same thing twice. That is the same trap the Players/Records split
 was built to avoid, and `CLAUDE.md` says so. `/season/charts` needs a redirect
-shim; `App.jsx` already carries seven. **Files:** `App.jsx`, `pages/Season.jsx`,
+shim; `App.jsx` already carries seven. **Two charts already on `SeasonCharts.jsx`
+carry forward as-is and are not up for redesign in 61, 62 or 64: "Points
+accumulated"** (`seasonPointsComparison` in `lib/charts.js`) **is the concrete
+shape *All seasons* has to take** — every season plotted on the shared matchday
+axis with the picked season painted in colour and the rest in grey behind it —
+so this phase's *All seasons* mode is this chart wired to the lifted filter,
+not a new comparison invented for it; **and "Goals scored and conceded"**
+(`seasonTrend` in `lib/charts.js`, the scored/conceded area chart) **moves onto
+the merged page unchanged.** Losing either was flagged as a live risk of this
+merge, not a hypothetical. **Files:** `App.jsx`, `pages/Season.jsx`,
 `components/season/SeasonCharts.jsx`, `scripts/site-map.js`. **Done means** the
-old address still lands somewhere sensible, the filter survives a tab change, and
-no figure appears on both Season and Records → All-time meaning different things.
+old address still lands somewhere sensible, the filter survives a tab change, no
+figure appears on both Season and Records → All-time meaning different things,
+and both named charts are still on the page, not just their data functions.
 **Docs:** `CLAUDE.md` → *Sections* table, `DESIGN.md` → *Sections do not grow*.
 **Model:** Opus 5 · xhigh — routing, a redirect, and an information-architecture
 call that is expensive to reverse.
@@ -272,9 +282,13 @@ game, conceded per game, both teams scored, clean sheets, players used), a W/D/L
 donut, the most frequent scorelines, and the winning and losing margins. All of
 it derives from `matches` alone, the goals home/away split included — Phase 56
 landed, so that card is in rather than conditional. W/D/L keeps `--win`, `--draw` and `--loss` in
-every chart on the page and is never themed. **Files:** `components/season/`,
+every chart on the page and is never themed. **These are additions to the page,
+not a replacement of it** — Phase 61 already carried "Points accumulated" and
+"Goals scored and conceded" onto `/season/stats` and neither is this phase's to
+touch or drop. **Files:** `components/season/`,
 `lib/matches.js`, `styles/components/charts.css`. **Done means** every figure is
-derived at load time with no new column, and the page holds at 375px. **Model:**
+derived at load time with no new column, the page holds at 375px, and both
+carried-over charts from Phase 61 are still present. **Model:**
 Sonnet 5 · high.
 
 **Phase 63 — The division, ranked.** Attack and defence across every club in the
@@ -289,18 +303,26 @@ ranks correctly, since the ratio is per game and the table is not always square.
 divisor is invisible.
 
 **Phase 64 — The charts, and the series palette.** Three charts under the
-division table: the golden boot race (cumulative goals by matchday, one line a
-player, direct labels at the line ends), games against contributions (a scatter,
-dots sized by how many players share a spot, a dashed one-a-game reference), and
-the appearance distribution (how many players played how many games). Also
-re-step `--series-1` to `--series-5` per finding 3 and re-validate. A chart is
+division table, added alongside what's already on the page: the golden boot
+race (cumulative goals by matchday, one line a player, direct labels at the
+line ends — the existing chart already on `SeasonCharts.jsx`, kept as is, not
+redrawn), games against contributions (a scatter, dots sized by how many
+players share a spot, a dashed one-a-game reference, new), and the appearance
+distribution (how many players played how many games, new). "Points
+accumulated" and "Goals scored and conceded" reached this page in Phase 61 and
+are not this phase's to re-step past the palette pass below.
+Also re-step `--series-1` to `--series-5` per finding 3 and re-validate — every
+chart on the page, old and new. A chart is
 drawn once at a canvas that fits 375px and scales up, never a wide canvas scaled
 down: that was the bug in the mock-up's first cut, where a 700-unit canvas put
 its labels at 5px on a phone. No horizontal scroll, on the chart or the page.
 **Files:** `components/season/`, `styles/components/charts.css`, `tokens.css`,
 `lib/tokens.js`. **Done means** the palette passes a colour-blind separation check
-before it ships, every chart fits 375px with no sideways scroll, and chart labels
-and the card's own headings are the same size as each other on a phone. **Docs:**
+before it ships, every chart fits 375px with no sideways scroll, chart labels
+and the card's own headings are the same size as each other on a phone, and the
+page still carries all five charts (golden boot race, points accumulated, goals
+scored and conceded, games against contributions, appearance distribution).
+**Docs:**
 `DESIGN.md` → *Chart series* and *Charts*. **Model:** Opus 5 · xhigh — SVG
 geometry, a scale that has to be right, and a palette that has to be measured
 rather than judged.
