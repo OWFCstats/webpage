@@ -13,6 +13,7 @@ import {
   currentSeasonOf,
   currentStreak,
   fixtures,
+  formOf,
   isCleanSheet,
   isPlayed,
   latestResult,
@@ -22,6 +23,7 @@ import {
   opponentMatches,
   opponentSlug,
   playedMatches,
+  recentFormLine,
   resultOf,
   seasonLadder,
   seasonSummary,
@@ -272,4 +274,17 @@ test('a season with nothing played is all fixtures and no figures', () => {
 test('a season nobody has entered is an empty ladder, not a crash', () => {
   assert.deepEqual(seasonLadder(mid.matches, '2099/00'), []);
   assert.deepEqual(seasonLadder([], null), []);
+});
+
+test('the form card reads oldest to newest, each result paired with its own scoreline', () => {
+  const seasonMatches = mid.matches.filter((m) => m.season === '2025/26');
+  const line = recentFormLine(seasonMatches, 5);
+  const newestFirst = formOf(seasonMatches, 5);
+
+  assert.equal(line.length, newestFirst.length);
+  assert.deepEqual(line.map((r) => r.match.id), newestFirst.map((m) => m.id).reverse());
+  for (const { match, result, scoreline } of line) {
+    assert.equal(result, resultOf(match));
+    assert.equal(scoreline, `${match.goals_for}–${match.goals_against}`);
+  }
 });
