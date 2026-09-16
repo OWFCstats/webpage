@@ -193,6 +193,188 @@ before — that is what keeps this file short.
    because words with no photo beat the nothing that is there now, and this is
    the only thing serving the community third of the vision.
 
+**The redesign below comes before all eight of these.** It is the one piece of
+work with an agreed design behind it rather than a paragraph, and four of its
+phases close budget rows that Phase 52 would otherwise have to argue from
+nothing.
+
+---
+
+## The redesign — phases 56 to 64, in order
+
+Agreed against a reference site (the Northern Premier League's club pages) and
+signed off as a working mock-up: **Draft D**, two pages at two widths, real
+2025/26 figures throughout. The mock-up is the specification. Where this file
+and the mock-up disagree, the mock-up is a picture and this file is the contract.
+
+**What the redesign is for.** Home currently opens with a result a reader has
+already seen and buries the fixture that decides whether they turn up. The
+redesign puts the next match at the top with a countdown against it, folds the
+result into a bar beneath, and turns Season's two chart-shaped sub-pages into one.
+It does not add a section, a colour, or a stored column.
+
+**Three findings from the data model bind every phase below.** They were checked
+against `supabase/schema.sql` and the committed fixture, not assumed:
+
+1. **`venue` is nullable and is null on all fourteen 2025/26 rows.** Nothing that
+   depends on home and away works until Phase 56 lands. That is the fixture card's
+   team order, the H/A letter in any list, and the goals split entirely.
+2. **`league_rows` holds totals, not results.** Played, won, drawn, lost, goals
+   for, goals against, per club per season. There is no way to derive another
+   club's last five, so a form column across the whole table is not buildable.
+   Phase 60 decides between our own row only and no column at all.
+3. **The `--series-*` tokens fail colour-blind separation when four are used at
+   once.** `--series-2` against `--series-4` is ΔE 4.9 under protanopia and
+   `--series-2` against `--series-1` is 12.5 for normal vision, against a floor of
+   15. Phase 64 re-steps them. `DESIGN.md` → *Chart series* carries the finding.
+
+**Reading the model column.** Effort is the reasoning-effort setting, not a
+separate model: `xhigh` is Claude Code's default for coding and the right setting
+for anything with a derivation or a route in it; `high` is the sweet spot for
+work whose shape is already decided and where the risk is typos rather than
+judgement; `medium` is for mechanical edits. Raise it, never lower it, if a phase
+turns out to be load-bearing. Sonnet 5 is named where the work is CSS and markup
+against a mock-up that already answers the design questions; Opus 5 where getting
+it wrong is silent (a derivation, a redirect, a schema change, a chart scale).
+
+---
+
+**Phase 56 — Venue, actually recorded.** The unblocking phase, and the only one
+with a migration in it. `venue` is `text check (venue in ('H','A','N'))` and
+nullable, and no row has ever been filled in, so `venueTeam()` returns null for
+every match the club has played. Backfill the fourteen 2025/26 rows and the
+2026/27 ones from the club's own records, make the field required in the result
+wizard and the match form, and give `matchContext` a defined answer when it is
+still absent so a missing venue degrades to "no letter" rather than to a wrong
+one. **Files:** `supabase/migration_2026_09_venue_required.sql`, `schema.sql`,
+`pages/admin/AddResult.jsx`, `pages/admin/MatchForm.jsx`, `lib/matches.js`,
+`fixtures/2025-26.json`, `tests/`. **Done means** every committed fixture row has
+a venue, the wizard cannot submit without one, and `venueTeam()` has a test for
+each of H, A, N and null. **Docs:** none. **Model:** Opus 5 · xhigh — a schema
+change plus a data backfill, and the one phase here that can corrupt history.
+
+**Phase 57 — The club band and the fixture card.** A dark band under the
+masthead, holding two paper cards with a gold hairline. Left is the form card
+(Phase 58), right is the next fixture: home team first and away second by
+`venue`, kick-off centred between them with the ground under it, the date on its
+own ruled line, then three tiles counting days, hours and minutes, then *Add to
+calendar* and *Match details*. The calendar action writes an `.ics` from the
+fixture and nothing else; *Match details* goes to `/matchday/:matchId`, which
+already renders an unplayed fixture as `–` vs `–` with "Kick-off" instead of
+"Full time" (`Scoreboard.jsx`). Above 860px the two cards are a grid pair and the
+form card is half the fixture card's height, centred; below it they stack.
+**Files:** `components/home/ClubBand.jsx` (new), `components/home/NextFixture.jsx`
+(rewritten), `lib/ics.js` (new), `styles/pages/home.css`, `pages/Home.jsx`,
+`tests/ics.test.js`. **Done means** the countdown reads correctly at 375px, the
+`.ics` opens in a phone calendar with the right kick-off and ground, and
+`check:layout` is green at six widths. **Docs:** `DESIGN.md` → *Home, addressed
+to the reader* gains the band above it. **Model:** Sonnet 5 · high — the layout
+is drawn; `lib/ics.js` is the only part with a right answer, and it has a test.
+
+**Phase 58 — The form card, and the last game as a bar.** The form card is
+league position over a run of five rounded squares with each scoreline under it,
+and nothing else: no sentence, no buttons. The last result stops being a board
+and becomes a full-width paper bar directly under the band, carrying the W/D/L
+chip, the score, the opponent, the goalscorers and the man of the match, each
+name a link. **This takes the site from five boards to four**, which is a
+`DESIGN.md` edit and not a detail: the board is scarce on purpose and the count
+is written down. **Files:** `components/home/LastResult.jsx` (rewritten as
+`LastGameBar.jsx`), `components/home/FormCard.jsx` (new), `lib/matches.js`
+(last-five-with-scorelines), `styles/pages/home.css`. **Done means** the bar
+names every scorer and the MOTM at 375px without wrapping into four lines, and
+the five squares stay square rather than flattening into pills when the card is
+height-constrained. **Docs:** `DESIGN.md` → *Board* (five becomes four, and why),
+and *Home, addressed to the reader*. **Model:** Sonnet 5 · high.
+
+**Phase 59 — Match outlook, and Home's grid.** Recent results and upcoming
+fixtures become one card: the last three and the next three, with `TBC` rows
+filling the gap so the card keeps its height when the diary is short. *Your
+season* moves directly under the band, above everything else. Below it, a
+two-column grid on desktop: outlook on the left spanning both rows, the league
+snapshot and *Season so far* stacked on the right, the three ending on one line.
+Reuse `ResultList`'s compact variant rather than adding a seventh scoreline
+shape. **Files:** `components/home/MatchOutlook.jsx` (new, replacing
+`RecentForm.jsx`), `pages/Home.jsx`, `styles/pages/home.css`. **Done means** the
+outlook card is the same height with one fixture in the diary as with three, and
+Home's three budget rows are re-measured into the table below. **Docs:**
+`ROADMAP.md` → *Page budgets*. **Model:** Sonnet 5 · high.
+
+**Phase 60 — The league snapshot's form column.** Small, and mostly a decision.
+The mock-up shows five coloured chips on every row; finding 2 above says only our
+own row can have them. Either show the column with our row filled and the rest
+blank, which is honest and looks broken, or drop the column and keep the chips on
+the form card alone, which is the recommendation. Whichever wins, the snapshot
+stays a snapshot: the rows around us and a link out, with the full table on
+Season. **Files:** `components/LeagueTable.jsx`, `styles/components/league-table.css`.
+**Done means** the decision is written into `DESIGN.md` with the reason, so the
+next session does not re-derive it from the mock-up. **Model:** Sonnet 5 · medium.
+
+**Phase 61 — Charts becomes Stats.** `/season/charts` merges into `/season/stats`
+and Season has two sub-pages rather than three chart-shaped ones. The season
+filter lifts above the segmented control so it holds across both, and gains *All
+seasons*. **The overlap with Records is the real decision here**: Records →
+All-time exists to be the one place every season combines, so *All seasons* on
+Season must mean season-by-season comparison, not all-time totals, or the two
+pages say the same thing twice. That is the same trap the Players/Records split
+was built to avoid, and `CLAUDE.md` says so. `/season/charts` needs a redirect
+shim; `App.jsx` already carries seven. **Files:** `App.jsx`, `pages/Season.jsx`,
+`components/season/SeasonCharts.jsx`, `scripts/site-map.js`. **Done means** the
+old address still lands somewhere sensible, the filter survives a tab change, and
+no figure appears on both Season and Records → All-time meaning different things.
+**Docs:** `CLAUDE.md` → *Sections* table, `DESIGN.md` → *Sections do not grow*.
+**Model:** Opus 5 · xhigh — routing, a redirect, and an information-architecture
+call that is expensive to reverse.
+
+**Phase 62 — The season's own numbers.** Six per-game tiles (played, scored per
+game, conceded per game, both teams scored, clean sheets, players used), a W/D/L
+donut, the most frequent scorelines, and the winning and losing margins. All of
+it derives from `matches` alone. The goals home/away split is in the mock-up and
+needs Phase 56 to have landed; if it has not, this phase ships without that card
+rather than with an empty one. W/D/L keeps `--win`, `--draw` and `--loss` in
+every chart on the page and is never themed. **Files:** `components/season/`,
+`lib/matches.js`, `styles/components/charts.css`. **Done means** every figure is
+derived at load time with no new column, and the page holds at 375px. **Model:**
+Sonnet 5 · high.
+
+**Phase 63 — The division, ranked.** Attack and defence across every club in the
+division, from `league_rows`: goals for over played, and goals against over
+played, sorted best first with our own row picked out in gold and the division
+average marked. Free from standings an admin already types in each week, which is
+the whole argument for it. One season at a time, because `league_rows` is scoped
+that way. **Files:** `lib/league.js`, `components/season/DivisionRatios.jsx` (new).
+**Done means** a division with a club on a different number of played games still
+ranks correctly, since the ratio is per game and the table is not always square.
+**Model:** Opus 5 · xhigh — it is a derivation over other clubs' data and a wrong
+divisor is invisible.
+
+**Phase 64 — The charts, and the series palette.** Three charts under the
+division table: the golden boot race (cumulative goals by matchday, one line a
+player, direct labels at the line ends), games against contributions (a scatter,
+dots sized by how many players share a spot, a dashed one-a-game reference), and
+the appearance distribution (how many players played how many games). Also
+re-step `--series-1` to `--series-5` per finding 3 and re-validate. A chart is
+drawn once at a canvas that fits 375px and scales up, never a wide canvas scaled
+down: that was the bug in the mock-up's first cut, where a 700-unit canvas put
+its labels at 5px on a phone. No horizontal scroll, on the chart or the page.
+**Files:** `components/season/`, `styles/components/charts.css`, `tokens.css`,
+`lib/tokens.js`. **Done means** the palette passes a colour-blind separation check
+before it ships, every chart fits 375px with no sideways scroll, and chart labels
+and the card's own headings are the same size as each other on a phone. **Docs:**
+`DESIGN.md` → *Chart series* and *Charts*. **Model:** Opus 5 · xhigh — SVG
+geometry, a scale that has to be right, and a palette that has to be measured
+rather than judged.
+
+---
+
+**One branch a phase, in this order.** 56 blocks 57 and 62. 57 and 58 are one
+screen between them and should be reviewed together even though they land
+separately. 61 blocks nothing but should come before 62 to 64, so those three
+land on the page that is going to keep them.
+
+**Each phase condenses to one *Done* row in the commit that closes it**, per the
+rule at the top of this file, and writes its own ruling into `DESIGN.md` in the
+same commit as the code.
+
 ---
 
 ## Page budgets
