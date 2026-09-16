@@ -82,10 +82,21 @@ export const ROUTES = [
     budget: 'Matchday',
   },
   { id: 'season', route: '/season', name: 'Season', budget: 'Season → any sub-page' },
+  // Two, because the sub-page has two shapes: one season, and the season-by-
+  // season comparison the All seasons filter puts up. The second is a different
+  // chart (every season lit and labelled rather than one) on a page with two
+  // fewer cards, so measuring the first says nothing about it.
   {
-    id: 'season-charts',
-    route: '/season/charts',
-    name: 'Season — charts',
+    id: 'season-stats',
+    route: '/season/stats',
+    name: 'Season — stats',
+    budget: 'Season → any sub-page',
+    charts: true,
+  },
+  {
+    id: 'season-stats-all',
+    route: '/season/stats?season=all',
+    name: 'Season — stats, every season compared',
     budget: 'Season → any sub-page',
     charts: true,
   },
