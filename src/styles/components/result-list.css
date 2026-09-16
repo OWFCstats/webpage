@@ -97,3 +97,7 @@
 }
 
 .result-chip { font-weight: 600; }
+
+/* An empty slot, not a fixture — no pill, no link, just the word every other
+   "no time yet" spot on the site already uses (NextFixture's kick-off). */
+.result-chip.tbc { color: var(--ink-soft); font-weight: 400; }

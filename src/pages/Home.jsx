@@ -6,23 +6,22 @@ import LeagueTable from '../components/LeagueTable';
 import ClubBand from '../components/home/ClubBand';
 import FormCard from '../components/home/FormCard';
 import LastGameBar from '../components/home/LastGameBar';
+import MatchOutlook from '../components/home/MatchOutlook';
 import NextFixture from '../components/home/NextFixture';
-import RecentForm from '../components/home/RecentForm';
 import SeasonStats from '../components/home/SeasonStats';
 import YourSeason from '../components/home/YourSeason';
 import {
   currentSeasonOf,
   fixtures,
-  formOf,
   isPlayed,
   latestResult,
   matchContext,
+  playedMatches,
   recentFormLine,
   seasonsOf,
   seasonSummary,
 } from '../lib/matches';
 import { leagueStandings } from '../lib/league';
-import { seasonTrend } from '../lib/charts';
 import { meSummary } from '../lib/me';
 
 export default function Home() {
@@ -48,18 +47,22 @@ export default function Home() {
     const standings = leagueStandings(leagueRows, teams, currentSeason);
     const ranked = standings.rows.map((r, i) => ({ ...r, rank: r.position ?? i + 1 }));
     const ourRow = ranked.find((r) => r.isUs) ?? null;
+    // The outlook's two groups — most recent results and soonest fixtures,
+    // across a season boundary like the next-fixture card always has, so
+    // entering next season's diary doesn't strand either list empty early.
+    const upcoming = fixtures(matches);
     return {
       currentSeason,
       // True once a newer season has a row (even just a fixture) — the label
       // says "final" so the summary below it doesn't read as live.
       seasonIsFinal: currentSeason != null && seasonsOf(matches)[0] !== currentSeason,
       summary: seasonSummary(seasonMatches),
-      form: formOf(seasonMatches),
       formLine: recentFormLine(seasonMatches),
       position: ourRow?.rank ?? null,
       divisionSize: ranked.length,
-      next: fixtures(matches)[0],
-      trend: seasonTrend(seasonMatches),
+      next: upcoming[0],
+      recentResults: playedMatches(matches).slice(0, 3),
+      upcomingFixtures: upcoming.slice(0, 3),
       lastMatch,
       lastCtx: lastMatch ? matchContext(lastMatch, players, matches, appearances) : null,
       cleanSheets: seasonMatches.filter((m) => isPlayed(m) && m.goals_against === 0).length,
@@ -78,8 +81,8 @@ export default function Home() {
   }
 
   const {
-    currentSeason, seasonIsFinal, summary, form, formLine, position, divisionSize,
-    next, trend, lastMatch, lastCtx, cleanSheets,
+    currentSeason, seasonIsFinal, summary, formLine, position, divisionSize,
+    next, recentResults, upcomingFixtures, lastMatch, lastCtx, cleanSheets,
   } = view;
 
   return (
@@ -118,11 +121,14 @@ export default function Home() {
         onForget={forgetMe}
       />
 
-      <LeagueTable season={currentSeason} />
-
-      <RecentForm form={form} trend={trend} />
-
-      <SeasonStats summary={summary} cleanSheets={cleanSheets} />
+      {/* Below Your season: the outlook spans both rows on the left, the
+          league snapshot and the season's own numbers stack on the right —
+          a two-column grid past 860px, one column on a phone. */}
+      <div className="home-grid">
+        <MatchOutlook recent={recentResults} upcoming={upcomingFixtures} />
+        <LeagueTable season={currentSeason} />
+        <SeasonStats summary={summary} cleanSheets={cleanSheets} />
+      </div>
     </div>
   );
 }

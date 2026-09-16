@@ -57,7 +57,7 @@ export default function HeadToHead({
   return (
     <div className="section sheet">
       <h3 className="block verdigris">Head to head</h3>
-      <ResultList matches={meetings} inline />
+      <ResultList matches={meetings} inline showOpponent={false} />
 
       {hasTape ? (
         <>

@@ -75,6 +75,7 @@ page-by-page review against the club's real 2025/26 season.
 | 56 | Venue, actually recorded | `matches.venue` is `not null`. It went in nullable with nothing to fill it from, and a null venue is not "no answer" but a wrong one: `matchHomeAway()` read `venue !== 'A'`, so every unrecorded row claimed we were at home, and `venueTeam()` gave the fixture no pitch. The roadmap's own finding said the live rows were null; they were not — the fixture's were, and checking the frozen parse instead of `backups/` is what made a closed question look open. The club's real H/A is in `import_2025_26.sql` now, so it reaches the fixture through the parser rather than being invented as an alternating run; the wizard, the match form and the walkover form all refuse to submit without one; and the migration stops and names the count rather than backfilling a venue nobody recorded. `matchHomeAway()` returns `known` — false for a neutral ground as well as an unrecorded one — so an ordering is never read as a claim about a pitch. Unblocks phases 57–64 |
 | 57 | The club band and the fixture card | `components/home/ClubBand.jsx` — a dark band directly under the masthead, reusing the masthead's own `--board` tokens rather than the `.board` surface class, so nesting a paper plate inside it isn't the box-in-a-box that surface rules out (`DESIGN.md` → *The club band, under the masthead*). Holds one plate today, the rewritten `NextFixture.jsx`: home side first and away second by venue, kick-off and the ground between them, the date on its own ruled line, a live days/hours/minutes countdown, *Add to calendar* (`lib/ics.js`, a dependency-free `.ics` writer with its own tests) and *Match details*. Phase 58's form card takes the band's other slot |
 | 58 | The form card, and the last game as a bar | `FormCard.jsx` fills the club band's second slot: league position over five result-coloured squares, each carrying its scoreline, nothing else. `LastResult.jsx` is now `LastGameBar.jsx` — a full-width paper bar built from the same `.result-row` every other scoreline uses, goalscorers and the MOTM linked underneath — which took Home from five named boards to four (`DESIGN.md` → *Board*) and closed the score-order split: the bar reads ours-first like every other row now that it isn't staging a scoreboard |
+| 59 | Match outlook, and Home's grid | `MatchOutlook.jsx` replaces `RecentForm.jsx`: the last three results and the next three fixtures, each group on `ResultList`'s own compact inline variant — extended with `showOpponent` and a `tbc` empty-slot chip rather than a seventh scoreline shape — padded with `TBC` chips so the card holds its height with a short diary. Below *Your season*, Home becomes a two-column grid past 860px: the outlook on the left spans *Division 5* and *Season so far* stacked on the right; one column below that. `DESIGN.md` → *Match outlook, and the grid below the band* has the reasoning, including where this deliberately simplifies Draft D's richer row |
 
 **The detail behind any closed phase is in its commit** — `git log --grep="Phase
 20"` finds it, because every phase commit names its phase in its own subject.
@@ -203,7 +204,7 @@ nothing.
 
 ---
 
-## The redesign — phases 59 to 64, in order (56, 57 and 58 are done)
+## The redesign — phases 60 to 64, in order (56–59 are done)
 
 Agreed against a reference site (the Northern Premier League's club pages) and
 signed off as a working mock-up: **Draft D**, two pages at two widths, real
@@ -247,19 +248,6 @@ against a mock-up that already answers the design questions; Opus 5 where gettin
 it wrong is silent (a derivation, a redirect, a schema change, a chart scale).
 
 ---
-
-**Phase 59 — Match outlook, and Home's grid.** Recent results and upcoming
-fixtures become one card: the last three and the next three, with `TBC` rows
-filling the gap so the card keeps its height when the diary is short. *Your
-season* moves directly under the band, above everything else. Below it, a
-two-column grid on desktop: outlook on the left spanning both rows, the league
-snapshot and *Season so far* stacked on the right, the three ending on one line.
-Reuse `ResultList`'s compact variant rather than adding a seventh scoreline
-shape. **Files:** `components/home/MatchOutlook.jsx` (new, replacing
-`RecentForm.jsx`), `pages/Home.jsx`, `styles/pages/home.css`. **Done means** the
-outlook card is the same height with one fixture in the diary as with three, and
-Home's three budget rows are re-measured into the table below. **Docs:**
-`ROADMAP.md` → *Page budgets*. **Model:** Sonnet 5 · high.
 
 **Phase 60 — The league snapshot's form column.** Small, and mostly a decision.
 The mock-up shows five coloured chips on every row; finding 2 above says only our
