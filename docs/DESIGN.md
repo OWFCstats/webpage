@@ -615,6 +615,22 @@ carrying appearances, the club's most-looked-at stat, in a colour with no basis
 in anything. `lib/tokens.js` maps appearances to `--series-4` by name, so the
 swap needed no JS change — only the token underneath it moved.
 
+**Contrast against the ground is not the same check as separation from each
+other, and these five pass the first and fail the second.** Measured on four at
+once: `--series-2` against `--series-4` is ΔE 4.9 under protanopia, and
+`--series-2` against `--series-1` is 12.5 for *normal* vision against a floor of
+15. Both greens read as one line to a red-green viewer, and the verdigris and the
+brass are hard to tell apart for everyone. The chroma on the two greens is also
+under the floor where a colour stops reading as a hue at all and starts reading
+as grey.
+
+Three or fewer, chosen apart, is safe today. **Four is not**, so any chart that
+wants four series re-steps the palette and measures it rather than trusting this
+list, and `ROADMAP.md` → Phase 64 owns re-stepping the tokens themselves. The
+rule this establishes: a categorical palette is validated by measurement, never
+by eye, and a direct label on the line is what makes a marginal pair legal rather
+than an excuse for one.
+
 ## Type
 
 Two families, three roles.
