@@ -34,7 +34,7 @@ one of these, that's a sign it doesn't belong yet.
 | --- | --- | --- |
 | **Home** | What's happening now, led by the last result with its MOTM named on the same surface, then the reader's own season if they have picked a name. League position, form, next fixture. | — |
 | **Matchday** | One match at a time: scoreboard, squad, report, and the archive stepper across the season. | — |
-| **Season** | One season as a whole. | Season · Charts |
+| **Season** | One season as a whole, and — on Stats alone — every season against every other. | Season · Stats |
 | **Players** | The leaderboards, the squad, and the numbers. Individual player pages hang off it. | Leaderboards · Squad · Data centre |
 | **Records** | **All time**, and anything above a single season. | Badges · Honours · All-time |
 
@@ -53,7 +53,11 @@ Squad and → Data centre are the club's whole history by default**, because a
 name or a stat should be findable regardless of which season it happened in —
 both take an optional year filter for the reader who wants one season only.
 **Records stays the one place that combines every season into a single
-all-time board**, so a career total is never the same board shown twice.
+all-time board**, so a career total is never the same board shown twice. Season
+→ Stats takes an *All seasons* filter of its own and it stays on the right side
+of that line because it **compares rather than combines**: one line a season,
+side by side. The two charts that would combine — the scoring race and the
+goals-per-match line — simply don't draw in that mode.
 
 Admin sits behind a login and is lazy-loaded, so a public visitor never
 downloads it. It is the phone-first flow — a pub table on a Saturday night —
@@ -93,7 +97,7 @@ game as both the last result and the next fixture, and lost the kick-off time
 and venue entered with it.
 
 Renames are expensive — every old address needs a redirect shim, and
-`src/App.jsx` already carries seven of them. Name a section for what it *is*,
+`src/App.jsx` already carries eight of them. Name a section for what it *is*,
 not for what it currently shows.
 
 ## Stack
@@ -243,9 +247,12 @@ honours go up* in `docs/DESIGN.md`.
 **A page file should read as a layout.** Sections, and the data it feeds them.
 When a page defines its own presentational sub-components inline it has stopped
 being a page — move them to `components/`. Anything over ~250 lines is telling
-you something. Two files are over it today and both are on Phase 51's list:
-`components/season/SeasonCharts.jsx` at 374 and `pages/admin/AddResult.jsx` at
-295. Phase 8's row in the roadmap used to record "longest 247 lines", which is
+you something. One file is over it today and it is on Phase 51's list:
+`pages/admin/AddResult.jsx` at 295. `components/season/SeasonCharts.jsx` was the
+other at 374, and Phase 61 split it on the way to becoming `SeasonStats.jsx`:
+one file per chart card under `components/season/`, the page itself the stack of
+them, with `ChartCard.jsx` and `chart-bits.jsx` as the shared frame the cards
+phases 62 to 64 add sit in. Phase 8's row in the roadmap used to record "longest 247 lines", which is
 the kind of measurement that goes stale quietly, so the rule is written as a
 threshold now and the exceptions are named.
 
@@ -334,7 +341,7 @@ Before adding a feature, check `docs/ROADMAP.md`. If it's not there and it's
 not small, it goes there first.
 
 **The redesign is the plan of record.** `docs/ROADMAP.md` → *The redesign* is
-phases 56 to 64, of which 56 has landed: the next match leads Home with a
+phases 56 to 64, of which 56 to 61 have landed: the next match leads Home with a
 countdown against it, the last result folds into a bar, Season's two
 chart-shaped sub-pages become one, and the league table earns a set of charts
 off data already stored. It was designed against a reference site and signed off

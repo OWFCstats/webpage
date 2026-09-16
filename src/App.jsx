@@ -1,5 +1,5 @@
 import { lazy } from 'react';
-import { HashRouter, Navigate, Route, Routes, useParams } from 'react-router-dom';
+import { HashRouter, Navigate, Route, Routes, useLocation, useParams } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { DataProvider } from './context/DataContext';
 import { MeProvider } from './context/MeContext';
@@ -35,6 +35,14 @@ function MatchRedirect() {
   return <Navigate to={`/matchday/${matchId}`} replace />;
 }
 
+// Charts became Stats. The season a link was shared with travels with it —
+// /season/charts?season=2025/26 is the shape of a link pasted into the group
+// chat, and dropping the query would land the reader on a different season.
+function SeasonChartsRedirect() {
+  const { search } = useLocation();
+  return <Navigate to={{ pathname: '/season/stats', search }} replace />;
+}
+
 // HashRouter: GitHub Pages can't rewrite arbitrary paths to index.html, and
 // hash routing also works unchanged on a custom domain later.
 export default function App() {
@@ -53,7 +61,7 @@ export default function App() {
                 <Route path="matchday" element={<Matchday />} />
                 <Route path="matchday/:matchId" element={<Matchday />} />
                 <Route path="season" element={<Season view="season" />} />
-                <Route path="season/charts" element={<Season view="charts" />} />
+                <Route path="season/stats" element={<Season view="stats" />} />
                 <Route path="players" element={<PlayersHub view="leaders" />} />
                 <Route path="players/squad" element={<PlayersHub view="squad" />} />
                 <Route path="players/data" element={<PlayersHub view="data" />} />
@@ -71,6 +79,7 @@ export default function App() {
                 <Route path="matches" element={<Navigate to="/season" replace />} />
                 <Route path="matches/:matchId" element={<MatchRedirect />} />
                 <Route path="trends" element={<Navigate to="/season" replace />} />
+                <Route path="season/charts" element={<SeasonChartsRedirect />} />
                 <Route path="leaderboards" element={<Navigate to="/players" replace />} />
                 <Route path="stats" element={<Navigate to="/players" replace />} />
 

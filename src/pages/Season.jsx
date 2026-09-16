@@ -6,7 +6,7 @@ import LeaderBoards from '../components/LeaderBoards';
 import LeagueTable from '../components/LeagueTable';
 import SeasonLadder from '../components/SeasonLadder';
 import SeasonSummary from '../components/season/SeasonSummary';
-import { monthYear } from '../lib/format';
+import { monthYear, plural } from '../lib/format';
 import {
   playedMatches,
   seasonLadder,
@@ -16,13 +16,13 @@ import {
 } from '../lib/matches';
 import { playerTotals } from '../lib/players';
 
-// Charts pull in Recharts (~400kB); they stay in their own chunk and load
-// only when someone opens /season/charts.
-const SeasonCharts = lazy(() => import('../components/season/SeasonCharts'));
+// The charts pull in Recharts (~400kB); they stay in their own chunk and load
+// only when someone opens /season/stats.
+const SeasonStats = lazy(() => import('../components/season/SeasonStats'));
 
 const VIEWS = [
   { to: '/season', end: true, label: 'Season' },
-  { to: '/season/charts', end: false, label: 'Charts' },
+  { to: '/season/stats', end: false, label: 'Stats' },
 ];
 
 export default function Season({ view }) {
@@ -33,28 +33,34 @@ export default function Season({ view }) {
   // year — falls back to the latest rather than rendering an empty season.
   const [params, setParams] = useSearchParams();
   const asked = params.get('season') ?? 'latest';
-
-  // "All seasons" used to be a picker option here; that board is Records'
-  // now (docs/DESIGN.md → Structure), reached once rather than from both
-  // sections on the same component. A link built against the old option
-  // still lands somewhere useful.
-  if (asked === 'all') return <Navigate to="/records/all-time" replace />;
+  const allSeasons = asked === 'all';
 
   const season = seasons.includes(asked) ? asked : 'latest';
   const activeSeason = season === 'latest' ? seasons[0] : season;
 
   const { pool, summary, results, rungs, homeAway, totals } = useMemo(() => {
-    const pool = matches.filter((m) => m.season === activeSeason);
+    // Under All seasons the page is the comparison chart, and the only figure
+    // the layout still needs from here is the intro line's count.
+    const pool = allSeasons ? matches : matches.filter((m) => m.season === activeSeason);
     return {
       pool,
       summary: seasonSummary(pool),
       results: playedMatches(pool),
-      rungs: seasonLadder(matches, activeSeason),
+      rungs: allSeasons ? [] : seasonLadder(matches, activeSeason),
       homeAway: venueSummary(pool),
-      totals: playerTotals(players, pool, appearances),
+      totals: allSeasons ? [] : playerTotals(players, pool, appearances),
     };
-  }, [matches, activeSeason, players, appearances]);
+  }, [matches, activeSeason, allSeasons, players, appearances]);
 
+  // Every return below is after the last hook: /season and /season/stats render
+  // the same component from two routes, so React reconciles rather than
+  // remounting and a hook skipped on one of them is a crash on the other.
+  //
+  // "All seasons" belongs to Stats: this sub-page is one season as a whole, and
+  // every all-seasons answer it could give — career totals, every result — is
+  // Records' (docs/DESIGN.md → Sections do not grow). An old ?season=all link
+  // lands on the comparison rather than on a season it didn't ask for.
+  if (allSeasons && view === 'season') return <Navigate to="/season/stats?season=all" replace />;
   if (loading) return <Spinner />;
   if (error) return <ErrorNote message={error} />;
 
@@ -64,7 +70,9 @@ export default function Season({ view }) {
   // matches on record. Where the club finished is a standings question, and
   // the table below answers it — this line stays about our own results.
   let periodLabel = null;
-  if (results.length > 0) {
+  if (allSeasons) {
+    periodLabel = plural(seasonsOf(results).length, 'season', 'seasons');
+  } else if (results.length > 0) {
     const oldest = results[results.length - 1];
     const newest = results[0];
     periodLabel = isLatestSeason
@@ -72,17 +80,23 @@ export default function Season({ view }) {
       : `ended ${monthYear(newest.date)}`;
   }
 
-  // The season carries across to whichever sub-page the control switches to.
-  const search = params.toString();
+  // The season carries across whichever sub-page the control switches to.
+  // All seasons doesn't: Season has no such view, so its tab drops the filter
+  // rather than bouncing the reader straight back here.
+  const searchFor = (to) => {
+    const next = new URLSearchParams(params);
+    if (to === '/season' && next.get('season') === 'all') next.delete('season');
+    return next.toString();
+  };
 
   return (
     <div>
       <div className="section-head">
-        <h1>Season {activeSeason ?? ''}</h1>
+        <h1>{allSeasons ? 'Every season' : `Season ${activeSeason ?? ''}`}</h1>
         <SeasonSelect
           seasons={seasons}
-          value={season === 'latest' ? (seasons[0] ?? '') : season}
-          allowAll={false}
+          value={allSeasons ? 'all' : (season === 'latest' ? (seasons[0] ?? '') : season)}
+          allowAll={view === 'stats'}
           onChange={(next) => {
             const nextParams = new URLSearchParams(params);
             if (next === seasons[0]) nextParams.delete('season');
@@ -96,7 +110,7 @@ export default function Season({ view }) {
         {VIEWS.map((v) => (
           <NavLink
             key={v.to}
-            to={{ pathname: v.to, search }}
+            to={{ pathname: v.to, search: searchFor(v.to) }}
             end={v.end}
             className={({ isActive }) => (isActive ? 'active' : undefined)}
           >
@@ -132,7 +146,13 @@ export default function Season({ view }) {
         </div>
       ) : (
         <Suspense fallback={<Spinner />}>
-          <SeasonCharts season={activeSeason} />
+          <SeasonStats season={allSeasons ? 'all' : activeSeason} />
+          {allSeasons && (
+            <p className="muted card-foot">
+              Career totals are on{' '}
+              <Link className="more" to="/records/all-time">Records → All-time</Link>
+            </p>
+          )}
         </Suspense>
       )}
     </div>

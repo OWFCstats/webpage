@@ -77,6 +77,7 @@ page-by-page review against the club's real 2025/26 season.
 | 58 | The form card, and the last game as a bar | `FormCard.jsx` fills the club band's second slot: league position over five result-coloured squares, each carrying its scoreline, nothing else. `LastResult.jsx` is now `LastGameBar.jsx` — a full-width paper bar built from the same `.result-row` every other scoreline uses, goalscorers and the MOTM linked underneath — which took Home from five named boards to four (`DESIGN.md` → *Board*) and closed the score-order split: the bar reads ours-first like every other row now that it isn't staging a scoreboard |
 | 59 | Match outlook, and Home's grid | `MatchOutlook.jsx` replaces `RecentForm.jsx`: the last three results and the next three fixtures, each group on `ResultList`'s own compact inline variant — extended with `showOpponent` and a `tbc` empty-slot chip rather than a seventh scoreline shape — padded with `TBC` chips so the card holds its height with a short diary. Below *Your season*, Home becomes a two-column grid past 860px: the outlook on the left spans *Division 5* and *Season so far* stacked on the right; one column below that. `DESIGN.md` → *Match outlook, and the grid below the band* has the reasoning, including where this deliberately simplifies Draft D's richer row |
 | 60 | The league snapshot keeps no form column | The mock-up's five coloured chips per row can't be built — `league_rows` holds only our own totals, not results, so no other club has a form to show. No column ships, on the snapshot or the full table; the chips stay where Phase 58 put them, on the form card alone. `DESIGN.md` → *Match outlook, and the grid below the band* has the ruling |
+| 61 | Charts becomes Stats | `/season/charts` is `/season/stats`, and Season is Season · Stats — one page for the numbers, which is where phases 62 to 64 add theirs rather than each earning a sub-page. The season filter gains *All seasons*, and the decision the phase was really for is what it means: **season against season, never the seasons added up**, since combining every season into one board is Records' and saying it twice is the trap the Players/Records split exists to avoid. So the mode is the "Points accumulated" chart with every line lit, labelled and in its own colour; the scoring race and the goals-per-match line don't draw there, because across every season they stop comparing and start totalling. Stats' alone, too — the Season sub-page is one season as a whole, so its tab drops the filter and an old `?season=all` link lands on the comparison. `SeasonCharts.jsx` split on the way across: one file per card, `SeasonStats.jsx` the stack of them, `ChartCard.jsx` and `chart-bits.jsx` the frame — 374 lines became six files, none over 141. Single-season Stats measures 1,909px, unchanged; *All seasons* 1,056px |
 
 **The detail behind any closed phase is in its commit** — `git log --grep="Phase
 20"` finds it, because every phase commit names its phase in its own subject.
@@ -173,8 +174,8 @@ before — that is what keeps this file short.
    `owfchomedashboard.patch`, 1,093 lines at the repo root patching a
    `src/styles.css` that Phase 1 deleted; the ranking line duplicated between
    `league.js` and `LeagueTable.jsx`; four `lib/` exports used only inside their
-   own module; `SeasonCharts.jsx` at 374 lines and `AddResult.jsx` at 295
-   against the ~250 guideline; `starts` coming off the player page, per
+   own module; `AddResult.jsx` at 295 against the ~250 guideline (`SeasonCharts.jsx`
+   was the other, and Phase 61 split it into `SeasonStats.jsx` and its cards); `starts` coming off the player page, per
    `DESIGN.md` → *A figure that cannot differ is not a figure*; and the one
    route left with no `<h1>` — `/matchday` with a match open, where the nearest
    line to promote sits in `.sb-head`'s flex row and needs a margin reset,
@@ -205,7 +206,7 @@ nothing.
 
 ---
 
-## The redesign — phases 60 to 64, in order (56–59 are done)
+## The redesign — phases 62 to 64, in order (56–61 are done)
 
 Agreed against a reference site (the Northern Premier League's club pages) and
 signed off as a working mock-up: **Draft D**, two pages at two widths, real
@@ -239,6 +240,9 @@ against `supabase/schema.sql` and the committed fixture, not assumed:
    once.** `--series-2` against `--series-4` is ΔE 4.9 under protanopia and
    `--series-2` against `--series-1` is 12.5 for normal vision, against a floor of
    15. Phase 64 re-steps them. `DESIGN.md` → *Chart series* carries the finding.
+   Phase 61 added a second chart that reaches four: *All seasons* gives each
+   season its own series colour, so the club hits this in its fourth season
+   whether or not five players are scoring.
 
 **Reading the model column.** Effort is the reasoning-effort setting, not a
 separate model: `xhigh` is Claude Code's default for coding and the right setting
@@ -250,32 +254,6 @@ against a mock-up that already answers the design questions; Opus 5 where gettin
 it wrong is silent (a derivation, a redirect, a schema change, a chart scale).
 
 ---
-
-**Phase 61 — Charts becomes Stats.** `/season/charts` merges into `/season/stats`
-and Season has two sub-pages rather than three chart-shaped ones. The season
-filter lifts above the segmented control so it holds across both, and gains *All
-seasons*. **The overlap with Records is the real decision here**: Records →
-All-time exists to be the one place every season combines, so *All seasons* on
-Season must mean season-by-season comparison, not all-time totals, or the two
-pages say the same thing twice. That is the same trap the Players/Records split
-was built to avoid, and `CLAUDE.md` says so. `/season/charts` needs a redirect
-shim; `App.jsx` already carries seven. **Two charts already on `SeasonCharts.jsx`
-carry forward as-is and are not up for redesign in 61, 62 or 64: "Points
-accumulated"** (`seasonPointsComparison` in `lib/charts.js`) **is the concrete
-shape *All seasons* has to take** — every season plotted on the shared matchday
-axis with the picked season painted in colour and the rest in grey behind it —
-so this phase's *All seasons* mode is this chart wired to the lifted filter,
-not a new comparison invented for it; **and "Goals scored and conceded"**
-(`seasonTrend` in `lib/charts.js`, the scored/conceded area chart) **moves onto
-the merged page unchanged.** Losing either was flagged as a live risk of this
-merge, not a hypothetical. **Files:** `App.jsx`, `pages/Season.jsx`,
-`components/season/SeasonCharts.jsx`, `scripts/site-map.js`. **Done means** the
-old address still lands somewhere sensible, the filter survives a tab change, no
-figure appears on both Season and Records → All-time meaning different things,
-and both named charts are still on the page, not just their data functions.
-**Docs:** `CLAUDE.md` → *Sections* table, `DESIGN.md` → *Sections do not grow*.
-**Model:** Opus 5 · xhigh — routing, a redirect, and an information-architecture
-call that is expensive to reverse.
 
 **Phase 62 — The season's own numbers.** Six per-game tiles (played, scored per
 game, conceded per game, both teams scored, clean sheets, players used), a W/D/L
@@ -305,8 +283,8 @@ divisor is invisible.
 **Phase 64 — The charts, and the series palette.** Three charts under the
 division table, added alongside what's already on the page: the golden boot
 race (cumulative goals by matchday, one line a player, direct labels at the
-line ends — the existing chart already on `SeasonCharts.jsx`, kept as is, not
-redrawn), games against contributions (a scatter, dots sized by how many
+line ends — the existing chart, now `components/season/GoldenBootRace.jsx`,
+kept as is, not redrawn), games against contributions (a scatter, dots sized by how many
 players share a spot, a dashed one-a-game reference, new), and the appearance
 distribution (how many players played how many games, new). "Points
 accumulated" and "Goals scored and conceded" reached this page in Phase 61 and

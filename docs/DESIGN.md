@@ -98,7 +98,7 @@ address. Tapping a bottom tab lands on the section's default sub-page.
 | --- | --- | --- |
 | Home | — | — |
 | Matchday | — | — |
-| Season | Season · Charts | Season |
+| Season | Season · Stats | Season |
 | Players | Leaderboards · Squad · Data centre | Leaderboards |
 | Records | Badges · Honours · All-time | Badges |
 
@@ -115,6 +115,20 @@ everything above a single season — badges, honours, club records — and its t
 sub-pages are that split made visible: **Badges** is the signature and the way
 into a badge's own page, **Honours** is who won what season by season, and
 **All-time** is every season's numbers together.
+
+**Season's filter sits above the segmented control, and *All seasons* is Stats'
+alone.** Above, because it scopes the section rather than the sub-page: the year
+a reader picked survives the tab they switch to. *All seasons* stops at Stats
+because the Season sub-page is one season as a whole, and every all-seasons
+answer it could give — career appearances, every result on record — is already
+Records'. On Stats the option means **season against season**: one line a
+season, side by side on a shared matchday axis. It never means the seasons
+added up, which is the distinction the Players/Records split exists to hold,
+and it is why the scoring race and the goals-per-match line don't draw in that
+mode — run across every season they stop comparing and start totalling. The
+Season tab drops `?season=all` rather than bouncing a reader back to Stats, and
+`/season?season=all` — the shape of a link from before the option moved — lands
+on the comparison.
 
 ### The frame outlives the page
 
@@ -1584,7 +1598,12 @@ Two judgement calls on what gets labelled and what doesn't:
   that chart are grey context, drawn to show shape, not identity — the finding
   sentence above the chart already names the one that matters, and "Show data"
   still headers every column with its season. Labelling all of them would be
-  the legend again, just moved onto the plot.
+  the legend again, just moved onto the plot. **Under *All seasons* it labels
+  every one**, because there is no focused season to name in the finding and
+  telling them apart is the only thing the mode is for; nothing is context
+  there, so each line takes its own series colour and its own end label. The
+  end labels stagger where two seasons finish on the same matchday on the same
+  points, which is the one way they land on each other.
 - **A label needs its own lane.** The career arc's three end labels stack
   vertically (`dy` of `-8`/`0`/`8`) because goals, assists and their sum
   converge at a career's end far more often than a season's results do — three
@@ -1812,7 +1831,8 @@ reports the real numbers — page by page, at every supported width, into
 Seven of these rows are inside now: Matchday's default route (against the 2,300
 below — see the note after this table), Players →
 Leaderboards (Phase 14, 1,296px), Records' three sub-pages (Phase 16), Season →
-Charts (Phase 18, at 1,909px), the opponent page (still light on content, but
+Stats (Phase 18 as Charts, still 1,909px after Phase 61's merge, and 1,056px
+under *All seasons*), the opponent page (still light on content, but
 measured and inside either way), and Player detail, which Phase 21 brought from
 3,127px to 2,241px and Phase 33's 40px badges put back to 2,279 — mostly by moving
 the career-arc chart and "Most played alongside"
