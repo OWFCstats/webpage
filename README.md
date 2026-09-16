@@ -297,10 +297,12 @@ with a failed backfill) has no `opponent_team_id`; those fall back to the
 free-text name so they still resolve rather than breaking the page.
 
 A fixture's kick-off time (`matches.kickoff_time`) is optional and shown
-wherever it's set. Its venue is derived, not stored: a home match points at
-Old Wellingtonians' own pitch (the `teams` row with `is_club` true), an away
-match at the opponent's, and a neutral or unrecorded venue shows no pitch at
-all. Pitch name, address, postcode and map link all come from `teams` — set
+wherever it's set. Home or away (`matches.venue`) is not: it is `H`, `A` or `N`
+and required on every write path, because a match with no venue used to read as
+a home game rather than as no answer (Phase 56). The *pitch* is then derived
+rather than stored — a home match points at Old Wellingtonians' own (the `teams`
+row with `is_club` true), an away match at the opponent's, and a neutral ground
+belongs to neither, so it shows no pitch at all. Pitch name, address, postcode and map link all come from `teams` — set
 them once per club on the Teams admin page and every fixture against that
 club picks them up.
 

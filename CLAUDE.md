@@ -334,17 +334,20 @@ Before adding a feature, check `docs/ROADMAP.md`. If it's not there and it's
 not small, it goes there first.
 
 **The redesign is the plan of record.** `docs/ROADMAP.md` → *The redesign* is
-phases 56 to 64: the next match leads Home with a countdown against it, the last
-result folds into a bar, Season's two chart-shaped sub-pages become one, and the
-league table earns a set of charts off data already stored. It was designed
-against a reference site and signed off as a mock-up, and the mock-up is the
-specification. Three things it cannot do are written down there with it, because
-each was checked against the schema rather than assumed: `venue` is null on every
-row the club has ever recorded, `league_rows` holds totals and not results, and
-the `--series-*` tokens fail colour-blind separation at four series. **Nothing in
-this file or `docs/DESIGN.md` describes the redesigned pages yet** — each phase
-edits them as it lands, which is the working agreement below, not an exception to
-it.
+phases 56 to 64, of which 56 has landed: the next match leads Home with a
+countdown against it, the last result folds into a bar, Season's two
+chart-shaped sub-pages become one, and the league table earns a set of charts
+off data already stored. It was designed against a reference site and signed off
+as a mock-up, and the mock-up is the specification. Two things it cannot do are
+written down there with it: `league_rows` holds totals and not results, and the
+`--series-*` tokens fail colour-blind separation at four series. A third — that
+`venue` was null everywhere — was Phase 56, and it is also the cautionary one:
+it had been checked against the committed fixture alone, where the venues were
+invented, while the live rows had been filled in from the club's records all
+along. **A claim about the club's data is checked against `backups/` too**, not
+the fixture by itself. **Nothing in this file or `docs/DESIGN.md` describes the
+redesigned pages yet** — each phase edits them as it lands, which is the working
+agreement below, not an exception to it.
 
 **The squad has it.** They played the first game of 2026/27 on 5 September 2026
 and reported a bug on the honours the same weekend, which is Phase 55. So the

@@ -8,9 +8,14 @@
 // 14 matches, 169 appearances.
 //
 // Deliberately a faithful parse and nothing more. Columns the spreadsheet
-// never had (venue, kick-off, reports, teams) stay null here and are filled in
-// by fixtures/datasets.js, where each choice is a decision with a reason next
-// to it rather than something smuggled in during a parse.
+// never had (kick-off, reports, teams) stay null here and are filled in by
+// fixtures/datasets.js, where each choice is a decision with a reason next to
+// it rather than something smuggled in during a parse.
+//
+// venue used to be one of those, invented as an alternating home/away run. It
+// is parsed now because Phase 56 made the column required and put the club's
+// real H/A into the import SQL: a fixture the redesign draws a fixture card
+// and a goals split from has to be the season that happened, not a pattern.
 
 import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -74,7 +79,7 @@ const players = rows('-- 1) Players').map(([name]) => ({
   created_at: '2026-06-01T09:00:00.000Z',
 }));
 
-const matches = rows('-- 2) Matches').map(([season, date, opponent, competition, gf, ga, result]) => ({
+const matches = rows('-- 2) Matches').map(([season, date, opponent, competition, venue, gf, ga, result]) => ({
   id: fixtureId(`match:${date}:${opponent}`),
   season,
   date,
@@ -82,7 +87,7 @@ const matches = rows('-- 2) Matches').map(([season, date, opponent, competition,
   opponent,
   opponent_team_id: null,
   competition,
-  venue: null,
+  venue,
   goals_for: gf,
   goals_against: ga,
   own_goals_for: 0,

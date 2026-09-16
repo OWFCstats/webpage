@@ -16,7 +16,9 @@ import { matchHomeAway, opponentInitials, resultOf } from '../../lib/matches';
 export default function LastResult({ match, ctx }) {
   const motm = ctx?.motm[0] ?? null;
   const home = match ? matchHomeAway(match) : null;
-  const weAreHome = match ? match.venue !== 'A' : null;
+  // The ordering matchHomeAway() chose, not a second reading of the venue:
+  // the crest on the home row has to agree with the name beside it.
+  const weAreHome = home?.homeIsUs ?? null;
   const result = match ? resultOf(match) : null;
   const initials = match ? opponentInitials(match.opponent) : null;
   return (

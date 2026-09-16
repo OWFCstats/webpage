@@ -58,7 +58,7 @@ function MatchFormInner({ match, isNew, matchId }) {
   const ga = form.goals_against === '' ? null : Number(form.goals_against);
   const played = gf != null && ga != null;
   const result = !played ? null : gf > ga ? 'W' : gf < ga ? 'L' : 'D';
-  const canSubmit = form.season.trim() && form.date && form.opponent_team_id;
+  const canSubmit = form.season.trim() && form.date && form.opponent_team_id && form.venue;
 
   async function submit(e) {
     e.preventDefault();
@@ -71,7 +71,7 @@ function MatchFormInner({ match, isNew, matchId }) {
       opponent: form.opponent.trim(),
       opponent_team_id: form.opponent_team_id || null,
       competition: form.competition.trim(),
-      venue: form.venue || null,
+      venue: form.venue,
       goals_for: gf,
       goals_against: ga,
       own_goals_for: Number(form.own_goals_for) || 0,
@@ -149,9 +149,9 @@ function MatchFormInner({ match, isNew, matchId }) {
             </select>
           </label>
           <label className="field">
-            <span>Venue (optional)</span>
-            <select value={form.venue} onChange={set('venue')}>
-              <option value="">— not recorded —</option>
+            <span>Venue</span>
+            <select value={form.venue} required onChange={set('venue')}>
+              <option value="">— pick one —</option>
               <option value="H">Home</option>
               <option value="A">Away</option>
               <option value="N">Neutral</option>

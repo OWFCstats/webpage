@@ -78,24 +78,29 @@ from (values
 where not exists (select 1 from public.players p where lower(p.name) = lower(v.name));
 
 -- 2) Matches (14)
-insert into public.matches (season, date, opponent, competition, goals_for, goals_against, own_goals_for, own_goals_against, result)
-select v.season, v.date, v.opponent, v.competition, v.gf, v.ga, 0, 0, v.result
+-- venue was added to this block in Phase 56, from the club's own records: the
+-- spreadsheet this was typed from never had the column, and matches.venue is
+-- `not null` now. The 2026-03-07 row is inferred rather than recorded -- it is
+-- the third Old Stoics meeting of a season that should have had two, and it
+-- shares the placeholder-date problem flagged at the top of this file.
+insert into public.matches (season, date, opponent, competition, venue, goals_for, goals_against, own_goals_for, own_goals_against, result)
+select v.season, v.date, v.opponent, v.competition, v.venue, v.gf, v.ga, 0, 0, v.result
 from (values
-  ('2025/26', date '2025-09-06', 'Wellington IX', 'Friendly', 1, 3, 'L'),
-  ('2025/26', date '2025-09-13', 'Old Oundelians', 'League', 3, 6, 'L'),
-  ('2025/26', date '2025-09-20', 'Old Cheltonians', 'League', 1, 7, 'L'),
-  ('2025/26', date '2025-10-04', 'Old Stoics', 'League', 5, 1, 'W'),
-  ('2025/26', date '2025-10-11', 'Old Salopians', 'League', 4, 1, 'W'),
-  ('2025/26', date '2025-10-25', 'Old Worthians', 'League', 2, 4, 'L'),
-  ('2025/26', date '2025-11-08', 'Old Oundelians', 'League', 1, 2, 'L'),
-  ('2025/26', date '2025-11-22', 'Old Malvernians', 'Cup', 2, 4, 'L'),
-  ('2025/26', date '2025-12-13', 'Old Cheltonians', 'League', 3, 3, 'D'),
-  ('2025/26', date '2026-01-17', 'Old King''s Scholars', 'League', 2, 2, 'D'),
-  ('2025/26', date '2026-01-24', 'Old Worthians', 'League', 3, 5, 'L'),
-  ('2025/26', date '2026-02-21', 'Old Salopians', 'League', 1, 1, 'D'),
-  ('2025/26', date '2026-03-07', 'Old Stoics', 'League', 4, 1, 'W'),
-  ('2025/26', date '2026-03-14', 'Old Stoics', 'League', 2, 3, 'L')
-) as v(season, date, opponent, competition, gf, ga, result)
+  ('2025/26', date '2025-09-06', 'Wellington IX', 'Friendly', 'A', 1, 3, 'L'),
+  ('2025/26', date '2025-09-13', 'Old Oundelians', 'League', 'H', 3, 6, 'L'),
+  ('2025/26', date '2025-09-20', 'Old Cheltonians', 'League', 'A', 1, 7, 'L'),
+  ('2025/26', date '2025-10-04', 'Old Stoics', 'League', 'A', 5, 1, 'W'),
+  ('2025/26', date '2025-10-11', 'Old Salopians', 'League', 'H', 4, 1, 'W'),
+  ('2025/26', date '2025-10-25', 'Old Worthians', 'League', 'A', 2, 4, 'L'),
+  ('2025/26', date '2025-11-08', 'Old Oundelians', 'League', 'A', 1, 2, 'L'),
+  ('2025/26', date '2025-11-22', 'Old Malvernians', 'Cup', 'H', 2, 4, 'L'),
+  ('2025/26', date '2025-12-13', 'Old Cheltonians', 'League', 'H', 3, 3, 'D'),
+  ('2025/26', date '2026-01-17', 'Old King''s Scholars', 'League', 'H', 2, 2, 'D'),
+  ('2025/26', date '2026-01-24', 'Old Worthians', 'League', 'H', 3, 5, 'L'),
+  ('2025/26', date '2026-02-21', 'Old Salopians', 'League', 'A', 1, 1, 'D'),
+  ('2025/26', date '2026-03-07', 'Old Stoics', 'League', 'A', 4, 1, 'W'),
+  ('2025/26', date '2026-03-14', 'Old Stoics', 'League', 'H', 2, 3, 'L')
+) as v(season, date, opponent, competition, venue, gf, ga, result)
 where not exists (select 1 from public.matches x where x.date = v.date and lower(x.opponent) = lower(v.opponent));
 
 -- 3) Appearances (169)

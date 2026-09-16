@@ -72,6 +72,7 @@ page-by-page review against the club's real 2025/26 season.
 | 47 | The address | `oldwellingtoniansfc.com` at Porkbun: four apex `A` records, four `AAAA`, `www` at `owfcstats.github.io`, the domain in Pages with Enforce HTTPS. `public/CNAME` became the one place it is written down — `vite.config.js` reads it for `%SITE_URL%`, so the `SITE_URL` repository variable that used to hold the same domain a second time is gone. The trap was that the two could disagree in silence: every page loaded and only the link preview and the canonical were wrong. `check.yml` asserts the file reaches `dist/`, that the built `og:image` and canonical are on that domain, and that no placeholder survived |
 | 48 | This is me | One cookie, `owfc.me`, holding one player id, and Home's second section becomes the reader's own: this season's apps, goals and assists, and the nearest career badge with what it costs. A preference and not a session — no account, no row, nothing sent anywhere — which is the distinction `DESIGN.md` → *What the site remembers* exists to keep. The offer is made twice, on Home and as *This is me* on a player's own page, and it is what finally lets the counter tell a reader's own page from somebody else's (`my-page` against `player-page`, plus `me-pick`), which Phase 45 wrote down as unanswerable until this landed. It costs Home 74px unpicked and 222px picked, and Phase 52 owns what comes off in exchange |
 | 55 | Honours wait for the season to end | Found by the squad on the first Saturday of 2026/27: one friendly in, all eleven who turned up held The Dependable, because three of the four honours are derived and so have a leader from the first whistle. `honoursSettled` publishes a season on 1 July once its diary is empty, `season_status` overrides that either way, and an unsettled season's awards arrive with nobody on them — one line, all six surfaces. Plus the repeats rule: `×n` where a badge is drawn small, the seasons where there is a column for them |
+| 56 | Venue, actually recorded | `matches.venue` is `not null`. It went in nullable with nothing to fill it from, and a null venue is not "no answer" but a wrong one: `matchHomeAway()` read `venue !== 'A'`, so every unrecorded row claimed we were at home, and `venueTeam()` gave the fixture no pitch. The roadmap's own finding said the live rows were null; they were not — the fixture's were, and checking the frozen parse instead of `backups/` is what made a closed question look open. The club's real H/A is in `import_2025_26.sql` now, so it reaches the fixture through the parser rather than being invented as an alternating run; the wizard, the match form and the walkover form all refuse to submit without one; and the migration stops and names the count rather than backfilling a venue nobody recorded. `matchHomeAway()` returns `known` — false for a neutral ground as well as an unrecorded one — so an ordering is never read as a claim about a pitch. Unblocks phases 57–64 |
 
 **The detail behind any closed phase is in its commit** — `git log --grep="Phase
 20"` finds it, because every phase commit names its phase in its own subject.
@@ -200,7 +201,7 @@ nothing.
 
 ---
 
-## The redesign — phases 56 to 64, in order
+## The redesign — phases 57 to 64, in order (56 is done)
 
 Agreed against a reference site (the Northern Premier League's club pages) and
 signed off as a working mock-up: **Draft D**, two pages at two widths, real
@@ -216,9 +217,15 @@ It does not add a section, a colour, or a stored column.
 **Three findings from the data model bind every phase below.** They were checked
 against `supabase/schema.sql` and the committed fixture, not assumed:
 
-1. **`venue` is nullable and is null on all fourteen 2025/26 rows.** Nothing that
-   depends on home and away works until Phase 56 lands. That is the fixture card's
-   team order, the H/A letter in any list, and the goals split entirely.
+1. ~~**`venue` is nullable and is null on all fourteen 2025/26 rows.**~~ **Closed
+   by Phase 56**, and it was half wrong when it was written: the fixture's venues
+   were null, but the live database's were not — they had been filled in from the
+   club's records some time before, and checking the fixture alone missed it. The
+   column is `not null` now, the club's real H/A is in the import SQL and so in
+   the fixture, and every write path requires one. Home and away is safe to build
+   on: the fixture card's team order, the H/A letter in any list, and the goals
+   split. **Check a claim about the data against `backups/` as well as the
+   fixture** — the fixture is a frozen parse and the backup is the club.
 2. **`league_rows` holds totals, not results.** Played, won, drawn, lost, goals
    for, goals against, per club per season. There is no way to derive another
    club's last five, so a form column across the whole table is not buildable.
@@ -238,20 +245,6 @@ against a mock-up that already answers the design questions; Opus 5 where gettin
 it wrong is silent (a derivation, a redirect, a schema change, a chart scale).
 
 ---
-
-**Phase 56 — Venue, actually recorded.** The unblocking phase, and the only one
-with a migration in it. `venue` is `text check (venue in ('H','A','N'))` and
-nullable, and no row has ever been filled in, so `venueTeam()` returns null for
-every match the club has played. Backfill the fourteen 2025/26 rows and the
-2026/27 ones from the club's own records, make the field required in the result
-wizard and the match form, and give `matchContext` a defined answer when it is
-still absent so a missing venue degrades to "no letter" rather than to a wrong
-one. **Files:** `supabase/migration_2026_09_venue_required.sql`, `schema.sql`,
-`pages/admin/AddResult.jsx`, `pages/admin/MatchForm.jsx`, `lib/matches.js`,
-`fixtures/2025-26.json`, `tests/`. **Done means** every committed fixture row has
-a venue, the wizard cannot submit without one, and `venueTeam()` has a test for
-each of H, A, N and null. **Docs:** none. **Model:** Opus 5 · xhigh — a schema
-change plus a data backfill, and the one phase here that can corrupt history.
 
 **Phase 57 — The club band and the fixture card.** A dark band under the
 masthead, holding two paper cards with a gold hairline. Left is the form card
@@ -328,9 +321,8 @@ call that is expensive to reverse.
 **Phase 62 — The season's own numbers.** Six per-game tiles (played, scored per
 game, conceded per game, both teams scored, clean sheets, players used), a W/D/L
 donut, the most frequent scorelines, and the winning and losing margins. All of
-it derives from `matches` alone. The goals home/away split is in the mock-up and
-needs Phase 56 to have landed; if it has not, this phase ships without that card
-rather than with an empty one. W/D/L keeps `--win`, `--draw` and `--loss` in
+it derives from `matches` alone, the goals home/away split included — Phase 56
+landed, so that card is in rather than conditional. W/D/L keeps `--win`, `--draw` and `--loss` in
 every chart on the page and is never themed. **Files:** `components/season/`,
 `lib/matches.js`, `styles/components/charts.css`. **Done means** every figure is
 derived at load time with no new column, and the page holds at 375px. **Model:**

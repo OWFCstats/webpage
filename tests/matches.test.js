@@ -27,6 +27,7 @@ import {
   seasonSummary,
   seasonsOf,
   slugify,
+  venueLabel,
   venueTeam,
 } from '../src/lib/matches.js';
 
@@ -108,12 +109,32 @@ test('a clean sheet is nil conceded, and a walkover is one', () => {
   assert.equal(isCleanSheet({ goals_for: null, goals_against: null }), false);
 });
 
-test('home and away follow the venue, and an unrecorded one puts us at home', () => {
-  const home = matchHomeAway({ venue: 'H', opponent: 'Old Stoics', goals_for: 4, goals_against: 1 });
-  assert.deepEqual(home, { homeTeam: CLUB_NAME, awayTeam: 'Old Stoics', homeGoals: 4, awayGoals: 1 });
-  const away = matchHomeAway({ venue: 'A', opponent: 'Old Stoics', goals_for: 4, goals_against: 1 });
-  assert.deepEqual(away, { homeTeam: 'Old Stoics', awayTeam: CLUB_NAME, homeGoals: 1, awayGoals: 4 });
-  assert.equal(matchHomeAway({ venue: null, opponent: 'X', goals_for: 1, goals_against: 0 }).homeTeam, CLUB_NAME);
+test('home and away follow the venue, and only H and A are a claim about one', () => {
+  const score = { opponent: 'Old Stoics', goals_for: 4, goals_against: 1 };
+
+  const home = matchHomeAway({ ...score, venue: 'H' });
+  assert.deepEqual(home, {
+    known: true, homeIsUs: true,
+    homeTeam: CLUB_NAME, awayTeam: 'Old Stoics', homeGoals: 4, awayGoals: 1,
+  });
+
+  const away = matchHomeAway({ ...score, venue: 'A' });
+  assert.deepEqual(away, {
+    known: true, homeIsUs: false,
+    homeTeam: 'Old Stoics', awayTeam: CLUB_NAME, homeGoals: 1, awayGoals: 4,
+  });
+
+  // A neutral ground and an unrecorded venue both order us first, because two
+  // teams have to be drawn in some order — but neither says we were at home,
+  // which is what `known` is for. Phase 56: the second is a row the database
+  // can no longer hold, and the answer is defined anyway.
+  for (const venue of ['N', null]) {
+    const it = matchHomeAway({ ...score, venue });
+    assert.equal(it.known, false, `venue ${venue} should not be a known home side`);
+    assert.equal(it.homeIsUs, true);
+    assert.equal(it.homeTeam, CLUB_NAME);
+    assert.equal(it.homeGoals, 4);
+  }
 });
 
 test('points are 3/1/0, except a walkover loss in a league game costs 3', () => {
@@ -145,7 +166,19 @@ test('the venue team is ours at home, theirs away, nobody otherwise', () => {
   const us = mid.teams.find((t) => t.is_club);
   assert.equal(venueTeam({ venue: 'H' }, mid.teams).id, us.id);
   assert.equal(venueTeam({ venue: 'A', opponent_team_id: stoics.id }, mid.teams).id, stoics.id);
+  // A neutral ground belongs to neither club, and an unrecorded venue is not a
+  // reason to guess one — both get no pitch rather than the wrong pitch.
+  assert.equal(venueTeam({ venue: 'N', opponent_team_id: stoics.id }, mid.teams), null);
   assert.equal(venueTeam({ venue: null, opponent_team_id: stoics.id }, mid.teams), null);
+  // An away game against a club that isn't in `teams` has nowhere to look.
+  assert.equal(venueTeam({ venue: 'A', opponent_team_id: null }, mid.teams), null);
+});
+
+test('the venue label is a letter for H, A and N, and nothing when unrecorded', () => {
+  assert.equal(venueLabel({ venue: 'H' }), '(H)');
+  assert.equal(venueLabel({ venue: 'A' }), '(A)');
+  assert.equal(venueLabel({ venue: 'N' }), '(N)');
+  assert.equal(venueLabel({ venue: null }), '');
 });
 
 test('an opponent slug survives punctuation and resolves back to its matches', () => {

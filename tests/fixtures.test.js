@@ -32,6 +32,20 @@ test('ids are stable across two builds of the same key', async () => {
 for (const [name, dataset] of Object.entries(DATASETS)) {
   const { players, matches, appearances, teams, league_rows: leagueRows, season_awards: awards } = dataset.data;
 
+  // Phase 56 made matches.venue `not null`. A fixture row without one is a row
+  // the real database can't hold, so every dataset has to be a season that
+  // could actually exist — the redesign draws home-and-away off this column.
+  test(`${name}: every match has a venue`, () => {
+    for (const m of matches) {
+      assert.ok(['H', 'A', 'N'].includes(m.venue), `${m.date} vs ${m.opponent} has venue ${m.venue}`);
+    }
+  });
+
+  test(`${name}: both home and away are represented`, () => {
+    assert.ok(matches.some((m) => m.venue === 'H'), 'no home game');
+    assert.ok(matches.some((m) => m.venue === 'A'), 'no away game');
+  });
+
   test(`${name}: every table is populated`, () => {
     for (const [table, rows] of Object.entries({ players, matches, appearances, teams, leagueRows, awards })) {
       assert.ok(rows.length > 0, `${table} is empty`);
@@ -86,8 +100,11 @@ for (const [name, dataset] of Object.entries(DATASETS)) {
     assert.ok(rows.some((r) => r.appearances === 0 && r.dropouts === 0));
   });
 
-  test(`${name}: holds a match with no venue and no kick-off recorded`, () => {
-    assert.ok(matches.some((m) => m.venue == null), 'every match has a venue');
+  // Venue used to be here too, as a row with none recorded. Phase 56 made the
+  // column required, so that state is gone from the fixture and its branches
+  // are covered in tests/matches.test.js instead. Kick-off stays nullable: a
+  // fixture goes in the diary before the time is confirmed.
+  test(`${name}: holds a match with no kick-off recorded`, () => {
     assert.ok(matches.some((m) => m.kickoff_time == null), 'every match has a kick-off time');
   });
 

@@ -215,7 +215,8 @@ export function latestResult(matches) {
   return playedMatches(matches)[0] ?? null;
 }
 
-/** "(H)" / "(A)" / "(N)" for display; empty when the venue wasn't recorded. */
+/** "(H)" / "(A)" / "(N)" for display; empty when the venue wasn't recorded —
+ *  which since Phase 56 means a row that never came from the database. */
 export function venueLabel(match) {
   return match.venue ? `(${match.venue})` : '';
 }
@@ -230,15 +231,31 @@ export function matchTitle(match) {
  *  than "us vs them". */
 export const CLUB_NAME = 'Old Wellingtonians';
 
-/** Home and away side of a match, with the score to match — OWFC can be
- *  either side. A neutral or unrecorded venue defaults to us at home. */
+/**
+ * Home and away side of a match, with the score to match — OWFC can be either
+ * side.
+ *
+ * `known` answers "does this match have a home side at all?", and is false for
+ * a neutral ground and for a venue nobody recorded. Both still get an ordering,
+ * because two teams have to be drawn in some order and us-first is the only one
+ * that isn't a claim about a pitch — `known` is what stops a caller reading
+ * that ordering as a fact. `homeIsUs` is that ordering and nothing more, so a
+ * caller picking which crest goes on the home row doesn't recompute it and
+ * disagree with the names above.
+ *
+ * Phase 56 made `venue` `not null`, so the unrecorded case can no longer come
+ * from the database. It stays answered rather than assumed because this takes
+ * whatever it is handed.
+ */
 export function matchHomeAway(match) {
-  const weAreHome = match.venue !== 'A';
+  const homeIsUs = match.venue !== 'A';
   return {
-    homeTeam: weAreHome ? CLUB_NAME : match.opponent,
-    awayTeam: weAreHome ? match.opponent : CLUB_NAME,
-    homeGoals: weAreHome ? match.goals_for : match.goals_against,
-    awayGoals: weAreHome ? match.goals_against : match.goals_for,
+    known: match.venue === 'H' || match.venue === 'A',
+    homeIsUs,
+    homeTeam: homeIsUs ? CLUB_NAME : match.opponent,
+    awayTeam: homeIsUs ? match.opponent : CLUB_NAME,
+    homeGoals: homeIsUs ? match.goals_for : match.goals_against,
+    awayGoals: homeIsUs ? match.goals_against : match.goals_for,
   };
 }
 
