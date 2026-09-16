@@ -83,7 +83,7 @@ export default function AddResult() {
 
   const gf = form.goals_for === '' ? null : Number(form.goals_for);
   const ga = form.goals_against === '' ? null : Number(form.goals_against);
-  const detailsOk = form.date && form.opponent_team_id && (form.season || defaultSeason);
+  const detailsOk = form.date && form.opponent_team_id && form.venue && (form.season || defaultSeason);
   const scored = [...picked.values()].reduce((s, v) => s + v.goals, 0);
   const ownGoals = Number(form.own_goals_for) || 0;
   const remaining = gf == null ? null : gf - ownGoals - scored;
@@ -152,7 +152,7 @@ export default function AddResult() {
       opponent: form.opponent.trim(),
       opponent_team_id: form.opponent_team_id || null,
       competition: form.competition.trim() || 'League',
-      venue: form.venue || null,
+      venue: form.venue,
       goals_for: gf,
       goals_against: ga,
       own_goals_for: ownGoals,

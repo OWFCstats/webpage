@@ -29,7 +29,7 @@ export default function WalkoverForm({ onDone, onCancel }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
 
-  const ready = (season || defaultSeason).trim() && date && opponentTeamId && winner;
+  const ready = (season || defaultSeason).trim() && date && opponentTeamId && venue && winner;
 
   // A walkover is usually awarded against a fixture that was already in the
   // diary, so it fills that row in rather than adding a second one — the same
@@ -47,7 +47,7 @@ export default function WalkoverForm({ onDone, onCancel }) {
       opponent: opponent.trim(),
       opponent_team_id: opponentTeamId || null,
       competition: competition.trim() || 'League',
-      venue: venue || null,
+      venue,
       goals_for: usGoals,
       goals_against: themGoals,
       own_goals_for: 0,
@@ -104,9 +104,9 @@ export default function WalkoverForm({ onDone, onCancel }) {
           </select>
         </label>
         <label className="field">
-          <span>Venue (optional)</span>
-          <select value={venue} onChange={(e) => setVenue(e.target.value)}>
-            <option value="">— not recorded —</option>
+          <span>Venue</span>
+          <select value={venue} required onChange={(e) => setVenue(e.target.value)}>
+            <option value="">— pick one —</option>
             <option value="H">Home</option>
             <option value="A">Away</option>
             <option value="N">Neutral</option>

@@ -2,8 +2,9 @@ import SeasonPicker from '../SeasonPicker';
 import TeamPicker from '../TeamPicker';
 
 /** Step one: what the game was. Leaving the score blank is how an upcoming
- *  fixture gets entered, which is why nothing here is required but the date
- *  and the opponent. */
+ *  fixture gets entered, which is why nothing here is required but the date,
+ *  the opponent and the venue — and the venue because it is the one thing a
+ *  fixture can't be drawn without, and nobody comes back to fill it in. */
 export default function MatchStep({ form, setForm, recentSeasons, defaultSeason, teams }) {
   return (
     <div className="sheet">
@@ -44,10 +45,10 @@ export default function MatchStep({ form, setForm, recentSeasons, defaultSeason,
           </select>
         </label>
         <label className="field">
-          <span>Venue (optional)</span>
-          <select value={form.venue}
+          <span>Venue</span>
+          <select value={form.venue} required
             onChange={(e) => setForm({ ...form, venue: e.target.value })}>
-            <option value="">— not recorded —</option>
+            <option value="">— pick one —</option>
             <option value="H">Home</option>
             <option value="A">Away</option>
             <option value="N">Neutral</option>

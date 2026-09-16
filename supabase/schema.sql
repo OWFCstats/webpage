@@ -47,9 +47,11 @@ create table if not exists public.matches (
   opponent          text not null,
   opponent_team_id  uuid references public.teams (id),
   competition       text not null,
-  -- H = home, A = away, N = neutral. Nullable: not every match has this
-  -- recorded, and older rows won't until someone fills it in.
-  venue             text check (venue in ('H', 'A', 'N')),
+  -- H = home, A = away, N = neutral. Required: a null venue is not "no
+  -- answer" but a wrong one -- matchHomeAway() has to put somebody on the home
+  -- row, so an unrecorded venue read as a home game. See
+  -- migration_2026_09_venue_required.sql.
+  venue             text not null check (venue in ('H', 'A', 'N')),
   -- Score columns are nullable so upcoming fixtures can exist before kick-off.
   goals_for         integer check (goals_for >= 0),
   goals_against     integer check (goals_against >= 0),

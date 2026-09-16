@@ -40,12 +40,14 @@ function team(name, extra = {}) {
 }
 
 function match(row) {
+  // matches.venue is `not null` (Phase 56), so there is no sensible default: a
+  // row added here without one would be a state the real database can't hold.
+  if (!row.venue) throw new Error(`fixture match ${row.date} vs ${row.opponent} has no venue`);
   return {
     id: fixtureId(`match:${row.date}:${row.opponent}`),
     season: '2025/26',
     kickoff_time: null,
     opponent_team_id: fixtureId(`team:${row.opponent}`),
-    venue: null,
     goals_for: null,
     goals_against: null,
     own_goals_for: 0,
@@ -110,23 +112,21 @@ const TEAMS = [
 // The real season, enriched with the columns the spreadsheet never had
 // ---------------------------------------------------------------------------
 
-// Venue alternates per opponent — first meeting home, second away — because
-// H/A is a real column now and a season of nulls tests only the null path.
-// One match keeps venue null on purpose: that is what every row imported
-// before the venue migration looks like, and venueLabel()/venueTeam() both
-// have a branch for it.
-function withVenues(matches) {
-  const seen = new Map();
-  return matches.map((m, i) => {
-    const n = (seen.get(m.opponent) ?? 0) + 1;
-    seen.set(m.opponent, n);
-    return {
-      ...m,
-      opponent_team_id: fixtureId(`team:${m.opponent}`),
-      venue: i === 2 ? null : n % 2 === 1 ? 'H' : 'A',
-      kickoff_time: i === 2 ? null : '14:00:00',
-    };
-  });
+// Venue is no longer invented here. It used to alternate per opponent, and one
+// row kept it null to exercise the unrecorded branch; Phase 56 made the column
+// required and put the club's real H/A into the import SQL, so it arrives with
+// the parse and a null venue is no longer a row the database can hold. The null
+// branches that survive in venueTeam() and matchHomeAway() are defensive, and
+// tests/matches.test.js is where they are covered.
+//
+// One match keeps its kick-off time null on purpose: that column is still
+// nullable, because a fixture can be entered before the time is confirmed.
+function withTeamsAndKickoffs(matches) {
+  return matches.map((m, i) => ({
+    ...m,
+    opponent_team_id: fixtureId(`team:${m.opponent}`),
+    kickoff_time: i === 2 ? null : '14:00:00',
+  }));
 }
 
 // Reports on two of sixteen results, which is roughly the club's own hit rate.
@@ -157,7 +157,7 @@ const REPORTS = {
 const withReports = (matches) =>
   matches.map((m) => ({ ...m, report: REPORTS[`${m.date}:${m.opponent}`] ?? m.report }));
 
-const realMatches = withVenues(season2526.matches);
+const realMatches = withTeamsAndKickoffs(season2526.matches);
 
 // ---------------------------------------------------------------------------
 // The states one real season doesn't contain
