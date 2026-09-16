@@ -78,6 +78,7 @@ page-by-page review against the club's real 2025/26 season.
 | 59 | Match outlook, and Home's grid | `MatchOutlook.jsx` replaces `RecentForm.jsx`: the last three results and the next three fixtures, each group on `ResultList`'s own compact inline variant — extended with `showOpponent` and a `tbc` empty-slot chip rather than a seventh scoreline shape — padded with `TBC` chips so the card holds its height with a short diary. Below *Your season*, Home becomes a two-column grid past 860px: the outlook on the left spans *Division 5* and *Season so far* stacked on the right; one column below that. `DESIGN.md` → *Match outlook, and the grid below the band* has the reasoning, including where this deliberately simplifies Draft D's richer row |
 | 60 | The league snapshot keeps no form column | The mock-up's five coloured chips per row can't be built — `league_rows` holds only our own totals, not results, so no other club has a form to show. No column ships, on the snapshot or the full table; the chips stay where Phase 58 put them, on the form card alone. `DESIGN.md` → *Match outlook, and the grid below the band* has the ruling |
 | 61 | Charts becomes Stats | `/season/charts` is `/season/stats`, and Season is Season · Stats — one page for the numbers, which is where phases 62 to 64 add theirs rather than each earning a sub-page. The season filter gains *All seasons*, and the decision the phase was really for is what it means: **season against season, never the seasons added up**, since combining every season into one board is Records' and saying it twice is the trap the Players/Records split exists to avoid. So the mode is the "Points accumulated" chart with every line lit, labelled and in its own colour; the scoring race and the goals-per-match line don't draw there, because across every season they stop comparing and start totalling. Stats' alone, too — the Season sub-page is one season as a whole, so its tab drops the filter and an old `?season=all` link lands on the comparison. `SeasonCharts.jsx` split on the way across: one file per card, `SeasonStats.jsx` the stack of them, `ChartCard.jsx` and `chart-bits.jsx` the frame — 374 lines became six files, none over 141. Single-season Stats measures 1,909px, unchanged; *All seasons* 1,056px |
+| 62 | The season's own numbers | `SeasonPerGameTiles`, `ResultSplit`, `ScorelineFrequency` and `MatchMargins` join the Golden Boot race, points accumulated and goals trend on `/season/stats`: six per-game tiles (played, scored/conceded a game, both teams scored, clean sheets, players used), a W/D/L donut in `--win`/`--draw`/`--loss`, the most frequent scorelines and the winning/losing margins. `lib/matches.js` gained `perGameStats`, `playersUsedCount`, `scorelineFrequency`, `marginBuckets` and `extremeMargins`, every figure derived at load time with no new column. Single-season only, the same reasoning as the two carried-over charts: combined across every season these become a career board, and that's Records'. `ChartCard` gained an optional `bodyClassName` for the donut, which has no line end to label so its counts sit in a caption row under the plot instead. 1,909px became 3,676px, well past the 2,200 budget — reported, not asserted, and not this phase's to close |
 
 **The detail behind any closed phase is in its commit** — `git log --grep="Phase
 20"` finds it, because every phase commit names its phase in its own subject.
@@ -206,7 +207,7 @@ nothing.
 
 ---
 
-## The redesign — phases 62 to 64, in order (56–61 are done)
+## The redesign — phases 63 and 64, in order (56–62 are done)
 
 Agreed against a reference site (the Northern Premier League's club pages) and
 signed off as a working mock-up: **Draft D**, two pages at two widths, real
@@ -255,20 +256,6 @@ it wrong is silent (a derivation, a redirect, a schema change, a chart scale).
 
 ---
 
-**Phase 62 — The season's own numbers.** Six per-game tiles (played, scored per
-game, conceded per game, both teams scored, clean sheets, players used), a W/D/L
-donut, the most frequent scorelines, and the winning and losing margins. All of
-it derives from `matches` alone, the goals home/away split included — Phase 56
-landed, so that card is in rather than conditional. W/D/L keeps `--win`, `--draw` and `--loss` in
-every chart on the page and is never themed. **These are additions to the page,
-not a replacement of it** — Phase 61 already carried "Points accumulated" and
-"Goals scored and conceded" onto `/season/stats` and neither is this phase's to
-touch or drop. **Files:** `components/season/`,
-`lib/matches.js`, `styles/components/charts.css`. **Done means** every figure is
-derived at load time with no new column, the page holds at 375px, and both
-carried-over charts from Phase 61 are still present. **Model:**
-Sonnet 5 · high.
-
 **Phase 63 — The division, ranked.** Attack and defence across every club in the
 division, from `league_rows`: goals for over played, and goals against over
 played, sorted best first with our own row picked out in gold and the division
@@ -299,7 +286,8 @@ its labels at 5px on a phone. No horizontal scroll, on the chart or the page.
 before it ships, every chart fits 375px with no sideways scroll, chart labels
 and the card's own headings are the same size as each other on a phone, and the
 page still carries all five charts (golden boot race, points accumulated, goals
-scored and conceded, games against contributions, appearance distribution).
+scored and conceded, games against contributions, appearance distribution) plus
+Phase 62's per-game tiles, results donut, scorelines and margins.
 **Docs:**
 `DESIGN.md` → *Chart series* and *Charts*. **Model:** Opus 5 · xhigh — SVG
 geometry, a scale that has to be right, and a palette that has to be measured
@@ -307,10 +295,11 @@ rather than judged.
 
 ---
 
-**One branch a phase, in this order.** 56 blocked 57 and still blocks 62. 57
+**One branch a phase, in this order.** 56 blocked 57, and 61 blocked 62 — Stats
+had to become the merged page before phases 62 to 64 could add cards to it. 57
 and 58 are one screen between them and should be reviewed together even though
-they land separately. 61 blocks nothing but should come before 62 to 64, so
-those three land on the page that is going to keep them.
+they land separately. 63 and 64 are independent of each other but both build on
+what 62 put on the page.
 
 **Each phase condenses to one *Done* row in the commit that closes it**, per the
 rule at the top of this file, and writes its own ruling into `DESIGN.md` in the
@@ -331,7 +320,7 @@ view. *Now* is `npm run shots` on the `mid-season` fixture at 375px.
 | Matchday — clean sheet (12 named, a report, clamped / open) | 2,746 / 3,150 | 2,300 | **Phase 52** — 446 over clamped; the clamp bounds it, it doesn't fit it. Same as above, untouched by 28 or 31 |
 | Matchday — walkover (no team sheet) | 1,533 | 2,300 | within |
 | Season | 2,494 | 2,200 | **Phase 52** — 290 over; Phase 29's `SeasonLadder` reuse took 734px back, see *Decisions* → *Open* |
-| Season → charts | 1,909 | 2,200 | met (18) |
+| Season → Stats | 3,676 | 2,200 | over since Phase 62 — 1,476 over; four new cards on top of the three Phase 61 carried over. Phases 63 and 64 add three more before the shape is final, so this isn't a decision to make yet, and it predates Phase 52's brief |
 | Players → Leaderboards | 1,296 | 1,400 | met (14, 24) |
 | Records → badges / honours / all-time | 1,729 / 1,069 / 1,807 | 2,000 | met (16); badges +62 for the bigger trophies (32–34). Honours was 1,155 and is 1,069 because Phase 55 leaves the season being played with no winners under its four trophies — 1,626 on `pre-season`, which is the same page with two seasons on the shelf and both published, and the taller of the two states |
 | Player detail | 2,287 | 2,400 | met (21); +38 for the 40px shelf (33) and +8 for Phase 48's *This is me*, which used to cost 54 and now sits in the hero's top-right corner rather than a row of its own |

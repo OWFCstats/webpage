@@ -12,19 +12,24 @@ import {
   CLUB_NAME,
   currentSeasonOf,
   currentStreak,
+  extremeMargins,
   fixtures,
   formOf,
   isCleanSheet,
   isPlayed,
   latestResult,
+  marginBuckets,
   matchContext,
   matchHomeAway,
   matchPoints,
   opponentMatches,
   opponentSlug,
+  perGameStats,
   playedMatches,
+  playersUsedCount,
   recentFormLine,
   resultOf,
+  scorelineFrequency,
   seasonLadder,
   seasonSummary,
   seasonsOf,
@@ -32,6 +37,7 @@ import {
   venueLabel,
   venueTeam,
 } from '../src/lib/matches.js';
+import { playerTotals } from '../src/lib/players.js';
 
 const mid = DATASETS['mid-season'].data;
 const pre = DATASETS['pre-season'].data;
@@ -287,4 +293,81 @@ test('the form card reads oldest to newest, each result paired with its own scor
     assert.equal(result, resultOf(match));
     assert.equal(scoreline, `${match.goals_for}–${match.goals_against}`);
   }
+});
+
+// Phase 62 — the season's own numbers. These four hold on small, hand-built
+// arrays rather than the fixture: the counts are cheap to verify by eye, and
+// that's the point of testing them at all.
+const played = (goals_for, goals_against) => ({ goals_for, goals_against });
+
+test('perGameStats rates the season by the game, not just the total', () => {
+  const matches = [played(3, 0), played(1, 1), played(0, 2), played(2, 2)];
+  const stats = perGameStats(matches);
+  assert.equal(stats.played, 4);
+  assert.equal(stats.scoredPerGame, (3 + 1 + 0 + 2) / 4);
+  assert.equal(stats.concededPerGame, (0 + 1 + 2 + 2) / 4);
+  // Both sides scored in the 1-1 and the 2-2, not the 3-0 or the 0-2.
+  assert.equal(stats.bothScored, 2);
+  assert.equal(stats.cleanSheets, 1);
+});
+
+test('perGameStats on no games is zero, not NaN', () => {
+  assert.deepEqual(perGameStats([]), {
+    played: 0, scoredPerGame: 0, concededPerGame: 0, bothScored: 0, cleanSheets: 0,
+  });
+});
+
+test('playersUsedCount counts the rotation, not the roster, and drops dropouts', () => {
+  const matches = [{ id: 'm1', goals_for: 1, goals_against: 0 }, { id: 'm2', goals_for: 0, goals_against: 0 }];
+  const appearances = [
+    { match_id: 'm1', player_id: 'a', dropout: false },
+    { match_id: 'm1', player_id: 'b', dropout: false },
+    { match_id: 'm2', player_id: 'a', dropout: false },
+    { match_id: 'm2', player_id: 'c', dropout: true },
+    { match_id: 'm3', player_id: 'd', dropout: false }, // a game not in the pool
+  ];
+  assert.equal(playersUsedCount(matches, appearances), 2);
+});
+
+test('playersUsedCount against the fixture agrees with playerTotals', () => {
+  const { players, matches, appearances } = mid;
+  const pool = matches.filter((m) => m.season === '2025/26');
+  const fromTotals = playerTotals(players, pool, appearances).filter((r) => r.appearances > 0).length;
+  assert.equal(playersUsedCount(pool, appearances), fromTotals);
+});
+
+test('scorelineFrequency counts repeats, most frequent first, ties broken by the scoreline', () => {
+  const matches = [played(2, 1), played(2, 1), played(0, 0), played(1, 0)];
+  assert.deepEqual(scorelineFrequency(matches), [
+    { scoreline: '2–1', count: 2 },
+    { scoreline: '0–0', count: 1 },
+    { scoreline: '1–0', count: 1 },
+  ]);
+});
+
+test('marginBuckets sorts a decided game by how many goals it was decided by, and drops draws', () => {
+  const matches = [
+    played(2, 1), // won by 1
+    played(1, 0), // won by 1
+    played(4, 0), // won by 4
+    played(6, 1), // won by 5 -> the 4+ bucket
+    played(0, 3), // lost by 3
+    played(1, 1), // draw, not counted
+  ];
+  assert.deepEqual(marginBuckets(matches), [
+    { margin: 1, wins: 2, losses: 0 },
+    { margin: 2, wins: 0, losses: 0 },
+    { margin: 3, wins: 0, losses: 1 },
+    { margin: '4+', wins: 2, losses: 0 },
+  ]);
+});
+
+test('extremeMargins finds the biggest win and the heaviest defeat', () => {
+  const matches = [played(2, 1), played(5, 0), played(0, 3), played(1, 1)];
+  assert.deepEqual(extremeMargins(matches), { biggestWin: 5, heaviestLoss: 3 });
+});
+
+test('extremeMargins is null where there is no such result yet', () => {
+  assert.deepEqual(extremeMargins([]), { biggestWin: null, heaviestLoss: null });
+  assert.deepEqual(extremeMargins([played(1, 1)]), { biggestWin: null, heaviestLoss: null });
 });

@@ -102,3 +102,47 @@
 
   .chart-body { height: 300px; }
 }
+
+/* The W/D/L donut has no line end to label, so its figures sit in a caption
+   row under the plot instead — the donut itself only needs to be as tall as
+   it is wide, not the fixed height a line chart's axis band wants. */
+.chart-body.chart-body-donut {
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s3);
+}
+
+.chart-body-donut .recharts-responsive-container {
+  max-width: 220px;
+}
+
+.chart-donut-key {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem 1.25rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: var(--t-small);
+}
+
+.chart-donut-key li {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.chart-donut-key strong {
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
+}
+
+.chart-donut-swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  flex: none;
+}
