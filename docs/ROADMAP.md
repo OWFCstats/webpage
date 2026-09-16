@@ -76,6 +76,7 @@ page-by-page review against the club's real 2025/26 season.
 | 57 | The club band and the fixture card | `components/home/ClubBand.jsx` — a dark band directly under the masthead, reusing the masthead's own `--board` tokens rather than the `.board` surface class, so nesting a paper plate inside it isn't the box-in-a-box that surface rules out (`DESIGN.md` → *The club band, under the masthead*). Holds one plate today, the rewritten `NextFixture.jsx`: home side first and away second by venue, kick-off and the ground between them, the date on its own ruled line, a live days/hours/minutes countdown, *Add to calendar* (`lib/ics.js`, a dependency-free `.ics` writer with its own tests) and *Match details*. Phase 58's form card takes the band's other slot |
 | 58 | The form card, and the last game as a bar | `FormCard.jsx` fills the club band's second slot: league position over five result-coloured squares, each carrying its scoreline, nothing else. `LastResult.jsx` is now `LastGameBar.jsx` — a full-width paper bar built from the same `.result-row` every other scoreline uses, goalscorers and the MOTM linked underneath — which took Home from five named boards to four (`DESIGN.md` → *Board*) and closed the score-order split: the bar reads ours-first like every other row now that it isn't staging a scoreboard |
 | 59 | Match outlook, and Home's grid | `MatchOutlook.jsx` replaces `RecentForm.jsx`: the last three results and the next three fixtures, each group on `ResultList`'s own compact inline variant — extended with `showOpponent` and a `tbc` empty-slot chip rather than a seventh scoreline shape — padded with `TBC` chips so the card holds its height with a short diary. Below *Your season*, Home becomes a two-column grid past 860px: the outlook on the left spans *Division 5* and *Season so far* stacked on the right; one column below that. `DESIGN.md` → *Match outlook, and the grid below the band* has the reasoning, including where this deliberately simplifies Draft D's richer row |
+| 60 | The league snapshot keeps no form column | The mock-up's five coloured chips per row can't be built — `league_rows` holds only our own totals, not results, so no other club has a form to show. No column ships, on the snapshot or the full table; the chips stay where Phase 58 put them, on the form card alone. `DESIGN.md` → *Match outlook, and the grid below the band* has the ruling |
 
 **The detail behind any closed phase is in its commit** — `git log --grep="Phase
 20"` finds it, because every phase commit names its phase in its own subject.
@@ -232,7 +233,8 @@ against `supabase/schema.sql` and the committed fixture, not assumed:
 2. **`league_rows` holds totals, not results.** Played, won, drawn, lost, goals
    for, goals against, per club per season. There is no way to derive another
    club's last five, so a form column across the whole table is not buildable.
-   Phase 60 decides between our own row only and no column at all.
+   Phase 60 settled it: no column, ever — see `DESIGN.md` → *Match outlook, and
+   the grid below the band*.
 3. **The `--series-*` tokens fail colour-blind separation when four are used at
    once.** `--series-2` against `--series-4` is ΔE 4.9 under protanopia and
    `--series-2` against `--series-1` is 12.5 for normal vision, against a floor of
@@ -248,16 +250,6 @@ against a mock-up that already answers the design questions; Opus 5 where gettin
 it wrong is silent (a derivation, a redirect, a schema change, a chart scale).
 
 ---
-
-**Phase 60 — The league snapshot's form column.** Small, and mostly a decision.
-The mock-up shows five coloured chips on every row; finding 2 above says only our
-own row can have them. Either show the column with our row filled and the rest
-blank, which is honest and looks broken, or drop the column and keep the chips on
-the form card alone, which is the recommendation. Whichever wins, the snapshot
-stays a snapshot: the rows around us and a link out, with the full table on
-Season. **Files:** `components/LeagueTable.jsx`, `styles/components/league-table.css`.
-**Done means** the decision is written into `DESIGN.md` with the reason, so the
-next session does not re-derive it from the mock-up. **Model:** Sonnet 5 · medium.
 
 **Phase 61 — Charts becomes Stats.** `/season/charts` merges into `/season/stats`
 and Season has two sub-pages rather than three chart-shaped ones. The season
