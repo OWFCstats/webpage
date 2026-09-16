@@ -321,6 +321,45 @@
   .home-spark-chart { height: var(--matched-height, 220px); }
 }
 
+/* ---- the home grid: outlook, league snapshot, season so far ---- */
+
+/* One column on a phone — the grid's own gap does the spacing .home > section
+   would otherwise, since these three sit a level deeper than that selector
+   reaches. Past 860px, the same width the club band switches at, the outlook
+   spans both rows on the left and the other two stack on the right. */
+.home-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s4);
+  margin-bottom: var(--s4);
+}
+
+@media (min-width: 860px) {
+  .home-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas: 'outlook league' 'outlook season';
+    gap: var(--s4);
+  }
+
+  .home-outlook { grid-area: outlook; }
+
+  .home-grid .home-table { grid-area: league; }
+
+  .home-grid .home-stats { grid-area: season; }
+}
+
+/* ---- match outlook ---- */
+
+/* Recent results and upcoming fixtures, each on ResultList's own compact
+   inline variant rather than a seventh scoreline shape (ROADMAP.md → Phase
+   59) — a short diary pads out with TBC chips instead of shrinking the
+   group, which is what keeps the card the same height whether the next
+   three fixtures are all in the book or none of them are yet. */
+.outlook-group + .outlook-group { margin-top: var(--s4); }
+
+.outlook-group .label { margin-bottom: var(--s2); }
+
 /* ---- last game bar ---- */
 
 /* A row like any other scoreline on the site now, not a scoreboard, so it
@@ -549,4 +588,6 @@
   .home > section { margin-bottom: var(--s3); }
 
   .home-season-note { margin-bottom: var(--s2); }
+
+  .home-grid { gap: var(--s3); margin-bottom: var(--s3); }
 }

@@ -308,6 +308,40 @@ where a gold button *is* the thing to press, no styling of that label reliably
 reads as "already claimed". The label says what the tap does; the tag says what
 is true.
 
+### Match outlook, and the grid below the band
+
+Phase 59. Below *Your season*, Home stops being one column of stacked sheets:
+past 860px — the same width the club band itself switches at — a two-column
+grid puts *Match outlook* on the left, spanning the full height of *Division
+5* (the league snapshot) and *Season so far* stacked on the right. Below
+860px all three stack in that same order, one column.
+
+*Match outlook* replaces *Recent form* and carries what it did plus the
+diary ahead of it: the last three results and the next three fixtures, each
+group on `ResultList`'s own compact **inline** variant — `showOpponent` now
+reaches that variant too, off by default only where a caller (`HeadToHead`)
+has already named the one opponent every chip is against — rather than a
+seventh scoreline shape. **A short diary pads out with `TBC` chips instead of
+shrinking the group**: three chips either side, always, so the card is the
+same height whether the next three fixtures are all in the book or the
+season has none left to show.
+
+Draft D draws this card richer than that — a date and competition on the
+left of each row, a coloured-edge score chip, the scorers or the ground as a
+second line. `ROADMAP.md`'s own Phase 59 entry, written with that picture
+already in hand, chose to reuse the existing primitive over drawing a new
+row shape for it — "the mock-up is a picture and this file is the contract"
+(`CLAUDE.md` → *The redesign*) is written for exactly this kind of gap, where
+what the picture shows and what stays inside the system disagree. The
+simpler card is the trade this phase made; a future phase reaching for the
+richer row should extend `ResultList` itself rather than starting a new
+component, the same way `showOpponent` and the `TBC` chip did here.
+
+The league snapshot and season stats cards are unchanged by this phase —
+only where they sit moved, onto the grid's right column — so Phase 60's
+form-column decision and any future numbers on *Season so far* still land on
+the components as they already are.
+
 ### A result is a row, not a sentence
 
 ```
