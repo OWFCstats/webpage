@@ -135,6 +135,23 @@ export function formOf(matches, n = 5) {
 }
 
 /**
+ * The form card's own shape: the last n results oldest-first, so the run
+ * reads left to right toward "now", each paired with its scoreline — the
+ * card prints that under the square rather than behind a title a phone can't
+ * hover.
+ */
+export function recentFormLine(matches, n = 5) {
+  return formOf(matches, n)
+    .slice()
+    .reverse()
+    .map((match) => ({
+      match,
+      result: resultOf(match),
+      scoreline: `${match.goals_for}–${match.goals_against}`,
+    }));
+}
+
+/**
  * One season as a ladder: a rung per match, newest first, each played game
  * carrying the goal difference the season stood at once it had finished. The
  * running figure is what makes this a season rather than an index of games —

@@ -197,6 +197,49 @@
 
 .fixture-actions .more { color: var(--gold-deep); font-size: var(--t-small); font-weight: 600; }
 
+/* ---- the form plate ---- */
+
+.form-position {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s2);
+  margin-bottom: var(--s3);
+}
+
+.form-position-value {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--t-headline);
+  letter-spacing: -0.015em;
+  font-variant-numeric: tabular-nums;
+}
+
+.form-position-of { font-size: var(--t-small); color: var(--ink-soft); }
+
+.form-squares {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s2);
+}
+
+/* flex: none on both the cell and the badge it wraps is what keeps the mark
+   square: nothing here is sized off the row's own height, so squeezing the
+   card to sit half the fixture card's tall can't flatten it into a pill. */
+.form-square {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.form-square-score {
+  font-family: var(--font-data);
+  font-size: var(--t-micro);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-soft);
+}
+
 /* ---- recent form widget ---- */
 
 /* Stacked on a phone; side by side once the card is wide enough for the
@@ -278,99 +321,27 @@
   .home-spark-chart { height: var(--matched-height, 220px); }
 }
 
-/* ---- last result widget ---- */
+/* ---- last game bar ---- */
 
-/* Compact and dark, like the KPI strip this replaced — a teaser for the full
-   scoreboard treatment on Matchday, not a second copy of it. */
-.home-result .home-widget-note { color: var(--on-board-soft); }
+/* A row like any other scoreline on the site now, not a scoreboard, so it
+   takes .result-row as-is rather than restating chip/opponent/score/venue as
+   a hero of its own — the div isn't a link because the scorers and the MOTM
+   underneath need their own, but it keeps the same 44px rhythm as a row that
+   is one. */
+.lgb-row { margin-bottom: var(--s2); }
 
-/* Home and away sides always sit left/right (stacked top/bottom on a phone)
-   by venue, same shape both ways — the row just switches from a column to a
-   row, so there's one layout to keep in sync, not two. Which side is "us" is
-   the badge's job, not position's, since position now belongs to venue. */
-.hr-hero {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--s2);
-  margin: var(--s4) 0;
-}
-
-.hr-side { display: flex; align-items: center; gap: var(--s2); }
-
-.hr-badge {
-  flex: none;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: var(--t-small);
-}
-
-.hr-badge.us { background: var(--gold); color: var(--board); }
-
-.hr-badge.them { background: var(--board-soft); color: var(--on-board-soft); }
-
-.hr-team {
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: var(--t-subtitle);
-  color: var(--on-board);
-}
-
-.hr-score {
-  display: flex;
-  align-items: center;
-  gap: var(--s2);
-}
-
-.hr-score-value {
-  font-family: var(--font-display);
-  font-size: var(--t-headline);
-  font-weight: 600;
-  letter-spacing: -0.015em;
-  color: var(--on-board);
-  font-variant-numeric: tabular-nums;
-}
-
-@media (min-width: 760px) {
-  .hr-hero { flex-direction: row; gap: var(--s4); }
-
-  .hr-side { flex: 1; }
-
-  .hr-hero > .hr-side:first-child { justify-content: flex-end; }
-
-  .hr-hero > .hr-side:last-child { justify-content: flex-start; }
-}
-
-/* The goals/MOTM lines and the CTA centre under the score rather than
-   hugging the left edge, which is what the hero row above centres on too. */
-.hr-footer {
-  text-align: center;
-  margin-top: var(--s2);
+.lgb-foot {
   padding-top: var(--s3);
-  border-top: 1px solid color-mix(in srgb, var(--on-board) 14%, transparent);
+  border-top: 1px solid var(--rule);
 }
 
-.hr-line {
+.lgb-line {
   margin: var(--s1) 0;
   font-size: var(--t-small);
-  color: var(--on-board-soft);
+  color: var(--ink-soft);
 }
 
-/* The names carry the weight the <strong> used to: they are what the footer
-   is for, and .board a's gild alone would leave them the same weight as the
-   label beside them. The gold is .board a's — a link on a dark ground is gold
-   everywhere — and inline links in prose take no press tint anywhere on the
-   site, so there isn't one here either. */
-.hr-line a { font-weight: 600; }
-
-/* .home-widget .more is two classes deep and would otherwise out-specify
-   .board a, putting paper gold on a dark ground. */
-.home-result .more { color: var(--gold-leaf); display: inline-block; margin-top: var(--s2); }
+.lgb-line a { font-weight: 600; }
 
 /* ---- your season: Home addressed to whoever is holding the phone ---- */
 

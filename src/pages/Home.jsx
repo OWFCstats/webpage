@@ -4,7 +4,8 @@ import { useMe } from '../context/MeContext';
 import { ErrorNote, Spinner } from '../components/bits';
 import LeagueTable from '../components/LeagueTable';
 import ClubBand from '../components/home/ClubBand';
-import LastResult from '../components/home/LastResult';
+import FormCard from '../components/home/FormCard';
+import LastGameBar from '../components/home/LastGameBar';
 import NextFixture from '../components/home/NextFixture';
 import RecentForm from '../components/home/RecentForm';
 import SeasonStats from '../components/home/SeasonStats';
@@ -16,14 +17,16 @@ import {
   isPlayed,
   latestResult,
   matchContext,
+  recentFormLine,
   seasonsOf,
   seasonSummary,
 } from '../lib/matches';
+import { leagueStandings } from '../lib/league';
 import { seasonTrend } from '../lib/charts';
 import { meSummary } from '../lib/me';
 
 export default function Home() {
-  const { players, matches, appearances, teams, loading, error } = useData();
+  const { players, matches, appearances, teams, leagueRows, loading, error } = useData();
   const { meId, pickMe, forgetMe } = useMe();
 
   // A pick the squad list no longer contains — a player deleted, or a cookie
@@ -40,6 +43,11 @@ export default function Home() {
       ? matches.filter((m) => m.season === currentSeason)
       : [];
     const lastMatch = latestResult(seasonMatches);
+    // Same rank line LeagueTable.jsx draws its own table from — Phase 51 owns
+    // pulling the two into one place (ROADMAP.md → Next).
+    const standings = leagueStandings(leagueRows, teams, currentSeason);
+    const ranked = standings.rows.map((r, i) => ({ ...r, rank: r.position ?? i + 1 }));
+    const ourRow = ranked.find((r) => r.isUs) ?? null;
     return {
       currentSeason,
       // True once a newer season has a row (even just a fixture) — the label
@@ -47,13 +55,16 @@ export default function Home() {
       seasonIsFinal: currentSeason != null && seasonsOf(matches)[0] !== currentSeason,
       summary: seasonSummary(seasonMatches),
       form: formOf(seasonMatches),
+      formLine: recentFormLine(seasonMatches),
+      position: ourRow?.rank ?? null,
+      divisionSize: ranked.length,
       next: fixtures(matches)[0],
       trend: seasonTrend(seasonMatches),
       lastMatch,
       lastCtx: lastMatch ? matchContext(lastMatch, players, matches, appearances) : null,
       cleanSheets: seasonMatches.filter((m) => isPlayed(m) && m.goals_against === 0).length,
     };
-  }, [players, matches, appearances]);
+  }, [players, matches, appearances, leagueRows, teams]);
 
   if (loading) return <Spinner />;
   if (error) return <ErrorNote message={error} />;
@@ -67,7 +78,8 @@ export default function Home() {
   }
 
   const {
-    currentSeason, seasonIsFinal, summary, form, next, trend, lastMatch, lastCtx, cleanSheets,
+    currentSeason, seasonIsFinal, summary, form, formLine, position, divisionSize,
+    next, trend, lastMatch, lastCtx, cleanSheets,
   } = view;
 
   return (
@@ -75,9 +87,11 @@ export default function Home() {
       {/* The club band: directly under the masthead, and the first thing on
           the page — the next fixture is what decides whether a reader turns
           up, which is why it leads rather than the result behind it. The
-          form card (Phase 58) is the band's other slot; until it lands the
-          fixture plate holds the band alone. */}
-      <ClubBand fixture={<NextFixture next={next} teams={teams} />} />
+          form card (Phase 58) is the band's other slot. */}
+      <ClubBand
+        form={<FormCard position={position} of={divisionSize} form={formLine} />}
+        fixture={<NextFixture next={next} teams={teams} />}
+      />
 
       {/* Home's top-level heading, and the only one it needs. It says the
           season rather than the club because the masthead already says the
@@ -91,7 +105,7 @@ export default function Home() {
           : 'Old Wellingtonians FC'}
       </h1>
 
-      <LastResult match={lastMatch} ctx={lastCtx} />
+      <LastGameBar match={lastMatch} ctx={lastCtx} />
 
       {/* Second, under the result: the first screen owes the squad the last
           result and a name, and this is the section that makes one of those

@@ -238,25 +238,28 @@ about the reader. See *An installed app has to open with no signal*.
 ### The club band, under the masthead
 
 The first thing on Home, and the first phase of the redesign (Phase 57): a
-dark band holding one or two paper plates with a gold hairline along the top
-of each. Today it holds one — the next fixture, home side first and away
-second by venue, kick-off and the ground between them, the date on its own
-ruled line, then a live countdown in days, hours and minutes, then *Add to
-calendar* (an `.ics` written from the fixture alone, `lib/ics.js`) and
-*Match details*. Phase 58 adds the second plate, the form card, at half the
-fixture card's height and centred against it.
+dark band holding two paper plates with a gold hairline along the top of each.
+The first is the next fixture: home side first and away second by venue,
+kick-off and the ground between them, the date on its own ruled line, then a
+live countdown in days, hours and minutes, then *Add to calendar* (an `.ics`
+written from the fixture alone, `lib/ics.js`) and *Match details*. The second,
+added in Phase 58, is the form card — league position over the last five
+results as coloured squares, at half the fixture card's height and centred
+against it (`align-items: center` on the band's own grid) — and nothing else:
+no sentence, no button, because the fixture plate beside it and the league
+table two sections down already carry both.
 
 **The band is chrome, not a fourth surface.** It reuses the masthead's own
 `--board` tokens — the same register as the header and the tab bar — rather
 than the `.board` surface class, and that distinction is load-bearing: `.board`
 is one of the three the system names, its own count of occasions is tracked
-(*Board* below), and Phase 58's note that Home goes from five boards to four
-only holds if the band was never a sixth. A paper plate nested inside `.board`
-is the box-in-a-box that surface rules out; nested inside chrome that carries
-no such rule, it isn't. `.club-plate` composes with `.sheet` and resets `color`
-back to `--ink` for exactly this reason — `.club-band` sets `--on-board` for
-its own direct text, and without the reset every plain string on the plate
-would inherit that pale ink onto paper.
+(*Board* below), and Phase 58 took Home from five boards to four only because
+the band was never a sixth. A paper plate nested inside `.board` is the
+box-in-a-box that surface rules out; nested inside chrome that carries no such
+rule, it isn't. `.club-plate` composes with `.sheet` and resets `color` back to
+`--ink` for exactly this reason — `.club-band` sets `--on-board` for its own
+direct text, and without the reset every plain string on the plate would
+inherit that pale ink onto paper.
 
 The band sits inside the page's ordinary padded column, not edge-to-edge —
 nothing else on the site breaks out of `main.page`'s margin, and a first
@@ -450,9 +453,9 @@ Every player's name the site renders links to their player page. No exceptions,
 and it is not a decoration: a name is the one thing on the site a player is
 looking for, and the badges, the totals and the ranks that make turning up worth
 something all live one tap behind it. Ten components got this right and
-Home's `LastResult` didn't — on the first screen, where `CLAUDE.md` says what
-the squad is owed is the last result *and a name*. A name that can't be tapped
-is half of that.
+Home's last result (`LastGameBar`, `LastResult` before Phase 58) didn't — on
+the first screen, where `CLAUDE.md` says what the squad is owed is the last
+result *and a name*. A name that can't be tapped is half of that.
 
 Two names are deliberately not links, because the page they would go to is the
 page you are on: the club's own row in the league table, and the player whose
@@ -764,8 +767,13 @@ this case is special.
 ### Board — green, gilded
 
 For occasions and honours: the matchday scoreboard, a player's hero, the
-honours board, the last result on Home — plus one per leaderboard card, since
-Phase 14 gave every stat its own leader row rather than promoting a single one.
+honours board — plus one per leaderboard card, since Phase 14 gave every stat
+its own leader row rather than promoting a single one. The last result on Home
+used to be a fourth named occasion; Phase 58 turned it into a full-width paper
+bar instead (`LastGameBar`, `styles/pages/home.css` → *last game bar*) — a
+scoreline, two linked names and a date don't need racing green to read as
+worth stopping for, and a page that opens on the club band no longer needed a
+second dark section right underneath it to say so again.
 `components/LeaderBoards.jsx` renders those now, on every page that shows one —
 Season included, since Phase 18. See *Leaderboards and the squad* below for
 the card format.
@@ -807,9 +815,11 @@ at 375px on Home, Players and Records, and no descendant of a board overflows
 one. Every board has vertical padding of its own, so nothing could ever have
 margin-collapsed through it either.
 
-The gold edge is 1px, not the 3px the scoreboard used to carry. With five boards
-in the site rather than one dark section, a 3px rule on each read as five
-underlines; the masthead keeps its 3px because it is the frame, not an occasion.
+The gold edge is 1px, not the 3px the scoreboard used to carry. With four named
+kinds of board in the site rather than one dark section — five until Phase 58
+folded Home's last result into a paper bar — a 3px rule on each would read as
+so many underlines; the masthead keeps its 3px because it is the frame, not an
+occasion.
 
 **The board is no longer rationed to one per page.** That rule existed to stop a
 near-black surface swallowing a page. Racing green does not swallow a page, and
@@ -1787,11 +1797,16 @@ excuse the gap. Both states are measured, and so is a third — a picked reader
 with no appearances this season — because the empty state is a different shape
 from the figures.
 Phase 57 put the club band on top of all three states — the fixture plate
-alone, until Phase 58's form card joins it — for +220px unpicked (2,116px →
-2,336px), +158px picked (2,264px → 2,422px) and 2,409px picked-with-no-apps.
-It is not a candidate for Phase 52 to cut: the next fixture is what decides
-whether a reader turns up, which the redesign's own brief (`ROADMAP.md` → *The
-redesign*) puts ahead of the result behind it.
+alone — for +220px unpicked (2,116px → 2,336px), +158px picked (2,264px →
+2,422px) and 2,409px picked-with-no-apps. Phase 58 finished the band with the
+form card, and folded the last result from a board into a paper bar in the
+same phase: the form card cost the band almost nothing, since it sits inside
+the fixture card's own height (`align-items: center`), but the two changes
+together still land the page higher than Phase 57 left it — 2,413px unpicked,
+2,499px picked, 2,487px picked-with-no-apps. It is not a candidate for Phase 52
+to cut: the next fixture is what decides whether a reader turns up, which the
+redesign's own brief (`ROADMAP.md` → *The redesign*) puts ahead of the result
+behind it.
 `LeagueTable` and `RecentForm` alone are most of the page, and neither shrinks
 further without breaking the "all ten columns from 360px up" rule below or
 cutting Recent form's list under the five results `formOf` shows everywhere else

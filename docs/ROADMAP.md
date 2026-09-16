@@ -74,6 +74,7 @@ page-by-page review against the club's real 2025/26 season.
 | 55 | Honours wait for the season to end | Found by the squad on the first Saturday of 2026/27: one friendly in, all eleven who turned up held The Dependable, because three of the four honours are derived and so have a leader from the first whistle. `honoursSettled` publishes a season on 1 July once its diary is empty, `season_status` overrides that either way, and an unsettled season's awards arrive with nobody on them — one line, all six surfaces. Plus the repeats rule: `×n` where a badge is drawn small, the seasons where there is a column for them |
 | 56 | Venue, actually recorded | `matches.venue` is `not null`. It went in nullable with nothing to fill it from, and a null venue is not "no answer" but a wrong one: `matchHomeAway()` read `venue !== 'A'`, so every unrecorded row claimed we were at home, and `venueTeam()` gave the fixture no pitch. The roadmap's own finding said the live rows were null; they were not — the fixture's were, and checking the frozen parse instead of `backups/` is what made a closed question look open. The club's real H/A is in `import_2025_26.sql` now, so it reaches the fixture through the parser rather than being invented as an alternating run; the wizard, the match form and the walkover form all refuse to submit without one; and the migration stops and names the count rather than backfilling a venue nobody recorded. `matchHomeAway()` returns `known` — false for a neutral ground as well as an unrecorded one — so an ordering is never read as a claim about a pitch. Unblocks phases 57–64 |
 | 57 | The club band and the fixture card | `components/home/ClubBand.jsx` — a dark band directly under the masthead, reusing the masthead's own `--board` tokens rather than the `.board` surface class, so nesting a paper plate inside it isn't the box-in-a-box that surface rules out (`DESIGN.md` → *The club band, under the masthead*). Holds one plate today, the rewritten `NextFixture.jsx`: home side first and away second by venue, kick-off and the ground between them, the date on its own ruled line, a live days/hours/minutes countdown, *Add to calendar* (`lib/ics.js`, a dependency-free `.ics` writer with its own tests) and *Match details*. Phase 58's form card takes the band's other slot |
+| 58 | The form card, and the last game as a bar | `FormCard.jsx` fills the club band's second slot: league position over five result-coloured squares, each carrying its scoreline, nothing else. `LastResult.jsx` is now `LastGameBar.jsx` — a full-width paper bar built from the same `.result-row` every other scoreline uses, goalscorers and the MOTM linked underneath — which took Home from five named boards to four (`DESIGN.md` → *Board*) and closed the score-order split: the bar reads ours-first like every other row now that it isn't staging a scoreboard |
 
 **The detail behind any closed phase is in its commit** — `git log --grep="Phase
 20"` finds it, because every phase commit names its phase in its own subject.
@@ -202,7 +203,7 @@ nothing.
 
 ---
 
-## The redesign — phases 58 to 64, in order (56 and 57 are done)
+## The redesign — phases 59 to 64, in order (56, 57 and 58 are done)
 
 Agreed against a reference site (the Northern Premier League's club pages) and
 signed off as a working mock-up: **Draft D**, two pages at two widths, real
@@ -246,21 +247,6 @@ against a mock-up that already answers the design questions; Opus 5 where gettin
 it wrong is silent (a derivation, a redirect, a schema change, a chart scale).
 
 ---
-
-**Phase 58 — The form card, and the last game as a bar.** The form card is
-league position over a run of five rounded squares with each scoreline under it,
-and nothing else: no sentence, no buttons. The last result stops being a board
-and becomes a full-width paper bar directly under the band, carrying the W/D/L
-chip, the score, the opponent, the goalscorers and the man of the match, each
-name a link. **This takes the site from five boards to four**, which is a
-`DESIGN.md` edit and not a detail: the board is scarce on purpose and the count
-is written down. **Files:** `components/home/LastResult.jsx` (rewritten as
-`LastGameBar.jsx`), `components/home/FormCard.jsx` (new), `lib/matches.js`
-(last-five-with-scorelines), `styles/pages/home.css`. **Done means** the bar
-names every scorer and the MOTM at 375px without wrapping into four lines, and
-the five squares stay square rather than flattening into pills when the card is
-height-constrained. **Docs:** `DESIGN.md` → *Board* (five becomes four, and why),
-and *Home, addressed to the reader*. **Model:** Sonnet 5 · high.
 
 **Phase 59 — Match outlook, and Home's grid.** Recent results and upcoming
 fixtures become one card: the last three and the next three, with `TBC` rows
@@ -360,7 +346,7 @@ view. *Now* is `npm run shots` on the `mid-season` fixture at 375px.
 
 | Page | Now | Budget | Owner |
 | --- | --- | --- | --- |
-| Home — unpicked / a name picked / picked, no apps this season | 2,336 / 2,422 / 2,409 | 1,600 | **Phase 52** — Phase 57 added the club band (the fixture plate alone; Phase 58 adds the form card) on top of whatever this row already carried: +220 unpicked, +158 picked, from the 2,116 / 2,264 `DESIGN.md` → *Page length* states before it. The pre-57 drift between this table's old figures (2,116 / 2,202 / 2,189) and `DESIGN.md`'s (2,116 / 2,264 / —) was never reconciled and Phase 57 doesn't touch that question — the band's own cost is additive on top of either baseline. **Phase 52 re-measures all three before it decides anything**, since a budget argued from a stale figure is the thing this table exists to prevent. Three rows because they are three states of one page, and only the first is what a stranger sees |
+| Home — unpicked / a name picked / picked, no apps this season | 2,413 / 2,499 / 2,487 | 1,600 | **Phase 52** — measured after Phase 58 added the form card to the club band. Losing the last-result board (folded into `LastGameBar`'s paper bar) gave some of that back, but the band now carries two plates rather than one, and the net is still well over budget. The pre-57 drift between this table's old figures and `DESIGN.md`'s was never reconciled and neither 57 nor 58 touches that question. **Phase 52 re-measures all three before it decides anything**, since a budget argued from a stale figure is the thing this table exists to prevent. Three rows because they are three states of one page, and only the first is what a stranger sees |
 | Matchday — latest | 2,456 | 2,300 | **Phase 52** — 156 over; head to head's tape, real content the old card didn't carry. The rail doesn't move this: the budget is stated at 375px and the rail is a >=900px-only change |
 | Matchday — clean sheet (12 named, a report, clamped / open) | 2,746 / 3,150 | 2,300 | **Phase 52** — 446 over clamped; the clamp bounds it, it doesn't fit it. Same as above, untouched by 28 or 31 |
 | Matchday — walkover (no team sheet) | 1,533 | 2,300 | within |
@@ -442,11 +428,13 @@ already names the season and which links to *Full season* three times.
    2,336 / 2,580 / 2,821px, shorter than at 700px, because the panel no
    longer stacks under the whole ladder — but that isn't this gap closing.
 
-3. **Score order.** Phase 23 made Home read home-first (`1–4` when we are away), with a badge marking which side is us.
-   Every other scoreline on the site reads goals-for–goals-against, ours first.
-   That is deliberate — a scoreboard reads by venue, a result row reads by us —
-   but if it ever needs to be uniform it is a `DESIGN.md` ruling, not a
-   component fix.
+3. **Score order.** Phase 23 made Home read home-first (`1–4` when we are away),
+   with a badge marking which side is us, because the last result staged itself
+   as a scoreboard and a scoreboard reads by venue. Phase 58 removed the reason:
+   folded into a paper bar, it is a result row like any other now, so it reads
+   goals-for–goals-against, ours first, the same as every other scoreline on the
+   site (`components/home/LastGameBar.jsx`). The site is uniform on this now —
+   nothing left open to decide.
 
 ---
 
