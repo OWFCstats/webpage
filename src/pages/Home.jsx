@@ -3,6 +3,7 @@ import { useData } from '../context/DataContext';
 import { useMe } from '../context/MeContext';
 import { ErrorNote, Spinner } from '../components/bits';
 import LeagueTable from '../components/LeagueTable';
+import ClubBand from '../components/home/ClubBand';
 import LastResult from '../components/home/LastResult';
 import NextFixture from '../components/home/NextFixture';
 import RecentForm from '../components/home/RecentForm';
@@ -22,7 +23,7 @@ import { seasonTrend } from '../lib/charts';
 import { meSummary } from '../lib/me';
 
 export default function Home() {
-  const { players, matches, appearances, loading, error } = useData();
+  const { players, matches, appearances, teams, loading, error } = useData();
   const { meId, pickMe, forgetMe } = useMe();
 
   // A pick the squad list no longer contains — a player deleted, or a cookie
@@ -71,6 +72,13 @@ export default function Home() {
 
   return (
     <div className="home">
+      {/* The club band: directly under the masthead, and the first thing on
+          the page — the next fixture is what decides whether a reader turns
+          up, which is why it leads rather than the result behind it. The
+          form card (Phase 58) is the band's other slot; until it lands the
+          fixture plate holds the band alone. */}
+      <ClubBand fixture={<NextFixture next={next} teams={teams} />} />
+
       {/* Home's top-level heading, and the only one it needs. It says the
           season rather than the club because the masthead already says the
           club (see home.css) — so this line, which was always the page's
@@ -97,8 +105,6 @@ export default function Home() {
       />
 
       <LeagueTable season={currentSeason} />
-
-      <NextFixture next={next} />
 
       <RecentForm form={form} trend={trend} />
 

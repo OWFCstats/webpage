@@ -43,6 +43,22 @@ export function countdownLabel(iso) {
   return `Kick-off in ${Math.round(days / 7)} weeks`;
 }
 
+/** Days, hours and minutes remaining until a fixture's kick-off, for the club
+ *  band's three tiles. `time` missing (a kick-off not yet confirmed) counts
+ *  down to midnight on the day, same target `daysUntil` uses. Clamped at
+ *  zero rather than going negative, so a page left open past kick-off reads
+ *  "0 · 0 · 0" instead of counting the wrong way. `now` is a parameter so a
+ *  test — and the layout harness's pinned clock — can pin it. */
+export function countdownParts(iso, time, now = new Date()) {
+  const target = new Date(`${iso}T${time || '00:00:00'}`);
+  const totalMinutes = Math.max(0, Math.floor((target - now) / 60000));
+  return {
+    days: Math.floor(totalMinutes / 1440),
+    hours: Math.floor((totalMinutes % 1440) / 60),
+    minutes: totalMinutes % 60,
+  };
+}
+
 export function formatDate(iso) {
   if (!iso) return '';
   const d = new Date(`${iso}T00:00:00`);
