@@ -235,6 +235,33 @@ site, and it is not an exception to any of the above: it holds files the site
 serves — the document, the bundle, the fonts, the artwork — and not one thing
 about the reader. See *An installed app has to open with no signal*.
 
+### The club band, under the masthead
+
+The first thing on Home, and the first phase of the redesign (Phase 57): a
+dark band holding one or two paper plates with a gold hairline along the top
+of each. Today it holds one — the next fixture, home side first and away
+second by venue, kick-off and the ground between them, the date on its own
+ruled line, then a live countdown in days, hours and minutes, then *Add to
+calendar* (an `.ics` written from the fixture alone, `lib/ics.js`) and
+*Match details*. Phase 58 adds the second plate, the form card, at half the
+fixture card's height and centred against it.
+
+**The band is chrome, not a fourth surface.** It reuses the masthead's own
+`--board` tokens — the same register as the header and the tab bar — rather
+than the `.board` surface class, and that distinction is load-bearing: `.board`
+is one of the three the system names, its own count of occasions is tracked
+(*Board* below), and Phase 58's note that Home goes from five boards to four
+only holds if the band was never a sixth. A paper plate nested inside `.board`
+is the box-in-a-box that surface rules out; nested inside chrome that carries
+no such rule, it isn't. `.club-plate` composes with `.sheet` and resets `color`
+back to `--ink` for exactly this reason — `.club-band` sets `--on-board` for
+its own direct text, and without the reset every plain string on the plate
+would inherit that pale ink onto paper.
+
+The band sits inside the page's ordinary padded column, not edge-to-edge —
+nothing else on the site breaks out of `main.page`'s margin, and a first
+full-bleed section would be its own decision rather than a detail of this one.
+
 ### Home, addressed to the reader
 
 Home's second section is the reader's own, under the last result and above the
@@ -1759,6 +1786,12 @@ phone, and this site's first job is making a player want to turn up. It does not
 excuse the gap. Both states are measured, and so is a third — a picked reader
 with no appearances this season — because the empty state is a different shape
 from the figures.
+Phase 57 put the club band on top of all three states — the fixture plate
+alone, until Phase 58's form card joins it — for +220px unpicked (2,116px →
+2,336px), +158px picked (2,264px → 2,422px) and 2,409px picked-with-no-apps.
+It is not a candidate for Phase 52 to cut: the next fixture is what decides
+whether a reader turns up, which the redesign's own brief (`ROADMAP.md` → *The
+redesign*) puts ahead of the result behind it.
 `LeagueTable` and `RecentForm` alone are most of the page, and neither shrinks
 further without breaking the "all ten columns from 360px up" rule below or
 cutting Recent form's list under the five results `formOf` shows everywhere else

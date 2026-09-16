@@ -51,17 +51,19 @@ export const EXPECTED = [
   },
   {
     invariant: 'icon-unmeasurable',
-    match: 'a.fixture-row > img',
+    match: 'fixture-team.us > img',
     owner: 'Phase 19',
     why:
-      'The next-fixture row draws the same public/crest.png the masthead does, '
-      + 'in place of the "OW" text placeholder it carried before the crest '
-      + 'existed — a second bitmap render, not a second bug: the masthead\'s own '
-      + 'entry above is scoped to a.brand, so this one needs its own line rather '
-      + 'than a widened match. Same limitation, same fix if it\'s ever needed: '
-      + 'vector art, not a wider exemption here. Scoped to the row and not to a '
-      + 'route: it used to say route "home", which meant Phase 48 adding two '
-      + 'more states of that same page reported the same crest as two new bugs. '
-      + 'The finding is that the fixture row draws a bitmap, wherever it is.',
+      'The club band\'s fixture plate draws the same public/crest.png the '
+      + 'masthead does, in place of the "OW" text placeholder it carried before '
+      + 'the crest existed — a second bitmap render, not a second bug: the '
+      + 'masthead\'s own entry above is scoped to a.brand, so this one needs its '
+      + 'own line rather than a widened match. Same limitation, same fix if it\'s '
+      + 'ever needed: vector art, not a wider exemption here. Scoped to the '
+      + 'element and not to a route, because it used to say route "home", which '
+      + 'meant Phase 48 adding two more states of that same page reported the '
+      + 'same crest as two new bugs. Phase 57 moved the crest from the old '
+      + '.fixture-row into the club band\'s fixture plate — the finding is that '
+      + 'this component draws a bitmap, wherever it renders.',
   },
 ];

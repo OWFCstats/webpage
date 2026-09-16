@@ -4,7 +4,7 @@
 
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { clampReport } from '../src/lib/format.js';
+import { clampReport, countdownParts } from '../src/lib/format.js';
 
 test('a short report renders whole, with nothing behind the clamp', () => {
   const text = 'A tidy two-line write-up of a routine afternoon.';
@@ -38,6 +38,21 @@ test('a long single paragraph is cut at a word boundary, not mid-word', () => {
   assert.ok(!shown.endsWith(' '));
   // The two halves rejoin word-for-word — nothing was lost or duplicated.
   assert.equal(`${shown} ${rest[0]}`, text);
+});
+
+test('countdownParts splits the gap to kick-off into days, hours and minutes', () => {
+  const now = new Date('2026-03-20T10:00:00');
+  assert.deepEqual(countdownParts('2026-03-28', '14:00:00', now), { days: 8, hours: 4, minutes: 0 });
+});
+
+test('countdownParts counts to midnight when the kick-off time is unconfirmed', () => {
+  const now = new Date('2026-03-27T22:30:00');
+  assert.deepEqual(countdownParts('2026-03-28', null, now), { days: 0, hours: 1, minutes: 30 });
+});
+
+test('countdownParts clamps at zero once kick-off has passed', () => {
+  const now = new Date('2026-03-29T09:00:00');
+  assert.deepEqual(countdownParts('2026-03-28', '14:00:00', now), { days: 0, hours: 0, minutes: 0 });
 });
 
 test('paragraphs that fit stay whole; the one the cut lands in opens its own tail first', () => {

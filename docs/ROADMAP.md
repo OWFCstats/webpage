@@ -73,6 +73,7 @@ page-by-page review against the club's real 2025/26 season.
 | 48 | This is me | One cookie, `owfc.me`, holding one player id, and Home's second section becomes the reader's own: this season's apps, goals and assists, and the nearest career badge with what it costs. A preference and not a session — no account, no row, nothing sent anywhere — which is the distinction `DESIGN.md` → *What the site remembers* exists to keep. The offer is made twice, on Home and as *This is me* on a player's own page, and it is what finally lets the counter tell a reader's own page from somebody else's (`my-page` against `player-page`, plus `me-pick`), which Phase 45 wrote down as unanswerable until this landed. It costs Home 74px unpicked and 222px picked, and Phase 52 owns what comes off in exchange |
 | 55 | Honours wait for the season to end | Found by the squad on the first Saturday of 2026/27: one friendly in, all eleven who turned up held The Dependable, because three of the four honours are derived and so have a leader from the first whistle. `honoursSettled` publishes a season on 1 July once its diary is empty, `season_status` overrides that either way, and an unsettled season's awards arrive with nobody on them — one line, all six surfaces. Plus the repeats rule: `×n` where a badge is drawn small, the seasons where there is a column for them |
 | 56 | Venue, actually recorded | `matches.venue` is `not null`. It went in nullable with nothing to fill it from, and a null venue is not "no answer" but a wrong one: `matchHomeAway()` read `venue !== 'A'`, so every unrecorded row claimed we were at home, and `venueTeam()` gave the fixture no pitch. The roadmap's own finding said the live rows were null; they were not — the fixture's were, and checking the frozen parse instead of `backups/` is what made a closed question look open. The club's real H/A is in `import_2025_26.sql` now, so it reaches the fixture through the parser rather than being invented as an alternating run; the wizard, the match form and the walkover form all refuse to submit without one; and the migration stops and names the count rather than backfilling a venue nobody recorded. `matchHomeAway()` returns `known` — false for a neutral ground as well as an unrecorded one — so an ordering is never read as a claim about a pitch. Unblocks phases 57–64 |
+| 57 | The club band and the fixture card | `components/home/ClubBand.jsx` — a dark band directly under the masthead, reusing the masthead's own `--board` tokens rather than the `.board` surface class, so nesting a paper plate inside it isn't the box-in-a-box that surface rules out (`DESIGN.md` → *The club band, under the masthead*). Holds one plate today, the rewritten `NextFixture.jsx`: home side first and away second by venue, kick-off and the ground between them, the date on its own ruled line, a live days/hours/minutes countdown, *Add to calendar* (`lib/ics.js`, a dependency-free `.ics` writer with its own tests) and *Match details*. Phase 58's form card takes the band's other slot |
 
 **The detail behind any closed phase is in its commit** — `git log --grep="Phase
 20"` finds it, because every phase commit names its phase in its own subject.
@@ -201,7 +202,7 @@ nothing.
 
 ---
 
-## The redesign — phases 57 to 64, in order (56 is done)
+## The redesign — phases 58 to 64, in order (56 and 57 are done)
 
 Agreed against a reference site (the Northern Premier League's club pages) and
 signed off as a working mock-up: **Draft D**, two pages at two widths, real
@@ -245,24 +246,6 @@ against a mock-up that already answers the design questions; Opus 5 where gettin
 it wrong is silent (a derivation, a redirect, a schema change, a chart scale).
 
 ---
-
-**Phase 57 — The club band and the fixture card.** A dark band under the
-masthead, holding two paper cards with a gold hairline. Left is the form card
-(Phase 58), right is the next fixture: home team first and away second by
-`venue`, kick-off centred between them with the ground under it, the date on its
-own ruled line, then three tiles counting days, hours and minutes, then *Add to
-calendar* and *Match details*. The calendar action writes an `.ics` from the
-fixture and nothing else; *Match details* goes to `/matchday/:matchId`, which
-already renders an unplayed fixture as `–` vs `–` with "Kick-off" instead of
-"Full time" (`Scoreboard.jsx`). Above 860px the two cards are a grid pair and the
-form card is half the fixture card's height, centred; below it they stack.
-**Files:** `components/home/ClubBand.jsx` (new), `components/home/NextFixture.jsx`
-(rewritten), `lib/ics.js` (new), `styles/pages/home.css`, `pages/Home.jsx`,
-`tests/ics.test.js`. **Done means** the countdown reads correctly at 375px, the
-`.ics` opens in a phone calendar with the right kick-off and ground, and
-`check:layout` is green at six widths. **Docs:** `DESIGN.md` → *Home, addressed
-to the reader* gains the band above it. **Model:** Sonnet 5 · high — the layout
-is drawn; `lib/ics.js` is the only part with a right answer, and it has a test.
 
 **Phase 58 — The form card, and the last game as a bar.** The form card is
 league position over a run of five rounded squares with each scoreline under it,
@@ -358,10 +341,10 @@ rather than judged.
 
 ---
 
-**One branch a phase, in this order.** 56 blocks 57 and 62. 57 and 58 are one
-screen between them and should be reviewed together even though they land
-separately. 61 blocks nothing but should come before 62 to 64, so those three
-land on the page that is going to keep them.
+**One branch a phase, in this order.** 56 blocked 57 and still blocks 62. 57
+and 58 are one screen between them and should be reviewed together even though
+they land separately. 61 blocks nothing but should come before 62 to 64, so
+those three land on the page that is going to keep them.
 
 **Each phase condenses to one *Done* row in the commit that closes it**, per the
 rule at the top of this file, and writes its own ruling into `DESIGN.md` in the
@@ -377,7 +360,7 @@ view. *Now* is `npm run shots` on the `mid-season` fixture at 375px.
 
 | Page | Now | Budget | Owner |
 | --- | --- | --- | --- |
-| Home — unpicked / a name picked / picked, no apps this season | 2,116 / 2,202 / 2,189 | 1,600 | **Phase 52** — 516 over unpicked and 602 over picked; Phase 23's badge, label and button cost 165px and Phase 44's `<h1>` gave 5px back. The two picked figures were 2,264 and 2,252 here and measure 62px shorter on both sides of Phase 55, so the drift is older than that branch and nothing has been found that accounts for it — which also leaves Phase 48's stated cost of 222px picked unreconciled (2,116 to 2,202 is 86px between the two states). **Phase 52 re-measures all three before it decides anything**, since a budget argued from a stale figure is the thing this table exists to prevent. Three rows because they are three states of one page, and only the first is what a stranger sees |
+| Home — unpicked / a name picked / picked, no apps this season | 2,336 / 2,422 / 2,409 | 1,600 | **Phase 52** — Phase 57 added the club band (the fixture plate alone; Phase 58 adds the form card) on top of whatever this row already carried: +220 unpicked, +158 picked, from the 2,116 / 2,264 `DESIGN.md` → *Page length* states before it. The pre-57 drift between this table's old figures (2,116 / 2,202 / 2,189) and `DESIGN.md`'s (2,116 / 2,264 / —) was never reconciled and Phase 57 doesn't touch that question — the band's own cost is additive on top of either baseline. **Phase 52 re-measures all three before it decides anything**, since a budget argued from a stale figure is the thing this table exists to prevent. Three rows because they are three states of one page, and only the first is what a stranger sees |
 | Matchday — latest | 2,456 | 2,300 | **Phase 52** — 156 over; head to head's tape, real content the old card didn't carry. The rail doesn't move this: the budget is stated at 375px and the rail is a >=900px-only change |
 | Matchday — clean sheet (12 named, a report, clamped / open) | 2,746 / 3,150 | 2,300 | **Phase 52** — 446 over clamped; the clamp bounds it, it doesn't fit it. Same as above, untouched by 28 or 31 |
 | Matchday — walkover (no team sheet) | 1,533 | 2,300 | within |
