@@ -1613,6 +1613,15 @@ No end label renders below 700px (`useIsNarrow`) on any chart — a phone-width
 plot has no lane for one without crowding the line data itself. The tooltip and
 the data table carry series identity there instead.
 
+**A pie has no line end, so its labels sit in a caption row underneath
+instead** (Phase 62's W/D/L donut, `components/season/ResultSplit.jsx`) — not
+a re-added legend, since a donut never had a multi-line plot to read one off
+in the first place. `--win`/`--draw`/`--loss` colour the slices there rather
+than the chart series order: those three mean something specific everywhere
+else on the site (*Chart series* above) and a result split is never themed.
+`ChartCard`'s optional `bodyClassName` exists for this one case, where a plot
+needs less than the fixed height a line chart's axis band wants.
+
 ## Motion
 
 Restrained. Motion marks a change the user caused, and nothing else.
@@ -1828,12 +1837,11 @@ sub-pages rather than shrinking. Home doesn't. The opponent page is the same kin
 of document as a Records sub-page and takes the same number. `npm run shots`
 reports the real numbers — page by page, at every supported width, into
 `shots/heights.json` — and the roadmap tracks each page against its budget.
-Seven of these rows are inside now: Matchday's default route (against the 2,300
+Six of these rows are inside now: Matchday's default route (against the 2,300
 below — see the note after this table), Players →
-Leaderboards (Phase 14, 1,296px), Records' three sub-pages (Phase 16), Season →
-Stats (Phase 18 as Charts, still 1,909px after Phase 61's merge, and 1,056px
-under *All seasons*), the opponent page (still light on content, but
-measured and inside either way), and Player detail, which Phase 21 brought from
+Leaderboards (Phase 14, 1,296px), Records' three sub-pages (Phase 16), the
+opponent page (still light on content, but measured and inside either way),
+and Player detail, which Phase 21 brought from
 3,127px to 2,241px and Phase 33's 40px badges put back to 2,279 — mostly by moving
 the career-arc chart and "Most played alongside"
 off the Overview tab and onto Full stats, next to the season table and squad
@@ -1850,6 +1858,12 @@ took Season from 3,224px to 2,494px, 734px back, but not the full 1,024px the
 (season at a glance, the appearances leaderboard), neither of which Phase 29's
 brief covered cutting. The remaining 290px is `ROADMAP.md` → *Decisions* →
 *Open*.
+Season → Stats stayed inside the budget through Phase 61's merge at 1,909px,
+then Phase 62 put it 1,476px over: six per-game tiles, a W/D/L donut, the most
+frequent scorelines and the winning and losing margins, four cards on top of
+the three the merge carried over. Phases 63 and 64 still have three more cards
+to add, so shrinking this page is not a decision to make until they land —
+`ROADMAP.md` → *Page budgets* tracks the number as it moves.
 Home is 2,116px unpicked and 2,264px with a name picked: Phase 19 took it from
 2,113px to 1,882px (the result leading, the next-fixture card collapsing to a
 row, a redundant form-chip strip coming off Recent form), Phase 23's badge,

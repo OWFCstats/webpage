@@ -208,6 +208,76 @@ export function venueSummary(matches) {
   };
 }
 
+/** Per-game core figures for a set of matches — how often, at what rate, and
+ *  how the games tended to go. Shares `playedMatches` with `seasonSummary`
+ *  rather than counting the same games twice. */
+export function perGameStats(matches) {
+  const played = playedMatches(matches);
+  const goalsFor = played.reduce((sum, m) => sum + m.goals_for, 0);
+  const goalsAgainst = played.reduce((sum, m) => sum + m.goals_against, 0);
+  return {
+    played: played.length,
+    scoredPerGame: played.length ? goalsFor / played.length : 0,
+    concededPerGame: played.length ? goalsAgainst / played.length : 0,
+    bothScored: played.filter((m) => m.goals_for > 0 && m.goals_against > 0).length,
+    cleanSheets: played.filter(isCleanSheet).length,
+  };
+}
+
+/** Distinct players with a counted (non-dropout) appearance in the given
+ *  matches — the squad rotation a season actually used, not the roster size. */
+export function playersUsedCount(matches, appearances) {
+  const ids = new Set(playedMatches(matches).map((m) => m.id));
+  const used = new Set();
+  for (const a of appearances) {
+    if (a.dropout || !ids.has(a.match_id)) continue;
+    used.add(a.player_id);
+  }
+  return used.size;
+}
+
+/** How often each final score has come up, most frequent first — ties broken
+ *  by the scoreline itself so the order is stable. Reads goals-for–
+ *  goals-against, ours first, the same as every other scoreline on the site
+ *  (ROADMAP → Phase 58). */
+export function scorelineFrequency(matches) {
+  const counts = new Map();
+  for (const m of playedMatches(matches)) {
+    const key = `${m.goals_for}–${m.goals_against}`;
+    counts.set(key, (counts.get(key) ?? 0) + 1);
+  }
+  return [...counts.entries()]
+    .map(([scoreline, count]) => ({ scoreline, count }))
+    .sort((a, b) => b.count - a.count || a.scoreline.localeCompare(b.scoreline));
+}
+
+/** Winning and losing margins, bucketed at 1/2/3/4-or-more goals — a win or
+ *  loss by five or more is rare enough most seasons that its own bucket would
+ *  be a lonely bar. Draws carry no margin and are left out. */
+export function marginBuckets(matches) {
+  const sizes = [1, 2, 3, '4+'];
+  const buckets = new Map(sizes.map((s) => [s, { margin: s, wins: 0, losses: 0 }]));
+  for (const m of playedMatches(matches)) {
+    const margin = m.goals_for - m.goals_against;
+    if (margin === 0) continue;
+    const key = Math.abs(margin) >= 4 ? '4+' : Math.abs(margin);
+    buckets.get(key)[margin > 0 ? 'wins' : 'losses'] += 1;
+  }
+  return [...buckets.values()];
+}
+
+/** The biggest win and heaviest defeat, by goal margin — null where there's
+ *  no such result yet. */
+export function extremeMargins(matches) {
+  const margins = playedMatches(matches).map((m) => m.goals_for - m.goals_against);
+  const wins = margins.filter((g) => g > 0);
+  const losses = margins.filter((g) => g < 0);
+  return {
+    biggestWin: wins.length ? Math.max(...wins) : null,
+    heaviestLoss: losses.length ? Math.abs(Math.min(...losses)) : null,
+  };
+}
+
 /** Longest run of identical results at the front of the (newest-first)
  * results, e.g. { result: 'W', count: 3 } for "won the last 3". Null if
  * nothing has been played. */

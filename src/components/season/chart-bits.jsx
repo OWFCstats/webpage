@@ -18,6 +18,9 @@ export const chartColours = () => ({
   positive: token('--series-2'),
   negative: token('--loss'),
   dot: token('--paper'),
+  win: token('--win'),
+  draw: token('--draw'),
+  loss: token('--loss'),
 });
 
 /**

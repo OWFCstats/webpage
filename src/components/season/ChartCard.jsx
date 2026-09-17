@@ -8,7 +8,7 @@ import { useState } from 'react';
  * Its own file rather than a helper inside the page, because the merged Stats
  * page is a stack of these and phases 62 to 64 each add more.
  */
-export default function ChartCard({ title, finding, children, empty, table }) {
+export default function ChartCard({ title, finding, children, empty, table, bodyClassName }) {
   const [showTable, setShowTable] = useState(false);
   return (
     <section className="sheet chart-card">
@@ -28,7 +28,7 @@ export default function ChartCard({ title, finding, children, empty, table }) {
       ) : showTable ? (
         <div className="table-wrap">{table}</div>
       ) : (
-        <div className="chart-body">{children}</div>
+        <div className={bodyClassName ? `chart-body ${bodyClassName}` : 'chart-body'}>{children}</div>
       )}
     </section>
   );
