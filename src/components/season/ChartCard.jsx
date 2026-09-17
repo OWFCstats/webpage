@@ -8,7 +8,9 @@ import { useState } from 'react';
  * Its own file rather than a helper inside the page, because the merged Stats
  * page is a stack of these and phases 62 to 64 each add more.
  */
-export default function ChartCard({ title, finding, children, empty, table, bodyClassName }) {
+export default function ChartCard({
+  title, finding, children, empty, emptyNote, table, bodyClassName,
+}) {
   const [showTable, setShowTable] = useState(false);
   return (
     <section className="sheet chart-card">
@@ -24,7 +26,12 @@ export default function ChartCard({ title, finding, children, empty, table, body
         )}
       </div>
       {empty ? (
-        <div className="empty">Not enough data yet — this fills in as matches are recorded.</div>
+        // The default says what fills most of these cards in. A card reading a
+        // table somebody types in by hand — the division's own figures — says
+        // so instead, because waiting for the next match wouldn't fix it.
+        <div className="empty">
+          {emptyNote ?? 'Not enough data yet — this fills in as matches are recorded.'}
+        </div>
       ) : showTable ? (
         <div className="table-wrap">{table}</div>
       ) : (

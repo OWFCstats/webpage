@@ -1,4 +1,5 @@
 import { useData } from '../../context/DataContext';
+import DivisionRatios from './DivisionRatios';
 import GoalsTrend from './GoalsTrend';
 import GoldenBootRace from './GoldenBootRace';
 import MatchMargins from './MatchMargins';
@@ -17,10 +18,17 @@ import SeasonPerGameTiles from './SeasonPerGameTiles';
  * season, each of those is a career total, and every season combined into one
  * board is Records' (CLAUDE.md → *Sections*). Points accumulated compares
  * instead — one line a season, side by side on a shared matchday axis — which
- * is the whole reason the mode exists.
+ * is the whole reason the mode exists. The division's own figures aren't in
+ * that argument at all: `league_rows` holds one table a season, so there is no
+ * all-seasons division to draw.
+ *
+ * The division card sits second, straight under the club's own per-game
+ * numbers, because those two read as one thought — what we did a game, then
+ * what everyone else did — and because a card nobody scrolls to is a card
+ * nobody reads (docs/DESIGN.md → *Page length*).
  */
 export default function SeasonStats({ season }) {
-  const { players, matches, appearances } = useData();
+  const { players, matches, appearances, leagueRows, teams } = useData();
   const allSeasons = season === 'all';
 
   return (
@@ -28,6 +36,7 @@ export default function SeasonStats({ season }) {
       {!allSeasons && (
         <>
           <SeasonPerGameTiles season={season} matches={matches} appearances={appearances} />
+          <DivisionRatios season={season} leagueRows={leagueRows} teams={teams} />
           <ResultSplit season={season} matches={matches} />
           <GoldenBootRace
             season={season}

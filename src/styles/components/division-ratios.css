@@ -1,0 +1,125 @@
+/* The division's attack and defence, ranked — components/season/DivisionRatios.jsx.
+
+   Two lists of the same clubs, each figure drawn as a wash behind its own row
+   rather than as a bar beside it. That is the phone decision: a bar in its own
+   column takes the width a club name needs, and "Old Merchant Taylors II" is
+   what the site's own measurements keep catching against a 375px screen
+   (docs/DESIGN.md → Mobile). Behind the row, the name has the whole width and
+   the figure still has a full-width scale to be read against.
+
+   The card's own frame — the sheet, the heading, the Show data button — is
+   ChartCard's, and the two-column body at 700px is in charts.css with the
+   rest of .chart-body. */
+
+.dr-list-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s2);
+  margin-bottom: var(--s2);
+}
+
+/* Which way "best" runs. Obvious for goals scored, not obvious at all for
+   goals conceded, and a rank column that reads 1, 2, 3 down a list of rising
+   numbers needs one word to say why. */
+.dr-best {
+  font-size: var(--t-micro);
+  white-space: nowrap;
+}
+
+/* The positioning context for the average mark, so one hairline can cross
+   every row in the list at once. */
+.dr-plot { position: relative; }
+
+.dr-rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.dr-row {
+  --dr-wash: color-mix(in srgb, var(--verdigris) 34%, transparent);
+  display: grid;
+  grid-template-columns: 1.25rem minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: var(--s2);
+  padding: 0.3rem var(--s2);
+  border-radius: var(--r-sm);
+  font-size: var(--t-small);
+  /* The figure itself. A background rather than an element, so the row has no
+     stacking order to get wrong and the text sits on top of it by default. */
+  background-image:
+    linear-gradient(to right, var(--dr-wash) var(--dr-fill), transparent var(--dr-fill));
+}
+
+/* Our own row, picked out in gold — the same wash the league table's own row
+   takes, and the weight as well as the colour, so the one row a reader is
+   looking for isn't marked by hue alone. */
+.dr-row.dr-us {
+  --dr-wash: color-mix(in srgb, var(--gold) 34%, transparent);
+}
+
+.dr-row.dr-us .dr-club,
+.dr-row.dr-us .dr-value { font-weight: 700; }
+
+.dr-rank {
+  font-family: var(--font-data);
+  font-size: var(--t-micro);
+  font-weight: 700;
+  color: var(--ink-soft);
+  text-align: center;
+}
+
+/* A name wraps rather than clips, same rule as everywhere else on the site. */
+.dr-club { min-width: 0; }
+
+.dr-value {
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+/* The division average, as one line crossing every row in its list. Both lists
+   share a scale, so the two marks land close together and a row can be read
+   against either: past the line on goals scored, or short of it on goals
+   conceded, is a club doing better than its division. */
+.dr-average {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--ink-soft);
+}
+
+.dr-key {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: var(--s2) 0 0;
+  font-size: var(--t-micro);
+}
+
+.dr-key-mark {
+  width: 1px;
+  height: 0.9rem;
+  background: var(--ink-soft);
+  flex: none;
+}
+
+/* Who isn't in either list and why, and when the figures were last typed in.
+   A club that has played no games has no rate, and a list one club short with
+   nothing said about it reads as a bug. */
+.dr-foot {
+  display: grid;
+  gap: var(--s1);
+}
+
+.dr-note {
+  margin: 0;
+  font-size: var(--t-micro);
+}
+
+/* The same gold as the ranked row, in the data table behind Show data. */
+table.data tbody tr.dr-us { background: color-mix(in srgb, var(--gold) 12%, transparent); }

@@ -257,13 +257,19 @@ const NEXT_SEASON = [
 
 const DIVISION = 'Arthurian League Division 5';
 
+// Old Stoics have two games in hand, which is what a March table looks like
+// and is the state a square one can't produce: they have scored fewer goals
+// than Old King's Scholars and score more of them a game, so any figure taken
+// per game has to rank them the other way round from the raw totals. Phase 63
+// ranks the division on exactly that, and a division where every club is on
+// the same number of games would never have caught a wrong divisor.
 const RIVALS = [
   // name, position, played, won, drawn, lost, for, against
   ['Old Cheltonians', 1, 12, 10, 1, 1, 44, 15],
   ['Old Worthians', 2, 12, 8, 2, 2, 38, 21],
   ['Old Oundelians', 3, 12, 7, 2, 3, 31, 22],
   ["Old King's Scholars", 4, 12, 5, 3, 4, 26, 25],
-  ['Old Stoics', 6, 12, 3, 2, 7, 22, 34],
+  ['Old Stoics', 6, 10, 3, 2, 5, 22, 34],
   ['Old Salopians', 7, 12, 1, 3, 8, 17, 40],
 ];
 

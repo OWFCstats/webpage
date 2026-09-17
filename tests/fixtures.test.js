@@ -69,6 +69,22 @@ for (const [name, dataset] of Object.entries(DATASETS)) {
     assert.ok(matches.filter(isCleanSheet).length >= 1);
   });
 
+  // Every club on the same number of games is a state a real March table is
+  // rarely in, and it is the one state that hides a wrong divisor: with a
+  // square division, ranking on totals and ranking per game give the same
+  // answer. Old Stoics have two games in hand and fewer goals than Old King's
+  // Scholars, so the two orders disagree — which is what Season → Stats'
+  // division card is measured against (ROADMAP → Phase 63).
+  test(`${name}: the division is not square, and per game disagrees with the total`, () => {
+    const season = leagueRows[0].season;
+    const table = leagueRows.filter((r) => r.season === season);
+    assert.ok(new Set(table.map((r) => r.played)).size > 1, 'every club is on the same games');
+    const byTotal = [...table].sort((a, b) => b.goals_for - a.goals_for);
+    const byRate = [...table].sort((a, b) => b.goals_for / b.played - a.goals_for / a.played);
+    assert.notDeepEqual(byRate.map((r) => r.team_id), byTotal.map((r) => r.team_id));
+    for (const r of table) assert.equal(r.won + r.drawn + r.lost, r.played, 'W/D/L misses played');
+  });
+
   test(`${name}: holds a walkover with no team sheet`, () => {
     const walkover = matches.find((m) => m.walkover);
     assert.ok(walkover, 'no walkover');

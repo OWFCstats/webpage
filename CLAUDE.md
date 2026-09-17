@@ -341,10 +341,12 @@ Before adding a feature, check `docs/ROADMAP.md`. If it's not there and it's
 not small, it goes there first.
 
 **The redesign is the plan of record.** `docs/ROADMAP.md` → *The redesign* is
-phases 56 to 64, of which 56 to 61 have landed: the next match leads Home with a
+phases 56 to 64, of which 56 to 63 have landed: the next match leads Home with a
 countdown against it, the last result folds into a bar, Season's two
-chart-shaped sub-pages become one, and the league table earns a set of charts
-off data already stored. It was designed against a reference site and signed off
+chart-shaped sub-pages become one, and that one page earns the season's own
+per-game numbers and the division ranked on its attack and defence — both off
+data already stored. Phase 64, the last of them, is three charts and the series
+palette. It was designed against a reference site and signed off
 as a mock-up, and the mock-up is the specification. Two things it cannot do are
 written down there with it: `league_rows` holds totals and not results, and the
 `--series-*` tokens fail colour-blind separation at four series. A third — that

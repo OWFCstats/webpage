@@ -1622,6 +1622,46 @@ else on the site (*Chart series* above) and a result split is never themed.
 `ChartCard`'s optional `bodyClassName` exists for this one case, where a plot
 needs less than the fixed height a line chart's axis band wants.
 
+### A ranked list is not a plot
+
+Season → Stats holds one card that draws no chart: the division's attack and
+defence (`components/season/DivisionRatios.jsx`, Phase 63), where every club's
+goals for and goals against per game are ranked best first and each figure is
+drawn as a wash behind its own row. The rules above are about Recharts plots;
+four decisions belong to this shape instead.
+
+- **The figure goes behind the row, never in a column beside it.** A bar in its
+  own column costs the width a club name needs, and club names are what the
+  measurements at 375px keep catching (*Mobile*). Behind the row, a name has the
+  full width to wrap into and the figure still has a full-width scale to be read
+  against. "Old Merchant Taylors II" is the case that decides this, and it is a
+  real club in the division.
+- **Both lists share one scale; each carries its own average.** Scored and
+  conceded are the same unit, so one maximum lets the two be read against each
+  other. The averages are still worked out separately, because this table is
+  typed in by hand: a complete division's goals for and goals against are the
+  same pile of goals counted twice, and the committed fixture's are 209 against
+  193. A hairline crosses each list at its own figure — past it on goals scored,
+  short of it on goals conceded, is a club doing better than its division.
+- **A club that has played nothing is in neither list, and is named underneath.**
+  Not a zero: dividing by zero is either NaN or, treated as a score of none, a
+  club that hasn't kicked a ball topping the defence table. It stays out of the
+  averages as well, so every goal in a numerator has games behind it in the
+  denominator. It is not a hypothetical: one of the nine clubs in the 2026/27
+  division, Old Malvernians, had played nothing a fortnight into the season.
+- **The card says "League games only", because the card above it doesn't.**
+  `league_rows` counts league games and the per-game tiles count every match, so
+  the same club's scored-a-game figure differs between two adjacent cards — 2.58
+  against 2.4 on the fixture. Each says which it is, which is *A figure that
+  cannot differ is not a figure* read the other way round: two figures that
+  genuinely differ have to say why.
+
+The wash is `--verdigris` for a rival and `--gold` for us — the same "this row
+is us" the league table's own row takes, with the club name and figure in a
+heavier weight beside it so the row a reader is looking for isn't marked by hue
+alone. Neither is a chart series colour: these are two categories, not five, and
+the series order is for lines that label themselves.
+
 ## Motion
 
 Restrained. Motion marks a change the user caused, and nothing else.
@@ -1861,9 +1901,11 @@ brief covered cutting. The remaining 290px is `ROADMAP.md` → *Decisions* →
 Season → Stats stayed inside the budget through Phase 61's merge at 1,909px,
 then Phase 62 put it 1,476px over: six per-game tiles, a W/D/L donut, the most
 frequent scorelines and the winning and losing margins, four cards on top of
-the three the merge carried over. Phases 63 and 64 still have three more cards
-to add, so shrinking this page is not a decision to make until they land —
-`ROADMAP.md` → *Page budgets* tracks the number as it moves.
+the three the merge carried over. Phase 63's division card added 854px of that
+page — fourteen ranked rows, which is what ranking a division twice costs —
+for 4,546px. Phase 64 still has three charts to add, so shrinking this page is
+not a decision to make until they land; `ROADMAP.md` → *Page budgets* tracks
+the number as it moves.
 Home is 2,116px unpicked and 2,264px with a name picked: Phase 19 took it from
 2,113px to 1,882px (the result leading, the next-fixture card collapsing to a
 row, a redundant form-chip strip coming off Recent form), Phase 23's badge,

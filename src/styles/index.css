@@ -25,6 +25,7 @@
 @import './components/season-ladder.css';
 @import './components/squad.css';
 @import './components/data-centre.css';
+@import './components/division-ratios.css';
 
 @import './pages/home.css';
 @import './pages/matchday.css';
