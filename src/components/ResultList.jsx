@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { VenueBadge } from './bits';
-import { formatDate } from '../lib/format';
+import { formatDate, formatKickoff, weekdayDayMonth } from '../lib/format';
 import { isPlayed, resultOf } from '../lib/matches';
 
 /**
@@ -17,6 +17,13 @@ import { isPlayed, resultOf } from '../lib/matches';
  * the fact is worth. `showOpponent` applies here too; `HeadToHead` turns it
  * off because it has already named the one opponent every chip is against.
  *
+ * `outlook` is the mock's richer row (Phase 69, `DESIGN.md` → *Match
+ * outlook*): date over competition on the left, a score chip with a W/D/L
+ * edge (or the kick-off time for a fixture), the opponent with the scorers
+ * or the ground as a second line (`m.note`, the caller's job to compute —
+ * `scorerLine` for a result, `venueTeam(m, teams)?.pitch_name` for a
+ * fixture), and H/A on the right.
+ *
  * A match carrying `tbc: true` is an empty slot rather than a fixture — a
  * plain "TBC" chip with no link, no pill and no venue, for a caller padding
  * a short list out to its usual length rather than losing the shape (Phase
@@ -28,8 +35,45 @@ export default function ResultList({
   showMeta = false,
   showOpponent = true,
   inline = false,
+  outlook = false,
 }) {
   if (matches.length === 0) return <div className="empty">{emptyText}</div>;
+  if (outlook) {
+    return (
+      <>
+        {matches.map((m) => {
+          if (m.tbc) {
+            return (
+              <div key={m.id} className="ol-row tbc">
+                <span className="ol-when"><b>&nbsp;</b>&nbsp;</span>
+                <span className="ol-score tbc">TBC</span>
+                <span className="ol-opp">Fixture TBC</span>
+                <span className="ol-venue">&nbsp;</span>
+              </div>
+            );
+          }
+          const played = isPlayed(m);
+          const result = played ? resultOf(m) : null;
+          return (
+            <Link key={m.id} to={`/matchday/${m.id}`} className="ol-row">
+              <span className="ol-when">
+                <b>{weekdayDayMonth(m.date)}</b>
+                {m.competition}
+              </span>
+              <span className={`ol-score${played ? ` ${result}` : ' next'}`}>
+                {played ? `${m.goals_for}–${m.goals_against}` : (formatKickoff(m.kickoff_time) || 'TBC')}
+              </span>
+              <span className="ol-opp">
+                {showOpponent && m.opponent}
+                {m.note && <small>{m.note}</small>}
+              </span>
+              <span className="ol-venue">{m.venue === 'H' || m.venue === 'A' ? m.venue : ''}</span>
+            </Link>
+          );
+        })}
+      </>
+    );
+  }
   if (inline) {
     return (
       <span className="result-inline">

@@ -219,35 +219,36 @@ green (216); Home's three budget rows fell rather than grew from dropping
 the old sheet-card chrome: 2,329px → 2,283px unpicked, 2,423px → 2,366px
 picked, 2,403px → 2,346px picked-with-no-apps.
 
-**Phase 69 — The outlook rows, the snapshot, and Season so far.**
-
-- **`ResultList` gains an `outlook` variant** — the mock's `.ol-row`, extending
-  the primitive rather than starting a component, as `DESIGN.md` → *Match
-  outlook* already asked: `grid-template-columns: 5.2rem 3.1rem 1fr auto`
-  (`4.4rem 2.8rem 1fr auto` below 520px); the date bold over the competition in
-  `--font-data`; the score as a chip on `--sheet` with a 3px W/D/L edge
-  (`.ol-score`), the kick-off in `--gold-deep` for a fixture, *TBC* faint for
-  an empty slot; the opponent at 600 with the scorers (a result) or the ground
-  (a fixture) as a small second line; H/A on the right. Group heads are
-  `.ol-head` — the label on a `--sheet` strip.
-- **`LeagueTable` gains a `compact` shape** for Home: `#` · Team · P · Pts, our
-  row washed gold with a 3px gold inset on its first cell; the *Form* column
-  arrives with Phase 73. The full ten-column table on Season is untouched. The
-  *entered by hand · updated* line moves under the table as `.muted`.
-- **`components/home/SeasonStats.jsx` becomes `SeasonSoFar.jsx`**: `.head`
-  *Season so far* with *13 played* muted; `.record` — Won / Drawn / Lost as
-  three cells, the figure in the display face at `--t-headline` in `--win` /
-  `--ink-soft` / `--loss`, a `.label` and the percentage under; then *For* /
-  *Against* bars in `--chart-1` / `--chart-2`. Played, clean sheets and win
-  rate come off — they are Stats' tiles.
-- The grid past 900px is `1.06fr 1fr` (the mock's), outlook spanning both rows.
-- **Files:** `components/ResultList.jsx`, `styles/components/result-list.css`,
-  `components/home/MatchOutlook.jsx`, `components/LeagueTable.jsx`,
-  `styles/components/league-table.css`, `components/home/SeasonSoFar.jsx`,
-  `pages/Home.jsx`, `styles/pages/home.css`.
-- **Done means** Home side by side at both widths *is* the mock, the form
-  column excepted; the three budget rows re-measured.
-- **Model:** Sonnet 5 · high.
+**Phase 69 — The outlook rows, the snapshot, and Season so far.** Done.
+`ResultList` gained an `outlook` variant — the mock's `.ol-row`: date bold
+over competition in `--font-data`, a score chip on `--sheet` with a 3px W/D/L
+edge (`.ol-score`), the kick-off in `--gold-deep` for a fixture, the opponent
+at 600 with the scorers (`scorerLine`, new in `lib/matches.js` — surnames
+only, "Simeon 2, Pugh, Wray") or the ground (`venueTeam(m,
+teams)?.pitch_name`) as a small second line, H/A on the right. The caller
+computes that line and hands it over as `m.note`, the same way `m.tbc` already
+worked for a padded empty slot — whose own placeholder text was cut from the
+mock's "Fixture to be confirmed" to "Fixture TBC", the first `text-clipped` at
+320–375px `check:layout` has caught since Phase 64 gave it the invariant.
+`MatchOutlook.jsx` keeps the group headers, now `.ol-head` on a `--sheet`
+strip. `LeagueTable` gained a `compact` shape for Home: `#` · Club · P · Pts,
+headed by the division's own name rather than the generic *League table*, our
+row washed gold with a 3px gold inset on its first cell (`.lt-compact tr.lt-us
+td:first-child`); the *Form* column waits on Phase 73, and the full
+ten-column table on Season is untouched. `components/home/SeasonStats.jsx`
+became `SeasonSoFar.jsx`: `.record` — Won / Drawn / Lost as three cells, the
+figure in the display face at `--t-headline` in `--win`/`--ink-soft`/`--loss`,
+a percentage under; then *For*/*Against* bars, corrected from a leftover
+`--verdigris-deep` to `--chart-1`/`--chart-2` per Phase 66's own ruling.
+Played, clean sheets and win rate came off with it — Stats' tiles now — and so
+did the card's link back to Season, which the mock doesn't carry. The grid
+past 900px (the mock's own breakpoint, not the club band's 860) is `1.06fr
+1fr`, outlook spanning both rows on `.g-outlook`/`.g-league`/`.g-season`.
+`npm test` green (219, three new: `surname`, `scorerLine` twice); `check:layout`
+green (40 known failures, nothing new). Home's three budget rows rose with the
+richer outlook row, net of what the shorter season card gave back: 2,283px →
+2,447px unpicked, 2,366px → 2,530px picked, 2,346px → 2,509px
+picked-with-no-apps.
 
 **Phase 70 — Stats, as drawn: the frame and the four small cards.**
 
@@ -575,7 +576,7 @@ Phase 52 (inside Phase 74) decides each.
 
 | Page | Now | Budget | Owner |
 | --- | --- | --- | --- |
-| Home — unpicked / a name picked / picked, no apps this season | 2,283 / 2,366 / 2,346 | 1,600 | **Phase 69**, then 52. Phases 67–68 landed lighter than what they replaced rather than heavier; the mock's outlook rows and league snapshot are still shorter than what shipped, so the number moves again before anything is cut. Three rows because they are three states of one page, and only the first is what a stranger sees |
+| Home — unpicked / a name picked / picked, no apps this season | 2,447 / 2,530 / 2,509 | 1,600 | **Phase 52**. Phases 67–68 landed lighter than what they replaced; Phase 69's richer outlook row cost more than the shorter season card gave back, so the number rose for the first time since Phase 19. Three rows because they are three states of one page, and only the first is what a stranger sees |
 | Matchday — latest | 2,456 | 2,300 | **Phase 52** — 156 over; head to head's tape, real content the old card didn't carry |
 | Matchday — clean sheet (12 named, a report, clamped / open) | 2,746 / 3,150 | 2,300 | **Phase 52** — 446 over clamped; the clamp bounds it, it doesn't fit it |
 | Matchday — walkover (no team sheet) | 1,533 | 2,300 | within |

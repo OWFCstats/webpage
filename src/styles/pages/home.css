@@ -425,9 +425,9 @@
 
 /* One column on a phone — the grid's own gap does the spacing
    .home-column > section would otherwise, since these three sit a level
-   deeper than that selector reaches. Past 860px, the same width the club
-   band switches at, the outlook spans both rows on the left and the other
-   two stack on the right. */
+   deeper than that selector reaches. Past 900px (the mock's own breakpoint,
+   not the club band's 860 — Draft D switches the two independently) the
+   outlook spans both rows on the left, 1.06fr against the right column's 1fr. */
 .home-grid {
   display: flex;
   flex-direction: column;
@@ -435,31 +435,53 @@
   margin-bottom: var(--s4);
 }
 
-@media (min-width: 860px) {
+@media (min-width: 900px) {
   .home-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-areas: 'outlook league' 'outlook season';
+    grid-template-columns: 1.06fr 1fr;
+    grid-template-rows: auto auto;
     gap: var(--s4);
   }
 
-  .home-outlook { grid-area: outlook; }
+  .home-grid .g-outlook { grid-column: 1; grid-row: 1 / span 2; }
+  .home-grid .g-league { grid-column: 2; grid-row: 1; }
+  .home-grid .g-season { grid-column: 2; grid-row: 2; }
 
-  .home-grid .home-table { grid-area: league; }
-
-  .home-grid .home-stats { grid-area: season; }
+  /* A flex column so the outlook's own body can stretch to fill whatever
+     height spanning two rows leaves it, the way the league table's and the
+     season card's shorter content don't need to. */
+  .home-grid > section { display: flex; flex-direction: column; }
+  .home-grid > section > .outlook,
+  .home-grid > section > .table-wrap { flex: 1; }
 }
 
 /* ---- match outlook ---- */
 
-/* Recent results and upcoming fixtures, each on ResultList's own compact
-   inline variant rather than a seventh scoreline shape (ROADMAP.md → Phase
-   59) — a short diary pads out with TBC chips instead of shrinking the
-   group, which is what keeps the card the same height whether the next
-   three fixtures are all in the book or none of them are yet. */
-.outlook-group + .outlook-group { margin-top: var(--s4); }
+/* Recent results and upcoming fixtures, each on ResultList's own `outlook`
+   row (Phase 69) rather than a seventh scoreline shape — a short diary pads
+   out with TBC chips instead of shrinking the group, which is what keeps the
+   card the same height whether the next three fixtures are all in the book
+   or none of them are yet. */
+.outlook { display: flex; flex-direction: column; }
 
-.outlook-group .label { margin-bottom: var(--s2); }
+.ol-group + .ol-group { margin-top: var(--s3); }
+
+/* The label on a --sheet strip, in place of the plain .label the two groups
+   (Recent results, Upcoming fixtures) took before — the row shape below is
+   ResultList's (styles/components/result-list.css); this is MatchOutlook's
+   own composition around it. */
+.ol-head {
+  font-family: var(--font-text);
+  font-size: var(--t-micro);
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  background: var(--sheet);
+  padding: 0.35rem 0.6rem;
+  border-radius: var(--r-sm);
+  margin-bottom: var(--s1);
+}
 
 /* ---- last game bar ---- */
 
@@ -598,9 +620,53 @@
    doesn't want a paragraph's margins. */
 .home-me-none { margin: 0; }
 
-/* ---- season stats widget ---- */
-.home-stats-body { display: flex; flex-direction: column; gap: var(--s4); }
+/* ---- season so far: the record ---- */
 
+/* Won, drawn, lost as three display-face figures — scoped under .home-stats
+   rather than left bare the way the mock has it, since a card this small
+   doesn't need three single-letter classes (.w/.d/.l) loose in the sheet. */
+.home-stats .record {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border: 1px solid var(--rule);
+  border-radius: var(--r);
+  overflow: hidden;
+}
+
+.home-stats .record > div {
+  padding: var(--s3) var(--s2);
+  text-align: center;
+  border-right: 1px solid var(--rule);
+  background: var(--sheet);
+}
+
+.home-stats .record > div:last-child { border-right: none; }
+
+.home-stats .record b {
+  display: block;
+  font-family: var(--font-display);
+  font-size: var(--t-headline);
+  font-weight: 600;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 0.25rem;
+}
+
+.home-stats .record .w b { color: var(--win); }
+.home-stats .record .d b { color: var(--ink-soft); }
+.home-stats .record .l b { color: var(--loss); }
+
+.home-stats .record small {
+  display: block;
+  font-family: var(--font-data);
+  font-size: var(--t-micro);
+  color: var(--ink-soft);
+  margin-top: 0.15rem;
+}
+
+.home-stats .home-bars { margin-top: var(--s4); }
+
+/* ---- shared home tiles / bars ---- */
 .home-stat-tiles {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -649,9 +715,13 @@
    frame read as one block appearing, one after the other reads as a count. */
 .home-bar-fill.ga { transition-delay: 60ms; }
 
-.home-bar-fill.gf { background: var(--gold); }
+/* The two pigments, not the season-card's own accent colour: DESIGN.md →
+   *Draft D is the specification* rules every bar, wash and split down to
+   --chart-1/--chart-2, and Phase 66 already moved everything else off the
+   five-series palette for exactly this reason. */
+.home-bar-fill.gf { background: var(--chart-1); }
 
-.home-bar-fill.ga { background: var(--verdigris-deep); }
+.home-bar-fill.ga { background: var(--chart-2); }
 
 .home-bar-value {
   width: 26px;
@@ -665,17 +735,6 @@
 
 @media (prefers-reduced-motion: reduce) {
   .home-bar-fill { transition: none; }
-}
-
-@media (min-width: 760px) {
-  .home-stats-body { flex-direction: row; align-items: center; gap: var(--s6); }
-
-  /* Scoped, because the tiles are a shared device now — Your season uses the
-     same three, and unscoped this handed its grid a 42% width in a column
-     where it means nothing. */
-  .home-stats-body .home-stat-tiles { flex: none; width: 42%; }
-
-  .home-bars { flex: 1; }
 }
 
 @media (max-width: 480px) {

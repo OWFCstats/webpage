@@ -101,3 +101,71 @@
 /* An empty slot, not a fixture — no pill, no link, just the word every other
    "no time yet" spot on the site already uses (NextFixture's kick-off). */
 .result-chip.tbc { color: var(--ink-soft); font-weight: 400; }
+
+/* Outlook variant (Phase 69, DESIGN.md → Draft D is the specification): the
+   mock's richer row — date over competition, a score chip with a W/D/L
+   edge, the opponent with its scorers or ground under, H/A on the right —
+   for Home's Match outlook card. MatchOutlook.jsx supplies the `.ol-head`
+   group labels this sits under (styles/pages/home.css); this file owns the
+   row itself, the way every other ResultList shape does. */
+.ol-row {
+  display: grid;
+  grid-template-columns: 5.2rem 3.1rem 1fr auto;
+  align-items: center;
+  gap: var(--s3);
+  padding: 0.5rem 0.6rem;
+  border-bottom: 1px solid var(--rule);
+  transition: background var(--dur-tint) ease;
+}
+
+.ol-group:last-child .ol-row:last-child { border-bottom: none; }
+
+@media (hover: hover) and (pointer: fine) {
+  .ol-row:hover { background: color-mix(in srgb, var(--gold) 7%, transparent); }
+}
+
+.ol-when { font-family: var(--font-data); font-size: var(--t-micro); color: var(--ink-soft); line-height: 1.3; }
+
+.ol-when b { display: block; color: var(--ink); font-size: var(--t-small); font-weight: 600; }
+
+.ol-score {
+  font-family: var(--font-data);
+  font-weight: 700;
+  font-size: var(--t-body);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  padding: 0.15rem 0;
+  border-radius: var(--r-sm);
+  background: var(--sheet);
+  position: relative;
+}
+
+/* The W/D/L edge — the row's own colour mark, in place of the pill every
+   other shape carries; a chip this narrow has no room for both. */
+.ol-score::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  border-radius: var(--r-sm) 0 0 var(--r-sm);
+}
+
+.ol-score.W::before { background: var(--win); }
+.ol-score.D::before { background: var(--draw); }
+.ol-score.L::before { background: var(--loss); }
+.ol-score.next { background: transparent; color: var(--gold-deep); }
+.ol-score.tbc { background: transparent; color: var(--ink-faint); font-weight: 600; }
+
+.ol-opp { font-weight: 600; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.ol-opp small { display: block; font-weight: 400; font-size: var(--t-micro); color: var(--ink-faint); }
+
+.ol-row.tbc .ol-opp { font-weight: 400; color: var(--ink-faint); }
+
+.ol-venue { font-family: var(--font-data); font-size: var(--t-micro); font-weight: 700; color: var(--ink-faint); }
+
+@media (max-width: 520px) {
+  .ol-row { grid-template-columns: 4.4rem 2.8rem 1fr auto; gap: var(--s2); padding: 0.5rem 0.3rem; }
+}

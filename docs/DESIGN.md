@@ -410,43 +410,54 @@ is true.
 
 ### Match outlook, and the grid below the band
 
-> **Phase 69.** Built, and not to the mock. The paragraph below that trades the
-> mock's rows for inline chips — "the mock-up is a picture and this file is the
-> contract" — is the reading `ROADMAP.md` → *The redesign — what went wrong*
-> retires; the rows are built as `ResultList`'s `outlook` variant, which is the
-> extension the last paragraph here already asks for. The Phase 60 ruling at the
-> foot is reversed by Phase 73: the form column is typed in, not derived.
+Phase 59 put the grid below *Your season*: past 900px — the mock's own
+breakpoint, not the club band's 860 (Draft D switches the two independently,
+`.g-outlook`/`.g-league`/`.g-season` the grid-area hooks) — a two-column grid
+puts *Match outlook* on the left, spanning the full height of the league
+snapshot and *Season so far* stacked on the right, 1.06fr against the right
+column's 1fr. Below 900px all three stack in that same order, one column.
 
-Phase 59. Below *Your season*, Home stops being one column of stacked sheets:
-past 860px — the same width the club band itself switches at — a two-column
-grid puts *Match outlook* on the left, spanning the full height of *Division
-5* (the league snapshot) and *Season so far* stacked on the right. Below
-860px all three stack in that same order, one column.
+**The outlook is rows, not chips (Phase 69).** `ResultList` gained an
+`outlook` variant — the mock's `.ol-row`: date over competition on the left in
+`--font-data`, a score chip with a 3px W/D/L edge (or the kick-off time, in
+`--gold-deep`, for a fixture), the opponent at 600 weight with a small second
+line under it — the scorers for a result, surnames only ("Simeon 2, Pugh,
+Wray", from `scorerLine`), the ground for a fixture (`venueTeam(m,
+teams)?.pitch_name`) — and H/A on the right. The caller computes that second
+line and hands it over as `m.note`; `ResultList` only renders what it's given,
+the same way `m.tbc` already worked for a padded empty slot. The last three
+results and the next three fixtures each run through it inside their own
+`.ol-group`, headed by `.ol-head` — a label on a `--sheet` strip, in place of
+the plain `.label` the two groups took under the chips this replaces. **A
+short diary still pads out with `TBC` chips instead of shrinking the group**,
+so the card is the same height whether the next three fixtures are all in the
+book or the season has none left to show.
 
-*Match outlook* replaces *Recent form* and carries what it did plus the
-diary ahead of it: the last three results and the next three fixtures, each
-group on `ResultList`'s own compact **inline** variant — `showOpponent` now
-reaches that variant too, off by default only where a caller (`HeadToHead`)
-has already named the one opponent every chip is against — rather than a
-seventh scoreline shape. **A short diary pads out with `TBC` chips instead of
-shrinking the group**: three chips either side, always, so the card is the
-same height whether the next three fixtures are all in the book or the
-season has none left to show.
+This replaces the compact **inline** chips Phase 59 shipped instead of the
+mock's own row — a trade its own entry defended as "the mock-up is a picture
+and this file is the contract" (`ROADMAP.md` → *The redesign — what went
+wrong* is the record of what that reading cost across the whole redesign, and
+the retired sentence itself). The row above is what the old paragraph here
+already asked a future phase to build: an extension of `ResultList` rather
+than a seventh scoreline shape.
 
-Draft D draws this card richer than that — a date and competition on the
-left of each row, a coloured-edge score chip, the scorers or the ground as a
-second line. `ROADMAP.md`'s own Phase 59 entry, written with that picture
-already in hand, chose to reuse the existing primitive over drawing a new
-row shape for it — "the mock-up is a picture and this file is the contract"
-(`CLAUDE.md` → *The redesign*) is written for exactly this kind of gap, where
-what the picture shows and what stays inside the system disagree. The
-simpler card is the trade this phase made; a future phase reaching for the
-richer row should extend `ResultList` itself rather than starting a new
-component, the same way `showOpponent` and the `TBC` chip did here.
+**The league snapshot is four columns, headed by the division.** `LeagueTable`
+gained a `compact` shape for Home: `#` · Club · P · Pts, headed by the
+division's own name (*Division 5*) rather than the generic *League table* the
+full standings keep, with *Full table →* on the right. Our own row washes gold
+with a 3px gold inset on its first cell (`.lt-compact tr.lt-us
+td:first-child`) rather than the hover-only tick every other `table.data` row
+carries — the wash alone doesn't read as "us" at four columns wide. The form
+column the mock draws waits on Phase 73, which types it in; the full
+ten-column table on Season is untouched by any of this.
 
-The league snapshot and season stats cards are unchanged by this phase —
-only where they sit moved, onto the grid's right column — so any future
-numbers on *Season so far* still land on the components as they already are.
+**Season so far is the record.** `SeasonStats` becomes `SeasonSoFar`: won,
+drawn and lost as three display-face figures coloured by result
+(`--win`/`--ink-soft`/`--loss`) with a percentage under each, then *For* /
+*Against* as the same bars the old card drew. Played, clean sheets and win
+rate come off — they're Stats' own tiles now (Phase 70), not this card's job
+— and so does the *Full season →* link the old card carried: the mock gives
+this one no way back to Season beyond the nav.
 
 **Phase 60 — no form column on the league table.** The mock-up draws five
 coloured chips on every row of the league snapshot; `ROADMAP.md`'s own finding
@@ -456,11 +467,12 @@ the chips. Filling that one row and leaving the rest blank would be honest but
 would read as broken data, and the chips already exist: the form card
 (Phase 58) is the one place the site draws them, against our own position over
 our own last five results. The league table stays what it has always shown —
-position, W/D/L, GF/GA, GD, Pts, on both the snapshot and the full standings —
-and doesn't grow a column it can only ever fill for one row. This holds
-however much of the division's data ever gets typed in: the constraint is what
-`league_rows` stores per club (aggregate totals), not what's missing from it
-yet.
+position and points on the snapshot, the full ten columns on Season — and
+doesn't grow a column it can only ever fill for one row. **Reversed by Phase
+73**, which types the form in for every other club rather than deriving it —
+the constraint above was about what `league_rows` stored, not a rule about the
+column, and typing in the missing fact is the same move Phase 56 already made
+for `venue`.
 
 ### A result is a row, not a sentence
 

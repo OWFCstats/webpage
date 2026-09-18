@@ -24,6 +24,14 @@ table.data.league-table tr.lt-us td.lt-pos { color: var(--gold-deep); }
   table.data.league-table tr.lt-us:hover { background: color-mix(in srgb, var(--gold) 18%, transparent); }
 }
 
+/* The snapshot's own mark for our row (Phase 69, DESIGN.md → Draft D is the
+   specification): a 3px gold inset on the first cell, in place of the
+   hover-only tick every other table.data carries — the wash alone reads as
+   "highlighted", not "us", at four columns wide. */
+table.data.league-table.lt-compact tr.lt-us td:first-child {
+  box-shadow: inset 3px 0 0 var(--gold);
+}
+
 /* The standings are typed in by hand, so when they were last touched is part
    of reading them. */
 .lt-updated { margin: var(--s3) 0 0; font-size: var(--t-small); }
@@ -41,36 +49,39 @@ table.data.league-table tr.lt-us td.lt-pos { color: var(--gold-deep); }
    Measured rather than eyeballed — at 375px the table needs 309px of the 341px
    this leaves it, so the club names wrap less than they did before.
 
-   Two classes deep on purpose: .home-widget sets the padding this undoes, and
-   it lives in a later layer. */
+   Scoped to the full ten-column shape only (`:not(.g-league)`, the compact
+   snapshot's own grid-area hook) — the mock's four-column snapshot never
+   needed the room this buys and keeps its sheet padding like every other
+   card. Two classes deep on purpose otherwise: .home-widget sets the padding
+   this undoes, and it lives in a later layer. */
 @media (max-width: 480px) {
-  .home-widget.home-table {
+  .home-widget.home-table:not(.g-league) {
     padding-left: 0;
     padding-right: 0;
   }
 
-  .home-table > .head,
-  .home-table > .lt-updated,
-  .home-table > .lt-placeholder {
+  .home-table:not(.g-league) > .head,
+  .home-table:not(.g-league) > .lt-updated,
+  .home-table:not(.g-league) > .lt-placeholder {
     padding-left: var(--s4);
     padding-right: var(--s4);
   }
 
-  table.data.league-table th,
-  table.data.league-table td { padding: 0.5rem 0.25rem; }
+  table.data.league-table:not(.lt-compact) th,
+  table.data.league-table:not(.lt-compact) td { padding: 0.5rem 0.25rem; }
 
   /* The row rules still run edge to edge — it's an engraved line across the
   sheet, not a box — so the breathing room at the two ends goes on the end
   cells rather than on the table. */
-  table.data.league-table th:first-child,
-  table.data.league-table td:first-child { padding-left: var(--s2); }
+  table.data.league-table:not(.lt-compact) th:first-child,
+  table.data.league-table:not(.lt-compact) td:first-child { padding-left: var(--s2); }
 
-  table.data.league-table th:last-child,
-  table.data.league-table td:last-child { padding-right: var(--s2); }
+  table.data.league-table:not(.lt-compact) th:last-child,
+  table.data.league-table:not(.lt-compact) td:last-child { padding-right: var(--s2); }
 
   /* The club name is what forces the table wider than the columns need —
   letting it wrap is what buys the last of the room. */
-  .league-table td.lt-club { white-space: normal; max-width: 34vw; }
+  .league-table:not(.lt-compact) td.lt-club { white-space: normal; max-width: 34vw; }
 }
 
 /* Below 360px even the full width isn't enough: the ten columns need 303px and

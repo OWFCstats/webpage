@@ -4,8 +4,8 @@ import ResultList from '../ResultList';
 const SLOTS = 3;
 
 /** Pads a list out to `n` entries with `tbc` placeholders, so a short diary
- *  still fills the row `ResultList`'s inline variant keeps to (Phase 59's
- *  own "Done means"). */
+ *  still fills the row count `ResultList`'s outlook variant keeps to (Phase
+ *  59's own "Done means", carried forward by Phase 69's richer row). */
 function padded(list, n) {
   if (list.length >= n) return list;
   return [
@@ -17,24 +17,27 @@ function padded(list, n) {
 /**
  * Recent results and upcoming fixtures as one card, replacing `RecentForm`:
  * the last three and the next three, each group on `ResultList`'s own
- * compact inline variant rather than a seventh scoreline shape. A short
+ * `outlook` row (Phase 69) rather than a seventh scoreline shape. A short
  * diary — end of season, or before the fixtures are in — pads out with
- * `TBC` chips instead of shrinking the card.
+ * `TBC` chips instead of shrinking the card, so it's the same height whether
+ * the next three fixtures are all in the book or the season has none left.
  */
 export default function MatchOutlook({ recent, upcoming }) {
   return (
-    <section className="sheet home-widget home-outlook">
+    <section className="sheet home-widget home-outlook g-outlook">
       <div className="head">
         <h2>Match outlook</h2>
         <Link className="more" to="/matchday">All matches →</Link>
       </div>
-      <div className="outlook-group">
-        <span className="label">Recent results</span>
-        <ResultList matches={padded(recent, SLOTS)} inline />
-      </div>
-      <div className="outlook-group">
-        <span className="label">Upcoming fixtures</span>
-        <ResultList matches={padded(upcoming, SLOTS)} inline />
+      <div className="outlook">
+        <div className="ol-group">
+          <div className="ol-head">Recent results</div>
+          <ResultList matches={padded(recent, SLOTS)} outlook />
+        </div>
+        <div className="ol-group">
+          <div className="ol-head">Upcoming fixtures</div>
+          <ResultList matches={padded(upcoming, SLOTS)} outlook />
+        </div>
       </div>
     </section>
   );

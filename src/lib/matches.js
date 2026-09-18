@@ -3,6 +3,13 @@
 // with zero conceded gets one (positions are fluid at this level, so no
 // GK/DEF gating).
 
+// The explicit extension matters here in a way it doesn't for this module's
+// sibling imports: fixtures/datasets.js imports this file directly under
+// plain Node (no bundler, no extensionless-import loader) for scripts/
+// check-layout.mjs and scripts/shots.mjs, so an extensionless import from
+// here would break both.
+import { surname } from './format.js';
+
 export function isPlayed(match) {
   return match.goals_for != null && match.goals_against != null;
 }
@@ -300,6 +307,22 @@ export function isCleanSheet(match) {
 /** Most recent completed match, or null. */
 export function latestResult(matches) {
   return playedMatches(matches)[0] ?? null;
+}
+
+/** Who scored in one match, most goals first, as a scoresheet reads it —
+ *  "Simeon 2, Pugh, Wray" — for the outlook row's second line under a
+ *  result. Null for a game with no goals recorded, including 0–0. */
+export function scorerLine(match, players, appearances) {
+  const playerById = new Map(players.map((p) => [p.id, p]));
+  const scorers = appearances
+    .filter((a) => a.match_id === match.id && !a.dropout && a.goals > 0)
+    .map((a) => ({ player: playerById.get(a.player_id), goals: a.goals }))
+    .filter((a) => a.player)
+    .sort((a, b) => b.goals - a.goals || a.player.name.localeCompare(b.player.name));
+  if (scorers.length === 0) return null;
+  return scorers
+    .map((s) => `${surname(s.player.name)}${s.goals > 1 ? ` ${s.goals}` : ''}`)
+    .join(', ');
 }
 
 /** "(H)" / "(A)" / "(N)" for display; empty when the venue wasn't recorded —

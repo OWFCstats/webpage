@@ -4,7 +4,7 @@
 
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { clampReport, countdownParts } from '../src/lib/format.js';
+import { clampReport, countdownParts, surname } from '../src/lib/format.js';
 
 test('a short report renders whole, with nothing behind the clamp', () => {
   const text = 'A tidy two-line write-up of a routine afternoon.';
@@ -38,6 +38,12 @@ test('a long single paragraph is cut at a word boundary, not mid-word', () => {
   assert.ok(!shown.endsWith(' '));
   // The two halves rejoin word-for-word — nothing was lost or duplicated.
   assert.equal(`${shown} ${rest[0]}`, text);
+});
+
+test('surname is the last word, and a one-word name comes back whole', () => {
+  assert.equal(surname('Tom Simeon'), 'Simeon');
+  assert.equal(surname('Alberto'), 'Alberto');
+  assert.equal(surname('  Padded   Name  '), 'Name');
 });
 
 test('countdownParts splits the gap to kick-off into days, hours and minutes', () => {
