@@ -19,7 +19,7 @@ export default function LastGameBar({ match, ctx }) {
   const result = match ? resultOf(match) : null;
   return (
     <section className="sheet home-widget last-game-bar">
-      <div className="home-widget-head">
+      <div className="head">
         <div><span className="label">Last time out</span></div>
         {match && <span className="home-widget-note">{formatDate(match.date)}</span>}
       </div>

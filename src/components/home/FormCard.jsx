@@ -14,7 +14,7 @@ import { ordinal } from '../../lib/format';
 export default function FormCard({ position, of, form }) {
   return (
     <div className="sheet club-plate form-card">
-      <span className="block burnt">League position</span>
+      <span className="block gold">League position</span>
       <div className="form-position">
         <span className="form-position-value">{position != null ? ordinal(position) : '—'}</span>
         {of ? <span className="form-position-of">of {of}</span> : null}

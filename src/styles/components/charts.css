@@ -13,17 +13,16 @@
   padding: var(--s5);
 }
 
-.chart-head {
-  display: flex;
+/* .head's shared shape (primitives.css), with the extra room a chart card's
+   subtitle and its own "Show data" toggle need over a plain heading + link. */
+.chart-card .head {
   align-items: flex-start;
-  justify-content: space-between;
-  gap: 1rem;
   margin-bottom: 0.9rem;
 }
 
-.chart-head button { white-space: nowrap; }
+.chart-card .head button { white-space: nowrap; }
 
-.chart-head h2 {
+.chart-card .head h2 {
   margin-bottom: 0.15rem;
 }
 
@@ -99,7 +98,7 @@
 @media (max-width: 700px) {
   .chart-card { padding: var(--s4) var(--s3); }
 
-  .chart-head {
+  .chart-card .head {
     flex-direction: column;
     align-items: stretch;
     gap: 0.5rem;
@@ -107,7 +106,7 @@
     padding: 0 0.3rem;
   }
 
-  .chart-head button { align-self: flex-start; }
+  .chart-card .head button { align-self: flex-start; }
 
   .chart-body { height: 300px; }
 }

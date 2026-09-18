@@ -70,7 +70,7 @@ export default function PlayerCareerChart({ arc, career }) {
 
   return (
     <section className="sheet chart-card">
-      <div className="chart-head">
+      <div className="head">
         <div>
           <h2>Career arc</h2>
           {finding && <p className="muted chart-sub">{finding}</p>}

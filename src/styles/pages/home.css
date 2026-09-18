@@ -23,16 +23,6 @@
    boxes rather than one dashboard. */
 .home-widget { padding: var(--s4); }
 
-.home-widget-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--s3);
-  margin-bottom: var(--s3);
-}
-
-.home-widget-head h2 { font-size: var(--t-subtitle); margin: 0; }
-
 /* Not nowrap: the note carries a date on most widgets but a whole division
    name on the standings, and an admin can type one of any length. Wrapping is
    what keeps the longest of them inside a 320px viewport. */
@@ -44,17 +34,6 @@
   align-items: flex-end;
   gap: var(--s1);
   min-width: 0;
-}
-
-.home-widget .more {
-  font-size: var(--t-small);
-  font-weight: 600;
-  color: var(--gold-deep);
-  white-space: nowrap;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .home-widget .more:hover { text-decoration: underline; }
 }
 
 /* ---- the club band ---- */
@@ -386,16 +365,16 @@
 
 /* Three states and never two at once — the question, the picker, or the
    figures — so the section lays them out in a column and lets each one be as
-   tall as it is. Gap rather than margins: .home-widget-head brings its own
-   bottom margin and a <p> brings two, and reconciling those was three rules
-   where this is one. */
+   tall as it is. Gap rather than margins: .head brings its own bottom margin
+   and a <p> brings two, and reconciling those was three rules where this is
+   one. */
 .home-me {
   display: flex;
   flex-direction: column;
   gap: var(--s3);
 }
 
-.home-me .home-widget-head { margin-bottom: 0; }
+.home-me .head { margin-bottom: 0; }
 
 .home-me.asking { padding: var(--s2) var(--s4); }
 
@@ -404,13 +383,13 @@
    holds a name and a control four characters wide, and stacking it spent a
    whole row of a page already over its budget on the button nobody came to
    press. */
-.home-me .home-widget-head {
+.home-me .head {
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
 }
 
-.home-me .home-widget-head button { flex: none; }
+.home-me .head button { flex: none; }
 
 .home-me h2 a { color: var(--ink); }
 
@@ -465,36 +444,6 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: var(--s2);
-}
-
-/* Inset rather than a sheet: these sit inside a surface, and --sheet is the
-   recessed ground. A nested sheet inside a sheet would be the box-in-a-box the
-   design system rules out. */
-.home-stat-tile {
-  background: var(--sheet);
-  border: 1px solid var(--rule);
-  border-radius: var(--r);
-  padding: var(--s2);
-  text-align: center;
-  transition: border-color var(--dur-tint) ease;
-}
-
-/* The tile's edge firms up under the pointer. It does not lift and it does
-   not grow: a stat tile is printed on the page, and three of them side by
-   side rising in turn would be the only thing on Home with a z-axis. */
-@media (hover: hover) and (pointer: fine) {
-  .home-stat-tile:hover { border-color: var(--gold-deep); }
-}
-
-.home-stat-tile b {
-  display: block;
-  font-family: var(--font-data);
-  font-size: var(--t-subtitle);
-  font-weight: 700;
-  line-height: 1;
-  color: var(--ink);
-  font-variant-numeric: tabular-nums;
-  margin-bottom: 0.3rem;
 }
 
 .home-bars { display: flex; flex-direction: column; gap: var(--s2); }
@@ -572,7 +521,7 @@
   /* Two columns fighting over 250px left the heading wrapping mid-phrase and
   the note wrapping beside it. Stacked, the heading gets the row it needs and
   the note and the link share the one beneath. */
-  .home-widget-head { flex-direction: column; align-items: stretch; gap: var(--s1); }
+  .head { flex-direction: column; align-items: stretch; gap: var(--s1); }
 
   .home-widget-head-right {
     flex-direction: row;

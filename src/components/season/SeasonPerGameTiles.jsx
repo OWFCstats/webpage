@@ -20,7 +20,7 @@ export default function SeasonPerGameTiles({ season, matches, appearances }) {
 
   return (
     <section className="sheet chart-card">
-      <div className="chart-head">
+      <div className="head">
         <div>
           <h2>The season's own numbers</h2>
           {stats.played > 0 && (
@@ -34,12 +34,12 @@ export default function SeasonPerGameTiles({ season, matches, appearances }) {
         <div className="empty">Not enough data yet — this fills in as matches are recorded.</div>
       ) : (
         <div className="grid cols-3">
-          <StatTile plain value={stats.played} label="Played" />
-          <StatTile plain value={round1(stats.scoredPerGame)} label="Scored a game" />
-          <StatTile plain value={round1(stats.concededPerGame)} label="Conceded a game" />
-          <StatTile plain value={stats.bothScored} label="Both teams scored" />
-          <StatTile plain value={stats.cleanSheets} label="Clean sheets" />
-          <StatTile plain value={used} label="Players used" />
+          <StatTile value={stats.played} label="Played" />
+          <StatTile value={round1(stats.scoredPerGame)} label="Scored a game" />
+          <StatTile value={round1(stats.concededPerGame)} label="Conceded a game" />
+          <StatTile value={stats.bothScored} label="Both teams scored" />
+          <StatTile value={stats.cleanSheets} label="Clean sheets" />
+          <StatTile value={used} label="Players used" />
         </div>
       )}
     </section>

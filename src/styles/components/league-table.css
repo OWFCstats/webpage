@@ -49,7 +49,7 @@ table.data.league-table tr.lt-us td.lt-pos { color: var(--gold-deep); }
     padding-right: 0;
   }
 
-  .home-table > .home-widget-head,
+  .home-table > .head,
   .home-table > .lt-updated,
   .home-table > .lt-placeholder {
     padding-left: var(--s4);

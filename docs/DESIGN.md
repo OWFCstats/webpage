@@ -772,11 +772,12 @@ engraved marks; every word beside a badge is `--ink` or `--ink-soft`.
 
 ### Chart series
 
-> **Phases 66 and 72.** The palette below is right and governs *lines that label
+> **Phase 72.** The palette below is right and governs *lines that label
 > themselves* — one chart. It was applied to every bar, dot and wash on Stats,
-> which is how appearances came to be drawn in `#4a3a18`. Phase 66 adds
-> `--chart-1` (gold) and `--chart-2` (racing green) for those; Phase 72 tests the
-> mock's burnt against `--series-4`. See *Draft D is the specification*.
+> which is how appearances came to be drawn in `#4a3a18`. Phase 66 gave a bar, a
+> wash or a split its own two-token palette instead (below), so it never reaches
+> for these five again; Phase 72 tests the mock's burnt against `--series-4`.
+> See *Draft D is the specification*.
 
 Fixed order, assigned in sequence, never cycled. **Three pigments at reading
 depth, then two of them again at half the lightness.**
@@ -791,6 +792,13 @@ The first three are three different hues, so a chart with three series or fewer
 — which is every chart on the site except the scoring race and *All seasons* —
 never repeats a pigment. Depth is what the fourth and fifth are for, and it is
 the fallback rather than the first answer.
+
+**A bar, a wash or a split never draws from the five above.** They aren't a line
+labelling itself, so the 4.5:1 contrast floor never applied to them, and reaching
+for a series colour anyway is how appearances came to be drawn in `#4a3a18` and
+the scorelines in teal. Their whole palette is two aliases, declared once in
+`tokens.css` rather than written down a second time: `--chart-1` (`var(--gold)`)
+and `--chart-2` (`var(--board-soft)`).
 
 **Five separable hues do not exist inside the constraints, which is why depth
 carries what hue can't.** A series colour has to clear 4.5:1 on paper so it can
@@ -913,11 +921,6 @@ beside it.
 | `--t-micro` | 0.75rem | Archivo 600 | Labels, and the smallest marks. The floor |
 
 ### The block
-
-> **Phase 66.** `.block.burnt` is on Home's two plates today, against the rule
-> under *Accents*; it comes off, and Home's block is gold. The label-over-heading
-> pairs on Home's cards — *Standings* / *League table*, *Overview* / *Season
-> stats* — are the eyebrow this section rules out, and go with `.head`.
 
 The school's brand device: bold uppercase on a solid field of colour. `.block`,
 in four variants — board, gold, verdigris, burnt.
@@ -1045,9 +1048,10 @@ be cards. `.season-card` and `.stat-cell` each hand-rolled the same ground,
 border and radius; both now carry `.sheet` and set only their own padding. The
 two that were still drawing their own box on the way to being deleted —
 `.honour` and `.ms` — are gone with the badge rebuild, so nothing paper-coloured
-in the site draws a surface by hand any more. `.home-stat-tile` is the one
-exception and it is permanent: it uses `--sheet`, the recessed ground, because
-it sits *inside* a surface.
+in the site draws a surface by hand any more. `.tile` is the one exception and
+it is permanent: it uses `--sheet`, the recessed ground, because it sits
+*inside* a surface. (Phase 66 promoted it from Home's own `.home-stat-tile` to
+a shared primitive — every stat strip on the site is one now.)
 
 ### Badge — a drawing
 

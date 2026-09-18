@@ -135,8 +135,6 @@
   .grid { gap: var(--s2); }
 
   .grid.cols-2, .grid.cols-3, .grid.cols-4 { grid-template-columns: repeat(2, 1fr); }
-
-  .stat-tile { padding: var(--s3) var(--s2); }
 }
 
 /* ---- the one label style ----
@@ -203,21 +201,59 @@ dl.compare dt {
 
 .block.burnt { background: var(--burnt); color: var(--board); }
 
-/* A tile is a sheet sized to one figure, so it keeps the surface and swaps
-   the padding for something square. */
-.stat-tile {
+/* A tile is a sheet nested inside a surface that's already a sheet, so it
+   takes the recessed --sheet ground rather than drawing a second .sheet
+   inside the first. Promoted from Home's own .home-stat-tile, which is what
+   every stat strip on the site now is — the mock's .tile. The edge firms up
+   gold on hover, the same idiom .squad-card and .badge-card use, because a
+   tile is printed on the page and doesn't otherwise move. */
+.tile {
+  background: var(--sheet);
+  border: 1px solid var(--rule);
+  border-radius: var(--r);
+  padding: var(--s3) var(--s2);
   text-align: center;
-  padding: var(--s5) var(--s3);
+  transition: border-color var(--dur-tint) ease;
 }
 
-.stat-tile .value {
-  font-family: var(--font-display);
-  font-size: var(--t-headline);
-  font-weight: 600;
-  letter-spacing: -0.015em;
+@media (hover: hover) and (pointer: fine) {
+  .tile:hover { border-color: var(--gold-deep); }
+}
+
+.tile b {
+  display: block;
+  font-family: var(--font-data);
+  font-size: var(--t-subtitle);
+  font-weight: 700;
+  line-height: 1;
   color: var(--ink);
-  line-height: 1.1;
   font-variant-numeric: tabular-nums;
+  margin-bottom: 0.3rem;
+}
+
+/* A card's own head: a heading and, on its right, a quiet link to more of
+   the same. Replaces .home-widget-head and .chart-head — one shape rather
+   than three near-identical ones. A .label above the h2 earns its place only
+   where it says something the heading doesn't (DESIGN.md → The block). */
+.head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s3);
+  margin-bottom: var(--s3);
+}
+
+.head h2 { font-size: var(--t-subtitle); margin: 0; }
+
+.head .more {
+  font-size: var(--t-small);
+  font-weight: 600;
+  color: var(--gold-deep);
+  white-space: nowrap;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .head .more:hover { text-decoration: underline; }
 }
 
 /* Sections are --s6 apart, --s5 on a phone. */

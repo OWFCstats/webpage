@@ -51,7 +51,7 @@ export default function YourSeason({ players, player, summary, onPick, onForget 
 
   return (
     <section className="sheet home-widget home-me">
-      <div className="home-widget-head">
+      <div className="head">
         <div>
           <span className="label">Your season</span>
           {/* The name is the heading and the heading is a link: the one place
@@ -64,15 +64,15 @@ export default function YourSeason({ players, player, summary, onPick, onForget 
 
       {summary.apps > 0 ? (
         <div className="home-stat-tiles">
-          <div className="home-stat-tile">
+          <div className="tile">
             <b>{summary.apps}</b>
             <em className="label">Apps</em>
           </div>
-          <div className="home-stat-tile">
+          <div className="tile">
             <b>{summary.goals}</b>
             <em className="label">Goals</em>
           </div>
-          <div className="home-stat-tile">
+          <div className="tile">
             <b>{summary.assists}</b>
             <em className="label">Assists</em>
           </div>
