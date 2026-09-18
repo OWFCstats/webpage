@@ -122,3 +122,87 @@ export function seasonPointsComparison(matches) {
   }
   return { seasons, points };
 }
+
+/**
+ * One dot a player: games played against goals + assists, for the scatter on
+ * Season → Stats. Players who share a spot are one dot with a `count`, because
+ * a squad bunches — six players on two games and one goal is one dot the size
+ * of six, not six dots drawn on top of each other and read as one.
+ *
+ * Players with no appearances are left out entirely rather than plotted at the
+ * origin: "played none" is not a point on a per-game chart, and a column of
+ * them at x=0 would be the biggest dot on it (the same divisor trap Phase 63
+ * names for a club that has played nothing).
+ *
+ * Returns { rows, points, reference, above, leader } — `rows` one per player
+ * for the data table, `points` the plotted dots, and `reference` how far the
+ * one-a-game diagonal can be drawn before it leaves the plot.
+ */
+export function contributionScatter(players, matches, appearances) {
+  const rows = playerTotals(players, matches, appearances)
+    .filter((r) => r.appearances > 0)
+    .map((r) => ({
+      id: r.player.id,
+      name: r.player.name,
+      appearances: r.appearances,
+      goals: r.goals,
+      assists: r.assists,
+      contributions: r.goalInvolvements,
+    }))
+    .sort((a, b) => b.contributions - a.contributions || b.appearances - a.appearances
+      || a.name.localeCompare(b.name));
+
+  const spots = new Map();
+  for (const row of rows) {
+    const key = `${row.appearances}:${row.contributions}`;
+    if (!spots.has(key)) {
+      spots.set(key, { key, appearances: row.appearances, contributions: row.contributions, count: 0, names: [] });
+    }
+    const spot = spots.get(key);
+    spot.count += 1;
+    spot.names.push(row.name);
+  }
+
+  const maxApps = Math.max(0, ...rows.map((r) => r.appearances));
+  const maxContributions = Math.max(0, ...rows.map((r) => r.contributions));
+  return {
+    rows,
+    points: [...spots.values()],
+    // The diagonal is y = x; past whichever axis runs out first it would be
+    // drawn outside the plot, so it stops there.
+    reference: Math.min(maxApps, maxContributions),
+    maxApps,
+    maxContributions,
+    above: rows.filter((r) => r.contributions >= r.appearances).length,
+    leader: rows[0] ?? null,
+  };
+}
+
+/**
+ * How many players played how many games: one bar per game count from 1 to the
+ * season's length, zeroes included so a gap in the middle of the squad is
+ * visible rather than closed up.
+ *
+ * `core` is how many played half the season or more — the figure this chart
+ * exists to give, since a club's problem is never the top of this distribution.
+ */
+export function appearanceSpread(players, matches, appearances) {
+  const played = playedMatches(matches).length;
+  const counts = playerTotals(players, matches, appearances)
+    .map((r) => r.appearances)
+    .filter((n) => n > 0);
+  const bars = [];
+  for (let games = 1; games <= played; games++) {
+    bars.push({ games, players: counts.filter((n) => n === games).length });
+  }
+  // Half a season rounded up: on fifteen games, eight is half of it, not seven.
+  const half = Math.ceil(played / 2);
+  return {
+    bars,
+    played,
+    used: counts.length,
+    half,
+    core: counts.filter((n) => n >= half).length,
+    most: Math.max(0, ...counts),
+  };
+}

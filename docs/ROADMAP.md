@@ -80,6 +80,7 @@ page-by-page review against the club's real 2025/26 season.
 | 61 | Charts becomes Stats | `/season/charts` is `/season/stats`, and Season is Season · Stats — one page for the numbers, which is where phases 62 to 64 add theirs rather than each earning a sub-page. The season filter gains *All seasons*, and the decision the phase was really for is what it means: **season against season, never the seasons added up**, since combining every season into one board is Records' and saying it twice is the trap the Players/Records split exists to avoid. So the mode is the "Points accumulated" chart with every line lit, labelled and in its own colour; the scoring race and the goals-per-match line don't draw there, because across every season they stop comparing and start totalling. Stats' alone, too — the Season sub-page is one season as a whole, so its tab drops the filter and an old `?season=all` link lands on the comparison. `SeasonCharts.jsx` split on the way across: one file per card, `SeasonStats.jsx` the stack of them, `ChartCard.jsx` and `chart-bits.jsx` the frame — 374 lines became six files, none over 141. Single-season Stats measures 1,909px, unchanged; *All seasons* 1,056px |
 | 62 | The season's own numbers | `SeasonPerGameTiles`, `ResultSplit`, `ScorelineFrequency` and `MatchMargins` join the Golden Boot race, points accumulated and goals trend on `/season/stats`: six per-game tiles (played, scored/conceded a game, both teams scored, clean sheets, players used), a W/D/L donut in `--win`/`--draw`/`--loss`, the most frequent scorelines and the winning/losing margins. `lib/matches.js` gained `perGameStats`, `playersUsedCount`, `scorelineFrequency`, `marginBuckets` and `extremeMargins`, every figure derived at load time with no new column. Single-season only, the same reasoning as the two carried-over charts: combined across every season these become a career board, and that's Records'. `ChartCard` gained an optional `bodyClassName` for the donut, which has no line end to label so its counts sit in a caption row under the plot instead. 1,909px became 3,676px, well past the 2,200 budget — reported, not asserted, and not this phase's to close |
 | 63 | The division, ranked | `divisionRatios` in `lib/league.js` and `components/season/DivisionRatios.jsx`: every club in the division ranked on goals for over played and goals against over played, best first, our row in gold, each list crossed by a hairline at the division average. Free — it reads the standings an admin already types in each week, and stores nothing. The whole risk was the divisor, and it is invisible when wrong: a club that has played nothing has no rate rather than a rate of zero (which would top the defence table), it is outside the averages as well as the ranking and is named underneath, and the average is the ratio of the totals rather than the mean of the ratios, because a table with clubs on different numbers of games is not a table you can take a flat mean of. The fixture division was square — every club on twelve — which is the one shape that hides all of that, so Old Stoics have two games in hand there now and rank above a club that has scored more goals; `tests/fixtures.test.js` asserts the division stays uneven. Not a Recharts plot: a ranked list with each figure washed behind its own row, which is what leaves a club name the full width of a phone (`DESIGN.md` → *A ranked list is not a plot*). It says "League games only", because the per-game tiles directly above it count friendlies and cup ties in the same figure. 3,676px became 4,546px |
+| 64 | The charts, and the series palette | `GamesAgainstContributions` and `AppearanceSpread` join the Golden Boot race under the division table, the three player cards together because that group is why a player opens the page: a scatter of games against goals + assists, one dot a *spot* sized by area rather than one a player — twenty of the forty-eight played a single game and fifteen of those scored nothing, which is one point carrying the largest fact on the plot — with a dashed one-a-game diagonal labelled on itself, and a distribution of who played how many, empty buckets drawn rather than closed up. `contributionScatter` and `appearanceSpread` in `lib/charts.js`, thirteen tests. **The palette was the phase.** The old five had been checked for contrast on the ground and never against each other: seven of the ten pairs were under the ΔE 15 floor and `--series-1` against `--series-3` measured **0.2 under deuteranopia** — the same colour, not a near miss — which is worse than the note recording the finding said, and its figures don't reproduce. Re-stepping found a limit rather than a fix: 4.5:1 on paper caps a series at L* 46, protanopia takes the red-green axis inside that band and tritanopia takes the blue-yellow one, so there are three usable hues and not five. The answer is **three pigments at reading depth and two of them again at half the lightness** — brass, verdigris, plum, then deep brass and deep plum — worst pair ΔE 18.1, and the first three are three hues so any chart with three series or fewer never repeats one. Measured, not judged: `scripts/colour.js` (CIEDE2000 + Viénot–Brettel–Mollon) and `tests/palette.test.js`, which holds the floors against `tokens.css` and the ΔE maths against the Sharma, Wu & Dalal reference pairs. `check:layout` gained a seventh invariant, `chart-text-below-floor`, so "drawn at a canvas that fits 375px" is asserted rather than claimed. 4,546px → 5,501px, reported not asserted — the page's shape is final now and the cut belongs to a phase that takes it deliberately |
 
 **The detail behind any closed phase is in its commit** — `git log --grep="Phase
 20"` finds it, because every phase commit names its phase in its own subject.
@@ -201,101 +202,49 @@ before — that is what keeps this file short.
    because words with no photo beat the nothing that is there now, and this is
    the only thing serving the community third of the vision.
 
-**The redesign below comes before all eight of these.** It is the one piece of
-work with an agreed design behind it rather than a paragraph, and four of its
-phases close budget rows that Phase 52 would otherwise have to argue from
-nothing.
+**The redesign is finished, so this list is now the whole of what to do next**
+— after anything the squad has actually hit, which still outranks all of it.
+**Phase 52 is the one to take first**, ahead of its place in the order above:
+the redesign closed no budget row and left Season → Stats 3,301px over with its
+shape final, which is the strongest case any page has ever made for cutting a
+section rather than moving a number.
 
 ---
 
-## The redesign — phase 64 (56–63 are done)
+## The redesign — done, 56 to 64
 
 Agreed against a reference site (the Northern Premier League's club pages) and
 signed off as a working mock-up: **Draft D**, two pages at two widths, real
-2025/26 figures throughout. The mock-up is the specification. Where this file
-and the mock-up disagree, the mock-up is a picture and this file is the contract.
+2025/26 figures throughout. Home opens on the next match with a countdown
+against it, the last result is a bar beneath, and Season's two chart-shaped
+sub-pages are one. It added no section, no stored column and — Phase 64 aside,
+which re-stepped five that already existed — no colour.
 
-**What the redesign is for.** Home currently opens with a result a reader has
-already seen and buries the fixture that decides whether they turn up. The
-redesign puts the next match at the top with a countdown against it, folds the
-result into a bar beneath, and turns Season's two chart-shaped sub-pages into one.
-It does not add a section, a colour, or a stored column.
+**Every ruling it established is in `DESIGN.md` now**, which is where the next
+session should look: *The club band, under the masthead*, *Match outlook, and
+the grid below the band*, *A ranked list is not a plot*, *Chart series* and
+*Charts*. The nine rows in *Done* above are the index, and
+`git log --grep="Phase 6"` finds the reasoning behind each one.
 
-**Three findings from the data model bind every phase below.** They were checked
-against `supabase/schema.sql` and the committed fixture, not assumed:
+**Two things it could not do, and one it got wrong**, kept because each one
+would otherwise be re-argued from scratch:
 
-1. ~~**`venue` is nullable and is null on all fourteen 2025/26 rows.**~~ **Closed
-   by Phase 56**, and it was half wrong when it was written: the fixture's venues
-   were null, but the live database's were not — they had been filled in from the
-   club's records some time before, and checking the fixture alone missed it. The
-   column is `not null` now, the club's real H/A is in the import SQL and so in
-   the fixture, and every write path requires one. Home and away is safe to build
-   on: the fixture card's team order, the H/A letter in any list, and the goals
-   split. **Check a claim about the data against `backups/` as well as the
-   fixture** — the fixture is a frozen parse and the backup is the club.
-2. **`league_rows` holds totals, not results.** Played, won, drawn, lost, goals
+1. **`league_rows` holds totals, not results.** Played, won, drawn, lost, goals
    for, goals against, per club per season. There is no way to derive another
-   club's last five, so a form column across the whole table is not buildable.
-   Phase 60 settled it: no column, ever — see `DESIGN.md` → *Match outlook, and
-   the grid below the band*.
-3. **The `--series-*` tokens fail colour-blind separation when four are used at
-   once.** `--series-2` against `--series-4` is ΔE 4.9 under protanopia and
-   `--series-2` against `--series-1` is 12.5 for normal vision, against a floor of
-   15. Phase 64 re-steps them. `DESIGN.md` → *Chart series* carries the finding.
-   Phase 61 added a second chart that reaches four: *All seasons* gives each
-   season its own series colour, so the club hits this in its fourth season
-   whether or not five players are scoring.
-
-**Reading the model column.** Effort is the reasoning-effort setting, not a
-separate model: `xhigh` is Claude Code's default for coding and the right setting
-for anything with a derivation or a route in it; `high` is the sweet spot for
-work whose shape is already decided and where the risk is typos rather than
-judgement; `medium` is for mechanical edits. Raise it, never lower it, if a phase
-turns out to be load-bearing. Sonnet 5 is named where the work is CSS and markup
-against a mock-up that already answers the design questions; Opus 5 where getting
-it wrong is silent (a derivation, a redirect, a schema change, a chart scale).
-
----
-
-**Phase 64 — The charts, and the series palette.** Three charts under the
-division table, added alongside what's already on the page: the golden boot
-race (cumulative goals by matchday, one line a player, direct labels at the
-line ends — the existing chart, now `components/season/GoldenBootRace.jsx`,
-kept as is, not redrawn), games against contributions (a scatter, dots sized by how many
-players share a spot, a dashed one-a-game reference, new), and the appearance
-distribution (how many players played how many games, new). "Points
-accumulated" and "Goals scored and conceded" reached this page in Phase 61 and
-are not this phase's to re-step past the palette pass below.
-Also re-step `--series-1` to `--series-5` per finding 3 and re-validate — every
-chart on the page, old and new. A chart is
-drawn once at a canvas that fits 375px and scales up, never a wide canvas scaled
-down: that was the bug in the mock-up's first cut, where a 700-unit canvas put
-its labels at 5px on a phone. No horizontal scroll, on the chart or the page.
-**Files:** `components/season/`, `styles/components/charts.css`, `tokens.css`,
-`lib/tokens.js`. **Done means** the palette passes a colour-blind separation check
-before it ships, every chart fits 375px with no sideways scroll, chart labels
-and the card's own headings are the same size as each other on a phone, and the
-page still carries all five charts (golden boot race, points accumulated, goals
-scored and conceded, games against contributions, appearance distribution) plus
-Phase 62's per-game tiles, results donut, scorelines and margins and Phase 63's
-division table — which draws no series colour and is not the palette's to
-re-step (`DESIGN.md` → *A ranked list is not a plot*).
-**Docs:**
-`DESIGN.md` → *Chart series* and *Charts*. **Model:** Opus 5 · xhigh — SVG
-geometry, a scale that has to be right, and a palette that has to be measured
-rather than judged.
-
----
-
-**One branch a phase, in this order.** 56 blocked 57, and 61 blocked 62 — Stats
-had to become the merged page before phases 62 to 64 could add cards to it. 57
-and 58 are one screen between them and should be reviewed together even though
-they land separately. 64 is the last of them, and its three charts go under the
-division table 63 put on the page.
-
-**Each phase condenses to one *Done* row in the commit that closes it**, per the
-rule at the top of this file, and writes its own ruling into `DESIGN.md` in the
-same commit as the code.
+   club's last five, so the mock-up's form column across the whole table is not
+   buildable and no phase should try again. Phase 60 settled it.
+2. **Five separable hues do not exist inside the constraints a series colour
+   has.** Phase 64 re-stepped the palette and found the limit rather than a
+   fix: dark enough to label its own line caps a colour at L\* 46, and between
+   what protanopia takes and what tritanopia takes there are three usable hue
+   regions in that band, not five. The palette is three pigments at two depths
+   because of it. `DESIGN.md` → *Chart series* has the numbers and the floors.
+3. **`venue` was said to be null on every 2025/26 row and it was not.** The
+   fixture's were; the live database's had been filled in from the club's
+   records all along, and checking the frozen parse alone made a closed question
+   look open. Phase 56 made the column `not null`. **A claim about the club's
+   data is checked against `backups/` as well as the fixture** — the fixture is
+   a parse, the backup is the club.
 
 ---
 
@@ -312,7 +261,7 @@ view. *Now* is `npm run shots` on the `mid-season` fixture at 375px.
 | Matchday — clean sheet (12 named, a report, clamped / open) | 2,746 / 3,150 | 2,300 | **Phase 52** — 446 over clamped; the clamp bounds it, it doesn't fit it. Same as above, untouched by 28 or 31 |
 | Matchday — walkover (no team sheet) | 1,533 | 2,300 | within |
 | Season | 2,494 | 2,200 | **Phase 52** — 290 over; Phase 29's `SeasonLadder` reuse took 734px back, see *Decisions* → *Open* |
-| Season → Stats | 4,546 | 2,200 | over since Phase 62 — 2,346 over; four new cards on top of the three Phase 61 carried over, and Phase 63's division table for 854 of it: fourteen ranked rows, two lists deep, which is what ranking a division at both ends costs. Phase 64 adds three charts before the shape is final, so this isn't a decision to make yet, and it predates Phase 52's brief |
+| Season → Stats | 5,501 | 2,200 | **Phase 52** — 3,301 over, and the worst row on the site. Ten cards: Phase 62's four on top of the three Phase 61 carried over, Phase 63's division table for 854 of it, and Phase 64's two new charts for 955. **The shape is final** — the redesign has nothing left to add here — so this row stops being a number to wait on and becomes a decision, and it is the clearest case on the site for cutting a section rather than moving a budget. It predated Phase 52's brief and belongs to it now |
 | Players → Leaderboards | 1,296 | 1,400 | met (14, 24) |
 | Records → badges / honours / all-time | 1,729 / 1,069 / 1,807 | 2,000 | met (16); badges +62 for the bigger trophies (32–34). Honours was 1,155 and is 1,069 because Phase 55 leaves the season being played with no winners under its four trophies — 1,626 on `pre-season`, which is the same page with two seasons on the shelf and both published, and the taller of the two states |
 | Player detail | 2,287 | 2,400 | met (21); +38 for the 40px shelf (33) and +8 for Phase 48's *This is me*, which used to cost 54 and now sits in the hero's top-right corner rather than a row of its own |

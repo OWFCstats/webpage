@@ -691,36 +691,80 @@ engraved marks; every word beside a badge is `--ink` or `--ink-soft`.
 
 ### Chart series
 
-Fixed order, assigned in sequence, never cycled. Ordered so the two warm darks
-aren't adjacent.
+Fixed order, assigned in sequence, never cycled. **Three pigments at reading
+depth, then two of them again at half the lightness.**
 
 ```
---series-1  #8c6716  brass      --series-2  #3f6b5c  verdigris
---series-3  #a2551a  burnt      --series-4  #2f6b46  green
---series-5  #4a3f7a  plum
+--series-1  #8c6716  brass        --series-2  #16796a  verdigris
+--series-3  #7361a8  plum         --series-4  #4a3a18  brass, deep
+--series-5  #423659  plum, deep
 ```
 
-All clear 4.5:1 on the ground, so a series colour can label its own line directly
-and skip the legend. Plum moved from `--series-4` to `--series-5`: it was
-carrying appearances, the club's most-looked-at stat, in a colour with no basis
-in anything. `lib/tokens.js` maps appearances to `--series-4` by name, so the
-swap needed no JS change — only the token underneath it moved.
+The first three are three different hues, so a chart with three series or fewer
+— which is every chart on the site except the scoring race and *All seasons* —
+never repeats a pigment. Depth is what the fourth and fifth are for, and it is
+the fallback rather than the first answer.
 
-**Contrast against the ground is not the same check as separation from each
-other, and these five pass the first and fail the second.** Measured on four at
-once: `--series-2` against `--series-4` is ΔE 4.9 under protanopia, and
-`--series-2` against `--series-1` is 12.5 for *normal* vision against a floor of
-15. Both greens read as one line to a red-green viewer, and the verdigris and the
-brass are hard to tell apart for everyone. The chroma on the two greens is also
-under the floor where a colour stops reading as a hue at all and starts reading
-as grey.
+**Five separable hues do not exist inside the constraints, which is why depth
+carries what hue can't.** A series colour has to clear 4.5:1 on paper so it can
+label its own line, and that caps it at L\* 46. Under protanopia and
+deuteranopia the red-green axis collapses, so within that band only yellow,
+green-teal and violet stay apart; under tritanopia the blue-yellow axis
+collapses instead, which is what takes green-teal and slate-blue down to ΔE 0.9.
+Between the two there are three usable hue regions, not five. The remaining
+dimension is lightness, and a fifth colour needs the bottom of it: measured,
+nothing above L\* 31 reaches the floor below, and L\* 27 is where a full set
+starts to fit.
 
-Three or fewer, chosen apart, is safe today. **Four is not**, so any chart that
-wants four series re-steps the palette and measures it rather than trusting this
-list, and `ROADMAP.md` → Phase 64 owns re-stepping the tokens themselves. The
-rule this establishes: a categorical palette is validated by measurement, never
-by eye, and a direct label on the line is what makes a marginal pair legal rather
-than an excuse for one.
+**Three floors, and a palette meets all three or it is not the palette.**
+
+| | floor | why |
+| --- | --- | --- |
+| Contrast on `--paper` | 4.5:1 | a direct end label on a line is text |
+| Chroma (C\*) | 20 | under about 15 a colour reads as a grey of some lightness, not as a hue |
+| Separation (ΔE2000) | 15 | two lines a reader cannot tell apart are one line |
+
+Separation is measured between **every pair**, under normal vision and under all
+three dichromacies — protanopia, deuteranopia and tritanopia. Tritanopia is by
+far the rarest and it is still required: dropping it was tried, it bought
+nothing the eye could see in the palette that came back, and a carve-out for the
+rare reader is the kind of thing this rule exists to stop. The worst pair in the
+set above is `--series-2` against `--series-3` at **ΔE 18.1** under tritanopia,
+three clear of the floor.
+
+**A categorical palette is validated by measurement, never by eye, and the
+measurement is a test** — `tests/palette.test.js`, over the values in
+`tokens.css`, with the maths in `scripts/colour.js` (CIEDE2000, and the Viénot,
+Brettel & Mollon dichromat model). Nothing the site ships imports either. The ΔE
+implementation is itself held against the Sharma, Wu & Dalal reference pairs,
+because a difference formula that is quietly wrong passes every other assertion
+while measuring nothing.
+
+**What the old set got wrong, and it was worse than the note that recorded it.**
+Until Phase 64 the five were brass, verdigris, burnt, green and plum, and they
+had been checked for contrast on the ground and never against each other. Seven
+of the ten pairs were under the floor. `--series-1` against `--series-3` — the
+brass and the burnt — measured **ΔE 0.2 under deuteranopia**: not close, the
+same colour, and 13.8 for normal vision as well. `--series-2` against
+`--series-4`, the two greens, measured 1.9 under tritanopia and 7.8 for normal
+vision. The figures the earlier note carried (4.9 and 12.5) do not reproduce
+against either palette and appear to have been estimates; the re-measurement is
+the record now, and the lesson is the one already written above — a palette
+nobody has run the numbers on has not been checked, however carefully it was
+chosen.
+
+**A direct label on the line is what makes a marginal pair legal**, not an
+excuse for one. It is also why no series colour is ever drawn on the board: the
+floors above are all stated against `--paper`, and a chart sits on a `.sheet`.
+
+`lib/tokens.js` maps a stat to a slot by name, so a token can move underneath
+one without any JS changing — that is how plum left `--series-4` in an earlier
+pass and how appearances came to wear deep brass in this one. Goals and MOTM
+take `--series-1`, assists and clean sheets `--series-2`, goal involvements
+`--series-3`, appearances and starts `--series-4`. Goals and appearances sitting
+side by side on a player's page as the same pigment light and deep is the
+intent, not a collision: they are the club's two headline figures and they read
+as a pair.
 
 ## Type
 
@@ -1587,6 +1631,14 @@ gradient area fills. Rules:
 - **Every chart keeps its "Show data" table.** This already exists and is the
   best thing about the current charts — a chart is a view of the numbers, not a
   replacement for them.
+- **A chart is drawn once, at a canvas that fits 375px, and scales up.** Never
+  a wide canvas fitted down: an SVG scaled to a phone scales its labels too, so
+  a 12px label ships at 5px and reads as a design choice rather than a bug.
+  Everything a chart writes is `--t-micro`, the same step and the same real
+  pixels as the small text around it, which in practice means `ResponsiveContainer`
+  and `fontPx('--t-micro')` rather than a `viewBox`. `check:layout` asserts it
+  (`chart-text-below-floor`): any SVG text whose size on the glass — after
+  whatever its transform chain does to it — falls under 12px is a finding.
 
 `components/ChartEndLabel.jsx` is the one label renderer shared by every line
 and area — season and career alike — since "render text at a series' last real
@@ -1621,6 +1673,32 @@ than the chart series order: those three mean something specific everywhere
 else on the site (*Chart series* above) and a result split is never themed.
 `ChartCard`'s optional `bodyClassName` exists for this one case, where a plot
 needs less than the fixed height a line chart's axis band wants.
+
+**A scatter of a squad is a scatter of piles, so the dot is the pile**
+(Phase 64's *Games against contributions*,
+`components/season/GamesAgainstContributions.jsx`). Plotting one dot a player
+draws fifteen of them on the same spot and shows one: after a season of Old
+Wellingtonians, twenty of the forty-eight had played a single game and fifteen
+of those had scored nothing, which is one point on the plot and the largest
+fact on it. So players sharing a spot are a single dot sized by how many, and
+the size is set as **area, not radius** — area is what the eye reads as
+quantity. The names are in the tooltip, capped, and in the data table in full,
+where each one is a link like every other name on the site (*A name is a link*).
+
+**A reference line gets its words on the line.** Recharts places a reference
+label from the line's bounding box, which for a diagonal is the entire plot, so
+`insideTopLeft` puts "one a game" in the corner where it reads as a label for
+whichever gridline it landed on. The diagonal's own label sits at its midpoint
+instead, in the empty triangle above it — everything below the line is dots.
+The line stops where the shorter axis runs out rather than at the end of the
+longer one, since `y = x` drawn past that is drawn outside the plot.
+
+**A distribution keeps its empty buckets** (*Appearances across the squad*).
+Games nobody played are drawn as zero rather than closed up: a gap in the middle
+of a squad — nobody between eleven and fourteen games — is the shape, and a
+chart that skips it shows a smooth tail that isn't there. The x axis thins its
+own ticks on a phone, because a sixteen-game season is more labels than 375px
+holds and the ends are what the reader places the shape between.
 
 ### A ranked list is not a plot
 
@@ -1903,9 +1981,16 @@ then Phase 62 put it 1,476px over: six per-game tiles, a W/D/L donut, the most
 frequent scorelines and the winning and losing margins, four cards on top of
 the three the merge carried over. Phase 63's division card added 854px of that
 page — fourteen ranked rows, which is what ranking a division twice costs —
-for 4,546px. Phase 64 still has three charts to add, so shrinking this page is
-not a decision to make until they land; `ROADMAP.md` → *Page budgets* tracks
-the number as it moves.
+for 4,546px, and Phase 64's two new charts a further 955 for **5,501px, 3,301
+over**. That is the shape final: the redesign has nothing further to add to
+this page. It is also, at ten cards, the clearest case on the site for the
+thing `ROADMAP.md` → *Page budgets* keeps saying — that closing a gap this size
+means cutting a section rather than shaving one — and the cut is a decision
+about what a season is for, not a measurement, so it belongs to a phase that
+takes it deliberately rather than to the phase that happened to add the last
+card. What Phase 64 owes the page it has paid: every card fits 375px, nothing
+scrolls sideways, and the three that a player opens the page for sit together
+rather than being spread through the club's own figures.
 Home is 2,116px unpicked and 2,264px with a name picked: Phase 19 took it from
 2,113px to 1,882px (the result leading, the next-fixture card collapsing to a
 row, a redundant form-chip strip coming off Recent form), Phase 23's badge,

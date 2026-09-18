@@ -56,8 +56,13 @@ both take an optional year filter for the reader who wants one season only.
 all-time board**, so a career total is never the same board shown twice. Season
 → Stats takes an *All seasons* filter of its own and it stays on the right side
 of that line because it **compares rather than combines**: one line a season,
-side by side. The two charts that would combine — the scoring race and the
-goals-per-match line — simply don't draw in that mode.
+side by side. *Points accumulated* is the only card that draws in that mode.
+Every other one on the page would combine rather than compare — a scoring race,
+a goals-per-match line, a season's per-game figures, its result split,
+scorelines and margins, and who played how often against what they produced are
+each a career board once run across every season — so they simply don't draw
+there. The division's own figures aren't in that argument at all: `league_rows`
+holds one table a season, so there is no all-seasons division to rank.
 
 Admin sits behind a login and is lazy-loaded, so a public visitor never
 downloads it. It is the phone-first flow — a pub table on a Saturday night —
@@ -169,8 +174,10 @@ src/
 supabase/                  schema.sql + one migration file per change
 fixtures/                  the committed season, the datasets, the Supabase stub
 backups/                   the database, dumped daily by CI: JSON + restore.sql
-scripts/                   the harness: shots, check:layout, the invariants
-tests/                     node --test over lib/, against the fixture
+scripts/                   the harness: shots, check:layout, the invariants,
+                           and colour.js — the maths the palette is held to
+tests/                     node --test over lib/, against the fixture; plus
+                           the palette, measured out of tokens.css
 docs/DESIGN.md             the design system — read before touching UI
 docs/ROADMAP.md            what's planned, in order
 ```
@@ -340,23 +347,25 @@ it.
 Before adding a feature, check `docs/ROADMAP.md`. If it's not there and it's
 not small, it goes there first.
 
-**The redesign is the plan of record.** `docs/ROADMAP.md` → *The redesign* is
-phases 56 to 64, of which 56 to 63 have landed: the next match leads Home with a
-countdown against it, the last result folds into a bar, Season's two
-chart-shaped sub-pages become one, and that one page earns the season's own
-per-game numbers and the division ranked on its attack and defence — both off
-data already stored. Phase 64, the last of them, is three charts and the series
-palette. It was designed against a reference site and signed off
-as a mock-up, and the mock-up is the specification. Two things it cannot do are
-written down there with it: `league_rows` holds totals and not results, and the
-`--series-*` tokens fail colour-blind separation at four series. A third — that
-`venue` was null everywhere — was Phase 56, and it is also the cautionary one:
-it had been checked against the committed fixture alone, where the venues were
-invented, while the live rows had been filled in from the club's records all
-along. **A claim about the club's data is checked against `backups/` too**, not
-the fixture by itself. **Nothing in this file or `docs/DESIGN.md` describes the
-redesigned pages yet** — each phase edits them as it lands, which is the working
-agreement below, not an exception to it.
+**The redesign is done — phases 56 to 64**, and `docs/DESIGN.md` is where it
+lives now: the next match leads Home with a countdown against it, the last
+result folds into a bar, Season's two chart-shaped sub-pages are one, and that
+one page carries the season's own per-game numbers, the division ranked on its
+attack and defence, and who played how often against what they produced — all
+of it off data already stored. It added no section and no stored column.
+`docs/ROADMAP.md` → *The redesign* keeps three findings rather than the plan,
+because each would otherwise be re-argued: `league_rows` holds totals and not
+results, so no club's form is derivable; five separable hues do not exist inside
+the constraints a chart series has, which is why the palette is three pigments
+at two depths (Phase 64, `DESIGN.md` → *Chart series*); and `venue` was said to
+be null everywhere and was not — checked against the committed fixture alone,
+where the venues were invented, while the live rows had been filled in from the
+club's records all along. **A claim about the club's data is checked against
+`backups/` too**, not the fixture by itself.
+
+**The order in `docs/ROADMAP.md` → *Next* is the whole of what to do now**, with
+Phase 52 — the page budgets — taken first: the redesign closed no budget row and
+left Season → Stats 3,301px over with its shape final.
 
 **The squad has it.** They played the first game of 2026/27 on 5 September 2026
 and reported a bug on the honours the same weekend, which is Phase 55. So the
