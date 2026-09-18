@@ -249,7 +249,81 @@ site, and it is not an exception to any of the above: it holds files the site
 serves — the document, the bundle, the fonts, the artwork — and not one thing
 about the reader. See *An installed app has to open with no signal*.
 
+### Draft D is the specification
+
+> **Phases 66–73.** Everything in this section is decided and drawn —
+> `docs/mocks/home-stats-draft-d.html`, two pages at two widths — and not yet
+> built. Phases 57–64 built Home and Season → Stats from a prose description of
+> that mock and the pages do not match it; the sections below that describe
+> them carry a marker pointing back here and are rewritten as each phase lands.
+> `docs/ROADMAP.md` → *Now* has the order and *The redesign — what went wrong*
+> has the seven findings. Where a paragraph below and the mock disagree, the
+> mock wins until its phase says otherwise and names the rule.
+
+What the mock decides, as rules rather than as a picture — the list that should
+have been written before Phase 57 and wasn't:
+
+- **Two pigments for every bar, wash and split: `--chart-1` (gold) and
+  `--chart-2` (racing green, `--board-soft`).** W/D/L keeps its three. The
+  five-series palette under *Chart series* is for a line that labels itself
+  and appears on one chart, the golden boot race. A bar carries its figure in
+  ink beside it and never needed a 4.5:1 colour. (Phase 66)
+- **The band is flush under the masthead** and, with the last-game bar under
+  it, runs edge to edge below 700px and spans the viewport above it, contents
+  in the 1400px column. These two strips are the site's only full-bleed
+  sections. **The plates carry a 1px gold border all round**, not a top edge.
+  (Phase 67)
+- **`.block` on Home is gold.** Burnt stays what *Accents* says it is —
+  competition tags — and the mock's competition mark is `.tag`. (Phase 66)
+- **A card head is `h2` in the display face at `--t-subtitle` with a `.more`
+  link on the right** (`.head`), and a `.label` above the `h2` only where it
+  says something the heading doesn't. *Standings* over *League table* is the
+  eyebrow *The block* ruled out in Phase 12; *The division* over *Attack and
+  defence* is not. The compact stats cards take `.label.ruled` and nothing
+  else. (Phase 66)
+- **A tile is a `.tile`**: `--sheet` ground, the figure in `--font-data` at
+  `--t-subtitle`, a label under — Home's stat tiles, Your season's, Stats' six,
+  and the countdown cells with the figure in the display face. Never a
+  display-face `StatTile` inside a sheet. (Phase 66)
+- **The form card**: the season and division as its `.label` (Home's `h1`),
+  the position at `--t-display`, *of N · P points*, then five 62px squares with
+  14px corners in a capped strip, the latest ringed gold, the scoreline under
+  each. (Phase 67)
+- **The fixture card**: 46px round badges with *Home* / *Away* under the
+  names, kick-off in the display face at `--t-title`, the ground balanced
+  under it, the date ruled, three display-face countdown cells, two equal
+  buttons. (Phase 67)
+- **The last game is a bar**: one wrapping row on `--sheet` with a 2px gold top
+  — pill, score, *v Opponent · date*, *Goals* and *Man of the match* as labels
+  over linked names, *Full match →*. No heading, no rule inside. (Phase 68)
+- **The outlook is rows, not chips**: date over competition, a score chip with
+  a W/D/L edge, the opponent with the scorers or the ground under, H/A —
+  `ResultList`'s `outlook` variant. (Phase 69)
+- **The league snapshot is five columns**: position, club, played, points,
+  form. The form column is typed for every other club and derived for ours
+  (Phase 73); the ten-column table stays on Season. (Phases 69, 73)
+- **Season so far is the record**: won, drawn, lost as three display-face
+  figures coloured by result with a percentage under, then *For* / *Against*
+  bars. Played, clean sheets and win rate are Stats' tiles. (Phase 69)
+- **Stats is compact.** A chip filter over the segmented control; six bare
+  `.tile`s; four small `.label.ruled` cards two across — donut with a ruled
+  key, home/away goals split, scorelines and margins as CSS bars; the division
+  as **one** ranked list behind an *Attack | Defence* toggle with the average as
+  a note under it; the golden boot race full width with a legend above and end
+  labels; the scatter and the spread two across. **A card whose every figure is
+  printed on it needs no data table**; the three plots keep theirs behind a
+  quiet *Data* link in the foot. The goals-per-match line comes off; *Points
+  accumulated* draws under *All seasons* only. (Phases 70–72)
+- **The scatter's dots are `--verdigris-deep` at 0.75 alpha and the leaders
+  gold with a surname beside them; the spread's bars are gold.** (Phase 72)
+
 ### The club band, under the masthead
+
+> **Phases 67–68.** Built, and not to the mock: the band sits inside the padded
+> column with paper above it, the plates carry a gold top edge rather than a
+> border, the fixture card is set in the data face with 32px badges, the form
+> card's squares are 26px and its label is burnt. See *Draft D is the
+> specification*; this section is rewritten when 67 and 68 land.
 
 The first thing on Home, and the first phase of the redesign (Phase 57): a
 dark band holding two paper plates with a gold hairline along the top of each.
@@ -323,6 +397,13 @@ reads as "already claimed". The label says what the tap does; the tag says what
 is true.
 
 ### Match outlook, and the grid below the band
+
+> **Phase 69.** Built, and not to the mock. The paragraph below that trades the
+> mock's rows for inline chips — "the mock-up is a picture and this file is the
+> contract" — is the reading `ROADMAP.md` → *The redesign — what went wrong*
+> retires; the rows are built as `ResultList`'s `outlook` variant, which is the
+> extension the last paragraph here already asks for. The Phase 60 ruling at the
+> foot is reversed by Phase 73: the form column is typed in, not derived.
 
 Phase 59. Below *Your season*, Home stops being one column of stacked sheets:
 past 860px — the same width the club band itself switches at — a two-column
@@ -691,6 +772,12 @@ engraved marks; every word beside a badge is `--ink` or `--ink-soft`.
 
 ### Chart series
 
+> **Phases 66 and 72.** The palette below is right and governs *lines that label
+> themselves* — one chart. It was applied to every bar, dot and wash on Stats,
+> which is how appearances came to be drawn in `#4a3a18`. Phase 66 adds
+> `--chart-1` (gold) and `--chart-2` (racing green) for those; Phase 72 tests the
+> mock's burnt against `--series-4`. See *Draft D is the specification*.
+
 Fixed order, assigned in sequence, never cycled. **Three pigments at reading
 depth, then two of them again at half the lightness.**
 
@@ -826,6 +913,11 @@ beside it.
 | `--t-micro` | 0.75rem | Archivo 600 | Labels, and the smallest marks. The floor |
 
 ### The block
+
+> **Phase 66.** `.block.burnt` is on Home's two plates today, against the rule
+> under *Accents*; it comes off, and Home's block is gold. The label-over-heading
+> pairs on Home's cards — *Standings* / *League table*, *Overview* / *Season
+> stats* — are the eyebrow this section rules out, and go with `.head`.
 
 The school's brand device: bold uppercase on a solid field of colour. `.block`,
 in four variants — board, gold, verdigris, burnt.
@@ -1606,6 +1698,13 @@ people come to find their own.
 
 ## Charts
 
+> **Phases 70–72.** Two rules below change with the mock: "every chart keeps its
+> Show data table" narrows to the three plots that hide names behind dots or
+> lines, behind a quiet link in the foot rather than a button in the head; and
+> the scorelines, margins and goals split are CSS bars in a compact card, not
+> Recharts in a 320px body. The donut stays Recharts at 128px. See *Draft D is
+> the specification*.
+
 The charts used to read as generated, from `type="monotone"` smoothing and
 gradient area fills. Rules:
 
@@ -1701,6 +1800,12 @@ own ticks on a phone, because a sixteen-game season is more labels than 375px
 holds and the ends are what the reader places the shape between.
 
 ### A ranked list is not a plot
+
+> **Phase 71.** The four decisions below stand; the shape changes. The mock draws
+> **one** list behind an *Attack | Defence* toggle, the figure as a solid bar in
+> `--chart-2` (ours `--chart-1`) in its own track beside the name rather than a
+> pale wash behind it, and the average as a note under the list rather than a
+> hairline across it. Half the height. See *Draft D is the specification*.
 
 Season → Stats holds one card that draws no chart: the division's attack and
 defence (`components/season/DivisionRatios.jsx`, Phase 63), where every club's

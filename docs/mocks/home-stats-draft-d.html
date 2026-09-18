@@ -1,0 +1,1315 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>OWFC Draft D</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Archivo+Narrow:wght@400;600;700&family=Libre+Caslon+Display&display=swap">
+<style>
+  #app {
+    --paper: #f1f3ef;
+    --sheet: #e6e9e2;
+    --board: #16281f;
+    --board-deep: #0f1d16;
+    --board-soft: #1d3227;
+    --ink: #20221f;
+    --ink-soft: #6a6a63;
+    --ink-faint: #9b9a92;
+    --on-board: #ece9df;
+    --on-board-soft: #96958c;
+    --gold: #c9992b;
+    --gold-leaf: #e6c65f;
+    --gold-deep: #8c6716;
+    --verdigris: #8fb3a6;
+    --verdigris-deep: #3f6b5c;
+    --burnt: #bf6a22;
+    --sky: #528799;
+    --sky-light: #8ec2d3;
+    --win: #2f7d4f;
+    --draw: #8a8b83;
+    --loss: #b3392f;
+    --rule: #e2ded2;
+    --rule-firm: #c9c4b4;
+    --r-sm: 2px;
+    --r: 4px;
+    --r-pill: 999px;
+    --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+    --dur-press: 120ms;
+    --dur-tint: 150ms;
+    --dur-pop: 180ms;
+    --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s5: 24px; --s6: 32px; --s7: 48px;
+    --font-display: 'Libre Caslon Display', Georgia, serif;
+    --font-text: 'Archivo', system-ui, -apple-system, sans-serif;
+    --font-data: 'Archivo Narrow', 'Archivo', system-ui, sans-serif;
+    --t-display: 2.75rem; --t-headline: 2rem; --t-title: 1.5rem; --t-subtitle: 1.125rem;
+    --t-body: 1rem; --t-small: 0.875rem; --t-micro: 0.75rem;
+    --chrome: #191d1b; --chrome-soft: #2b312e; --chrome-ink: #d8ded9;
+
+    /* stat bars: gold against the board's own dark. W/D/L keeps its own three. */
+    --chart-1: var(--gold);
+    --chart-2: var(--board-soft);
+  }
+
+  #app * { box-sizing: border-box; }
+
+  #app {
+    background: var(--chrome);
+    min-height: 100vh;
+    font-family: var(--font-text);
+    padding-bottom: var(--s7);
+  }
+
+  /* ---- mockup chrome ---- */
+  .chrome-bar {
+    position: sticky; top: 0; z-index: 60; background: var(--chrome);
+    border-bottom: 1px solid var(--chrome-soft); padding: 0.7rem 1rem;
+    display: flex; align-items: center; gap: 0.7rem; flex-wrap: wrap;
+  }
+
+  .chrome-title {
+    font-size: 0.8rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--chrome-ink); margin-right: auto;
+  }
+
+  .chrome-title small {
+    display: block; font-weight: 400; letter-spacing: 0.02em; text-transform: none;
+    color: #8b938d; font-size: 0.7rem;
+  }
+
+  .chrome-group { display: inline-flex; background: var(--chrome-soft); border-radius: var(--r); padding: 3px; }
+
+  .chrome-group button {
+    font: inherit; font-size: 0.74rem; font-weight: 600; border: 0; background: none;
+    color: #9aa39d; padding: 0.34rem 0.75rem; border-radius: var(--r-sm); cursor: pointer;
+    transition: background var(--dur-tint) ease, color var(--dur-tint) ease;
+  }
+
+  .chrome-group button[aria-pressed="true"] { background: var(--gold); color: #16281f; }
+  .chrome-group button:focus-visible { outline: 2px solid var(--gold-leaf); outline-offset: 2px; }
+
+  .device {
+    container-type: inline-size;
+    margin: var(--s5) auto 0;
+    background: var(--paper); color: var(--ink);
+    max-width: 1180px;
+    box-shadow: 0 14px 44px rgba(0, 0, 0, 0.42);
+    transition: max-width 260ms var(--ease-out);
+  }
+
+  #app.device-phone .device { max-width: 393px; }
+
+  .device-note { max-width: 1180px; margin: 0.6rem auto 0; font-size: 0.72rem; color: #7d857f; padding: 0 0.25rem; }
+  #app.device-phone .device-note { max-width: 393px; }
+
+  .device h1, .device h2, .device h3 {
+    font-family: var(--font-display); font-weight: 600; letter-spacing: -0.015em; color: var(--ink); margin: 0 0 var(--s2);
+  }
+
+  .device h1 { font-size: var(--t-display); line-height: 1.1; margin-bottom: var(--s4); }
+
+  /* the gilded rule under a page title */
+  .device h1::after {
+    content: ''; display: block; width: 56px; height: 3px;
+    margin-top: var(--s2); background: var(--gold);
+  }
+
+  .device h2 { font-size: var(--t-title); }
+  .device h3 { font-family: var(--font-text); font-size: var(--t-subtitle); letter-spacing: 0; }
+  .device p { margin: 0; }
+  .device a { color: inherit; text-decoration: none; }
+
+  @container (max-width: 700px) { .device { --t-display: 2rem; --t-headline: 1.6rem; } }
+
+  /* ================= site header: the same on every page ================= */
+  .site-header {
+    background: var(--board);
+    color: var(--on-board);
+    border-bottom: 3px solid var(--gold);
+  }
+
+  .site-header .inner {
+    display: flex; align-items: center; gap: 1rem;
+    padding: 0.9rem 1.6rem;
+  }
+
+  .site-header .brand { margin-right: auto; }
+
+  nav.main-nav { display: flex; gap: 0.2rem; }
+
+  nav.main-nav a {
+    padding: 0.5rem 0.85rem; border-radius: var(--r); font-weight: 600;
+    font-size: var(--t-small); color: var(--on-board-soft); cursor: pointer;
+    transition: color var(--dur-tint) ease, background var(--dur-tint) ease;
+  }
+
+  nav.main-nav a.active { color: var(--gold-leaf); background: color-mix(in srgb, var(--gold) 14%, transparent); }
+
+  @media (hover: hover) and (pointer: fine) {
+    nav.main-nav a:hover { color: var(--on-board); background: rgba(236, 233, 223, 0.08); }
+  }
+
+  /* ================= club band ================= */
+  .band {
+    position: relative; overflow: hidden;
+    background: radial-gradient(120% 150% at 78% 0%, var(--board-soft) 0%, var(--board) 48%, var(--board-deep) 100%);
+    color: var(--on-board);
+    border-bottom: 1px solid rgba(236, 233, 223, 0.12);
+  }
+
+  .band-body {
+    position: relative; z-index: 2;
+    display: flex; flex-direction: column; gap: var(--s4);
+    padding: var(--s4) 1.6rem var(--s5);
+  }
+
+  @container (min-width: 860px) {
+    /* stretch, so the form card and the fixture card are one pair rather than
+       two boxes of different heights sitting on the same green */
+    .band-body { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s6); align-items: stretch; }
+  }
+
+  /* The grid row takes its height from the fixture card, so the form card can
+     be sized against it: half as tall, centred, equal air above and below. */
+  .band-left { display: flex; flex-direction: column; justify-content: center; gap: var(--s4); }
+
+  .form-card { justify-content: center; }
+
+  @container (min-width: 860px) {
+    /* half the fixture card, but never tighter than its own content */
+    .form-card { height: 50%; min-height: fit-content; }
+  }
+
+  .brand { display: flex; align-items: center; gap: 0.8rem; min-width: 0; }
+
+  /* Stands in for public/crest.png: a plain disc, since four letters inside a
+     46px circle are unreadable at the size this actually renders. */
+  .crest {
+    height: 60px; width: 60px; flex: none; border-radius: 50%;
+    background: var(--gold);
+    box-shadow: inset 0 0 0 3px color-mix(in srgb, var(--board) 22%, transparent);
+  }
+
+  .crest.sm { height: 44px; width: 44px; box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--board) 22%, transparent); }
+
+  .brand .name {
+    font-family: var(--font-display); font-weight: 600; font-size: var(--t-title);
+    letter-spacing: -0.015em; color: var(--on-board); line-height: 1.12;
+  }
+
+  .brand .sub {
+    display: block; margin-top: 0.2rem; color: var(--gold); font-size: var(--t-micro);
+    font-weight: 600; letter-spacing: 0.11em; text-transform: uppercase;
+  }
+
+  /* the two cards that sit on the green */
+  .card {
+    background: var(--paper); color: var(--ink);
+    border: 1px solid var(--gold); border-radius: var(--r);
+    padding: var(--s4);
+    display: flex; flex-direction: column;
+  }
+
+  /* the action row sits on the card's floor, so both cards end on one line */
+  .card .nm-actions { margin-top: auto; padding-top: var(--s3); }
+
+  .card-head {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: var(--s3); margin-bottom: var(--s3);
+  }
+
+  .label {
+    font-family: var(--font-text); font-size: var(--t-micro); font-weight: 600;
+    letter-spacing: 0.08em; line-height: 1.35; text-transform: uppercase; color: var(--ink-soft); display: block;
+  }
+
+  .label.ruled { border-bottom: 1px solid var(--rule); padding-bottom: var(--s2); margin-bottom: var(--s3); }
+
+  .block {
+    display: inline-block; font-family: var(--font-text); font-size: var(--t-micro); font-weight: 700;
+    letter-spacing: 0.08em; line-height: 1.35; text-transform: uppercase;
+    padding: 0.15rem 0.55rem; border-radius: var(--r); background: var(--gold); color: var(--board);
+  }
+
+  .tag {
+    display: inline-block; font-size: var(--t-micro); font-weight: 600; padding: 0.12rem 0.5rem;
+    border-radius: var(--r-pill); background: color-mix(in srgb, var(--verdigris) 30%, transparent);
+    color: var(--verdigris-deep);
+  }
+
+  .muted { color: var(--ink-soft); font-size: var(--t-small); }
+
+  /* ---- form card ----
+     Position on top, the run of five across the full width beneath it. The
+     squares take whatever width the card has rather than sitting in a column
+     beside the position, which is what left the card half empty. */
+  .form-card { gap: var(--s2); }
+
+  .form-card .label { margin: 0; }
+
+  .form-strip { display: flex; gap: var(--s2); }
+
+
+  /* rounded squares, not circles, and never squeezed by the card's height */
+  .form-badge {
+    flex: none; height: 62px; border-radius: 14px; display: grid; place-items: center;
+    font-family: var(--font-data); font-size: var(--t-subtitle); font-weight: 700; color: #fff;
+  }
+
+  .form-badge.W { background: var(--win); }
+  .form-badge.D { background: var(--draw); }
+  .form-badge.L { background: var(--loss); }
+  .form-badge.latest { box-shadow: inset 0 0 0 2px var(--gold), 0 0 0 1px var(--gold); }
+
+  /* the score under each letter: the run says how it went, these say by how much */
+  /* capped, so five of them read as squares spread across the card rather than
+     five wide bars stretched to its full width */
+  .form-run { flex: 1 1 0; min-width: 0; max-width: 78px; display: flex; flex-direction: column; gap: 0.35rem; }
+
+  .form-run small {
+    text-align: center; font-family: var(--font-data); font-size: var(--t-small); font-weight: 600;
+    font-variant-numeric: tabular-nums; color: var(--ink-soft);
+  }
+
+  .form-pos { display: flex; align-items: baseline; gap: var(--s3); margin-bottom: var(--s1); }
+
+  .form-pos b {
+    font-family: var(--font-display); font-size: var(--t-display); font-weight: 600;
+    line-height: 1; color: var(--ink); letter-spacing: -0.015em;
+  }
+
+  .form-pos b sup { font-size: 0.45em; vertical-align: super; }
+
+  .form-pos small {
+    font-family: var(--font-data); font-size: var(--t-small); font-weight: 600; color: var(--ink-soft);
+  }
+
+  /* ---- next match card ---- */
+  .nm-teams {
+    display: grid; grid-template-columns: 1fr auto 1fr; align-items: start;
+    gap: var(--s3); margin: var(--s4) 0 var(--s3);
+  }
+
+  .nm-team { display: flex; flex-direction: column; align-items: center; gap: var(--s2); text-align: center; min-width: 0; }
+
+  .nm-badge {
+    width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center;
+    font-family: var(--font-display); font-weight: 600; font-size: var(--t-small);
+  }
+
+  .nm-badge.us { background: var(--gold); color: var(--board); }
+  .nm-badge.them { background: var(--sheet); color: var(--ink-soft); border: 1px solid var(--rule-firm); }
+  .nm-team strong { font-size: var(--t-small); font-weight: 600; line-height: 1.25; }
+  .nm-team em { font-style: normal; font-size: var(--t-micro); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-faint); }
+
+  .nm-mid { text-align: center; min-width: 6.5rem; }
+
+  .nm-mid .vs { font-size: var(--t-micro); font-weight: 700; letter-spacing: 0.1em; color: var(--ink-faint); text-transform: uppercase; }
+
+  .nm-mid .time {
+    display: block; font-family: var(--font-display); font-size: var(--t-title); font-weight: 600;
+    color: var(--ink); font-variant-numeric: tabular-nums; line-height: 1.15;
+  }
+
+  .nm-mid .where {
+    display: block; margin-top: 0.3rem; font-size: var(--t-micro); line-height: 1.35;
+    color: var(--ink-soft); text-wrap: balance;
+  }
+
+  .nm-date {
+    text-align: center; font-size: var(--t-small); color: var(--ink-soft);
+    padding-bottom: var(--s3); border-bottom: 1px solid var(--rule); margin-bottom: var(--s3);
+  }
+
+  .nm-count { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s2); }
+
+  .nm-cell { background: var(--sheet); border: 1px solid var(--rule); border-radius: var(--r); padding: var(--s3) var(--s2); text-align: center; }
+
+  .nm-cell b {
+    display: block; font-family: var(--font-display); font-size: var(--t-headline); font-weight: 600;
+    line-height: 1; color: var(--ink); font-variant-numeric: tabular-nums; margin-bottom: 0.3rem;
+  }
+
+  .nm-actions { display: flex; gap: var(--s2); margin-top: var(--s3); }
+
+  .nm-actions button {
+    flex: 1; min-height: 44px; font: inherit; font-size: var(--t-small); font-weight: 600;
+    padding: 0.5rem 0.8rem; border-radius: var(--r); border: 1px solid transparent; cursor: pointer;
+    background: var(--gold); color: var(--board);
+    transition: background var(--dur-tint) ease, transform var(--dur-press) var(--ease-out), border-color var(--dur-tint) ease, color var(--dur-tint) ease;
+  }
+
+  .nm-actions button.secondary { background: var(--paper); border-color: var(--rule-firm); color: var(--ink); }
+
+  @media (hover: hover) and (pointer: fine) {
+    .nm-actions button:hover { background: color-mix(in srgb, var(--gold) 82%, var(--gold-deep)); }
+    .nm-actions button.secondary:hover { background: var(--paper); border-color: var(--gold-deep); color: var(--gold-deep); }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .nm-actions button:active { transform: scale(0.97); }
+  }
+
+  .nm-actions button:focus-visible { outline: 2px solid var(--gold-deep); outline-offset: 2px; }
+
+  .nm-said { margin-top: var(--s2); font-size: var(--t-small); font-weight: 600; color: var(--verdigris-deep); }
+
+  /* ---- last game bar: paper, under the band ---- */
+  .last-bar {
+    display: flex; align-items: center; gap: var(--s4); flex-wrap: wrap;
+    padding: var(--s3) 1.6rem;
+    background: var(--sheet);
+    border-top: 2px solid var(--gold);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .lb-score { display: flex; align-items: center; gap: var(--s2); }
+
+  .lb-score b {
+    font-family: var(--font-display); font-size: var(--t-title); font-weight: 600;
+    font-variant-numeric: tabular-nums; line-height: 1;
+  }
+
+  .result-pill {
+    display: inline-grid; place-items: center; min-width: 24px; padding: 0.12rem 0.4rem;
+    border-radius: var(--r); font-family: var(--font-data); font-weight: 700; font-size: var(--t-micro); color: #fff;
+  }
+
+  .result-pill.W { background: var(--win); }
+  .result-pill.D { background: var(--draw); }
+  .result-pill.L { background: var(--loss); }
+
+  .lb-facts { display: flex; gap: var(--s5); flex-wrap: wrap; font-size: var(--t-small); }
+  .lb-facts div { min-width: 0; }
+  .lb-facts .label { margin-bottom: 0.1rem; }
+  .lb-facts a { font-weight: 600; color: var(--gold-deep); }
+  .lb-more { margin-left: auto; font-size: var(--t-small); font-weight: 600; color: var(--gold-deep); white-space: nowrap; }
+
+  /* ================= page ================= */
+  main.page { padding: var(--s5) 1.6rem 3.5rem; }
+
+  .sheet { background: var(--paper); border: 1px solid var(--rule); border-radius: var(--r); padding: var(--s4); }
+
+  .head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--s3); margin-bottom: var(--s3); }
+  .head h2 { font-size: var(--t-subtitle); margin: 0; }
+  .more { font-size: var(--t-small); font-weight: 600; color: var(--gold-deep); white-space: nowrap; }
+
+  .tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s2); }
+
+  .tile { background: var(--sheet); border: 1px solid var(--rule); border-radius: var(--r); padding: var(--s3) var(--s2); text-align: center; }
+
+  .tile b {
+    display: block; font-family: var(--font-data); font-size: var(--t-subtitle); font-weight: 700;
+    line-height: 1; color: var(--ink); font-variant-numeric: tabular-nums; margin-bottom: 0.3rem;
+  }
+
+  .tile span { font-size: var(--t-micro); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft); }
+
+  /* the three-card block, heights matched on desktop */
+  .home-grid { display: flex; flex-direction: column; gap: var(--s4); margin-top: var(--s4); }
+
+  @container (min-width: 900px) {
+    .home-grid {
+      display: grid; grid-template-columns: 1.06fr 1fr;
+      grid-template-rows: auto auto; gap: var(--s4);
+    }
+    .g-outlook { grid-column: 1; grid-row: 1 / span 2; }
+    .g-league { grid-column: 2; grid-row: 1; }
+    .g-season { grid-column: 2; grid-row: 2; }
+    .home-grid > section { display: flex; flex-direction: column; }
+    .home-grid > section > .outlook,
+    .home-grid > section > .table-hold { flex: 1; }
+  }
+
+  /* match outlook */
+  .outlook { display: flex; flex-direction: column; }
+
+  .ol-head {
+    font-family: var(--font-text); font-size: var(--t-micro); font-weight: 700; letter-spacing: 0.09em;
+    text-transform: uppercase; color: var(--ink-soft); background: var(--sheet);
+    padding: 0.35rem 0.6rem; border-radius: var(--r-sm); margin-bottom: var(--s1);
+  }
+
+  .ol-head + .ol-row { border-top: none; }
+
+  .ol-row {
+    display: grid; grid-template-columns: 5.2rem 3.1rem 1fr auto; align-items: center;
+    gap: var(--s3); padding: 0.5rem 0.6rem; border-bottom: 1px solid var(--rule);
+    transition: background var(--dur-tint) ease;
+  }
+
+  .ol-group:last-child .ol-row:last-child { border-bottom: none; }
+
+  @media (hover: hover) and (pointer: fine) {
+    .ol-row:hover { background: color-mix(in srgb, var(--gold) 7%, transparent); }
+  }
+
+  .ol-when { font-family: var(--font-data); font-size: var(--t-micro); color: var(--ink-soft); line-height: 1.3; }
+  .ol-when b { display: block; color: var(--ink); font-size: var(--t-small); font-weight: 600; }
+
+  .ol-score {
+    font-family: var(--font-data); font-weight: 700; font-size: var(--t-body); font-variant-numeric: tabular-nums;
+    text-align: center; padding: 0.15rem 0; border-radius: var(--r-sm); background: var(--sheet); position: relative;
+  }
+
+  .ol-score::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; border-radius: var(--r-sm) 0 0 var(--r-sm); }
+  .ol-score.W::before { background: var(--win); }
+  .ol-score.D::before { background: var(--draw); }
+  .ol-score.L::before { background: var(--loss); }
+  .ol-score.next { background: transparent; color: var(--gold-deep); }
+  .ol-score.tbc { background: transparent; color: var(--ink-faint); font-weight: 600; }
+
+  .ol-opp { font-weight: 600; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ol-opp small { display: block; font-weight: 400; font-size: var(--t-micro); color: var(--ink-faint); }
+  .ol-row.tbc .ol-opp { font-weight: 400; color: var(--ink-faint); }
+  .ol-venue { font-family: var(--font-data); font-size: var(--t-micro); font-weight: 700; color: var(--ink-faint); }
+
+  @container (max-width: 520px) {
+    .ol-row { grid-template-columns: 4.4rem 2.8rem 1fr auto; gap: var(--s2); padding: 0.5rem 0.3rem; }
+  }
+
+  /* league table */
+  table.data { width: 100%; border-collapse: collapse; font-family: var(--font-data); font-size: var(--t-small); font-variant-numeric: tabular-nums; }
+
+  table.data th {
+    text-align: left; border-bottom: 1px solid var(--rule-firm); padding: 0.45rem 0.5rem; white-space: nowrap;
+    font-family: var(--font-text); font-size: var(--t-micro); font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--ink-soft);
+  }
+
+  table.data td { padding: 0.5rem; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+  table.data tbody tr:last-child td { border-bottom: none; }
+  table.data td.num, table.data th.num { text-align: right; }
+  .lt-us { background: color-mix(in srgb, var(--gold) 13%, transparent); }
+  .lt-us td { font-weight: 700; }
+  .lt-us td:first-child { box-shadow: inset 3px 0 0 var(--gold); }
+  .chips { display: flex; gap: 3px; justify-content: flex-end; }
+
+  .chip { width: 17px; height: 17px; border-radius: var(--r-sm); display: grid; place-items: center; font-family: var(--font-data); font-size: 0.63rem; font-weight: 700; color: #fff; }
+  .chip.W { background: var(--win); }
+  .chip.D { background: var(--draw); }
+  .chip.L { background: var(--loss); }
+
+  /* season so far */
+  .record { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--rule); border-radius: var(--r); overflow: hidden; }
+
+  .record div { padding: var(--s3) var(--s2); text-align: center; border-right: 1px solid var(--rule); background: var(--sheet); }
+  .record div:last-child { border-right: none; }
+
+  .record b {
+    display: block; font-family: var(--font-display); font-size: var(--t-headline); font-weight: 600;
+    line-height: 1; font-variant-numeric: tabular-nums; margin-bottom: 0.25rem;
+  }
+
+  .record .w b { color: var(--win); }
+  .record .d b { color: var(--ink-soft); }
+  .record .l b { color: var(--loss); }
+  .record small { display: block; font-family: var(--font-data); font-size: var(--t-micro); color: var(--ink-soft); margin-top: 0.15rem; }
+
+  .bars { display: flex; flex-direction: column; gap: var(--s2); margin-top: var(--s4); }
+  .bar { display: flex; align-items: center; gap: var(--s2); font-size: var(--t-small); }
+  .bar-label { width: 68px; flex: none; font-weight: 600; color: var(--ink-soft); }
+  .bar-track { flex: 1; height: 10px; border-radius: var(--r-sm); background: var(--sheet); overflow: hidden; }
+  .bar-fill { display: block; height: 100%; border-radius: var(--r-sm); }
+  .bar-fill.gf { background: var(--chart-1); }
+  .bar-fill.ga { background: var(--chart-2); }
+  .bar-value { width: 26px; flex: none; text-align: right; font-family: var(--font-data); font-weight: 700; font-variant-numeric: tabular-nums; }
+
+  /* ================= stats page ================= */
+  .season-filter { display: flex; align-items: center; gap: var(--s2); flex-wrap: wrap; margin-bottom: var(--s3); }
+
+  .chip-btn {
+    background: var(--paper); border: 1px solid var(--rule-firm); color: var(--ink-soft);
+    border-radius: var(--r-pill); padding: 0.3rem 0.8rem; font: inherit; font-size: var(--t-small);
+    white-space: nowrap; cursor: pointer; transition: background var(--dur-tint) ease, color var(--dur-tint) ease, border-color var(--dur-tint) ease;
+  }
+
+  .chip-btn.active { background: var(--board); border-color: var(--board); color: var(--gold-leaf); }
+  .chip-btn:focus-visible { outline: 2px solid var(--gold-deep); outline-offset: 2px; }
+
+  .seg { display: inline-flex; background: var(--sheet); border-radius: var(--r); padding: 3px; }
+
+  .seg a {
+    color: var(--ink-soft); border-radius: var(--r-sm); padding: 0.4rem 1.1rem;
+    font-size: var(--t-small); font-weight: 600; cursor: pointer;
+  }
+
+  .seg a.active { background: var(--paper); color: var(--ink); box-shadow: 0 1px 2px rgba(22, 40, 31, 0.14); }
+
+  .stats-two { display: flex; flex-direction: column; gap: var(--s4); }
+
+  @container (min-width: 900px) {
+    .stats-two { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s4); align-items: start; }
+  }
+
+  .donut-wrap { display: flex; align-items: center; gap: var(--s5); flex-wrap: wrap; }
+  .donut-key { display: flex; flex-direction: column; gap: var(--s2); font-size: var(--t-small); flex: 1; min-width: 150px; }
+  .donut-key div { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; border-bottom: 1px solid var(--rule); padding-bottom: 0.32rem; }
+  .donut-key i { width: 10px; height: 10px; border-radius: var(--r-sm); display: inline-block; margin-right: 0.45rem; }
+  .donut-key b { font-family: var(--font-data); font-variant-numeric: tabular-nums; }
+
+  .hbars { display: flex; flex-direction: column; gap: 0.45rem; }
+  .hbar { display: grid; grid-template-columns: 3.4rem 1fr 2.2rem; align-items: center; gap: var(--s2); font-size: var(--t-small); }
+  .hbar .k { font-family: var(--font-data); font-weight: 700; font-variant-numeric: tabular-nums; }
+  .hbar .track { height: 15px; background: var(--sheet); border-radius: var(--r-sm); overflow: hidden; }
+  .hbar .fill { display: block; height: 100%; background: var(--chart-1); }
+  .hbar .fill.quiet { background: var(--chart-2); }
+  .hbar .v { text-align: right; font-family: var(--font-data); color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+
+  .split { display: flex; height: 32px; border-radius: var(--r); overflow: hidden; }
+  .split span { display: grid; place-items: center; font-family: var(--font-data); font-weight: 700; font-size: var(--t-micro); color: #fff; }
+  .split .a { background: var(--chart-1); color: var(--board); }
+  .split .b { background: var(--chart-2); }
+
+  .ratio-row { display: grid; grid-template-columns: 1.4rem 8.4rem 1fr 2.6rem; align-items: center; gap: var(--s2); font-size: var(--t-small); padding: 0.24rem 0; }
+  .ratio-row .pos { font-family: var(--font-data); color: var(--ink-faint); text-align: right; font-variant-numeric: tabular-nums; }
+  .ratio-row .club { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ratio-row .track { height: 15px; background: var(--sheet); border-radius: var(--r-sm); overflow: hidden; }
+  .ratio-row .fill { display: block; height: 100%; background: var(--chart-2); }
+  .ratio-row.us { background: color-mix(in srgb, var(--gold) 13%, transparent); border-radius: var(--r-sm); }
+  .ratio-row.us .fill { background: var(--chart-1); }
+  .ratio-row .v { text-align: right; font-family: var(--font-data); font-weight: 700; font-variant-numeric: tabular-nums; }
+
+  @container (max-width: 520px) {
+    .ratio-row { grid-template-columns: 1.2rem 6.2rem 1fr 2.3rem; gap: 0.4rem; font-size: var(--t-micro); }
+  }
+
+  .avg-note { display: flex; align-items: center; gap: 0.4rem; margin-top: var(--s3); font-size: var(--t-micro); color: var(--ink-soft); }
+  .avg-note i { width: 14px; border-top: 2px dashed var(--ink-faint); display: inline-block; }
+
+  /* ---- charts ---- */
+  .chart-card { display: flex; flex-direction: column; }
+
+  .chart-hold { width: 100%; }
+
+  /* Capped so a full-width card doesn't scale a 480-unit drawing to twice the
+     size its type was drawn for. */
+  .chart-hold svg { display: block; width: 100%; max-width: 760px; height: auto; margin: 0 auto; }
+
+  /* On a phone the drawing still fits the screen; the card's own type comes
+     down with it so the chart is not a small picture under large headings. */
+  /* The drawing renders at about 0.72 of its own units here, so the labels are
+     drawn larger to land at the same size as the legend beside them. */
+  @container (max-width: 700px) {
+    .chart-card .head h2 { font-size: var(--t-body); }
+    .chart-card .label { font-size: 0.68rem; }
+    .chart-card .muted { font-size: var(--t-micro); }
+    .legend { font-size: 0.72rem; gap: var(--s3) var(--s4); margin-bottom: var(--s2); }
+    .legend i { width: 11px; }
+    .c-tick { font-size: 14px; }
+    .c-name { font-size: 15px; }
+    .c-note { font-size: 13px; }
+  }
+
+  .c-grid { stroke: var(--rule); stroke-width: 1; }
+  .c-axis { stroke: var(--rule-firm); stroke-width: 1; }
+  .c-tick { font-family: var(--font-data); font-size: 10px; fill: var(--ink-soft); }
+  .c-name { font-family: var(--font-text); font-size: 11px; font-weight: 600; }
+  .c-line { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+  .c-ref { stroke: var(--rule-firm); stroke-width: 1; stroke-dasharray: 4 4; fill: none; }
+  .c-note { font-family: var(--font-data); font-size: 10px; fill: var(--ink-faint); }
+
+  .legend { display: flex; gap: var(--s4); flex-wrap: wrap; margin-bottom: var(--s3); font-size: var(--t-small); }
+  .legend span { display: inline-flex; align-items: center; gap: 0.4rem; color: var(--ink-soft); }
+  .legend i { width: 14px; height: 3px; border-radius: 2px; display: inline-block; }
+
+  .dot { stroke: var(--paper); stroke-width: 2; }
+
+  /* phone */
+  @container (max-width: 700px) {
+    nav.main-nav { display: none; }
+    .site-header .inner { padding: 0.6rem 1rem; }
+    .band-body { padding: var(--s4) 1rem var(--s4); }
+    .crest { height: 48px; width: 48px; }
+    .crest.sm { height: 36px; width: 36px; }
+    .last-bar { padding: var(--s3) 1rem; gap: var(--s3); }
+    .lb-more { margin-left: 0; }
+    main.page { padding: var(--s4) 1rem var(--s4); }
+    .tiles.six { grid-template-columns: repeat(2, 1fr); }
+    .tab-bar { display: grid; }
+  }
+
+  .tab-bar { display: none; grid-template-columns: repeat(5, 1fr); background: var(--board); border-top: 2px solid var(--gold); position: sticky; bottom: 0; z-index: 40; }
+
+  .tab-bar a {
+    display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 44px;
+    padding: 0.5rem 0.1rem 0.55rem; text-align: center; color: var(--on-board-soft);
+    font-family: var(--font-data); font-size: var(--t-micro); font-weight: 600; line-height: 1.3; cursor: pointer;
+  }
+
+  .tab-bar a.active { color: var(--gold-leaf); }
+  .tab-bar svg { width: 19px; height: 19px; display: block; margin: 0 auto 2px; fill: none; stroke: currentColor; stroke-width: 1.3; stroke-linecap: round; stroke-linejoin: round; }
+
+  .site-footer { border-top: 1px solid var(--rule); color: var(--ink-soft); font-size: var(--t-small); text-align: center; padding: 1.2rem; }
+
+  .view { display: none; }
+  .view.active { display: block; }
+</style>
+
+<div id="app" class="device-desktop">
+  <div class="chrome-bar">
+    <div class="chrome-title">
+      Draft D · Merged
+      <small>Form card paired with the fixture, gold-on-board stats, charts under the division table.</small>
+    </div>
+    <div class="chrome-group" role="group" aria-label="Page">
+      <button type="button" data-view="home" aria-pressed="true">Home</button>
+      <button type="button" data-view="stats" aria-pressed="false">Season · Stats</button>
+    </div>
+    <div class="chrome-group" role="group" aria-label="Width">
+      <button type="button" data-width="phone" aria-pressed="false">375px</button>
+      <button type="button" data-width="desktop" aria-pressed="true">Desktop</button>
+    </div>
+  </div>
+
+  <div class="device">
+    <!-- ===================== HOME ===================== -->
+    <div class="view active" id="view-home">
+      <header class="site-header">
+        <div class="inner">
+          <div class="brand">
+            <div class="crest sm"></div>
+            <div>
+              <div class="name" style="font-size: var(--t-subtitle)">Old Wellingtonians FC</div>
+              <span class="sub">Arthurian League</span>
+            </div>
+          </div>
+          <nav class="main-nav">
+            <a class="active">Home</a>
+            <a>Matchday</a>
+            <a data-nav="stats">Season</a>
+            <a>Players</a>
+            <a>Records</a>
+            <a style="color: var(--on-board-soft)">Log in</a>
+          </nav>
+        </div>
+      </header>
+
+      <div class="band">
+        <div class="band-body">
+          <div class="band-left">
+            <section class="card form-card">
+              <span class="label">Division 5</span>
+              <div class="form-pos">
+                <b>6<sup>th</sup></b>
+                <small>of 8 &middot; 12 points</small>
+              </div>
+
+              <span class="label">Recent form &middot; last 5</span>
+              <div class="form-strip">
+                <span class="form-run"><span class="form-badge D">D</span><small>3&ndash;3</small></span>
+                <span class="form-run"><span class="form-badge D">D</span><small>2&ndash;2</small></span>
+                <span class="form-run"><span class="form-badge L">L</span><small>3&ndash;5</small></span>
+                <span class="form-run"><span class="form-badge D">D</span><small>1&ndash;1</small></span>
+                <span class="form-run"><span class="form-badge W latest">W</span><small>4&ndash;1</small></span>
+              </div>
+            </section>
+          </div>
+
+          <section class="card">
+            <div class="card-head">
+              <span class="block">Next match</span>
+              <span class="tag">League</span>
+            </div>
+
+            <div class="nm-teams">
+              <div class="nm-team">
+                <div class="nm-badge them">OS</div>
+                <strong>Old Stoics</strong>
+                <em>Home</em>
+              </div>
+              <div class="nm-mid">
+                <span class="vs">vs</span>
+                <b class="time">14:00</b>
+                <span class="where">Stowe School,<br>Buckingham</span>
+              </div>
+              <div class="nm-team">
+                <div class="nm-badge us">OWF</div>
+                <strong>Old Wellingtonians</strong>
+                <em>Away</em>
+              </div>
+            </div>
+
+            <p class="nm-date">Saturday 14 March 2026</p>
+
+            <div class="nm-count" id="cd4">
+              <div class="nm-cell"><b data-cd="d">02</b><span class="label">Days</span></div>
+              <div class="nm-cell"><b data-cd="h">05</b><span class="label">Hrs</span></div>
+              <div class="nm-cell"><b data-cd="m">00</b><span class="label">Min</span></div>
+            </div>
+
+            <div class="nm-actions">
+              <button type="button" data-cal>Add to calendar</button>
+              <button type="button" class="secondary">Match details</button>
+            </div>
+            <p class="nm-said" data-said hidden>Saved to your calendar, Sat 14 Mar 14:00.</p>
+          </section>
+        </div>
+      </div>
+
+      <div class="last-bar">
+        <div class="lb-score">
+          <span class="result-pill W">W</span>
+          <b>4&ndash;1</b>
+          <span class="muted">v Old Stoics &middot; Sat 7 Mar</span>
+        </div>
+        <div class="lb-facts">
+          <div>
+            <span class="label">Goals</span>
+            <a href="#">Tom Simeon</a> 2, <a href="#">David Pugh</a>, <a href="#">Matt Wray</a>
+          </div>
+          <div>
+            <span class="label">Man of the match</span>
+            <a href="#">Tom Simeon</a>
+          </div>
+        </div>
+        <a href="#" class="lb-more">Full match &rarr;</a>
+      </div>
+
+      <main class="page">
+        <section class="sheet">
+          <div class="head">
+            <h2>Your season</h2>
+            <a href="#" class="more">Owen Gibbons &rarr;</a>
+          </div>
+          <div class="tiles">
+            <div class="tile"><b>9</b><span>Apps</span></div>
+            <div class="tile"><b>5</b><span>Goals</span></div>
+            <div class="tile"><b>2</b><span>MOTM</span></div>
+          </div>
+        </section>
+
+        <div class="home-grid">
+          <section class="sheet g-outlook">
+            <div class="head">
+              <h2>Match outlook</h2>
+              <a href="#" class="more">All matches &rarr;</a>
+            </div>
+            <div class="outlook">
+              <div class="ol-group">
+                <div class="ol-head">Recent results</div>
+                <div class="ol-row">
+                  <span class="ol-when"><b>Sat 7 Mar</b>League</span>
+                  <span class="ol-score W">4&ndash;1</span>
+                  <span class="ol-opp">Old Stoics<small>Simeon 2, Pugh, Wray</small></span>
+                  <span class="ol-venue">H</span>
+                </div>
+                <div class="ol-row">
+                  <span class="ol-when"><b>Sat 21 Feb</b>League</span>
+                  <span class="ol-score D">1&ndash;1</span>
+                  <span class="ol-opp">Old Salopians<small>Grindon</small></span>
+                  <span class="ol-venue">A</span>
+                </div>
+                <div class="ol-row">
+                  <span class="ol-when"><b>Sat 24 Jan</b>League</span>
+                  <span class="ol-score L">3&ndash;5</span>
+                  <span class="ol-opp">Old Worthians<small>Gibbons 2, Nagra</small></span>
+                  <span class="ol-venue">A</span>
+                </div>
+              </div>
+
+              <div class="ol-group">
+                <div class="ol-head" style="margin-top: var(--s3)">Upcoming fixtures</div>
+                <div class="ol-row">
+                  <span class="ol-when"><b>Sat 14 Mar</b>League</span>
+                  <span class="ol-score next">14:00</span>
+                  <span class="ol-opp">Old Stoics<small>Stowe School</small></span>
+                  <span class="ol-venue">A</span>
+                </div>
+                <div class="ol-row">
+                  <span class="ol-when"><b>Sat 21 Mar</b>League</span>
+                  <span class="ol-score next">14:00</span>
+                  <span class="ol-opp">Old Malvernians<small>Wellington College</small></span>
+                  <span class="ol-venue">H</span>
+                </div>
+                <div class="ol-row tbc">
+                  <span class="ol-when"><b>&nbsp;</b>&nbsp;</span>
+                  <span class="ol-score tbc">TBC</span>
+                  <span class="ol-opp">Fixture to be confirmed</span>
+                  <span class="ol-venue">&nbsp;</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="sheet g-league">
+            <div class="head">
+              <h2>Division 5</h2>
+              <a href="#" class="more">Full table &rarr;</a>
+            </div>
+            <div class="table-hold">
+              <table class="data">
+                <thead>
+                  <tr><th>#</th><th>Team</th><th class="num">P</th><th class="num">Pts</th><th class="num">Form</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>4</td><td>Old Malvernians</td><td class="num">12</td><td class="num">21</td>
+                    <td><div class="chips"><span class="chip W">W</span><span class="chip L">L</span><span class="chip W">W</span><span class="chip D">D</span><span class="chip W">W</span></div></td></tr>
+                  <tr><td>5</td><td>Old King's Scholars</td><td class="num">13</td><td class="num">18</td>
+                    <td><div class="chips"><span class="chip D">D</span><span class="chip W">W</span><span class="chip L">L</span><span class="chip W">W</span><span class="chip L">L</span></div></td></tr>
+                  <tr class="lt-us"><td>6</td><td>Old Wellingtonians</td><td class="num">13</td><td class="num">12</td>
+                    <td><div class="chips"><span class="chip D">D</span><span class="chip D">D</span><span class="chip L">L</span><span class="chip D">D</span><span class="chip W">W</span></div></td></tr>
+                  <tr><td>7</td><td>Old Salopians</td><td class="num">13</td><td class="num">11</td>
+                    <td><div class="chips"><span class="chip L">L</span><span class="chip L">L</span><span class="chip D">D</span><span class="chip L">L</span><span class="chip W">W</span></div></td></tr>
+                  <tr><td>8</td><td>Old Stoics</td><td class="num">13</td><td class="num">8</td>
+                    <td><div class="chips"><span class="chip L">L</span><span class="chip L">L</span><span class="chip W">W</span><span class="chip L">L</span><span class="chip L">L</span></div></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="sheet g-season">
+            <div class="head">
+              <h2>Season so far</h2>
+              <span class="muted">13 played</span>
+            </div>
+            <div class="record">
+              <div class="w"><b>3</b><span class="label">Won</span><small>23%</small></div>
+              <div class="d"><b>3</b><span class="label">Drawn</span><small>23%</small></div>
+              <div class="l"><b>7</b><span class="label">Lost</span><small>54%</small></div>
+            </div>
+
+            <div class="bars">
+              <div class="bar">
+                <span class="bar-label">For</span>
+                <span class="bar-track"><i class="bar-fill gf" style="width: 80%"></i></span>
+                <span class="bar-value">32</span>
+              </div>
+              <div class="bar">
+                <span class="bar-label">Against</span>
+                <span class="bar-track"><i class="bar-fill ga" style="width: 100%"></i></span>
+                <span class="bar-value">40</span>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <!-- ===================== SEASON · STATS ===================== -->
+    <div class="view" id="view-stats">
+      <header class="site-header">
+        <div class="inner">
+          <div class="brand">
+            <div class="crest sm"></div>
+            <div>
+              <div class="name" style="font-size: var(--t-subtitle)">Old Wellingtonians FC</div>
+              <span class="sub">Arthurian League</span>
+            </div>
+          </div>
+          <nav class="main-nav">
+            <a data-nav="home">Home</a>
+            <a>Matchday</a>
+            <a class="active">Season</a>
+            <a>Players</a>
+            <a>Records</a>
+            <a style="color: var(--on-board-soft)">Log in</a>
+          </nav>
+        </div>
+      </header>
+
+      <main class="page">
+        <h1>Season 2025/26</h1>
+
+        <!-- the season filter, now above the tabs so it holds across both -->
+        <div class="season-filter">
+          <span class="label" style="display: inline">Season</span>
+          <button type="button" class="chip-btn active">2025/26</button>
+          <button type="button" class="chip-btn">2024/25</button>
+          <button type="button" class="chip-btn">All seasons</button>
+        </div>
+
+        <div class="head" style="margin-bottom: var(--s4)">
+          <div class="seg">
+            <a>Season</a>
+            <a class="active">Stats</a>
+          </div>
+        </div>
+
+        <div class="tiles six" style="grid-template-columns: repeat(3, 1fr); margin-bottom: var(--s4)">
+          <div class="tile"><b>13</b><span>Played</span></div>
+          <div class="tile"><b>2.46</b><span>Scored / game</span></div>
+          <div class="tile"><b>3.08</b><span>Conceded / game</span></div>
+          <div class="tile"><b>100%</b><span>Both teams scored</span></div>
+          <div class="tile"><b>0</b><span>Clean sheets</span></div>
+          <div class="tile"><b>47</b><span>Players used</span></div>
+        </div>
+
+        <div class="stats-two">
+          <section class="sheet">
+            <span class="label ruled">How the games finished</span>
+            <div class="donut-wrap">
+              <svg width="128" height="128" viewBox="0 0 128 128" role="img" aria-label="Won 3, drawn 3, lost 7 of 13 matches">
+                <circle cx="64" cy="64" r="48" fill="none" stroke="#e6e9e2" stroke-width="18"></circle>
+                <circle cx="64" cy="64" r="48" fill="none" stroke="#2f7d4f" stroke-width="18" stroke-dasharray="69.6 232" transform="rotate(-90 64 64)"></circle>
+                <circle cx="64" cy="64" r="48" fill="none" stroke="#8a8b83" stroke-width="18" stroke-dasharray="69.6 232" transform="rotate(-20.4 64 64)"></circle>
+                <circle cx="64" cy="64" r="48" fill="none" stroke="#b3392f" stroke-width="18" stroke-dasharray="162.4 232" transform="rotate(49.2 64 64)"></circle>
+                <text x="64" y="60" text-anchor="middle" style="font-family: 'Libre Caslon Display', Georgia, serif; font-size: 1.7rem; fill: #20221f">13</text>
+                <text x="64" y="79" text-anchor="middle" style="font-family: Archivo, sans-serif; font-size: 0.6rem; letter-spacing: 0.1em; fill: #6a6a63">MATCHES</text>
+              </svg>
+              <div class="donut-key">
+                <div><span><i style="background: #2f7d4f"></i>Won</span><b>3 &middot; 23%</b></div>
+                <div><span><i style="background: #8a8b83"></i>Drawn</span><b>3 &middot; 23%</b></div>
+                <div><span><i style="background: #b3392f"></i>Lost</span><b>7 &middot; 54%</b></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="sheet">
+            <span class="label ruled">Where the goals came</span>
+            <div class="split" role="img" aria-label="17 goals scored at home, 15 away">
+              <span class="a" style="flex: 17">17 home (53%)</span>
+              <span class="b" style="flex: 15">15 away (47%)</span>
+            </div>
+          </section>
+
+          <section class="sheet">
+            <span class="label ruled">Most frequent scorelines</span>
+            <div class="hbars">
+              <div class="hbar"><span class="k">4&ndash;1</span><span class="track"><i class="fill" style="width: 100%"></i></span><span class="v">2</span></div>
+              <div class="hbar"><span class="k">2&ndash;4</span><span class="track"><i class="fill" style="width: 100%"></i></span><span class="v">2</span></div>
+              <div class="hbar"><span class="k">3&ndash;3</span><span class="track"><i class="fill quiet" style="width: 50%"></i></span><span class="v">1</span></div>
+              <div class="hbar"><span class="k">1&ndash;1</span><span class="track"><i class="fill quiet" style="width: 50%"></i></span><span class="v">1</span></div>
+              <div class="hbar"><span class="k">2&ndash;2</span><span class="track"><i class="fill quiet" style="width: 50%"></i></span><span class="v">1</span></div>
+              <div class="hbar"><span class="k">5&ndash;1</span><span class="track"><i class="fill quiet" style="width: 50%"></i></span><span class="v">1</span></div>
+              <div class="hbar"><span class="k">1&ndash;7</span><span class="track"><i class="fill quiet" style="width: 50%"></i></span><span class="v">1</span></div>
+            </div>
+          </section>
+
+          <section class="sheet">
+            <span class="label ruled">Winning and losing margins</span>
+            <div class="hbars">
+              <div class="hbar"><span class="k">Draw</span><span class="track"><i class="fill quiet" style="width: 75%"></i></span><span class="v">3</span></div>
+              <div class="hbar"><span class="k">By 1</span><span class="track"><i class="fill quiet" style="width: 25%"></i></span><span class="v">1</span></div>
+              <div class="hbar"><span class="k">By 2</span><span class="track"><i class="fill" style="width: 100%"></i></span><span class="v">4</span></div>
+              <div class="hbar"><span class="k">By 3</span><span class="track"><i class="fill quiet" style="width: 75%"></i></span><span class="v">3</span></div>
+              <div class="hbar"><span class="k">By 4</span><span class="track"><i class="fill quiet" style="width: 25%"></i></span><span class="v">1</span></div>
+              <div class="hbar"><span class="k">By 6</span><span class="track"><i class="fill quiet" style="width: 25%"></i></span><span class="v">1</span></div>
+            </div>
+          </section>
+        </div>
+
+        <section class="sheet" style="margin-top: var(--s4)">
+          <div class="head">
+            <div>
+              <span class="label">The division</span>
+              <h2 style="margin: 0">Attack and defence</h2>
+            </div>
+            <div class="seg">
+              <a class="active" data-ratio="attack">Attack</a>
+              <a data-ratio="defence">Defence</a>
+            </div>
+          </div>
+          <div id="ratios"></div>
+          <div class="avg-note"><i></i> <span id="ratio-note"></span></div>
+        </section>
+
+        <!-- ===== charts ===== -->
+        <section class="sheet chart-card" style="margin-top: var(--s4)">
+          <div class="head">
+            <div>
+              <span class="label">Cumulative goals, matchday by matchday</span>
+              <h2 style="margin: 0">The golden boot race</h2>
+            </div>
+          </div>
+
+          <div class="legend">
+            <span><i style="background: #c9992b"></i>Owen Gibbons</span>
+            <span><i style="background: #00897a"></i>Tom Simeon</span>
+            <span><i style="background: #6340a8"></i>Hugh Grindon</span>
+            <span><i style="background: #a83a17"></i>Dhaneal Nagra</span>
+          </div>
+
+          <div class="chart-hold">
+            <svg viewBox="0 0 480 272" role="img" aria-label="Cumulative goals by matchday: Gibbons and Simeon both finish on five, Grindon three, Nagra two.">
+              <g class="c-grid">
+                <line x1="30" y1="40" x2="330" y2="40"></line>
+                <line x1="30" y1="79" x2="330" y2="79"></line>
+                <line x1="30" y1="118" x2="330" y2="118"></line>
+                <line x1="30" y1="157" x2="330" y2="157"></line>
+                <line x1="30" y1="196" x2="330" y2="196"></line>
+              </g>
+              <line class="c-axis" x1="30" y1="235" x2="330" y2="235"></line>
+
+              <g class="c-tick" text-anchor="end">
+                <text x="24" y="44">5</text>
+                <text x="24" y="83">4</text>
+                <text x="24" y="122">3</text>
+                <text x="24" y="161">2</text>
+                <text x="24" y="200">1</text>
+                <text x="24" y="239">0</text>
+              </g>
+
+              <g class="c-tick" text-anchor="middle">
+                <text x="30" y="252">6 Sep</text>
+                <text x="105" y="252">4 Oct</text>
+                <text x="180" y="252">8 Nov</text>
+                <text x="255" y="252">17 Jan</text>
+                <text x="330" y="252">7 Mar</text>
+              </g>
+
+              <polyline class="c-line" stroke="#a83a17" points="30,235 55,196 80,196 105,157 130,157 155,157 180,157 205,157 230,157 255,157 280,157 305,157 330,157"></polyline>
+              <polyline class="c-line" stroke="#6340a8" points="30,235 55,235 80,196 105,196 130,196 155,196 180,196 205,196 230,157 255,118 280,118 305,118 330,118"></polyline>
+              <polyline class="c-line" stroke="#00897a" points="30,235 55,235 80,235 105,235 130,157 155,157 180,157 205,157 230,157 255,157 280,118 305,118 330,40"></polyline>
+              <polyline class="c-line" stroke="#c9992b" points="30,196 55,196 80,196 105,79 130,79 155,79 180,79 205,79 230,79 255,79 280,40 305,40 330,40"></polyline>
+
+              <circle class="dot" cx="330" cy="40" r="4" fill="#c9992b"></circle>
+              <circle class="dot" cx="330" cy="40" r="4" fill="#00897a"></circle>
+              <circle class="dot" cx="330" cy="118" r="4" fill="#6340a8"></circle>
+              <circle class="dot" cx="330" cy="157" r="4" fill="#a83a17"></circle>
+
+              <g class="c-name">
+                <text x="340" y="36" fill="#c9992b">Gibbons 5</text>
+                <text x="340" y="54" fill="#00897a">Simeon 5</text>
+                <text x="340" y="122" fill="#6340a8">Grindon 3</text>
+                <text x="340" y="161" fill="#a83a17">Nagra 2</text>
+              </g>
+            </svg>
+          </div>
+        </section>
+
+        <div class="stats-two" style="margin-top: var(--s4)">
+          <section class="sheet chart-card">
+            <div class="head">
+              <div>
+                <span class="label">Every player who has appeared</span>
+                <h2 style="margin: 0">Games against contributions</h2>
+              </div>
+            </div>
+            <p class="muted" style="margin-bottom: var(--s3)">Dot size: how many players share the spot.</p>
+            <div class="chart-hold">
+              <svg viewBox="0 0 480 300" role="img" aria-label="Scatter of appearances against goals plus assists. Gibbons leads on eight contributions in nine games.">
+                <g class="c-grid">
+                  <line x1="40" y1="30" x2="450" y2="30"></line>
+                  <line x1="40" y1="81.5" x2="450" y2="81.5"></line>
+                  <line x1="40" y1="133" x2="450" y2="133"></line>
+                  <line x1="40" y1="184.5" x2="450" y2="184.5"></line>
+                </g>
+                <line class="c-axis" x1="40" y1="236" x2="450" y2="236"></line>
+                <line class="c-axis" x1="40" y1="30" x2="40" y2="236"></line>
+
+                <line class="c-ref" x1="40" y1="236" x2="268.6" y2="30"></line>
+                <text class="c-note" x="262" y="22" text-anchor="end">one a game</text>
+
+                <g class="c-tick" text-anchor="end">
+                  <text x="32" y="240">0</text>
+                  <text x="32" y="188">2</text>
+                  <text x="32" y="137">4</text>
+                  <text x="32" y="85">6</text>
+                  <text x="32" y="34">8</text>
+                </g>
+                <g class="c-tick" text-anchor="middle">
+                  <text x="68.6" y="254">1</text>
+                  <text x="154.3" y="254">4</text>
+                  <text x="240" y="254">7</text>
+                  <text x="325.7" y="254">10</text>
+                  <text x="411.4" y="254">13</text>
+                  <text x="245" y="274">Appearances</text>
+                </g>
+
+                <g fill="#3f6b5c" fill-opacity="0.75" class="dot">
+                  <circle cx="68.6" cy="236" r="14"><title>15 players: one game, no goal or assist</title></circle>
+                  <circle cx="97.1" cy="236" r="9"><title>4 players: two games, no contribution</title></circle>
+                  <circle cx="68.6" cy="210.25" r="8.3"><title>3 players: one game, one contribution</title></circle>
+                  <circle cx="97.1" cy="210.25" r="7.5"><title>2 players: two games, one contribution</title></circle>
+                  <circle cx="125.7" cy="236" r="6"><title>Lewis: 3 games</title></circle>
+                  <circle cx="125.7" cy="184.5" r="6"><title>Alex Wessely: 3 games, 2 contributions</title></circle>
+                  <circle cx="125.7" cy="158.75" r="6"><title>Artem Naydenov: 3 games, 3 contributions</title></circle>
+                  <circle cx="154.3" cy="236" r="7.5"><title>2 players: four games, no contribution</title></circle>
+                  <circle cx="154.3" cy="210.25" r="7.5"><title>2 players: four games, one contribution</title></circle>
+                  <circle cx="154.3" cy="184.5" r="6"><title>David Pugh: 4 games, 2 contributions</title></circle>
+                  <circle cx="182.9" cy="236" r="7.5"><title>2 players: five games, no contribution</title></circle>
+                  <circle cx="211.4" cy="210.25" r="7.5"><title>2 players: six games, one contribution</title></circle>
+                  <circle cx="211.4" cy="184.5" r="6"><title>Will Line: 6 games, 2 contributions</title></circle>
+                  <circle cx="240" cy="236" r="6"><title>Joe Britz: 7 games</title></circle>
+                  <circle cx="268.6" cy="184.5" r="6"><title>Max Burke: 8 games, 2 contributions</title></circle>
+                  <circle cx="297.1" cy="222.5" r="6"><title>Dom Bonham-Lloyd: 9 games, 1 contribution</title></circle>
+                  <circle cx="297.1" cy="184.5" r="6"><title>Jack Perry: 9 games, 2 contributions</title></circle>
+                  <circle cx="68.6" cy="184.5" r="6"><title>Hector Elrington: 1 game, 2 goals</title></circle>
+                </g>
+
+                <g class="dot">
+                  <circle cx="154.3" cy="107.25" r="7" fill="#c9992b"><title>Dhaneal Nagra: 4 games, 5 contributions</title></circle>
+                  <circle cx="211.4" cy="107.25" r="7" fill="#c9992b"><title>Jacob Kasaska: 6 games, 5 contributions</title></circle>
+                  <circle cx="411.4" cy="107.25" r="7" fill="#c9992b"><title>Hugh Grindon: 13 games, 5 contributions</title></circle>
+                  <circle cx="268.6" cy="55.75" r="7" fill="#c9992b"><title>Tom Simeon: 8 games, 7 contributions</title></circle>
+                  <circle cx="297.1" cy="30" r="7" fill="#c9992b"><title>Owen Gibbons: 9 games, 8 contributions</title></circle>
+                </g>
+
+                <g class="c-name" fill="#20221f">
+                  <text x="308" y="34">Gibbons</text>
+                  <text x="280" y="60">Simeon</text>
+                  <text x="402" y="111" text-anchor="end">Grindon</text>
+                  <text x="211.4" y="94" text-anchor="middle">Kasaska</text>
+                  <text x="146" y="111" text-anchor="end">Nagra</text>
+                </g>
+              </svg>
+            </div>
+          </section>
+
+          <section class="sheet chart-card">
+            <div class="head">
+              <div>
+                <span class="label">47 players used</span>
+                <h2 style="margin: 0">How often people played</h2>
+              </div>
+            </div>
+            <div class="chart-hold">
+              <svg viewBox="0 0 480 300" role="img" aria-label="Distribution of appearances: 19 players appeared once, one played all 13.">
+                <g class="c-grid">
+                  <line x1="40" y1="30" x2="450" y2="30"></line>
+                  <line x1="40" y1="82.5" x2="450" y2="82.5"></line>
+                  <line x1="40" y1="135" x2="450" y2="135"></line>
+                  <line x1="40" y1="187.5" x2="450" y2="187.5"></line>
+                </g>
+                <line class="c-axis" x1="40" y1="240" x2="450" y2="240"></line>
+
+                <g class="c-tick" text-anchor="end">
+                  <text x="32" y="244">0</text>
+                  <text x="32" y="191">5</text>
+                  <text x="32" y="139">10</text>
+                  <text x="32" y="86">15</text>
+                  <text x="32" y="34">20</text>
+                </g>
+
+                <g fill="#c9992b">
+                  <rect x="44" y="30" width="23" height="210" rx="2"><title>19 players appeared once</title></rect>
+                  <rect x="75.5" y="173.7" width="23" height="66.3" rx="2"><title>6 players appeared twice</title></rect>
+                  <rect x="107" y="206.8" width="23" height="33.2" rx="2"><title>3 players appeared 3 times</title></rect>
+                  <rect x="138.5" y="173.7" width="23" height="66.3" rx="2"><title>6 players appeared 4 times</title></rect>
+                  <rect x="170" y="217.9" width="23" height="22.1" rx="2"><title>2 players appeared 5 times</title></rect>
+                  <rect x="201.5" y="195.8" width="23" height="44.2" rx="2"><title>4 players appeared 6 times</title></rect>
+                  <rect x="233" y="228.9" width="23" height="11.1" rx="2"><title>1 player appeared 7 times</title></rect>
+                  <rect x="264.5" y="217.9" width="23" height="22.1" rx="2"><title>2 players appeared 8 times</title></rect>
+                  <rect x="296" y="206.8" width="23" height="33.2" rx="2"><title>3 players appeared 9 times</title></rect>
+                  <rect x="422" y="228.9" width="23" height="11.1" rx="2"><title>Hugh Grindon played all 13</title></rect>
+                </g>
+
+                <g class="c-tick" text-anchor="middle">
+                  <text x="55.5" y="254">1</text>
+                  <text x="150" y="254">4</text>
+                  <text x="244.5" y="254">7</text>
+                  <text x="339" y="254">10</text>
+                  <text x="433.5" y="254">13</text>
+                  <text x="245" y="274">Games played</text>
+                </g>
+
+                <text class="c-name" x="433.5" y="222" text-anchor="middle" fill="#8c6716">Grindon</text>
+              </svg>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <nav class="tab-bar">
+      <a class="active" data-nav="home"><svg viewBox="0 0 24 24"><path d="M3 10.5 12 4l9 6.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Home</a>
+      <a><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 4v4M12 16v4M4 12h4M16 12h4"/></svg>Matchday</a>
+      <a data-nav="stats"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Season</a>
+      <a><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.4"/><path d="M5 20c0-3.6 3.1-6 7-6s7 2.4 7 6"/></svg>Players</a>
+      <a><svg viewBox="0 0 24 24"><path d="M8 4h8v6a4 4 0 0 1-8 0z"/><path d="M8 6H5v2a3 3 0 0 0 3 3M16 6h3v2a3 3 0 0 1-3 3M10 20h4M12 14v6"/></svg>Records</a>
+    </nav>
+
+    <footer class="site-footer">Old Wellingtonians FC &middot; mock-up, real 2025/26 figures</footer>
+  </div>
+
+  <p class="device-note">Chart series validated for colour-blind separation. Worst adjacent pair &Delta;E 15.0 under protanopia.</p>
+</div>
+
+<script>
+  (function () {
+    var app = document.getElementById('app');
+
+    function show(view) {
+      app.querySelectorAll('.view').forEach(function (v) { v.classList.toggle('active', v.id === 'view-' + view); });
+      app.querySelectorAll('[data-view]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.view === view)); });
+    }
+
+    app.querySelectorAll('[data-view]').forEach(function (btn) {
+      btn.addEventListener('click', function () { show(btn.dataset.view); });
+    });
+
+    app.querySelectorAll('[data-nav]').forEach(function (a) {
+      a.addEventListener('click', function (e) { e.preventDefault(); show(a.dataset.nav); });
+    });
+
+    app.querySelectorAll('[data-width]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        app.querySelectorAll('[data-width]').forEach(function (b) { b.setAttribute('aria-pressed', String(b === btn)); });
+        app.classList.toggle('device-phone', btn.dataset.width === 'phone');
+      });
+    });
+
+
+    app.querySelectorAll('.chip-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        app.querySelectorAll('.chip-btn').forEach(function (b) { b.classList.toggle('active', b === btn); });
+      });
+    });
+
+    app.querySelectorAll('[data-cal]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var n = btn.closest('section').querySelector('[data-said]');
+        if (n) n.hidden = false;
+      });
+    });
+
+    var KICKOFF = Date.parse('2026-03-14T14:00:00Z');
+    var MOCK_NOW = Date.parse('2026-03-12T09:00:00Z');
+    var loaded = Date.now();
+
+    function pad(n) { return String(n).padStart(2, '0'); }
+
+    function tick() {
+      var left = Math.max(0, KICKOFF - (MOCK_NOW + (Date.now() - loaded)));
+      var mins = Math.floor(left / 60000);
+      var box = document.getElementById('cd4');
+      if (!box) return;
+      box.querySelector('[data-cd="d"]').textContent = pad(Math.floor(mins / 1440));
+      box.querySelector('[data-cd="h"]').textContent = pad(Math.floor(mins % 1440 / 60));
+      box.querySelector('[data-cd="m"]').textContent = pad(mins % 60);
+    }
+
+    tick();
+    setInterval(tick, 30000);
+
+    var CLUBS = [
+      { name: 'Old Cheltonians', p: 13, gf: 44, ga: 18 },
+      { name: 'Old Oundelians', p: 13, gf: 38, ga: 20 },
+      { name: 'Old Worthians', p: 13, gf: 35, ga: 25 },
+      { name: 'Old Malvernians', p: 12, gf: 30, ga: 24 },
+      { name: "Old King's Scholars", p: 13, gf: 28, ga: 29 },
+      { name: 'Old Wellingtonians', p: 13, gf: 32, ga: 40, us: true },
+      { name: 'Old Salopians', p: 13, gf: 24, ga: 38 },
+      { name: 'Old Stoics', p: 13, gf: 19, ga: 45 }
+    ];
+
+    function drawRatios(mode) {
+      var rows = CLUBS.map(function (c) {
+        return { name: c.name, us: !!c.us, v: (mode === 'attack' ? c.gf : c.ga) / c.p };
+      });
+      rows.sort(function (a, b) { return mode === 'attack' ? b.v - a.v : a.v - b.v; });
+      var max = Math.max.apply(null, rows.map(function (r) { return r.v; }));
+      var avg = rows.reduce(function (s, r) { return s + r.v; }, 0) / rows.length;
+
+      document.getElementById('ratios').innerHTML = rows.map(function (r, i) {
+        return '<div class="ratio-row' + (r.us ? ' us' : '') + '">' +
+          '<span class="pos">' + (i + 1) + '</span><span class="club">' + r.name + '</span>' +
+          '<span class="track"><i class="fill" style="width:' + (r.v / max * 100).toFixed(1) + '%"></i></span>' +
+          '<span class="v">' + r.v.toFixed(2) + '</span></div>';
+      }).join('');
+
+      document.getElementById('ratio-note').textContent = 'Division average ' + avg.toFixed(2) +
+        (mode === 'attack' ? ' scored per game' : ' conceded per game');
+    }
+
+    app.querySelectorAll('[data-ratio]').forEach(function (a) {
+      a.addEventListener('click', function (e) {
+        e.preventDefault();
+        app.querySelectorAll('[data-ratio]').forEach(function (b) { b.classList.toggle('active', b === a); });
+        drawRatios(a.dataset.ratio);
+      });
+    });
+
+    drawRatios('attack');
+  }());
+</script>
+
+</body></html>

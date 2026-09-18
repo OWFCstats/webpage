@@ -9,8 +9,9 @@ and is enforced by Row Level Security, not just the UI.
 
 1. **Database** — in the Supabase Dashboard, open *SQL Editor*, paste the whole
    of [`supabase/schema.sql`](supabase/schema.sql) and run it. It creates the
-   `players`, `matches`, `appearances`, `teams` and `league_rows` tables and the
-   RLS policies (public `select`, writes only for authenticated users).
+   seven tables — `players`, `matches`, `appearances`, `teams`, `league_rows`,
+   `season_awards` and `season_status` — and the RLS policies (public `select`,
+   writes only for authenticated users).
 2. **Auth** — in *Authentication → Sign In / Up*, turn **off** both "Allow new
    users to sign up" **and** "Allow anonymous sign-ins". Writes are granted to
    any `authenticated` role, and an anonymous sign-in creates one, so either
@@ -23,8 +24,8 @@ and is enforced by Row Level Security, not just the UI.
    project URL and publishable key (Dashboard → Settings → API). `.env*` is
    git-ignored; the publishable key is a public client key — data is protected
    by RLS, not by hiding the key.
-4. **Crest** — drop the club crest image at `public/crest.png`. Until it
-   exists the header shows an "OW" monogram.
+4. **Crest** — `public/crest.png` is the club's crest and is committed. If it
+   ever fails to load, the header falls back to an "OW" monogram.
 
 ## Develop
 
@@ -279,14 +280,17 @@ its own. Nothing else in the workflow needs to change.
 
 ## How stats work
 
-Everything on the site is computed from the three tables at load time —
-nothing is hardcoded and no stat is stored twice. (The one exception is the
-league table, which needs other clubs' results; see *League standings* below.) Clean sheets are derived
+Everything on the site is computed from `players`, `matches`, `appearances`
+and `teams` at load time — nothing is hardcoded and no stat is stored twice. The
+exceptions are the facts our own rows cannot hold, each typed in by an admin:
+the league table (`league_rows`, see *League standings* below), the voted
+Player of the Season (`season_awards`), and whether a season has ended
+(`season_status`). `CLAUDE.md` → *Everything is derived* is the rule. Clean sheets are derived
 and team-wide: every player who appeared in a match where the team conceded
 zero gets one (positions are optional labels and affect no stat). Match
 results (W/D/L) are derived from the score when saving a match. A lineup row
 can also be marked "Dropped out (24h)" — those rows are excluded from all
-stats and surface as a separate Dropouts count on the In-Depth page.
+stats and surface as a separate Dropouts count on Players → Data centre.
 
 Every opponent is a proper record in `teams` (see below), linked from
 `matches.opponent_team_id`. `matches.opponent` still holds the same name as
@@ -317,7 +321,7 @@ League Division 5"), and `updated_at` is stamped on every save so the public
 table can say how current it is.
 
 Points and goal difference are **not** columns. Both are derived in the client
-(`leagueStandings` in `src/lib/stats.js`) like every other stat here, so a
+(`leagueStandings` in `src/lib/league.js`) like every other stat here, so a
 stored total can never drift from the W/D/L it summarises — and there are two
 fewer boxes to fill in on a Saturday night.
 
@@ -325,8 +329,10 @@ Rows sort on points, then goal difference, then goals scored. Where a row
 carries an explicit `position` that wins instead, since leagues apply their own
 tie-breaks and points deductions that a W/D/L line can't show. Home shows our
 row with two clubs either side; the season page shows the whole division. Below
-480px the P, D, GF and GA columns drop out rather than let the table scroll
-sideways.
+360px the P, D, GF and GA columns come out rather than let the table scroll
+sideways; from 360px up all ten show (`docs/DESIGN.md` → *Mobile*). Phase 69
+cuts Home's snapshot to position, club, played and points, and Phase 73 adds
+the form column beside them — `docs/ROADMAP.md` → *Now*.
 
 ## Admin flow
 

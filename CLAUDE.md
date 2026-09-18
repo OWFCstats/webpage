@@ -347,25 +347,38 @@ it.
 Before adding a feature, check `docs/ROADMAP.md`. If it's not there and it's
 not small, it goes there first.
 
-**The redesign is done — phases 56 to 64**, and `docs/DESIGN.md` is where it
-lives now: the next match leads Home with a countdown against it, the last
-result folds into a bar, Season's two chart-shaped sub-pages are one, and that
-one page carries the season's own per-game numbers, the division ranked on its
-attack and defence, and who played how often against what they produced — all
-of it off data already stored. It added no section and no stored column.
-`docs/ROADMAP.md` → *The redesign* keeps three findings rather than the plan,
-because each would otherwise be re-argued: `league_rows` holds totals and not
-results, so no club's form is derivable; five separable hues do not exist inside
-the constraints a chart series has, which is why the palette is three pigments
-at two depths (Phase 64, `DESIGN.md` → *Chart series*); and `venue` was said to
-be null everywhere and was not — checked against the committed fixture alone,
-where the venues were invented, while the live rows had been filled in from the
-club's records all along. **A claim about the club's data is checked against
-`backups/` too**, not the fixture by itself.
+**The redesign shipped — phases 56 to 64 — and does not match its mock.** It
+was signed off as a working mock-up, **Draft D**, described in prose in
+`docs/ROADMAP.md` and never committed, so eight sessions built Home and Season →
+Stats from the description and mapped each drawn element onto the nearest
+primitive the site already had. The result has the mock's contents and almost
+none of its shape or colour. **The mock is in the repo now —
+`docs/mocks/home-stats-draft-d.html` — and it is the specification, full stop.**
+Where the roadmap's description of a phase and the mock disagree, the mock wins
+unless the phase names the rule that stops it and says what is drawn instead;
+"the mock is a picture and this file is the contract" is retired, and
+`docs/ROADMAP.md` → *The redesign — what went wrong* is the record of what that
+sentence cost. `docs/DESIGN.md` → *Draft D is the specification* lists what the
+mock decides, each marked with the phase that builds it; the `DESIGN.md`
+sections describing the first pass carry markers pointing there and are
+rewritten as each phase lands. **A visual phase is done when the built route
+sits beside the mock at 375 and 1400 and is the same page** — `check:layout`
+green was true of all eight phases that got this wrong.
 
-**The order in `docs/ROADMAP.md` → *Next* is the whole of what to do now**, with
-Phase 52 — the page budgets — taken first: the redesign closed no budget row and
-left Season → Stats 3,301px over with its shape final.
+Three findings about the data still bind every phase: `league_rows` holds
+totals and not results, so no other club's form is derivable (Phase 73 has it
+typed in — the same class of fact `league_rows` already is); five separable hues
+do not exist for a line that labels itself inside the floors a series colour
+has, so the series palette is three pigments at two depths — and it governs
+*lines only*; every bar, wash and split takes the mock's two pigments, gold and
+racing green (Phase 66, `DESIGN.md` → *Chart series*); and **a claim about the
+club's data is checked against `backups/` too**, not the fixture by itself —
+`venue` was said to be null everywhere and was not.
+
+**The order in `docs/ROADMAP.md` → *Now* is the whole of what to do now**:
+phases 65 to 74, in order, 66 first because everything after it draws with its
+tokens and primitives, and Phase 52 — the page budgets — inside 74 once the
+pages are the mock's and can be measured as such.
 
 **The squad has it.** They played the first game of 2026/27 on 5 September 2026
 and reported a bug on the honours the same weekend, which is Phase 55. So the
