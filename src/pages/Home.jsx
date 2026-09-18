@@ -8,18 +8,19 @@ import FormCard from '../components/home/FormCard';
 import LastGameBar from '../components/home/LastGameBar';
 import MatchOutlook from '../components/home/MatchOutlook';
 import NextFixture from '../components/home/NextFixture';
-import SeasonStats from '../components/home/SeasonStats';
+import SeasonSoFar from '../components/home/SeasonSoFar';
 import YourSeason from '../components/home/YourSeason';
 import {
   currentSeasonOf,
   fixtures,
-  isPlayed,
   latestResult,
   matchContext,
   playedMatches,
   recentFormLine,
+  scorerLine,
   seasonsOf,
   seasonSummary,
+  venueTeam,
 } from '../lib/matches';
 import { leagueStandings } from '../lib/league';
 import { meSummary } from '../lib/me';
@@ -63,11 +64,15 @@ export default function Home() {
       points: ourRow?.points ?? null,
       divisionSize: ranked.length,
       next: upcoming[0],
-      recentResults: playedMatches(matches).slice(0, 3),
-      upcomingFixtures: upcoming.slice(0, 3),
+      // The outlook's own second line (DESIGN.md → *Match outlook*): who
+      // scored for a result, the ground for a fixture — ResultList's
+      // `outlook` variant just renders whatever `note` it's handed.
+      recentResults: playedMatches(matches).slice(0, 3)
+        .map((m) => ({ ...m, note: scorerLine(m, players, appearances) })),
+      upcomingFixtures: upcoming.slice(0, 3)
+        .map((m) => ({ ...m, note: venueTeam(m, teams)?.pitch_name ?? null })),
       lastMatch,
       lastCtx: lastMatch ? matchContext(lastMatch, players, matches, appearances) : null,
-      cleanSheets: seasonMatches.filter((m) => isPlayed(m) && m.goals_against === 0).length,
     };
   }, [players, matches, appearances, leagueRows, teams]);
 
@@ -84,7 +89,7 @@ export default function Home() {
 
   const {
     currentSeason, seasonIsFinal, division, summary, formLine, position, points, divisionSize,
-    next, recentResults, upcomingFixtures, lastMatch, lastCtx, cleanSheets,
+    next, recentResults, upcomingFixtures, lastMatch, lastCtx,
   } = view;
 
   // The form plate's own first line (Phase 67) — this was Home's standalone
@@ -128,11 +133,12 @@ export default function Home() {
 
         {/* Below Your season: the outlook spans both rows on the left, the
             league snapshot and the season's own numbers stack on the right —
-            a two-column grid past 860px, one column on a phone. */}
+            a two-column grid past 900px (the mock's own breakpoint), one
+            column on a phone. */}
         <div className="home-grid">
           <MatchOutlook recent={recentResults} upcoming={upcomingFixtures} />
-          <LeagueTable season={currentSeason} />
-          <SeasonStats summary={summary} cleanSheets={cleanSheets} />
+          <LeagueTable season={currentSeason} compact />
+          <SeasonSoFar summary={summary} />
         </div>
       </div>
     </div>

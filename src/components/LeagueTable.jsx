@@ -9,15 +9,19 @@ import { leagueStandings } from '../lib/league';
  * are derived, never stored; ordering and the join to `teams` live in
  * leagueStandings().
  *
- * One component, two shapes:
- *   `full` — the whole division, as the Season page shows it.
- *   default — our row plus two clubs either side, which is what Home has room
- *   for and what "how are we doing" actually asks.
+ * Two independent choices: `full` picks the window (the whole division, as
+ * Season shows it, against our row plus two clubs either side, which is what
+ * Home has room for) and `compact` picks the shape (Phase 69's four-column
+ * snapshot — `#` · Club · P · Pts, headed by the division name itself rather
+ * than a generic "League table" — against the full ten-column table). Home
+ * uses the narrow window with the compact shape; Season uses the whole
+ * division with the full shape. Nothing stops the other two combinations,
+ * there's just no caller for them yet.
  *
  * A season with nothing entered yet keeps the placeholder line rather than a
  * mocked-up table for data that isn't there.
  */
-export default function LeagueTable({ season, full = false, showSeasonLink = true }) {
+export default function LeagueTable({ season, full = false, compact = false, showSeasonLink = true }) {
   const { leagueRows, teams } = useData();
   const { rows, division, updatedAt } = leagueStandings(leagueRows, teams, season);
   // Ranked before the window is taken, so the numbers down the side of Home's
@@ -27,16 +31,24 @@ export default function LeagueTable({ season, full = false, showSeasonLink = tru
   const note = [season, division].filter(Boolean).join(' · ');
 
   return (
-    <section className="sheet home-widget home-table">
+    <section className={`sheet home-widget home-table${compact ? ' g-league' : ''}`}>
       <div className="head">
-        <div>
-          <span className="label">Standings</span>
-          <h2>League table</h2>
-        </div>
-        <div className="home-widget-head-right">
-          {note && <span className="home-widget-note">{note}</span>}
-          {showSeasonLink && <Link className="more" to="/season">Full standings →</Link>}
-        </div>
+        {compact ? (
+          <h2>{division ?? 'League table'}</h2>
+        ) : (
+          <div>
+            <span className="label">Standings</span>
+            <h2>League table</h2>
+          </div>
+        )}
+        {compact ? (
+          showSeasonLink && <Link className="more" to="/season">Full table →</Link>
+        ) : (
+          <div className="home-widget-head-right">
+            {note && <span className="home-widget-note">{note}</span>}
+            {showSeasonLink && <Link className="more" to="/season">Full standings →</Link>}
+          </div>
+        )}
       </div>
 
       {shown.length === 0 ? (
@@ -44,18 +56,22 @@ export default function LeagueTable({ season, full = false, showSeasonLink = tru
       ) : (
         <>
           <div className="table-wrap">
-            <table className="data league-table">
+            <table className={`data league-table${compact ? ' lt-compact' : ''}`}>
               <thead>
                 <tr>
                   <th className="lt-pos">#</th>
                   <th>Club</th>
-                  <th className="num lt-hide-narrow">P</th>
-                  <th className="num">W</th>
-                  <th className="num lt-hide-narrow">D</th>
-                  <th className="num">L</th>
-                  <th className="num lt-hide-narrow">GF</th>
-                  <th className="num lt-hide-narrow">GA</th>
-                  <th className="num">GD</th>
+                  <th className={compact ? 'num' : 'num lt-hide-narrow'}>P</th>
+                  {!compact && (
+                    <>
+                      <th className="num">W</th>
+                      <th className="num lt-hide-narrow">D</th>
+                      <th className="num">L</th>
+                      <th className="num lt-hide-narrow">GF</th>
+                      <th className="num lt-hide-narrow">GA</th>
+                      <th className="num">GD</th>
+                    </>
+                  )}
                   <th className="num">Pts</th>
                 </tr>
               </thead>
@@ -70,15 +86,19 @@ export default function LeagueTable({ season, full = false, showSeasonLink = tru
                         ? r.name
                         : <Link to={`/opponents/${r.team.slug}`}>{r.name}</Link>}
                     </td>
-                    <td className="num lt-hide-narrow">{r.played}</td>
-                    <td className="num">{r.won}</td>
-                    <td className="num lt-hide-narrow">{r.drawn}</td>
-                    <td className="num">{r.lost}</td>
-                    <td className="num lt-hide-narrow">{r.goals_for}</td>
-                    <td className="num lt-hide-narrow">{r.goals_against}</td>
-                    <td className="num lt-gd">
-                      {r.goalDifference > 0 ? `+${r.goalDifference}` : r.goalDifference}
-                    </td>
+                    <td className={compact ? 'num' : 'num lt-hide-narrow'}>{r.played}</td>
+                    {!compact && (
+                      <>
+                        <td className="num">{r.won}</td>
+                        <td className="num lt-hide-narrow">{r.drawn}</td>
+                        <td className="num">{r.lost}</td>
+                        <td className="num lt-hide-narrow">{r.goals_for}</td>
+                        <td className="num lt-hide-narrow">{r.goals_against}</td>
+                        <td className="num lt-gd">
+                          {r.goalDifference > 0 ? `+${r.goalDifference}` : r.goalDifference}
+                        </td>
+                      </>
+                    )}
                     <td className="num lt-pts">{r.points}</td>
                   </tr>
                 ))}

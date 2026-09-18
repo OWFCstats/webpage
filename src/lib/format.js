@@ -121,6 +121,14 @@ export function initials(name) {
   return name.split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase();
 }
 
+/** "Simeon" — a name's last word, for a row too narrow for the whole thing
+ *  (the outlook's scorer line). A one-word name, of which the club has a
+ *  few, comes back whole rather than losing its only word. */
+export function surname(name) {
+  const words = name.trim().split(/\s+/);
+  return words[words.length - 1];
+}
+
 /** "3rd" — for a rank shown beside a figure. Two pages want it (a player's
  *  rank list and their stat grid), so it lives here rather than in either. */
 export function ordinal(n) {

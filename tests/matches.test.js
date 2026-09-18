@@ -30,6 +30,7 @@ import {
   recentFormLine,
   resultOf,
   scorelineFrequency,
+  scorerLine,
   seasonLadder,
   seasonSummary,
   seasonsOf,
@@ -219,6 +220,19 @@ test('match context survives a walkover, which has no team sheet at all', () => 
   assert.deepEqual(ctx.scorers, []);
   assert.deepEqual(ctx.motm, []);
   assert.equal(ctx.margin, 3);
+});
+
+test('the scorer line reads surnames, most goals first, with a count above one', () => {
+  const brace = on(mid, '2025-10-04', 'Old Stoics');
+  assert.equal(scorerLine(brace, mid.players, mid.appearances), 'Gibbons 3, Nagra, Perry');
+
+  const oneEach = on(mid, '2026-02-07', 'Wellington IX');
+  assert.equal(scorerLine(oneEach, mid.players, mid.appearances), 'Hill, Simeon');
+});
+
+test('the scorer line is null with nothing to show — a walkover, or a blank scoresheet', () => {
+  const walkover = mid.matches.find((m) => m.walkover);
+  assert.equal(scorerLine(walkover, mid.players, mid.appearances), null);
 });
 
 test('the ladder runs newest first, with the goal difference each game left behind', () => {
