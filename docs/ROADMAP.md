@@ -250,52 +250,34 @@ richer outlook row, net of what the shorter season card gave back: 2,283px →
 2,447px unpicked, 2,366px → 2,530px picked, 2,346px → 2,509px
 picked-with-no-apps.
 
-**Phase 70 — Stats, as drawn: the frame and the four small cards.**
-
-- **The season filter is a `.chip-row` of `.chip-btn`s** above the segmented
-  control — the mock's `.season-filter` — with *All seasons* a chip on Stats
-  only. `SeasonSelect` stays where Players uses it: Season's filter sits over a
-  `.seg`, and two select-shaped controls stacked read as a form.
-- **The six tiles are `.tile`s in `.tiles.six`** — three across, two below
-  700px — **not inside a sheet, with no heading and no finding**: the tiles
-  are the heading. Figures in `--font-data` at `--t-subtitle`, two decimals
-  for a rate (the mock's *2.46*), a percentage for both-teams-scored.
-- **Four compact cards in `.stats-two`** (two columns past 900px, one below),
-  each a `.sheet` with a `.label.ruled` head and nothing else — **no `h2`, no
-  finding sentence, no *Show data***:
-  - *How the games finished* — a 128px donut (Recharts stays, sized to the
-    mock) beside a `.donut-key`: one ruled row per result with swatch, name
-    and *3 · 23%*.
-  - *Where the goals came* — `.split`: one 32px bar, home goals in `--chart-1`
-    and away in `--chart-2`, each half labelled *17 home (53%)*. **New**, from
-    `venueSummary`, which already returns each side's `goalsFor`; Phase 62
-    skipped it waiting on venue, which Phase 56 closed. Neutral-ground goals
-    are named under the bar when there are any.
-  - *Most frequent scorelines* — `.hbars`: up to seven `.hbar` rows,
-    `3.4rem 1fr 2.2rem`, a 15px track on `--sheet`, the fill `--chart-1` for
-    the joint-most and `.quiet` (`--chart-2`) for the rest, the count right.
-  - *Winning and losing margins* — the same `.hbar`s: *Draw*, *By 1*, *By 2*
-    … each with its count, draws included as the mock counts them.
-    `marginBuckets` already splits wins from losses; the row is the two added,
-    with the split in its `title`.
-- **A card whose every figure is printed on it needs no data table** — the
-  tiles, these four, the ranked list. A plot that hides names behind dots or
-  lines keeps one behind a quiet *Data* link in its foot (Phase 72). `DESIGN.md`
-  → *Charts* is rewritten to say so; `ChartCard` keeps its table for those
-  three only, and its head becomes `.head`.
-- **Off the page:** `GoalsTrend` — the mock has no goals-per-match line; the
-  split and the margins replaced it — and `PointsAccumulated` under a single
-  season, which draws under *All seasons* only, the mode it exists for (Phase
-  61). **Say so on this phase if either is wanted back**; each is a full-width
-  card on a page 3,301px over.
-- **Files:** `pages/Season.jsx`, `components/season/SeasonStats.jsx`,
-  `SeasonPerGameTiles.jsx`, `ResultSplit.jsx`, `ScorelineFrequency.jsx`,
-  `MatchMargins.jsx`, `VenueGoalsSplit.jsx` (new), `ChartCard.jsx`,
-  `styles/components/charts.css`, `styles/pages/season.css`, `tests/`.
-- **Done means** side by side; Stats re-measured (expect about half of
-  5,501px); `chart-text-below-floor` clean at six widths.
-- **Model:** Sonnet 5 · high — every figure already derives and the cards are
-  markup; the one judgement (two charts off) is made here.
+**Phase 70 — Stats, as drawn: the frame and the four small cards.** Done.
+`Season.jsx`'s old `SeasonSelect` gave way to a `.chip-row` of `.chip-btn`s
+above the `.seg`, the mock's own `.season-filter` built from a primitive
+rather than a new class — *All seasons* is a chip on Stats only, and dropped
+96px off the shared header every sub-page carries in the same move.
+`SeasonPerGameTiles` lost its sheet, heading and finding sentence for a bare
+`.tiles.six` — two decimals for a rate, a percentage for both-teams-scored,
+the new `.tiles`/`.tiles.six` primitives in `primitives.css`. `ResultSplit`,
+`ScorelineFrequency` and `MatchMargins` came off `ChartCard` onto a `.sheet`
+with a `.label.ruled` head and nothing else: the donut keeps its 128px
+Recharts pie but trades the caption row for a `.donut-key` beside it; the
+scorelines and margins are `.hbars` now, not Recharts bar charts, margins
+gaining a `Draw` row and the win/loss split moving into each row's `title`.
+`VenueGoalsSplit.jsx` is new — a 32px `.split` bar, `--chart-1` home against
+`--chart-2` away, off `venueSummary`, which already had each side's
+`goalsFor` once Phase 56 closed the venue gap Phase 62 was waiting on.
+`GoalsTrend.jsx` is deleted and `PointsAccumulated` draws under *All seasons*
+only now, both off the single-season page entirely — the mock has no
+goals-per-match line, and points accumulated compares seasons, so a single
+one drawing alone was never answering anything. `ChartCard` is down to the
+division (Phase 71), the three player charts and Points accumulated;
+`DESIGN.md` → *Charts* is rewritten for the four cards that left it. `npm
+test` unchanged and green (219); `check:layout` PASS, 40 known failures,
+nothing new. Season → Stats: 5,501px → **3,814px, 1,614px over** — about
+two-thirds of the old number rather than the half estimated going in, because
+the division's ranked lists and the three player charts are untouched here
+and are most of what's left. Season itself: 2,494px → 2,398px from the
+chip-row alone.
 
 **Phase 71 — The division, one list at a time.**
 

@@ -1,7 +1,7 @@
 import { lazy, Suspense, useMemo } from 'react';
 import { Link, Navigate, NavLink, useSearchParams } from 'react-router-dom';
 import { useData } from '../context/DataContext';
-import { ErrorNote, SeasonSelect, Spinner } from '../components/bits';
+import { ErrorNote, Spinner } from '../components/bits';
 import LeaderBoards from '../components/LeaderBoards';
 import LeagueTable from '../components/LeagueTable';
 import SeasonLadder from '../components/SeasonLadder';
@@ -89,21 +89,44 @@ export default function Season({ view }) {
     return next.toString();
   };
 
+  // Season's own filter, above the segmented control so it holds across both
+  // sub-pages — the mock's .season-filter, built from the site's own chip
+  // row rather than a new class (Draft D). All seasons is a chip on Stats
+  // only: Season has no such view, so its own filter never offers it.
+  const pickSeason = (next) => {
+    const nextParams = new URLSearchParams(params);
+    if (next === seasons[0]) nextParams.delete('season');
+    else nextParams.set('season', next);
+    setParams(nextParams);
+  };
+
   return (
     <div>
-      <div className="section-head">
-        <h1>{allSeasons ? 'Every season' : `Season ${activeSeason ?? ''}`}</h1>
-        <SeasonSelect
-          seasons={seasons}
-          value={allSeasons ? 'all' : (season === 'latest' ? (seasons[0] ?? '') : season)}
-          allowAll={view === 'stats'}
-          onChange={(next) => {
-            const nextParams = new URLSearchParams(params);
-            if (next === seasons[0]) nextParams.delete('season');
-            else nextParams.set('season', next);
-            setParams(nextParams);
-          }}
-        />
+      <h1>{allSeasons ? 'Every season' : `Season ${activeSeason ?? ''}`}</h1>
+
+      <div className="chip-row" role="group" aria-label="Season">
+        <span className="label">Season</span>
+        {seasons.map((s) => (
+          <button
+            key={s}
+            type="button"
+            className={`chip-btn${!allSeasons && s === activeSeason ? ' active' : ''}`}
+            aria-pressed={!allSeasons && s === activeSeason}
+            onClick={() => pickSeason(s)}
+          >
+            {s}
+          </button>
+        ))}
+        {view === 'stats' && (
+          <button
+            type="button"
+            className={`chip-btn${allSeasons ? ' active' : ''}`}
+            aria-pressed={allSeasons}
+            onClick={() => pickSeason('all')}
+          >
+            All seasons
+          </button>
+        )}
       </div>
 
       <nav className="seg" aria-label="Season view">
