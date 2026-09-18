@@ -4,11 +4,11 @@ import { useState } from 'react';
  * The card for a chart that hides identity behind a dot or a line and so
  * still needs its numbers spelled out somewhere: a finding as its subtitle —
  * a sentence, not a description of the axes — and the data table one press
- * away (docs/DESIGN.md → *Charts*). Phase 70 moved every card whose own
- * figures are already printed on it — the tiles, the donut, the goals split,
- * the scorelines, the margins, the division's ranked lists — off this
- * component onto a bare `.sheet`; what's left is the division (until Phase
- * 71), Points accumulated, and the three player charts.
+ * away (docs/DESIGN.md → *Charts*). Phases 70 and 71 moved every card whose
+ * own figures are already printed on it — the tiles, the donut, the goals
+ * split, the scorelines, the margins, the division's ranked list — off this
+ * component onto a bare `.sheet`; what's left is Points accumulated and the
+ * three player charts.
  */
 export default function ChartCard({
   title, finding, children, empty, emptyNote, table, bodyClassName,

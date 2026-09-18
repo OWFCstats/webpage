@@ -238,22 +238,3 @@
   color: var(--ink-soft);
   font-variant-numeric: tabular-nums;
 }
-
-/* The division's ranked lists are not a plot either, so they take their own
-   height rather than the axis band's — same exception the donut above is, and
-   the lists themselves are in division-ratios.css. Two of them stack on a
-   phone and sit side by side once there's room for a club name twice over. */
-.chart-body.chart-body-ranked {
-  height: auto;
-  display: grid;
-  gap: var(--s5);
-}
-
-.chart-body-ranked .dr-foot { grid-column: 1 / -1; }
-
-@media (min-width: 700px) {
-  .chart-body.chart-body-ranked {
-    grid-template-columns: 1fr 1fr;
-    gap: var(--s5) var(--s6);
-  }
-}

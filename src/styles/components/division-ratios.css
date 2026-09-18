@@ -1,125 +1,126 @@
 /* The division's attack and defence, ranked — components/season/DivisionRatios.jsx.
 
-   Two lists of the same clubs, each figure drawn as a wash behind its own row
-   rather than as a bar beside it. That is the phone decision: a bar in its own
-   column takes the width a club name needs, and "Old Merchant Taylors II" is
-   what the site's own measurements keep catching against a 375px screen
-   (docs/DESIGN.md → Mobile). Behind the row, the name has the whole width and
-   the figure still has a full-width scale to be read against.
+   One list at a time, behind the card's own Attack | Defence toggle. The
+   figure is a solid bar in its own track beside the name, which is Draft D's
+   shape: with only one ranking on screen the row has the width for a track,
+   and a bar that starts at a common left edge is read against its neighbours
+   more easily than a wash whose end a reader has to find. The frame is the
+   plain .sheet and the shared .head — no chart card, because every figure on
+   this card is printed on its own row (docs/DESIGN.md → *Charts*). */
 
-   The card's own frame — the sheet, the heading, the Show data button — is
-   ChartCard's, and the two-column body at 700px is in charts.css with the
-   rest of .chart-body. */
-
-.dr-list-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--s2);
-  margin-bottom: var(--s2);
+/* Below 480px the shared .head stacks and stretches its children (the rule is
+   in home.css, unscoped), which leaves the toggle a full-width track with both
+   labels packed against its left edge. Let the two share the track instead: on
+   a phone that reads as the segmented control it is, and it is twice the tap
+   target. Scoped to a .seg inside a .head, which is this card and nothing else
+   — every other one on the site sits in a row of its own controls. */
+@media (max-width: 480px) {
+  .head .seg button { flex: 1; }
 }
 
-/* Which way "best" runs. Obvious for goals scored, not obvious at all for
-   goals conceded, and a rank column that reads 1, 2, 3 down a list of rising
-   numbers needs one word to say why. */
-.dr-best {
-  font-size: var(--t-micro);
-  white-space: nowrap;
-}
-
-/* The positioning context for the average mark, so one hairline can cross
-   every row in the list at once. */
-.dr-plot { position: relative; }
-
-.dr-rows {
+.ratio-rows {
   list-style: none;
   margin: 0;
   padding: 0;
-  display: grid;
-  gap: 2px;
 }
 
-.dr-row {
-  --dr-wash: color-mix(in srgb, var(--verdigris) 34%, transparent);
+.ratio-row {
   display: grid;
-  grid-template-columns: 1.25rem minmax(0, 1fr) auto;
-  align-items: baseline;
+  grid-template-columns: 1.4rem minmax(0, 9.6rem) minmax(64px, 1fr) 2.6rem;
+  align-items: center;
   gap: var(--s2);
-  padding: 0.3rem var(--s2);
-  border-radius: var(--r-sm);
   font-size: var(--t-small);
-  /* The figure itself. A background rather than an element, so the row has no
-     stacking order to get wrong and the text sits on top of it by default. */
-  background-image:
-    linear-gradient(to right, var(--dr-wash) var(--dr-fill), transparent var(--dr-fill));
+  padding: 0.24rem 0;
 }
 
-/* Our own row, picked out in gold — the same wash the league table's own row
-   takes, and the weight as well as the colour, so the one row a reader is
-   looking for isn't marked by hue alone. */
-.dr-row.dr-us {
-  --dr-wash: color-mix(in srgb, var(--gold) 34%, transparent);
-}
-
-.dr-row.dr-us .dr-club,
-.dr-row.dr-us .dr-value { font-weight: 700; }
-
-.dr-rank {
-  font-family: var(--font-data);
-  font-size: var(--t-micro);
-  font-weight: 700;
-  color: var(--ink-soft);
-  text-align: center;
-}
-
-/* A name wraps rather than clips, same rule as everywhere else on the site. */
-.dr-club { min-width: 0; }
-
-.dr-value {
+.ratio-row .pos {
   font-family: var(--font-data);
   font-variant-numeric: tabular-nums;
+  color: var(--ink-faint);
+  text-align: right;
+}
+
+/* The name column is measured, not the mock's: Draft D draws 8.4rem with an
+   ellipsis, and the longest club in the real division — "Old Merchant Taylors
+   II", which `backups/league_rows.json` has in 2026/27 — needs 127px at
+   --t-micro and 148px at --t-small, so the mock's own width cuts it at both
+   steps. The track gives the room up instead, because a bar is read as a
+   proportion of its own track and a name cut mid-word is the bug this site
+   measures for at every width (docs/DESIGN.md → *Mobile*). Past the fixed
+   maximum the name wraps rather than clips — the fallback, not the design. */
+.ratio-row .club {
+  min-width: 0;
   font-weight: 600;
+  line-height: 1.25;
 }
 
-/* The division average, as one line crossing every row in its list. Both lists
-   share a scale, so the two marks land close together and a row can be read
-   against either: past the line on goals scored, or short of it on goals
-   conceded, is a club doing better than its division. */
-.dr-average {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 1px;
-  background: var(--ink-soft);
+.ratio-row .track {
+  height: 15px;
+  background: var(--sheet);
+  border-radius: var(--r-sm);
+  overflow: hidden;
 }
 
-.dr-key {
+.ratio-row .fill {
+  display: block;
+  height: 100%;
+  background: var(--chart-2);
+}
+
+/* Our own row, washed gold with its bar in the other pigment — the same "this
+   row is us" the league table takes, and the bar as well as the wash, so the
+   row a reader is looking for isn't marked by hue alone. */
+.ratio-row.us {
+  background: color-mix(in srgb, var(--gold) 13%, transparent);
+  border-radius: var(--r-sm);
+}
+
+.ratio-row.us .fill { background: var(--chart-1); }
+
+.ratio-row .v {
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  text-align: right;
+}
+
+@media (max-width: 520px) {
+  .ratio-row {
+    grid-template-columns: 1.2rem minmax(0, 8.25rem) minmax(48px, 1fr) 2.3rem;
+    gap: 0.4rem;
+    font-size: var(--t-micro);
+  }
+}
+
+/* The division's average, as a note under the list rather than a hairline
+   across every row: one list is on screen at a time, so there is no second
+   ranking to read the same mark against, and the note says the figure outright
+   instead of leaving it to be judged off a rule's position. */
+.avg-note {
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  margin: var(--s2) 0 0;
+  margin: var(--s3) 0 0;
   font-size: var(--t-micro);
+  color: var(--ink-soft);
 }
 
-.dr-key-mark {
-  width: 1px;
-  height: 0.9rem;
-  background: var(--ink-soft);
+.avg-note i {
+  width: 14px;
+  border-top: 2px dashed var(--ink-faint);
   flex: none;
 }
 
-/* Who isn't in either list and why, and when the figures were last typed in.
-   A club that has played no games has no rate, and a list one club short with
+/* Who isn't in the list and why, and when the figures were last typed in. A
+   club that has played no games has no rate, and a list one club short with
    nothing said about it reads as a bug. */
 .dr-foot {
   display: grid;
   gap: var(--s1);
+  margin-top: var(--s3);
 }
 
 .dr-note {
   margin: 0;
   font-size: var(--t-micro);
 }
-
-/* The same gold as the ranked row, in the data table behind Show data. */
-table.data tbody tr.dr-us { background: color-mix(in srgb, var(--gold) 12%, transparent); }
