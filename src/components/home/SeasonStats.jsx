@@ -7,7 +7,7 @@ export default function SeasonStats({ summary, cleanSheets }) {
   const goalScale = Math.max(summary.goalsFor, summary.goalsAgainst, 1);
   return (
     <section className="sheet home-widget home-stats">
-      <div className="home-widget-head">
+      <div className="head">
         <div>
           <span className="label">Overview</span>
           <h2>Season stats</h2>
@@ -16,15 +16,15 @@ export default function SeasonStats({ summary, cleanSheets }) {
       </div>
       <div className="home-stats-body">
         <div className="home-stat-tiles">
-          <div className="home-stat-tile">
+          <div className="tile">
             <b>{summary.played}</b>
             <em className="label">Played</em>
           </div>
-          <div className="home-stat-tile">
+          <div className="tile">
             <b>{cleanSheets}</b>
             <em className="label">Clean sheets</em>
           </div>
-          <div className="home-stat-tile">
+          <div className="tile">
             <b>{winRate === null ? '—' : `${winRate}%`}</b>
             <em className="label">Win rate</em>
           </div>

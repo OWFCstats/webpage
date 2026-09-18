@@ -174,7 +174,7 @@
 }
 
 /* --gold-deep rather than the firmer grey this used to take: three surfaces in
-   the site firm their edge on hover — this, .badge-card and .home-stat-tile —
+   the site firm their edge on hover — this, .badge-card and .tile —
    and one of them going gold while two went grey made the rule unreadable.
    Gold on all three (DESIGN.md → Motion). */
 @media (hover: hover) and (pointer: fine) {

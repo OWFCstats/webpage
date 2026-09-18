@@ -156,37 +156,19 @@ nothing else; `DESIGN.md` → *Draft D is the specification* lists what the mock
 decides, marked with the phases that build it, and the sections describing
 the first pass carry markers pointing there. Nothing under `src/` changed.
 
-**Phase 66 — Two pigments, one head, and the block.** Tokens and primitives,
-before anything draws with them.
-
-- `tokens.css` gains **`--chart-1: var(--gold)` and `--chart-2:
-  var(--board-soft)`** — aliases, so no colour is written twice. The rule
-  (`DESIGN.md` → *Chart series*): **a bar, a wash or a split takes the two
-  pigments; the five-series palette is for a line that labels itself, and
-  nothing else**; W/D/L keeps its three. A bar carries its figure in ink beside
-  it, so the 4.5:1 text floor never applied to it — that is how appearances
-  came to be drawn in `#4a3a18` and the scorelines in teal.
-- `primitives.css` gains **`.tile`**, promoted from `home.css`'s
-  `.home-stat-tile` (the mock's `.tile`: `--sheet` ground, `--rule` edge, the
-  figure in `--font-data` at `--t-subtitle`, a `.label` under), and **`.head`**
-  (the mock's: `h2` at `--t-subtitle` in the display face, a `.more` in
-  `--gold-deep` on the right, baseline-aligned; an optional `.label` above the
-  `h2` only where it says something the heading doesn't — *The division* over
-  *Attack and defence*, never *Standings* over *League table*). `.head`
-  replaces `.home-widget-head` and `.chart-head`; `.tile` replaces every
-  `.home-stat-tile` and `StatTile plain`. `DESIGN.md` → *The block* has said
-  since Phase 12 that a section never carries a label and a heading saying the
-  same word, and Home broke it on five cards.
-- **`.block` on Home is gold.** `.block.burnt` comes off the fixture and form
-  plates: burnt is competition tags and nothing else (`DESIGN.md` → *Accents*),
-  and the mock's competition mark is `.tag`.
-- **Files:** `styles/tokens.css`, `styles/primitives.css`,
-  `styles/pages/home.css`, `styles/components/charts.css`, `components/bits.jsx`
-  (`StatTile`), `DESIGN.md` → *Chart series*, *The block*.
-- **Done means** `tests/palette.test.js` is unchanged and green — the series
-  tokens don't move; no `.home-stat-tile`, `.home-widget-head` or `.chart-head`
-  selector is left; no `.block.burnt` on Home; `check:layout` green.
-- **Model:** Sonnet 5 · high.
+**Phase 66 — Two pigments, one head, and the block.** Done. `tokens.css` gained
+`--chart-1` (`var(--gold)`) and `--chart-2` (`var(--board-soft)`) — aliases, so
+a bar, a wash or a split never reaches for the five-series line palette again,
+the mistake that put appearances in `#4a3a18` and the scorelines in teal
+(`DESIGN.md` → *Chart series*). `primitives.css` gained `.tile` (promoted from
+Home's own `.home-stat-tile` — the mock's `.tile`) and `.head` (the mock's card
+head: an `h2` with a `.more` link on the right and an optional `.label` above
+it), replacing `.home-stat-tile`, `.home-widget-head` and `.chart-head`
+everywhere. `StatTile` lost its `plain` prop with it — every call site already
+passed it, so `.tile` is the only shape left. Home's two `.block`s (*Next up*,
+*League position*) are gold now, not burnt — burnt stays competition tags alone
+(`DESIGN.md` → *Accents*). `tests/palette.test.js` unchanged and green;
+`check:layout` green.
 
 **Phase 67 — The band, as drawn.**
 

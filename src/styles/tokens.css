@@ -63,6 +63,13 @@
   --series-4: #4a3a18; /* brass, deep */
   --series-5: #423659; /* plum, deep */
 
+  /* A bar, a wash or a split is never a line labelling itself, so it never
+     draws from the five above — these two aliases are the whole of its
+     palette. No colour is written down twice: both point back at kit tokens
+     already declared. */
+  --chart-1: var(--gold);
+  --chart-2: var(--board-soft);
+
   /* ---- rules and radius ---- */
   --rule: #e2ded2;
   --rule-firm: #c9c4b4;

@@ -85,12 +85,11 @@ export function VenueBadge({ venue }) {
   );
 }
 
-/** `plain` drops the card surface — for tiles nested inside another card. */
-export function StatTile({ value, label, plain = false }) {
+export function StatTile({ value, label }) {
   return (
-    <div className={plain ? 'stat-tile' : 'sheet stat-tile'}>
-      <div className="value">{value}</div>
-      <div className="label">{label}</div>
+    <div className="tile">
+      <b>{value}</b>
+      <em className="label">{label}</em>
     </div>
   );
 }

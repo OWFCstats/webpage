@@ -13,11 +13,10 @@ export default function SeasonSummary({ summary, homeAway }) {
     <div className="flat-block">
       <div className="block board">Season at a glance</div>
       <div className="grid cols-4">
-        <StatTile plain value={summary.played} label="Played" />
-        <StatTile plain value={`${summary.won}-${summary.drawn}-${summary.lost}`} label="W-D-L" />
-        <StatTile plain value={gd > 0 ? `+${gd}` : gd} label="Goal difference" />
+        <StatTile value={summary.played} label="Played" />
+        <StatTile value={`${summary.won}-${summary.drawn}-${summary.lost}`} label="W-D-L" />
+        <StatTile value={gd > 0 ? `+${gd}` : gd} label="Goal difference" />
         <StatTile
-          plain
           value={summary.played ? `${Math.round((summary.won / summary.played) * 100)}%` : '—'}
           label="Win rate"
         />

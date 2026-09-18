@@ -44,7 +44,7 @@ export default function NextFixture({ next, teams }) {
   if (!next) {
     return (
       <div className="sheet club-plate fixture-card">
-        <span className="block burnt">Next up</span>
+        <span className="block gold">Next up</span>
         <div className="empty">No fixture scheduled.</div>
       </div>
     );
@@ -56,7 +56,7 @@ export default function NextFixture({ next, teams }) {
 
   return (
     <div className="sheet club-plate fixture-card">
-      <span className="block burnt">Next up</span>
+      <span className="block gold">Next up</span>
       <div className="fixture-teams">
         <span className={`fixture-team ${home.homeIsUs ? 'us' : 'them'}`}>
           {home.homeIsUs
@@ -77,9 +77,9 @@ export default function NextFixture({ next, teams }) {
       </div>
       <p className="fixture-date">{weekdayDate(next.date)}</p>
       <div className="home-stat-tiles fixture-tiles">
-        <div className="home-stat-tile"><b>{parts.days}</b><em className="label">Days</em></div>
-        <div className="home-stat-tile"><b>{parts.hours}</b><em className="label">Hrs</em></div>
-        <div className="home-stat-tile"><b>{parts.minutes}</b><em className="label">Mins</em></div>
+        <div className="tile"><b>{parts.days}</b><em className="label">Days</em></div>
+        <div className="tile"><b>{parts.hours}</b><em className="label">Hrs</em></div>
+        <div className="tile"><b>{parts.minutes}</b><em className="label">Mins</em></div>
       </div>
       <div className="fixture-actions">
         <button type="button" onClick={() => downloadIcs(next, ground)}>Add to calendar</button>

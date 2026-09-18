@@ -28,7 +28,7 @@ export default function LeagueTable({ season, full = false, showSeasonLink = tru
 
   return (
     <section className="sheet home-widget home-table">
-      <div className="home-widget-head">
+      <div className="head">
         <div>
           <span className="label">Standings</span>
           <h2>League table</h2>

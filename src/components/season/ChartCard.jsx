@@ -14,7 +14,7 @@ export default function ChartCard({
   const [showTable, setShowTable] = useState(false);
   return (
     <section className="sheet chart-card">
-      <div className="chart-head">
+      <div className="head">
         <div>
           <h2>{title}</h2>
           {finding && <p className="muted chart-sub">{finding}</p>}

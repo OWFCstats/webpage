@@ -24,7 +24,7 @@ function padded(list, n) {
 export default function MatchOutlook({ recent, upcoming }) {
   return (
     <section className="sheet home-widget home-outlook">
-      <div className="home-widget-head">
+      <div className="head">
         <h2>Match outlook</h2>
         <Link className="more" to="/matchday">All matches →</Link>
       </div>
