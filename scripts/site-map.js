@@ -93,6 +93,18 @@ export const ROUTES = [
     budget: 'Season → any sub-page',
     charts: true,
   },
+  // The three player charts hide their data table behind a *Data* link, and a
+  // table nobody measures is a table that hides a column: opening these took
+  // the whole document to 724px in a 375px viewport and no check saw it,
+  // because every state on this list had them shut.
+  {
+    id: 'season-stats-data',
+    route: '/season/stats',
+    name: 'Season — stats, data tables open',
+    budget: 'Season → any sub-page',
+    charts: true,
+    open: 'button.chart-data',
+  },
   {
     id: 'season-stats-all',
     route: '/season/stats?season=all',

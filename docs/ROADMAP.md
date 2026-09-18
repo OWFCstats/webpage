@@ -303,38 +303,43 @@ up; the mock's own render clips at both steps. `npm test` unchanged and green
 (219); `check:layout` PASS, 40 known failures, nothing new. The card is 854px
 → **408px** at 375px, and Season → Stats **3,814px → 3,377px, 1,177px over**.
 
-**Phase 72 — The three player charts, and the pigments on them.**
+**Phase 72 — The three player charts, and the pigments on them.** Done. All
+three came off `ChartCard` onto `ChartSheet`, new in `chart-bits.jsx`: the
+mock's `.head` — a `.label` over the `h2` — no finding sentence, the drawing in
+a `.chart-hold` capped at 760px and centred, and the data table behind a quiet
+*Data* link in the foot that swaps for the chart rather than opening under it.
+`.chart-plot` carries Draft D's proportion as an `aspect-ratio` instead of a
+fixed height, **without a height floor**: an aspect-ratio box transfers a
+height minimum back through the ratio into a *width* minimum, and the 240px one
+this started with became a 404px minimum width that pushed every section on
+Stats — tiles, division, all four small cards — 71px off the right of a 375px
+screen. *The golden boot race* gained the mock's `.legend` above the plot
+(inside the same cap, so the key sits over the plot it names), end labels of
+surname and total (*Gibbons 5*) and a dot where each line stops, and its x axis
+is now five dates evenly across the season rather than sixteen matchday
+numbers, which took its axis caption with it. *Games against contributions* and
+*How often people played* sit in a `.stats-two` past 900px; the scatter's pile
+is `--verdigris-deep` at 0.75 alpha and its leaders `--chart-1` with a surname
+beside each, the spread's bars `--chart-1` with the far bar's player named over
+it in `--gold-deep`. Both axes on the scatter round up to four even intervals,
+because Recharts divides a raw maximum four ways and rounds each tick
+separately — 0/3/6/10.
 
-- *The golden boot race*: `.head` (`.label` *Cumulative goals, matchday by
-  matchday* over the `h2`), a `.legend` above the plot — swatch and name per
-  series; the mock carries a legend *and* end labels, and below 700px the site
-  drops end labels, so the legend is what a phone reads — lines in
-  `--series-1..4` (the one place the series palette applies: they label
-  themselves), end labels *Gibbons 5*, the plot capped at 760px and centred.
-  **Test whether the mock's burnt `#a83a17` can replace `--series-4`
-  (`#4a3a18`)**: it clears contrast (5.73:1 on paper) and chroma; if every pair
-  against series 1, 2, 3 and 5 clears ΔE 15 under all four visions it goes in
-  and `tests/palette.test.js` holds it, and if not deep brass stays and the
-  commit says the number.
-- *Games against contributions* and *How often people played* side by side in
-  `.stats-two` past 900px, each with `.head` and a one-line `.muted` note (*Dot
-  size: how many players share the spot*) and no finding sentence. Scatter dots
-  `--verdigris-deep` at 0.75 alpha; players at one a game or better in
-  `--chart-1` with their surname beside the dot; the dashed *one a game*
-  diagonal with its words on it (Phase 64's rule); the axis reads
-  *Appearances*. Spread bars in `--chart-1`, the top bucket's player named at
-  its foot (*Grindon*).
-- These three keep their tables, behind a quiet *Data* link in the foot
-  (Phase 70's rule).
-- **Files:** `components/season/GoldenBootRace.jsx`,
-  `GamesAgainstContributions.jsx`, `AppearanceSpread.jsx`, `chart-bits.jsx`,
-  `styles/components/charts.css`; `styles/tokens.css` and
-  `tests/palette.test.js` if series-4 moves; `DESIGN.md` → *Chart series*,
-  *Charts*.
-- **Done means** side by side; `chart-text-below-floor` clean; palette test
-  green; Stats re-measured.
-- **Model:** Opus 5 · xhigh — a palette measured rather than judged, and chart
-  geometry.
+**Two places this does not follow the roadmap's own description of the phase,
+both measured rather than judged.** The mock's burnt `#a83a17` does not replace
+`--series-4`: it clears contrast (5.73:1) and chroma (61.7) and then measures
+**ΔE 2.0 against `--series-1` under tritanopia**, thirteen short of the floor
+and the same collapse Phase 64 threw the old palette out for, so deep brass
+stays. And the scatter gilds **the five leading contributors**, which is what
+the mock draws, not "players at one a game or better", which is what this
+file said: they are different sets, and in the club's own 2025/26 five players
+were at one a game or better and three of them had played a single game, while
+the mock's five gold dots are the top five by goals + assists exactly. A card
+about turning up cannot headline a one-game cameo. A dot is a pile, so only a
+dot holding one player wears a name. `contributionScatter` marks the leaders
+and `appearanceSpread` returns the ever-present; three new tests (222 total,
+all green). `check:layout` PASS, 40 known failures, nothing new. Season →
+Stats: **3,377px → 3,107px, 907px over**.
 
 **Phase 73 — Form, typed in.** The one the owner asked for: the mock's *Form*
 column on the league snapshot, which Phase 60 ruled out because `league_rows`
@@ -387,14 +392,12 @@ holds totals and not results. It still does — so the results are typed.
 
 ---
 
-**One branch a phase, in this order.** 66 blocks everything after it — every
-later phase draws with its tokens and primitives. 67 to 69 are one screen and
-are reviewed together against the mock's Home even though they land
-separately; 70 to 72 the same against its Stats. 73 is the only migration and
-can slot anywhere after 69. Each phase condenses to one *Done* row in the
-commit that closes it and writes its ruling into `DESIGN.md` in the same
-commit — the rule at the top of this file, which the first pass followed to
-the letter while building the wrong thing.
+**One branch a phase, in this order.** 66 to 72 have landed; Home and Season →
+Stats are the mock's pages now. 73 is the only migration and is what is left of
+the mock, then 74. Each phase condenses to one *Done* row in the commit that
+closes it and writes its ruling into `DESIGN.md` in the same commit — the rule
+at the top of this file, which the first pass followed to the letter while
+building the wrong thing.
 
 ---
 
@@ -559,9 +562,9 @@ rest are how it propagated.
 `DESIGN.md`'s *Page length* table is the authority for the numbers — they are a
 design constraint and a component author reads that file. This is the tracking
 view. *Now* is `npm run shots` on the `mid-season` fixture at 375px; every row
-that is over its budget was re-measured in Phase 71, and the rows that are
-within it were last measured after Phase 64. **Phase 72 re-measures its own
-row as it lands**, and Phase 52 (inside Phase 74) decides each.
+that is over its budget was re-measured in Phase 72, and the rows that are
+within it were last measured after Phase 64. Phase 52 (inside Phase 74) decides
+each.
 
 | Page | Now | Budget | Owner |
 | --- | --- | --- | --- |
@@ -570,7 +573,7 @@ row as it lands**, and Phase 52 (inside Phase 74) decides each.
 | Matchday — clean sheet (12 named, a report, clamped / open) | 2,758 / 3,162 | 2,300 | **Phase 52** — 446 over clamped; the clamp bounds it, it doesn't fit it |
 | Matchday — walkover (no team sheet) | 1,533 | 2,300 | within |
 | Season | 2,398 | 2,200 | **Phase 52** — 198 over; Phase 70's chip row took 96 off it. See *Decisions* → *Open* |
-| Season → Stats | 3,377 | 2,200 | **Phase 72**, then 52. 5,501 before the redesign reached it; Phase 70's frame and four small cards took it to 3,814 and Phase 71's single ranking to 3,377. The three player charts are what is left to redraw. What remains after that is a decision about what a season is for, and 52 takes it with the measurement in hand |
+| Season → Stats | 3,107 | 2,200 | **Phase 52** — 907 over. 5,806 with all three data tables open, a state Phase 72 added to `site-map.js` so the tables are measured at all; it is not a budget row, because nobody lands on it. 5,501 before the redesign reached it; Phase 70's frame and four small cards took it to 3,814, Phase 71's single ranking to 3,377 and Phase 72's three redrawn charts to 3,107. The page is the mock's now, so what is left is a decision about what a season is for, and 52 takes it with the measurement in hand |
 | Players → Leaderboards | 1,296 | 1,400 | met (14, 24) |
 | Records → badges / honours / all-time | 1,729 / 1,069 / 1,807 | 2,000 | met (16); badges +62 for the bigger trophies (32–34). Honours is 1,626 on `pre-season`, the taller of its two states |
 | Player detail | 2,287 | 2,400 | met (21); +38 for the 40px shelf (33), +8 for *This is me* (48) |

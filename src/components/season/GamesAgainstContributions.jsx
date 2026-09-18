@@ -5,10 +5,9 @@ import {
   XAxis, YAxis, ZAxis,
 } from 'recharts';
 import { contributionScatter } from '../../lib/charts';
-import { plural } from '../../lib/format';
-import { fontPx, statColour } from '../../lib/tokens';
-import ChartCard from './ChartCard';
-import { chartColours, useChartAxis } from './chart-bits';
+import { plural, surname } from '../../lib/format';
+import { fontPx, token } from '../../lib/tokens';
+import { ChartSheet, chartColours, useChartAxis } from './chart-bits';
 
 // A tooltip listing forty-eight names is a page, not a tooltip. The rest are
 // counted, and the data table below the chart has all of them with their own
@@ -18,15 +17,6 @@ const NAMES_SHOWN = 6;
 // Dot area in px², not radius: a dot for six players has to look like six, and
 // area is what the eye reads as quantity.
 const DOT_AREA = [46, 340];
-
-function finding({ leader, above, rows }) {
-  if (!leader) return null;
-  const lead = `${leader.name} leads on ${leader.contributions} `
-    + `from ${plural(leader.appearances, 'game', 'games')}`;
-  if (above === 0) return `${lead}. Nobody is at one a game yet.`;
-  return `${lead} — ${above} of ${rows.length} ${above === 1 ? 'is' : 'are'} `
-    + 'at one a game or better.';
-}
 
 /**
  * "One a game", written on the diagonal rather than beside it. Recharts places
@@ -49,6 +39,39 @@ function DiagonalLabel({ viewBox, fill, size }) {
     >
       One a game
     </text>
+  );
+}
+
+/**
+ * A gilded dot with its own surname beside it. Drawn as the Scatter's `shape`
+ * rather than a `LabelList` so the dot and the name are positioned together,
+ * and sized off the same `size` (an area) every other dot is, because the
+ * card's note promises size means how many share the spot.
+ *
+ * The name flips to the left of the dot in the last third of the axis, where a
+ * label drawn rightwards would run off the plot. Decided off the data rather
+ * than off the rendered geometry: the plot's own width isn't a thing a shape
+ * can read without reaching into Recharts' internals.
+ */
+function LeaderDot({ cx, cy, size, fill, payload, flipAt, nameFill }) {
+  if (cx == null || cy == null) return null;
+  const r = Math.sqrt((size ?? DOT_AREA[0]) / Math.PI);
+  const left = payload.appearances >= flipAt;
+  return (
+    <g>
+      <circle cx={cx} cy={cy} r={r} fill={fill} stroke={fill} />
+      <text
+        x={left ? cx - r - 5 : cx + r + 5}
+        y={cy}
+        dy={4}
+        textAnchor={left ? 'end' : 'start'}
+        fill={nameFill}
+        fontSize={fontPx('--t-micro')}
+        fontWeight={600}
+      >
+        {surname(payload.leader.name)}
+      </text>
+    </g>
   );
 }
 
@@ -80,7 +103,10 @@ function SpotTip({ active, payload }) {
  * dot sized by how many, rather than a dozen drawn on top of each other and
  * read as one.
  *
- * One season at a time, the same reason as the scoring race beside it: across
+ * The season's leading contributors are gold and carry their surname; the rest
+ * of the squad is the verdigris pile behind them (docs/DESIGN.md → *Charts*).
+ *
+ * One season at a time, the same reason as the scoring race above it: across
  * every season this is a career board, and career boards are Records'
  * (CLAUDE.md → *Sections*).
  */
@@ -94,20 +120,34 @@ export default function GamesAgainstContributions({ season, players, matches, ap
   );
 
   const maxCount = Math.max(1, ...data.points.map((p) => p.count));
+  // Four even intervals on both axes, so they read 0/3/6/9/12 rather than the
+  // 0/3/6/10 Recharts lands on when it divides a raw maximum four ways and
+  // rounds each tick separately.
+  const ceiling = (n) => Math.max(4, Math.ceil(n / 4) * 4);
+  const pile = data.points.filter((p) => !p.leader);
+  const leaders = data.points.filter((p) => p.leader);
+  // Measured against the axis, not against the busiest player: the axis rounds
+  // up past the last dot, so a leader two thirds of the way along the data can
+  // still have half the plot to his right to write a name in.
+  const flipAt = ceiling(data.maxApps) * 0.72;
 
   return (
-    <ChartCard
+    <ChartSheet
+      label="Every player who has appeared"
       title="Games against contributions"
-      finding={finding(data)}
+      note="Dot size: how many players share the spot."
       empty={data.rows.length === 0}
       table={
         <table className="data">
           <thead>
+            {/* The league table's own column codes: five words of header is
+                68px more than a 375px screen has, and P/G/A are letters this
+                site already teaches on every standings table. */}
             <tr>
               <th>Player</th>
-              <th className="num">Games</th>
-              <th className="num">Goals</th>
-              <th className="num">Assists</th>
+              <th className="num">P</th>
+              <th className="num">G</th>
+              <th className="num">A</th>
               <th className="num">G+A</th>
             </tr>
           </thead>
@@ -125,57 +165,67 @@ export default function GamesAgainstContributions({ season, players, matches, ap
         </table>
       }
     >
-      <ResponsiveContainer>
-        <ScatterChart margin={{ top: 8, right: 20, bottom: 24, left: 4 }}>
-          <CartesianGrid stroke={c.grid} vertical={false} />
-          <XAxis
-            type="number"
-            dataKey="appearances"
-            allowDecimals={false}
-            domain={[0, 'dataMax']}
-            tick={tick}
-            axisLine={false}
-            tickLine={false}
-          >
-            <Label value="Games played" position="insideBottom" offset={-12} style={tick} />
-          </XAxis>
-          <YAxis
-            type="number"
-            dataKey="contributions"
-            allowDecimals={false}
-            domain={[0, 'dataMax']}
-            tick={tick}
-            axisLine={false}
-            tickLine={false}
-            width={yWidth}
-          />
-          <ZAxis
-            type="number"
-            dataKey="count"
-            // A floor of 2 on the domain so a season where nobody shares a spot
-            // draws every dot at the small end rather than all of them at the
-            // large one.
-            domain={[1, Math.max(2, maxCount)]}
-            range={DOT_AREA}
-          />
-          {data.reference > 0 && (
-            <ReferenceLine
-              segment={[{ x: 0, y: 0 }, { x: data.reference, y: data.reference }]}
-              stroke={c.muted}
-              strokeDasharray="4 4"
-              label={<DiagonalLabel fill={c.muted} size={fontPx('--t-micro')} />}
+      <div className="chart-plot">
+        <ResponsiveContainer>
+          <ScatterChart margin={{ top: 8, right: 20, bottom: 24, left: 4 }}>
+            <CartesianGrid stroke={c.grid} vertical={false} />
+            <XAxis
+              type="number"
+              dataKey="appearances"
+              allowDecimals={false}
+              domain={[0, ceiling(data.maxApps)]}
+              tickCount={5}
+              tick={tick}
+              axisLine={false}
+              tickLine={false}
+            >
+              <Label value="Appearances" position="insideBottom" offset={-12} style={tick} />
+            </XAxis>
+            <YAxis
+              type="number"
+              dataKey="contributions"
+              allowDecimals={false}
+              domain={[0, ceiling(data.maxContributions)]}
+              tickCount={5}
+              tick={tick}
+              axisLine={false}
+              tickLine={false}
+              width={yWidth}
             />
-          )}
-          <Tooltip content={<SpotTip />} cursor={false} />
-          <Scatter
-            data={data.points}
-            name="Players"
-            fill={statColour('goalInvolvements')}
-            fillOpacity={0.7}
-            stroke={statColour('goalInvolvements')}
-          />
-        </ScatterChart>
-      </ResponsiveContainer>
-    </ChartCard>
+            <ZAxis
+              type="number"
+              dataKey="count"
+              // A floor of 2 on the domain so a season where nobody shares a spot
+              // draws every dot at the small end rather than all of them at the
+              // large one.
+              domain={[1, Math.max(2, maxCount)]}
+              range={DOT_AREA}
+            />
+            {data.reference > 0 && (
+              <ReferenceLine
+                segment={[{ x: 0, y: 0 }, { x: data.reference, y: data.reference }]}
+                stroke={c.muted}
+                strokeDasharray="4 4"
+                label={<DiagonalLabel fill={c.muted} size={fontPx('--t-micro')} />}
+              />
+            )}
+            <Tooltip content={<SpotTip />} cursor={false} />
+            <Scatter
+              data={pile}
+              name="Players"
+              fill={c.pile}
+              fillOpacity={0.75}
+              stroke={c.pile}
+            />
+            <Scatter
+              data={leaders}
+              name="Leading contributors"
+              fill={c.gold}
+              shape={<LeaderDot flipAt={flipAt} nameFill={token('--ink')} />}
+            />
+          </ScatterChart>
+        </ResponsiveContainer>
+      </div>
+    </ChartSheet>
   );
 }

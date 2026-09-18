@@ -258,8 +258,10 @@ you something. One file is over it today and it is on Phase 51's list:
 `pages/admin/AddResult.jsx` at 295. `components/season/SeasonCharts.jsx` was the
 other at 374, and Phase 61 split it on the way to becoming `SeasonStats.jsx`:
 one file per chart card under `components/season/`, the page itself the stack of
-them, with `ChartCard.jsx` and `chart-bits.jsx` as the shared frame the cards
-phases 62 to 64 add sit in. Phase 8's row in the roadmap used to record "longest 247 lines", which is
+them, with `chart-bits.jsx` as the shared frame — `ChartSheet`, the card Draft D
+draws, plus the axis settings and colours every plot reads out of `tokens.css`.
+(`ChartCard.jsx` is the frame that preceded it and now holds one card, *Points
+accumulated* under *All seasons*, which the mock does not draw.) Phase 8's row in the roadmap used to record "longest 247 lines", which is
 the kind of measurement that goes stale quietly, so the rule is written as a
 threshold now and the exceptions are named.
 
@@ -371,14 +373,17 @@ typed in — the same class of fact `league_rows` already is); five separable hu
 do not exist for a line that labels itself inside the floors a series colour
 has, so the series palette is three pigments at two depths — and it governs
 *lines only*; every bar, wash and split takes the mock's two pigments, gold and
-racing green (Phase 66, `DESIGN.md` → *Chart series*); and **a claim about the
+racing green (Phase 66, `DESIGN.md` → *Chart series*), and a pigment the mock
+draws is still measured before it goes in, which is how the mock's own burnt
+was kept out of the palette in Phase 72; and **a claim about the
 club's data is checked against `backups/` too**, not the fixture by itself —
 `venue` was said to be null everywhere and was not.
 
 **The order in `docs/ROADMAP.md` → *Now* is the whole of what to do now**:
-phases 65 to 74, in order, 66 first because everything after it draws with its
-tokens and primitives, and Phase 52 — the page budgets — inside 74 once the
-pages are the mock's and can be measured as such.
+phases 65 to 74, in order. 65 to 72 have landed, so what is left of the mock is
+Phase 73 — the league snapshot's *Form* column — then 74, with Phase 52 — the
+page budgets — inside it now the pages are the mock's and can be measured as
+such.
 
 **The squad has it.** They played the first game of 2026/27 on 5 September 2026
 and reported a bug on the honours the same weekend, which is Phase 55. So the

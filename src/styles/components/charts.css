@@ -7,6 +7,13 @@
   gap: var(--s4);
 }
 
+/* A grid item sizes to its own min-content unless told not to, and a data
+   table's min-content is every column's longest word added up. Opening the
+   scoring race's table on a 375px screen took the whole document to 724px —
+   every card on the page, not just the one holding the table. The tables were
+   never measured because `check:layout` only ever saw them closed. */
+.chart-stack > * { min-width: 0; }
+
 /* A chart wants more room round it than a table does, and the plot's own
    axis labels sit inside this padding. */
 .chart-card {
@@ -32,10 +39,104 @@
   margin: 0;
 }
 
-/* Height includes room for the x-axis band so labels are never clipped. */
+/* Height includes room for the x-axis band so labels are never clipped. Points
+   accumulated is the last card still on `ChartCard`; the three player charts
+   Phase 72 redrew size themselves off `.chart-plot` below. */
 .chart-body {
   width: 100%;
   height: 320px;
+}
+
+/* ---- the three player charts (Draft D, Phase 72) ----
+   Draft D caps its drawings and centres them, so a full-width card doesn't
+   scale a plot drawn for 480 units to twice the size its type was drawn for.
+   The legend sits inside the cap rather than at the card's edge: a key that
+   names the lines belongs over the plot it names, not a third of a screen
+   away from it. */
+.chart-hold {
+  width: 100%;
+  max-width: 760px;
+  margin-inline: auto;
+}
+
+/* The mock's own proportion, as a ratio rather than a viewBox — the drawing is
+   made at the width it is shown at, which is the only way its labels stay at
+   the type floor (docs/DESIGN.md → *Charts*). The cap stops a 760px card
+   getting a plot taller than the screen it's read on.
+
+   No min-height, and that is not an oversight: an aspect-ratio box transfers a
+   height floor back through the ratio into a width floor, so a 240px minimum
+   here became a 404px minimum width and pushed every section on Stats — tiles,
+   division, all four small cards — 71px off the right of a 375px screen. */
+.chart-plot {
+  width: 100%;
+  aspect-ratio: 480 / 285;
+  max-height: 440px;
+}
+
+/* The note under the head — one line, and it says what the drawing can't. */
+.chart-note {
+  margin: -0.4rem 0 var(--s3);
+}
+
+/* A chart card is the narrowest frame a data table sits in on this site — it
+   carries the card's own padding inside the page's — so its cells give back
+   the room the league table's don't need to. Without this the scatter's five
+   columns are 2px over a 320px screen, which is a hidden column by the rule
+   the check holds (*Mobile*). */
+.chart-card table.data th,
+.chart-card table.data td {
+  padding-left: 0.4rem;
+  padding-right: 0.4rem;
+}
+
+/* The data table, as a link rather than a button in the head: the table is the
+   card's footnote, not a second view competing with the chart for the heading.
+   Quiet on purpose — this is the least-pressed control on the page. */
+.chart-foot {
+  margin: var(--s2) 0 0;
+  text-align: right;
+}
+
+/* The type is `.label`'s — the site has two uppercase styles and this is not a
+   third. All that's left here is undoing the button chrome. */
+.chart-data {
+  display: inline;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .chart-data:hover { color: var(--ink); text-decoration: underline; }
+}
+
+/* The scoring race's key. Above the plot, because below 700px the end labels
+   come off and this is the only thing left naming a line. */
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2) var(--s4);
+  margin: 0 0 var(--s3);
+  padding: 0;
+  list-style: none;
+  font-size: var(--t-small);
+}
+
+.legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--ink-soft);
+}
+
+.legend i {
+  width: 14px;
+  height: 3px;
+  border-radius: 2px;
+  display: inline-block;
+  flex: none;
 }
 
 /* A tooltip does float above the page, so this is one of the few things that
@@ -109,6 +210,8 @@
   .chart-card .head button { align-self: flex-start; }
 
   .chart-body { height: 300px; }
+
+  .legend { gap: var(--s1) var(--s3); }
 }
 
 /* ---- the four printed cards (Draft D, Phase 70) ----
