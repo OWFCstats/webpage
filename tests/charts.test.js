@@ -93,6 +93,51 @@ test('half a season rounds up, so the core is not overstated', () => {
   assert.equal(core, 1);
 });
 
+test('the scatter gilds the leading contributors, not whoever is above the line', () => {
+  const players = [
+    player('a', 'Ann Four'), player('b', 'Bob Three'), player('c', 'Cal Three'),
+    player('d', 'Dee Two'), player('e', 'Eve Two'), player('f', 'Fay Cameo'),
+    player('g', 'Gus None'),
+  ];
+  const every = (id, goals) => MATCHES.map((m, i) => app(m.id, id, i < goals ? 1 : 0));
+  const apps = [
+    ...every('a', 4),                                   // 4 games, 4 — a leader, on the line
+    ...every('b', 3),                                   // 4 games, 3 — a leader, below the line
+    app('m1', 'c', 1), app('m2', 'c', 1), app('m3', 'c', 1), // 3 games, 3 — leader, on the line
+    ...every('e', 2),                                   // 4 games, 2 — a leader, below the line
+    app('m1', 'd', 1), app('m2', 'd', 1),               // 2 games, 2 — a leader, on the line
+    app('m1', 'f', 1),                                  // 1 game, 1 — on the line, not a leader
+    ...every('g', 0),                                   // 4 games, nothing
+  ];
+  const { points, above } = contributionScatter(players, MATCHES, apps);
+  const named = points.filter((p) => p.leader).map((p) => p.leader.name).sort();
+  assert.deepEqual(named, ['Ann Four', 'Bob Three', 'Cal Three', 'Dee Two', 'Eve Two']);
+  // The distinction the card turns on: four players are at one a game or
+  // better, and the cameo among them is the one nobody wants named as the
+  // season's standout. Two of the five gilded are below the line.
+  assert.equal(above, 4);
+  assert.equal(named.includes('Fay Cameo'), false);
+});
+
+test('a dot two players share carries no name, even when both are leaders', () => {
+  const players = [player('a', 'Ann'), player('b', 'Bob')];
+  const apps = [app('m1', 'a', 2), app('m1', 'b', 2)];
+  const { points } = contributionScatter(players, MATCHES, apps);
+  assert.equal(points.length, 1);
+  assert.equal(points[0].count, 2);
+  // Both are leaders; neither can be written on a dot that is two people.
+  assert.equal(points[0].leader, null);
+});
+
+test('the spread names one ever-present and nobody when two share the top', () => {
+  const players = [player('a', 'Ann Zeta'), player('b', 'Bob Young')];
+  const one = [app('m1', 'a'), app('m2', 'a'), app('m3', 'a'), app('m4', 'a'), app('m1', 'b')];
+  assert.deepEqual(appearanceSpread(players, MATCHES, one).top, { games: 4, name: 'Ann Zeta' });
+
+  const both = [...one, app('m2', 'b'), app('m3', 'b'), app('m4', 'b')];
+  assert.equal(appearanceSpread(players, MATCHES, both).top, null);
+});
+
 test('a dropout is not an appearance in either chart', () => {
   const players = [player('a', 'Ann')];
   const apps = [app('m1', 'a', 0, 0, { dropout: true }), app('m2', 'a', 1)];

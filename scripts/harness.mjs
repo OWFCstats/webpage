@@ -120,12 +120,14 @@ export async function visit(page, route, { charts = false, open = false, admin =
   // route needs its 1.5s to finish or the screenshot catches a half-drawn line.
   if (charts) await page.waitForTimeout(1900);
   else await page.waitForTimeout(150);
+  // `open` is the selector for whatever this state expands — a route can have
+  // more than one control, so every match is pressed. It was `.report-more`
+  // hard-coded until Season → Stats needed its three *Data* links opened.
   if (open) {
-    const control = page.locator('.report-more');
-    if (await control.count() > 0) {
-      await control.click();
-      await page.waitForTimeout(50);
-    }
+    const control = page.locator(open === true ? '.report-more' : open);
+    const count = await control.count();
+    for (let i = 0; i < count; i++) await control.nth(i).click();
+    if (count > 0) await page.waitForTimeout(50);
   }
 }
 

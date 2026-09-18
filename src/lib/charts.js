@@ -4,6 +4,11 @@
 import { matchPoints, playedMatches, resultOf, seasonsOf } from './matches';
 import { playerTotals } from './players';
 
+// How many of the season's contributors the scatter gilds and names. Five, the
+// same depth as the scoring race's line count — a card that names half a squad
+// names nobody.
+const LEADERS = 5;
+
 /**
  * Cumulative goals per match date for the top `limit` scorers over the given
  * matches — data for the "top scorer race" chart. Returns
@@ -134,9 +139,16 @@ export function seasonPointsComparison(matches) {
  * them at x=0 would be the biggest dot on it (the same divisor trap Phase 63
  * names for a club that has played nothing).
  *
- * Returns { rows, points, reference, above, leader } — `rows` one per player
- * for the data table, `points` the plotted dots, and `reference` how far the
- * one-a-game diagonal can be drawn before it leaves the plot.
+ * The leading contributors are marked so the card can gild and name them
+ * (docs/DESIGN.md → *Charts*). A dot is a pile, so only a dot holding one
+ * player can wear a name: a leader who happens to share a spot with somebody
+ * else stays in the pile, because there is no honest way to write one name on
+ * a dot that is two people.
+ *
+ * Returns { rows, points, reference, above, leader, leaders } — `rows` one per
+ * player for the data table, `points` the plotted dots (each with `leader`,
+ * the row it names when it names one), and `reference` how far the one-a-game
+ * diagonal can be drawn before it leaves the plot.
  */
 export function contributionScatter(players, matches, appearances) {
   const rows = playerTotals(players, matches, appearances)
@@ -152,15 +164,23 @@ export function contributionScatter(players, matches, appearances) {
     .sort((a, b) => b.contributions - a.contributions || b.appearances - a.appearances
       || a.name.localeCompare(b.name));
 
+  // Sorted by contributions already, so the leaders are the top of the list —
+  // the same five the scoring race beside this card tracks. Not "one a game or
+  // better", which the diagonal marks: three of the five players over that
+  // line after 2025/26 had played a single game, and gilding a one-game cameo
+  // as the season's standout is the opposite of what this card is for.
+  const leaders = new Set(rows.filter((r) => r.contributions > 0).slice(0, LEADERS).map((r) => r.id));
+
   const spots = new Map();
   for (const row of rows) {
     const key = `${row.appearances}:${row.contributions}`;
     if (!spots.has(key)) {
-      spots.set(key, { key, appearances: row.appearances, contributions: row.contributions, count: 0, names: [] });
+      spots.set(key, { key, appearances: row.appearances, contributions: row.contributions, count: 0, names: [], leader: null });
     }
     const spot = spots.get(key);
     spot.count += 1;
     spot.names.push(row.name);
+    spot.leader = spot.count === 1 && leaders.has(row.id) ? row : null;
   }
 
   const maxApps = Math.max(0, ...rows.map((r) => r.appearances));
@@ -175,6 +195,7 @@ export function contributionScatter(players, matches, appearances) {
     maxContributions,
     above: rows.filter((r) => r.contributions >= r.appearances).length,
     leader: rows[0] ?? null,
+    leaders,
   };
 }
 
@@ -197,12 +218,18 @@ export function appearanceSpread(players, matches, appearances) {
   }
   // Half a season rounded up: on fifteen games, eight is half of it, not seven.
   const half = Math.ceil(played / 2);
+  const most = Math.max(0, ...counts);
+  // Who is at the far end, for the one name the chart writes on itself. Named
+  // only when one player holds it: two ever-presents are a bar, not a name, and
+  // writing one of them is picking a winner out of a tie.
+  const ever = playerTotals(players, matches, appearances).filter((r) => r.appearances === most);
   return {
     bars,
     played,
     used: counts.length,
     half,
     core: counts.filter((n) => n >= half).length,
-    most: Math.max(0, ...counts),
+    most,
+    top: most > 0 && ever.length === 1 ? { games: most, name: ever[0].player.name } : null,
   };
 }

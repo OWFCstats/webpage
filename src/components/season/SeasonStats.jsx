@@ -27,8 +27,9 @@ import VenueGoalsSplit from './VenueGoalsSplit';
  * Under a single season: six tiles with no heading of their own — the tiles
  * are the heading — then the division (what everyone else did), then four
  * compact cards whose every figure is printed on them and so carry no data
- * table, then the three player charts that do, because a dot or a line hides
- * a name behind it.
+ * table, then the scoring race full width, and the scatter and the spread two
+ * across. Those last three keep a data table, because a dot or a line hides a
+ * name behind it — behind a quiet *Data* link in the foot.
  */
 export default function SeasonStats({ season }) {
   const { players, matches, appearances, leagueRows, teams } = useData();
@@ -58,18 +59,20 @@ export default function SeasonStats({ season }) {
         matches={matches}
         appearances={appearances}
       />
-      <GamesAgainstContributions
-        season={season}
-        players={players}
-        matches={matches}
-        appearances={appearances}
-      />
-      <AppearanceSpread
-        season={season}
-        players={players}
-        matches={matches}
-        appearances={appearances}
-      />
+      <div className="stats-two">
+        <GamesAgainstContributions
+          season={season}
+          players={players}
+          matches={matches}
+          appearances={appearances}
+        />
+        <AppearanceSpread
+          season={season}
+          players={players}
+          matches={matches}
+          appearances={appearances}
+        />
+      </div>
     </div>
   );
 }

@@ -251,14 +251,14 @@ about the reader. See *An installed app has to open with no signal*.
 
 ### Draft D is the specification
 
-> **Phases 66–73.** Everything in this section is decided and drawn —
-> `docs/mocks/home-stats-draft-d.html`, two pages at two widths — and not yet
-> built. Phases 57–64 built Home and Season → Stats from a prose description of
-> that mock and the pages do not match it; the sections below that describe
-> them carry a marker pointing back here and are rewritten as each phase lands.
-> `docs/ROADMAP.md` → *Now* has the order and *The redesign — what went wrong*
-> has the seven findings. Where a paragraph below and the mock disagree, the
-> mock wins until its phase says otherwise and names the rule.
+> **Phase 73.** Everything in this section is decided and drawn —
+> `docs/mocks/home-stats-draft-d.html`, two pages at two widths — and all of it
+> is built except the league snapshot's *Form* column, which is Phase 73.
+> Phases 57–64 built Home and Season → Stats from a prose description of that
+> mock and the pages did not match it; the sections below that described them
+> are rewritten as each phase lands. `docs/ROADMAP.md` → *The redesign — what
+> went wrong* has the seven findings. Where a paragraph below and the mock
+> disagree, the mock wins until its phase says otherwise and names the rule.
 
 What the mock decides, as rules rather than as a picture — the list that should
 have been written before Phase 57 and wasn't:
@@ -315,7 +315,18 @@ have been written before Phase 57 and wasn't:
   quiet *Data* link in the foot. The goals-per-match line comes off; *Points
   accumulated* draws under *All seasons* only. (Phases 70–72)
 - **The scatter's dots are `--verdigris-deep` at 0.75 alpha and the leaders
-  gold with a surname beside them; the spread's bars are gold.** (Phase 72)
+  gold with a surname beside them; the spread's bars are gold.** The leaders
+  are the top five by goals + assists, which is what the mock draws — not the
+  players above its own diagonal, which is what Phase 72's description said and
+  is a different five (*Charts*). (Phase 72)
+- **The mock's burnt `#a83a17` is not a series colour.** It was measured
+  against the palette and collapses into the brass under tritanopia at ΔE 2.0,
+  so the fourth line stays deep brass (*Chart series*). (Phase 72)
+- **The drawings are made at the width they are shown at, not scaled down from
+  a wide canvas.** Draft D's charts are one `viewBox` each and compensate for a
+  phone by drawing their type larger; at 375px that still lands at about 10px,
+  under the site's 12px floor, which `check:layout` asserts. So the mock's
+  shape and proportion are followed and its technique is not. (Phase 72)
 
 ### The club band, under the masthead
 
@@ -796,12 +807,11 @@ engraved marks; every word beside a badge is `--ink` or `--ink-soft`.
 
 ### Chart series
 
-> **Phase 72.** The palette below is right and governs *lines that label
-> themselves* — one chart. It was applied to every bar, dot and wash on Stats,
-> which is how appearances came to be drawn in `#4a3a18`. Phase 66 gave a bar, a
-> wash or a split its own two-token palette instead (below), so it never reaches
-> for these five again; Phase 72 tests the mock's burnt against `--series-4`.
-> See *Draft D is the specification*.
+The palette below governs *lines that label themselves* — one chart, the golden
+boot race. It used to be applied to every bar, dot and wash on Stats, which is
+how appearances came to be drawn in `#4a3a18`; Phase 66 gave a bar, a wash or a
+split its own two-token palette instead (below), so nothing else reaches for
+these five.
 
 Fixed order, assigned in sequence, never cycled. **Three pigments at reading
 depth, then two of them again at half the lightness.**
@@ -871,6 +881,17 @@ against either palette and appear to have been estimates; the re-measurement is
 the record now, and the lesson is the one already written above — a palette
 nobody has run the numbers on has not been checked, however carefully it was
 chosen.
+
+**Draft D's burnt was tested against `--series-4` and did not go in.** The mock
+draws its fourth line in `#a83a17`, which clears the first two floors
+comfortably — 5.73:1 on paper and chroma 61.7, against `#4a3a18`'s 9.85:1 and
+23.5 — and fails the third outright: against `--series-1`, the brass, it
+measures **ΔE 2.0 under tritanopia**, thirteen short of the floor and the same
+failure mode as the palette Phase 64 threw out. Under tritanopia the
+blue-yellow axis collapses, and brass and burnt are two points on it. Deep
+brass stays. The general lesson is the one below and it survived a second
+attempt to talk round it: a colour picked in a drawing is not a colour that has
+been measured, and the drawing is not where the argument is settled.
 
 **A direct label on the line is what makes a marginal pair legal**, not an
 excuse for one. It is also why no series colour is ever drawn on the board: the
@@ -1726,11 +1747,10 @@ people come to find their own.
 
 ## Charts
 
-> **Phase 72.** One rule below still changes with the mock: "every chart keeps
-> its Show data table" narrows further, to a quiet link in the foot rather than
-> a button in the head, for the three plots that hide names behind dots or
-> lines — Golden boot race, Games against contributions, Appearance spread. See
-> *Draft D is the specification*.
+A single season's Stats draws three plots — the golden boot race, the scatter
+and the spread — and *All seasons* draws one, Points accumulated. Everything
+else that used to be a chart on that page is printed figures or a CSS bar
+(Phases 70 and 71).
 
 The charts used to read as generated, from `type="monotone"` smoothing and
 gradient area fills. Rules:
@@ -1754,13 +1774,21 @@ gradient area fills. Rules:
   there.
 - **Series colours from the token order.** Never a literal, never a per-call
   prop.
-- **A chart that hides identity behind a dot or a line keeps a "Show data"
-  table** — a chart is a view of the numbers, not a replacement for them —
-  currently behind a button in its head; Phase 72 moves it to a quiet link in
-  the foot. **A card whose own figures are already printed on it carries no
-  table at all**: the six per-game tiles, the W/D/L donut, the home/away goals
-  split, the scorelines, the margins, and the division's ranked list (Phases 70
-  and 71; *A ranked list is not a plot* below).
+- **A chart that hides identity behind a dot or a line keeps its data table** —
+  a chart is a view of the numbers, not a replacement for them — behind a quiet
+  *Data* link in the card's foot (`components/season/chart-bits.jsx` →
+  `ChartSheet`). The table swaps for the drawing rather than opening under it,
+  so the link stays where the reader pressed it. **A card whose own figures are
+  already printed on it carries no table at all**: the six per-game tiles, the
+  W/D/L donut, the home/away goals split, the scorelines, the margins, and the
+  division's ranked list (Phases 70 and 71; *A ranked list is not a plot*
+  below).
+- **A plot is capped at 760px and centred**, and takes its height from its own
+  width — `.chart-hold` and `.chart-plot` in `charts.css`, Draft D's proportion
+  as an `aspect-ratio`. No height floor on that box: an aspect-ratio box
+  transfers a height floor back through the ratio into a *width* floor, and a
+  240px minimum became a 404px minimum width that pushed every section on Stats
+  71px off the right of a 375px screen.
 - **A chart is drawn once, at a canvas that fits 375px, and scales up.** Never
   a wide canvas fitted down: an SVG scaled to a phone scales its labels too, so
   a 12px label ships at 5px and reads as a design choice rather than a bug.
@@ -1793,8 +1821,18 @@ Two judgement calls on what gets labelled and what doesn't:
   labels landing on the same point read as one run-on word without it.
 
 No end label renders below 700px (`useIsNarrow`) on any chart — a phone-width
-plot has no lane for one without crowding the line data itself. The tooltip and
-the data table carry series identity there instead.
+plot has no lane for one without crowding the line data itself.
+
+**Which is why the scoring race carries a legend as well** (`.legend`, above the
+plot inside the same 760px cap). Draft D draws both, and they are not a
+duplication here: on a phone the labels are gone and the legend is the only
+thing naming a line. The labels themselves are the mock's — surname and season
+total, *Gibbons 5* — since the full name is already in the legend and what the
+end of a line still has to say is where it finished, and each line gets a dot
+where it stops, which on a phone is what separates two players finishing level.
+Its x axis is dates rather than matchday numbers, five of them evenly across the
+season with both ends kept: a race is read against when it happened, and a tick
+a match is sixteen dates on one line. The spread's axis is thinned the same way.
 
 **A pie has no line end, so its key sits beside it instead**
 (`components/season/ResultSplit.jsx`) — not a re-added legend, since a donut
@@ -1829,6 +1867,22 @@ the size is set as **area, not radius** — area is what the eye reads as
 quantity. The names are in the tooltip, capped, and in the data table in full,
 where each one is a link like every other name on the site (*A name is a link*).
 
+**The gilded dots are the season's leading contributors, and they are not the
+dots above the diagonal.** Draft D draws five gold and names them, and the
+roadmap's description of Phase 72 said those five were "players at one a game
+or better" — the players the diagonal marks. They are not the same set, and the
+club's own 2025/26 is what settles it: five players finished at one a game or
+better and **three of them had played a single game**, while the five the mock
+gilds are the top five by goals + assists, exactly. A card whose subject is how
+often people turn up against what they produce cannot headline a one-game cameo
+as the standout, so the five are taken off the top of the contributions list —
+the same depth the scoring race takes, and four of the same names. The diagonal
+still means what it says; it is a threshold, not a shortlist. A dot is a pile,
+so only a dot holding one player wears a name: two leaders sharing a spot are
+drawn in the pile, because there is no honest way to write one name on a dot
+that is two people. The surname sits to the right of its dot, and flips left in
+the last quarter of the axis where a name drawn rightwards would leave the plot.
+
 **A reference line gets its words on the line.** Recharts places a reference
 label from the line's bounding box, which for a diagonal is the entire plot, so
 `insideTopLeft` puts "one a game" in the corner where it reads as a label for
@@ -1837,12 +1891,13 @@ instead, in the empty triangle above it — everything below the line is dots.
 The line stops where the shorter axis runs out rather than at the end of the
 longer one, since `y = x` drawn past that is drawn outside the plot.
 
-**A distribution keeps its empty buckets** (*Appearances across the squad*).
+**A distribution keeps its empty buckets** (*How often people played*).
 Games nobody played are drawn as zero rather than closed up: a gap in the middle
 of a squad — nobody between eleven and fourteen games — is the shape, and a
-chart that skips it shows a smooth tail that isn't there. The x axis thins its
-own ticks on a phone, because a sixteen-game season is more labels than 375px
-holds and the ends are what the reader places the shape between.
+chart that skips it shows a smooth tail that isn't there. The bar at the far end
+carries the name of whoever is standing on it, in `--gold-deep` above the bar —
+and only when one player is, because two ever-presents are a bar and writing one
+of their names is picking a winner out of a tie.
 
 ### A ranked list is not a plot
 
@@ -2089,6 +2144,21 @@ The design target, not a fallback. Every change gets checked at 375px first.
   column still sticks below 700px, the same rule every `.table-wrap` gets, so
   a reader never loses track of which row they're scrolling. A second table
   reaching for this exception needs its own argument, not a widened selector.
+- **The golden boot race's data table is the second, and its argument is that
+  its width is data.** Every other table on the site is a fixed set of columns
+  a designer chose, so it can be made to fit by choosing shorter ones. This one
+  is a matrix — a row a matchday, **a column a tracked scorer** — and its
+  headers are people's names: five surnames is 420px at 375, and there is no
+  shorter word for Grindon. Nothing is hidden by the scroll that isn't named
+  on the chart it backs, it is opened deliberately from a *Data* link by a
+  reader who wants the numbers rather than the lines, and the matchday column
+  sticks like every other. The scatter's table beside it was made to fit
+  instead, on the league table's own column codes (`P`, `G`, `A`, `G+A`), and
+  the spread's two columns always did. Phase 72 also added the state that
+  measures all three (`season-stats-data` in `scripts/site-map.js`): they were
+  never measured open, and opening them used to take the whole document to
+  724px in a 375px viewport, because a grid item sizes to its own min-content
+  and a table's min-content is every column's longest word added up.
 
 ### Page length
 
@@ -2159,11 +2229,15 @@ about two-thirds of the old number, not the half the phase estimated going
 in, because the division's ranked lists and the three player charts were
 untouched there and are most of what was left. Phase 71 took the first of
 those: the division ranked twice became one ranking behind a toggle, 854px to
-408px, for **3,814px → 3,377px, 1,177px over**. The three player charts are
-Phase 72's, and this is still the clearest case on the site for the thing
-`ROADMAP.md` → *Page budgets* keeps saying — that closing a gap this size
-means cutting a section rather than shaving one, which is what dropping a
-whole ranking was.
+408px, for **3,814px → 3,377px, 1,177px over**. Phase 72 redrew the three
+player charts and took 270px: each plot takes its height from its own width
+now (Draft D's proportion, about 205px on a phone against the fixed 300px they
+had), and the scoring race lost its x-axis caption with the switch to dates —
+against which the scoring race's legend and the three *Data* feet put a little
+back, for **3,377px → 3,107px, 907px over**. This is still the clearest case
+on the site for the thing `ROADMAP.md` → *Page budgets* keeps saying — that
+closing a gap this size means cutting a section rather than shaving one, which
+is what dropping a whole ranking was, and what Phase 52 has left to decide.
 Home is 2,116px unpicked and 2,264px with a name picked: Phase 19 took it from
 2,113px to 1,882px (the result leading, the next-fixture card collapsing to a
 row, a redundant form-chip strip coming off Recent form), Phase 23's badge,
