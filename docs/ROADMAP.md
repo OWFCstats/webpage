@@ -170,46 +170,29 @@ passed it, so `.tile` is the only shape left. Home's two `.block`s (*Next up*,
 (`DESIGN.md` → *Accents*). `tests/palette.test.js` unchanged and green;
 `check:layout` green.
 
-**Phase 67 — The band, as drawn.**
-
-- **Flush under the masthead.** `main.page` drops its top padding and its
-  column for Home (`main.page:has(> .home)` → `padding: 0; max-width: none`)
-  and Home applies the column itself to everything under the band
-  (`.home-column`: 1400px, the page's own gutters). The band and the last-game
-  bar run edge to edge below 700px and span the viewport above it, their
-  contents inside the column. `DESIGN.md` said a full-bleed section "would be
-  its own decision" — Draft D is that decision, for these two strips only.
-- **The plates** (`.club-plate`): `1px solid var(--gold)` all round, not a 3px
-  top edge; padding `--s4`; the actions row on the floor (`margin-top: auto`)
-  so both plates end on one line.
-- **The fixture plate** (mock `.card`, right): `.block` gold *Next match* and a
-  `.tag` for the competition in the head; `.nm-teams` — 46px round badges
-  (`.nm-badge.them` on `--sheet`, `.nm-badge.us` gold, the crest inside the
-  disc), the club's name at `--t-small` 600, *Home* / *Away* as an `em` label
-  under each; the kick-off in the display face at `--t-title` with the ground
-  under it (`text-wrap: balance`); the date on its own ruled line; three
-  `.nm-cell`s — a `.tile` with the figure in the display face at `--t-headline`,
-  zero-padded; two equal 44px buttons, *Add to calendar* gold and *Match
-  details* secondary; a `.nm-said` line once the calendar is saved.
-- **The form plate** (mock `.form-card`): Home's `<h1 class="label">` becomes
-  the plate's first line and says the season and the division — *Season
-  2026/27 · Division 5* — which is the mock's `.label` slot with the one-`h1`
-  rule kept; the position in the display face at `--t-display` with a `sup`
-  ordinal and *of 9 · 3 points* beside it in `--font-data`; a `.label` *Recent
-  form · last 5*; a `.form-strip` of `.form-run`s — `flex: 1 1 0; max-width:
-  78px`, the square 62px tall with `border-radius: 14px` and the letter at
-  `--t-subtitle` 700, the scoreline under in `--font-data` 600, the latest
-  ringed in gold (`.latest`). Fewer than five sit left, capped, not spread to
-  the corners — which is what two results do today. Centred against the
-  fixture plate and half its height above 860px, as Phase 57 already has it.
-- **Files:** `pages/Home.jsx`, `components/home/ClubBand.jsx`,
-  `NextFixture.jsx`, `FormCard.jsx`, `styles/pages/home.css`,
-  `styles/layout.css` (the `:has` rule), `scripts/expected-failures.js` if the
-  crest's selector moves.
-- **Done means** side by side at 375 and 1400; the countdown still ticks and
-  the `.ics` still downloads (`tests/ics.test.js` untouched); Home's three
-  budget rows re-measured into *Page budgets*.
-- **Model:** Sonnet 5 · high.
+**Phase 67 — The band, as drawn.** Done. `main.page:has(> .home)` drops the
+page's own padding and column for Home; `.home-column` (`home.css`) re-applies
+1400px and the page's own gutters to everything under the band, and
+`.club-band-inner` does the same inside the band's own full-bleed ground —
+flush under the masthead, edge to edge below 700px and spanning the viewport
+above it, the site's first full-bleed section. `.club-plate` takes a 1px gold
+border all round in place of the old 3px top edge, and is a flex column now so
+`.nm-actions`'s `margin-top: auto` sits it on the plate's own floor — with the
+band's grid stretched to match, that's what lines both plates' bottom edges up
+without either needing to know the other's height. `NextFixture.jsx` is
+redrawn to the mock's own class names — `.nm-head`, `.nm-teams`, `.nm-team`,
+`.nm-badge` (46px, the crest inside the gold disc), `.nm-mid`, `.nm-count` (the
+countdown, still `.tile` per Phase 66, lifted onto the display face at
+`--t-headline` and zero-padded) — plus a `.nm-said` line once *Add to
+calendar* is used. `FormCard.jsx` takes Home's old `<h1>` as its own first
+line — *Season 2026/27 · Division 5*, the one-`h1` rule kept by moving it, not
+doubling it — the position at `--t-display` with a `sup` ordinal and *of N · P
+points*, and `.form-strip` of 62px `.form-run` squares capped at 78px, the
+latest ringed gold. `scripts/expected-failures.js`'s crest entry moved with
+the markup, from `fixture-team.us > img` to `nm-badge.us > img`. `tests/
+ics.test.js` untouched and green; `npm test` green (216). Home's three budget
+rows: 2,413px → 2,329px unpicked, 2,499px → 2,423px picked, 2,487px → 2,403px
+picked-with-no-apps — `DESIGN.md` → *Page budgets*.
 
 **Phase 68 — The last game as a bar, and Your season's head.**
 

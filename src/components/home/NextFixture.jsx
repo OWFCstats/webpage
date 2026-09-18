@@ -17,6 +17,8 @@ function downloadIcs(match, ground) {
   URL.revokeObjectURL(url);
 }
 
+const pad = (n) => String(n).padStart(2, '0');
+
 /**
  * The club band's own plate: the next fixture, home side first and away
  * second by venue — a scoreboard reads by venue, the same convention Phase
@@ -35,16 +37,20 @@ export default function NextFixture({ next, teams }) {
   // this interval never fires during a screenshot and never changes what one
   // shows.
   const [, tick] = useState(0);
+  const [saved, setSaved] = useState(false);
   useEffect(() => {
     if (!next) return undefined;
     const id = setInterval(() => tick((n) => n + 1), 30000);
     return () => clearInterval(id);
   }, [next]);
+  // A new "next" fixture (the old one was played, or an earlier one was
+  // added) means the last save no longer describes what's on the card.
+  useEffect(() => { setSaved(false); }, [next?.id]);
 
   if (!next) {
     return (
       <div className="sheet club-plate fixture-card">
-        <span className="block gold">Next up</span>
+        <span className="block gold">Next match</span>
         <div className="empty">No fixture scheduled.</div>
       </div>
     );
@@ -53,38 +59,63 @@ export default function NextFixture({ next, teams }) {
   const home = matchHomeAway(next);
   const ground = venueTeam(next, teams);
   const parts = countdownParts(next.date, next.kickoff_time);
+  const kickoff = formatKickoff(next.kickoff_time);
 
   return (
     <div className="sheet club-plate fixture-card">
-      <span className="block gold">Next up</span>
-      <div className="fixture-teams">
-        <span className={`fixture-team ${home.homeIsUs ? 'us' : 'them'}`}>
-          {home.homeIsUs
-            ? <Crest />
-            : <span className="fixture-badge">{opponentInitials(next.opponent)}</span>}
+      <div className="nm-head">
+        <span className="block gold">Next match</span>
+        {next.competition && <span className="tag">{next.competition}</span>}
+      </div>
+
+      <div className="nm-teams">
+        <div className="nm-team">
+          <span className={`nm-badge ${home.homeIsUs ? 'us' : 'them'}`}>
+            {home.homeIsUs
+              ? <Crest />
+              : opponentInitials(next.opponent)}
+          </span>
           <strong>{home.homeTeam}</strong>
-        </span>
-        <div className="fixture-kickoff">
-          <span className="fixture-time">{formatKickoff(next.kickoff_time) || 'TBC'}</span>
-          {ground?.pitch_name && <span className="fixture-ground">{ground.pitch_name}</span>}
+          <em>Home</em>
         </div>
-        <span className={`fixture-team ${home.homeIsUs ? 'them' : 'us'}`}>
+        <div className="nm-mid">
+          <span className="vs">vs</span>
+          <span className="time">{kickoff || 'TBC'}</span>
+          {ground?.pitch_name && <span className="where">{ground.pitch_name}</span>}
+        </div>
+        <div className="nm-team">
+          <span className={`nm-badge ${home.homeIsUs ? 'them' : 'us'}`}>
+            {home.homeIsUs
+              ? opponentInitials(next.opponent)
+              : <Crest />}
+          </span>
           <strong>{home.awayTeam}</strong>
-          {home.homeIsUs
-            ? <span className="fixture-badge">{opponentInitials(next.opponent)}</span>
-            : <Crest />}
-        </span>
+          <em>Away</em>
+        </div>
       </div>
-      <p className="fixture-date">{weekdayDate(next.date)}</p>
-      <div className="home-stat-tiles fixture-tiles">
-        <div className="tile"><b>{parts.days}</b><em className="label">Days</em></div>
-        <div className="tile"><b>{parts.hours}</b><em className="label">Hrs</em></div>
-        <div className="tile"><b>{parts.minutes}</b><em className="label">Mins</em></div>
+
+      <p className="nm-date">{weekdayDate(next.date)}</p>
+
+      <div className="home-stat-tiles nm-count">
+        <div className="tile"><b>{pad(parts.days)}</b><em className="label">Days</em></div>
+        <div className="tile"><b>{pad(parts.hours)}</b><em className="label">Hrs</em></div>
+        <div className="tile"><b>{pad(parts.minutes)}</b><em className="label">Min</em></div>
       </div>
-      <div className="fixture-actions">
-        <button type="button" onClick={() => downloadIcs(next, ground)}>Add to calendar</button>
-        <Link className="more" to={`/matchday/${next.id}`}>Match details →</Link>
+
+      <div className="nm-actions">
+        <button
+          type="button"
+          onClick={() => { downloadIcs(next, ground); setSaved(true); }}
+        >
+          Add to calendar
+        </button>
+        <Link className="btn secondary" to={`/matchday/${next.id}`}>Match details</Link>
       </div>
+      {saved && (
+        <p className="nm-said">
+          Saved to your calendar, {weekdayDate(next.date).replace(/ \d{4}$/, '')}{kickoff ? ` ${kickoff}` : ''}.
+        </p>
+      )}
     </div>
   );
 }
