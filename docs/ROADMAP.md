@@ -194,26 +194,30 @@ ics.test.js` untouched and green; `npm test` green (216). Home's three budget
 rows: 2,413px → 2,329px unpicked, 2,499px → 2,423px picked, 2,487px → 2,403px
 picked-with-no-apps — `DESIGN.md` → *Page budgets*.
 
-**Phase 68 — The last game as a bar, and Your season's head.**
-
-- `LastGameBar` becomes the mock's `.last-bar`: a strip on `--sheet` directly
-  under the band, `2px solid var(--gold)` on top and `1px var(--rule)` under,
-  no heading and no rule inside. One row that wraps: `.lb-score` (the pill, the
-  score in the display face at `--t-title`, *v Old Stoics · Sat 7 Mar* muted);
-  `.lb-facts` — *Goals* and *Man of the match*, each a `.label` over linked
-  names; `.lb-more` *Full match →* on the right. It reads ours-first like every
-  row on the site — Phase 58's ruling stands.
-- *Your season* takes `.head`: `h2` *Your season*, the reader's name as the
-  `.more` link on the right, *Not you?* beside it as a small secondary; its
-  figures are `.tile`s. What the card says is unchanged — apps, goals, assists
-  and the nearest badge, per `DESIGN.md` → *Home, addressed to the reader*.
-  The mock's *MOTM* tile was illustrative; that section's argument about
-  which figures belong here was made deliberately and is kept.
-- **Files:** `components/home/LastGameBar.jsx`, `YourSeason.jsx`,
-  `styles/pages/home.css`.
-- **Done means** the bar is one row at 1400 and two at 375, every name a link;
-  side by side.
-- **Model:** Sonnet 5 · high.
+**Phase 68 — The last game as a bar, and Your season's head.** Done.
+`LastGameBar` becomes the mock's `.last-bar`: a strip on `--sheet` directly
+under the band — the site's second full-bleed section, `.last-bar-inner`
+re-applying the 1400px column the way `.club-band-inner` does — `2px solid
+var(--gold)` on top and `1px var(--rule)` under, no heading and no rule
+inside. One row that wraps: `.lb-score` (the pill, the score in the display
+face at `--t-title`, *v Old Stoics · Sat 14 Mar* muted); `.lb-facts` — *Goals*
+and *Man of the match*, each a `.label` over linked names; `.lb-more` *Full
+match →* on the right. It reads ours-first like every row on the site —
+Phase 58's ruling stands. *Your season* takes `.head`: `h2` *Your season*,
+the reader's name as the `.more` link on the right, *Not you?* beside it as
+a small secondary; its figures are `.tile`s, unchanged — apps, goals and
+assists. The roadmap's own brief for this phase said the card also carried
+"the nearest badge", following `DESIGN.md` → *Home, addressed to the
+reader*; the badge chase was actually dropped from the card weeks earlier
+(`git log --grep="Drop the next-badge chase"`) because nearly every reader
+was shown the same uninformative "1 to clean sheet", and that doc section
+never caught up. Corrected here rather than carried forward: the section
+now says three figures and no badge, and *A name is a link* no longer claims
+the reader's own name is the card's heading. `lib/format.js` gained
+`weekdayDayMonth` ("Sat 14 Mar") for the bar's own date line. `npm test`
+green (216); Home's three budget rows fell rather than grew from dropping
+the old sheet-card chrome: 2,329px → 2,283px unpicked, 2,423px → 2,366px
+picked, 2,403px → 2,346px picked-with-no-apps.
 
 **Phase 69 — The outlook rows, the snapshot, and Season so far.**
 
@@ -571,7 +575,7 @@ Phase 52 (inside Phase 74) decides each.
 
 | Page | Now | Budget | Owner |
 | --- | --- | --- | --- |
-| Home — unpicked / a name picked / picked, no apps this season | 2,413 / 2,499 / 2,487 | 1,600 | **Phases 67–69**, then 52. The mock's bar, rows and snapshot are all shorter than what shipped, so the number moves before anything is cut. Three rows because they are three states of one page, and only the first is what a stranger sees |
+| Home — unpicked / a name picked / picked, no apps this season | 2,283 / 2,366 / 2,346 | 1,600 | **Phase 69**, then 52. Phases 67–68 landed lighter than what they replaced rather than heavier; the mock's outlook rows and league snapshot are still shorter than what shipped, so the number moves again before anything is cut. Three rows because they are three states of one page, and only the first is what a stranger sees |
 | Matchday — latest | 2,456 | 2,300 | **Phase 52** — 156 over; head to head's tape, real content the old card didn't carry |
 | Matchday — clean sheet (12 named, a report, clamped / open) | 2,746 / 3,150 | 2,300 | **Phase 52** — 446 over clamped; the clamp bounds it, it doesn't fit it |
 | Matchday — walkover (no team sheet) | 1,533 | 2,300 | within |

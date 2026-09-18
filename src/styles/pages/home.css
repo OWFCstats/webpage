@@ -16,10 +16,11 @@
 .form-card h1::after { content: none; }
 
 /* Home draws its own 1400px column (styles/layout.css hands it the whole
-   viewport instead) for everything under the band: the last-game bar,
-   Your season, and the outlook/league/season-so-far grid. The band draws its
-   own column the same way, in .club-band-inner below, because its ground has
-   to span the viewport behind it. */
+   viewport instead) for everything under the band and the last-game bar:
+   Your season, and the outlook/league/season-so-far grid. The band and the
+   bar draw their own column the same way, in .club-band-inner and
+   .last-bar-inner, because their ground has to span the viewport behind
+   them. */
 .home-column {
   max-width: 1400px;
   margin: 0 auto;
@@ -462,25 +463,59 @@
 
 /* ---- last game bar ---- */
 
-/* A row like any other scoreline on the site now, not a scoreboard, so it
-   takes .result-row as-is rather than restating chip/opponent/score/venue as
-   a hero of its own — the div isn't a link because the scorers and the MOTM
-   underneath need their own, but it keeps the same 44px rhythm as a row that
-   is one. */
-.lgb-row { margin-bottom: var(--s2); }
-
-.lgb-foot {
-  padding-top: var(--s3);
-  border-top: 1px solid var(--rule);
+/* Full-bleed like the band above it (Phase 68) — the site's second such
+   strip — rather than a card inside the page's own column. Paper on the
+   band's dark ground, a 2px gold rule on top and a hairline under, so it
+   reads as the frame's own next fixed point rather than one more sheet in
+   the column beneath it. */
+.last-bar {
+  background: var(--sheet);
+  border-top: 2px solid var(--gold);
+  border-bottom: 1px solid var(--rule);
 }
 
-.lgb-line {
-  margin: var(--s1) 0;
+/* Centres the row in the site's own 1400px column with its own gutters, the
+   way .club-band-inner does above it. */
+.last-bar-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: var(--s3) 1.6rem;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--s4);
+}
+
+.lb-score { display: flex; align-items: center; gap: var(--s2); }
+
+.lb-score b {
+  font-family: var(--font-display);
+  font-size: var(--t-title);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.lb-facts { display: flex; gap: var(--s5); flex-wrap: wrap; font-size: var(--t-small); }
+
+.lb-facts div { min-width: 0; }
+
+.lb-facts .label { margin-bottom: 0.1rem; }
+
+.lb-facts a { font-weight: 600; }
+
+.lb-more {
+  margin-left: auto;
   font-size: var(--t-small);
-  color: var(--ink-soft);
+  font-weight: 600;
+  color: var(--gold-deep);
+  white-space: nowrap;
 }
 
-.lgb-line a { font-weight: 600; }
+@media (max-width: 700px) {
+  .last-bar-inner { padding: var(--s3) 1rem; gap: var(--s3); }
+  .lb-more { margin-left: 0; }
+}
 
 /* ---- your season: Home addressed to whoever is holding the phone ---- */
 
@@ -501,22 +536,27 @@
 
 /* The one widget head that does not stack below 480px. The rule that stacks
    the others is there because a heading and a note fight over 250px; this head
-   holds a name and a control four characters wide, and stacking it spent a
-   whole row of a page already over its budget on the button nobody came to
-   press. */
+   holds a short fixed heading and a control four characters wide, and
+   stacking it spent a whole row of a page already over its budget on the
+   button nobody came to press. */
 .home-me .head {
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
 }
 
-.home-me .head button { flex: none; }
-
-.home-me h2 a { color: var(--ink); }
-
-@media (hover: hover) and (pointer: fine) {
-  .home-me h2 a:hover { color: var(--gold-deep); }
+/* The name and "Not you?" together, right-aligned — wrapping onto their own
+   second line rather than the whole head stacking, for a name too long to
+   sit beside the button at 375px. */
+.ys-more {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
+
+.ys-more button { flex: none; }
 
 /* Unpicked, the question is the whole section, so the control is the whole row
    rather than a gold button adrift in an empty sheet. Same shape as the

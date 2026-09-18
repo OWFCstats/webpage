@@ -319,19 +319,12 @@ have been written before Phase 57 and wasn't:
 
 ### The club band, under the masthead
 
-> **Phase 68.** The band and its two plates are built to the mock (Phase 67);
-> the last-game bar under them is not — it is still `LastGameBar`'s old
-> sheet-card shape, inside `.home-column` with *Your season* rather than its
-> own full-bleed strip. See *Draft D is the specification*; this section is
-> rewritten again when 68 lands.
-
-The first thing on Home, flush under the masthead and full-bleed — the first
-of the site's two full-bleed sections, the last-game bar the second once Phase
-68 lands (`main.page:has(> .home)` drops the page's own padding and column for
-Home; `.club-band-inner` re-applies the same 1400px column and gutters inside
-the band's own dark ground, the way `.home-column` does for everything under
-it). Two paper plates on a 1px gold border all round, stretched to one height
-past 860px. The first is the next fixture: home side first and away second by
+The first thing on Home, flush under the masthead and full-bleed
+(`main.page:has(> .home)` drops the page's own padding and column for Home;
+`.club-band-inner` re-applies the same 1400px column and gutters inside the
+band's own dark ground, the way `.home-column` does for everything under it).
+Two paper plates on a 1px gold border all round, stretched to one height past
+860px. The first is the next fixture: home side first and away second by
 venue, 46px round badges with the crest inside the gold one, kick-off in the
 display face between them with the ground under it, the date on its own ruled
 line, a live countdown in days, hours and minutes, then *Add to calendar* (an
@@ -346,6 +339,17 @@ the points beside it, then the last five results as a capped strip of 62px
 squares, the latest ringed gold — and nothing else: no sentence, no button,
 because the fixture plate beside it and the league table two sections down
 already carry both.
+
+**The last-game bar is the site's second full-bleed strip.** Redrawn to the
+mock in Phase 68: `.last-bar` on `--sheet`, a 2px gold rule on top and a
+hairline under, directly beneath the band rather than a card inside
+`.home-column` — `.last-bar-inner` re-applies the 1400px column the same way
+`.club-band-inner` does. One row that wraps rather than a heading over a
+scoreline: the W/D/L pill, the score in the display face, then *v Old Stoics ·
+Sat 14 Mar* muted for context, the goalscorers and the Man of the match as
+linked names, and *Full match →* on the right. It still reads ours-first —
+the pill and our score lead, the opponent and date follow — which is Phase
+58's ruling and is unchanged by drawing it as a strip instead of a card.
 
 **The band is chrome, not a fourth surface.** It reuses the masthead's own
 `--board` tokens — the same register as the header and the tab bar — rather
@@ -372,30 +376,27 @@ standings — first screen, no navigating, which is the whole point of it.
 **It has three states and shows one.** Unpicked it is a single row asking one
 question, because most of the people who ever see it have never played for the
 club and a card of blanks is worse than a question; tapping it swaps in the
-player search. Picked it is this season's apps, goals and assists in the same
-three tiles the season stats use, and under them the nearest career badge with
-what it costs — *Assists · 1 to silver*.
+player search. Picked it takes `.head` — the same primitive every other card's
+head does, `h2` *Your season* with the reader's own name as the `.more` link on
+the right and *Not you?* beside it as a small secondary — and its figures are
+`.tile`s: this season's apps, goals and assists, the ones a player opens the
+site to check on a Sunday morning without navigating to find them.
 
-**The figures are the season and the badge is career, and that split is
-deliberate.** Everything else on Home is this season, so a card quietly showing
-career totals would disagree with the page around it; a badge, meanwhile, is a
-career thing and its own drawing says so, so "1 to silver" against a season
-total would be a different and wrong number. `lib/me.js` is where both are
-derived and its header comment is the same argument.
+**It used to carry a fourth thing: the nearest career badge, and what it
+cost.** Early in a season nearly every player has zero of most things, so the
+badge was showing most readers the same grey clean-sheet badge and the same
+uninformative "1 to clean sheet" — not the incentive it was meant to be. It
+was dropped rather than fixed, because the fix (a badge worth chasing this
+early would have to look past the reader's own next rung to find one, which is
+a different and more complicated promise than "here's what's next"). Career
+totals and the full badge shelf stay one tap away, through the name.
 
-**The drawing is the metal they hold, not the one they are chasing.** A
-full-colour silver crest over "1 to silver" would be showing somebody a badge
-they haven't earned. Same convention as the shelf on their own page, and the
-same reason the unearned one is drawn drained rather than hidden: a badge you
-can't see is not an incentive.
-
-**Two figures and a badge, and no more.** The obvious next thing is a rank, or a
-career total beside the season one, or the club's average to compare against —
-and all three are on the reader's own page, one tap away through the name, which
-is the heading and a link. Home's job here is to say "you, this season, and
-what's next" in one screen of a page that is already over its height budget. It
-costs 74px unpicked and 222px picked, which is real: `ROADMAP.md` → *Page
-budgets* carries the number and Phase 52 owns what comes off in exchange.
+**Three figures and no more.** The obvious next thing is a rank, or a career
+total beside the season one, or the club's average to compare against — and
+all three are on the reader's own page, one tap away through the name. Home's
+job here is to say "you, this season" in one screen of a page that is already
+over its height budget — real height, which `ROADMAP.md` → *Page budgets*
+tracks.
 
 **The offer is made twice: here, and on the player's own page.** The hero
 carries *This is me* in its top-right corner — gold, because it is an offer,
@@ -614,10 +615,10 @@ Two names are deliberately not links, because the page they would go to is the
 page you are on: the club's own row in the league table, and the player whose
 page is already open.
 
-The reader's own name on Home is a link like any other, and it is the heading of
-that section rather than a line inside it — the one place on the front page that
-leads to the reader's own page, which is where everything the card has room for
-one line of is written out in full.
+The reader's own name on Home is a link like any other — the `.more` link on
+*Your season*'s own `.head` since Phase 68 — and it is the one place on the
+front page that leads to the reader's own page, which is where everything the
+card has room for one line of is written out in full.
 
 ### One `<h1>` a page, and it names the page
 
