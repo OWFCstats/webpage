@@ -1759,8 +1759,8 @@ gradient area fills. Rules:
   currently behind a button in its head; Phase 72 moves it to a quiet link in
   the foot. **A card whose own figures are already printed on it carries no
   table at all**: the six per-game tiles, the W/D/L donut, the home/away goals
-  split, the scorelines, the margins, and the division's ranked lists (Phase
-  70; *A ranked list is not a plot* below).
+  split, the scorelines, the margins, and the division's ranked list (Phases 70
+  and 71; *A ranked list is not a plot* below).
 - **A chart is drawn once, at a canvas that fits 375px, and scales up.** Never
   a wide canvas fitted down: an SVG scaled to a phone scales its labels too, so
   a 12px label ships at 5px and reads as a design choice rather than a bug.
@@ -1846,31 +1846,43 @@ holds and the ends are what the reader places the shape between.
 
 ### A ranked list is not a plot
 
-> **Phase 71.** The four decisions below stand; the shape changes. The mock draws
-> **one** list behind an *Attack | Defence* toggle, the figure as a solid bar in
-> `--chart-2` (ours `--chart-1`) in its own track beside the name rather than a
-> pale wash behind it, and the average as a note under the list rather than a
-> hairline across it. Half the height. See *Draft D is the specification*.
-
 Season → Stats holds one card that draws no chart: the division's attack and
-defence (`components/season/DivisionRatios.jsx`, Phase 63), where every club's
-goals for and goals against per game are ranked best first and each figure is
-drawn as a wash behind its own row. The rules above are about Recharts plots;
-four decisions belong to this shape instead.
+defence (`components/season/DivisionRatios.jsx`, Phase 63, redrawn to Draft D
+in Phase 71). Every club's goals for and goals against per game are ranked best
+first, **one ranking at a time behind an *Attack | Defence* toggle** — a `.seg`
+in the card's own `.head`, under the `.label` *The division*. The rules above
+are about Recharts plots; five decisions belong to this shape instead.
 
-- **The figure goes behind the row, never in a column beside it.** A bar in its
-  own column costs the width a club name needs, and club names are what the
-  measurements at 375px keep catching (*Mobile*). Behind the row, a name has the
-  full width to wrap into and the figure still has a full-width scale to be read
-  against. "Old Merchant Taylors II" is the case that decides this, and it is a
-  real club in the division.
-- **Both lists share one scale; each carries its own average.** Scored and
-  conceded are the same unit, so one maximum lets the two be read against each
-  other. The averages are still worked out separately, because this table is
-  typed in by hand: a complete division's goals for and goals against are the
-  same pile of goals counted twice, and the committed fixture's are 209 against
-  193. A hairline crosses each list at its own figure — past it on goals scored,
-  short of it on goals conceded, is a club doing better than its division.
+- **One list, not two.** The same division ranked twice on one screen is the
+  same nine club names read twice, and it made this the tallest card on Season →
+  Stats: 854px, against a page budget of 2,200px for everything. The toggle
+  costs a tap and halves the card, and nothing is lost — nobody reads a club's
+  attack and its defence in the same glance, which is why the mock drew it this
+  way.
+- **The figure is a solid bar in its own track, and the name gets a measured
+  column.** Phase 63 drew the figure as a wash behind the whole row, on the
+  argument that a bar in its own column costs the width a club name needs. With
+  one list on screen there is width for both, and a bar from a common left edge
+  is read against its neighbours more easily than a wash whose end has to be
+  found. The name column is measured rather than taken from the mock: the mock
+  draws 8.4rem with an ellipsis, and "Old Merchant Taylors II" — a real club in
+  the 2026/27 division, in `backups/league_rows.json` — needs 127px at
+  `--t-micro` and 148px at `--t-small`, so the mock's own width cuts it at both
+  steps. The column is 8.25rem below 520px and 9.6rem above, the track takes
+  what is left down to a 48px floor, and every real club name in the division
+  sits on one line from 320px up. Past that maximum the name wraps; it never
+  clips, which is the rule *Mobile* states and `check:layout` asserts.
+- **Both rankings share one scale; each carries its own average.** Scored and
+  conceded are the same unit, so one maximum means the toggle moves a bar for a
+  reason — a club that concedes what it scores keeps the same length across it.
+  The averages are still worked out separately, because this table is typed in
+  by hand: a complete division's goals for and goals against are the same pile
+  of goals counted twice, and the committed fixture's are 209 against 193. The
+  average is **a note under the list** — a dashed mark and *Division average
+  2.55 scored per game* — not a hairline across every row: with one ranking on
+  screen there is no second list for the same mark to be read against, and the
+  note says the figure outright rather than leaving it to be judged off a rule's
+  position.
 - **A club that has played nothing is in neither list, and is named underneath.**
   Not a zero: dividing by zero is either NaN or, treated as a score of none, a
   club that hasn't kicked a ball topping the defence table. It stays out of the
@@ -1882,13 +1894,14 @@ four decisions belong to this shape instead.
   the same club's scored-a-game figure differs between two adjacent cards — 2.58
   against 2.4 on the fixture. Each says which it is, which is *A figure that
   cannot differ is not a figure* read the other way round: two figures that
-  genuinely differ have to say why.
+  genuinely differ have to say why. The foot draws only when the list does: on a
+  season with no standings typed in there are no figures to reconcile.
 
-The wash is `--verdigris` for a rival and `--gold` for us — the same "this row
-is us" the league table's own row takes, with the club name and figure in a
-heavier weight beside it so the row a reader is looking for isn't marked by hue
+The bar is `--chart-2` for a rival and `--chart-1` for us, with our row washed
+gold — the same "this row is us" the league table's own row takes, and the bar
+as well as the wash, so the row a reader is looking for isn't marked by hue
 alone. Neither is a chart series colour: these are two categories, not five, and
-the series order is for lines that label themselves.
+the series palette is for lines that label themselves (*Chart series*).
 
 ## Motion
 
@@ -2143,13 +2156,14 @@ Recharts card ever did, the scorelines and margins became `.hbar`s instead of
 two Recharts bar charts, and both Points accumulated and the goals-per-match
 line came off a single season entirely. **5,501px → 3,814px, 1,614px over** —
 about two-thirds of the old number, not the half the phase estimated going
-in, because the division's ranked lists and the three player charts are
-untouched here and are most of what's left; those are Phase 71 and 72's own
-cards to shrink or cut. It is still, at seven cards against the mock's own
-nine (the division counts as one on the mock's own layout, two lists behind a
-toggle rather than side by side, which is Phase 71), the clearest case on the
-site for the thing `ROADMAP.md` → *Page budgets* keeps saying — that closing a
-gap this size means cutting a section rather than shaving one.
+in, because the division's ranked lists and the three player charts were
+untouched there and are most of what was left. Phase 71 took the first of
+those: the division ranked twice became one ranking behind a toggle, 854px to
+408px, for **3,814px → 3,377px, 1,177px over**. The three player charts are
+Phase 72's, and this is still the clearest case on the site for the thing
+`ROADMAP.md` → *Page budgets* keeps saying — that closing a gap this size
+means cutting a section rather than shaving one, which is what dropping a
+whole ranking was.
 Home is 2,116px unpicked and 2,264px with a name picked: Phase 19 took it from
 2,113px to 1,882px (the result leading, the next-fixture card collapsing to a
 row, a redundant form-chip strip coming off Recent form), Phase 23's badge,

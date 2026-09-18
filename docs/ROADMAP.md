@@ -279,23 +279,29 @@ the division's ranked lists and the three player charts are untouched here
 and are most of what's left. Season itself: 2,494px → 2,398px from the
 chip-row alone.
 
-**Phase 71 — The division, one list at a time.**
-
-- `DivisionRatios` becomes the mock's card: `.head` with the `.label` *The
-  division* over `h2` *Attack and defence*, and a `.seg` *Attack | Defence* on
-  the right toggling **one** ranked list. Rows are `.ratio-row` — `1.4rem
-  8.4rem 1fr 2.6rem` (`1.2rem 6.2rem 1fr 2.3rem` below 520px): rank faint, club
-  at 600 with ellipsis, a 15px track on `--sheet` filled solid `--chart-2` —
-  ours `--chart-1` with the row washed gold — and the figure to two decimals.
-  The average is an `.avg-note` under the list — a dashed mark and *Division
-  average 2.63 scored per game* — not a hairline across every row. *League
-  games only · entered by hand, updated …* stays as the foot. `divisionRatios`
-  in `lib/league.js` is untouched.
-- **Files:** `components/season/DivisionRatios.jsx`,
-  `styles/components/division-ratios.css`, `styles/components/charts.css`.
-- **Done means** 854px becomes about 430 at 375px; side by side;
-  `tests/league.test.js` untouched and green.
-- **Model:** Sonnet 5 · high.
+**Phase 71 — The division, one list at a time.** Done. `DivisionRatios` came
+off `ChartCard` onto a plain `.sheet` with the shared `.head` — `.label` *The
+division* over `h2` *Attack and defence*, a `.seg` toggling **one** ranked
+list, and no data table, because every figure on this card is printed on its
+own row (Phase 70's rule). Rows are the mock's `.ratio-row`: rank faint, club
+at 600, a 15px track on `--sheet` filled solid `--chart-2` — ours `--chart-1`
+with the row washed gold — and the figure to two decimals. The average is an
+`.avg-note` under the list, a dashed mark and *Division average 2.55 scored
+per game*, in place of the hairline that used to cross every row; *League
+games only · entered by hand, updated …* stays as the foot, and now draws only
+when the list does. `divisionRatios` in `lib/league.js` is untouched, so both
+rankings still share one scale and the toggle moves a bar for a reason.
+**The one place the mock is not followed is the club column**, and it is
+measured rather than argued: Draft D draws 8.4rem with an ellipsis, and "Old
+Merchant Taylors II" — a real club in the 2026/27 division, which
+`backups/league_rows.json` has and the fixture's 2025/26 division does not, so
+`check:layout` could not have caught it — needs 127px at `--t-micro` and 148px
+at `--t-small`. The column is `minmax(0, 8.25rem)` below 520px and
+`minmax(0, 9.6rem)` above with the track taking what is left down to a 48px
+floor, which puts every real club name in the division on one line from 320px
+up; the mock's own render clips at both steps. `npm test` unchanged and green
+(219); `check:layout` PASS, 40 known failures, nothing new. The card is 854px
+→ **408px** at 375px, and Season → Stats **3,814px → 3,377px, 1,177px over**.
 
 **Phase 72 — The three player charts, and the pigments on them.**
 
@@ -552,18 +558,19 @@ rest are how it propagated.
 
 `DESIGN.md`'s *Page length* table is the authority for the numbers — they are a
 design constraint and a component author reads that file. This is the tracking
-view. *Now* is `npm run shots` on the `mid-season` fixture at 375px, measured
-after Phase 64; **phases 67–72 re-measure their own rows as they land**, and
-Phase 52 (inside Phase 74) decides each.
+view. *Now* is `npm run shots` on the `mid-season` fixture at 375px; every row
+that is over its budget was re-measured in Phase 71, and the rows that are
+within it were last measured after Phase 64. **Phase 72 re-measures its own
+row as it lands**, and Phase 52 (inside Phase 74) decides each.
 
 | Page | Now | Budget | Owner |
 | --- | --- | --- | --- |
 | Home — unpicked / a name picked / picked, no apps this season | 2,447 / 2,530 / 2,509 | 1,600 | **Phase 52**. Phases 67–68 landed lighter than what they replaced; Phase 69's richer outlook row cost more than the shorter season card gave back, so the number rose for the first time since Phase 19. Three rows because they are three states of one page, and only the first is what a stranger sees |
-| Matchday — latest | 2,456 | 2,300 | **Phase 52** — 156 over; head to head's tape, real content the old card didn't carry |
-| Matchday — clean sheet (12 named, a report, clamped / open) | 2,746 / 3,150 | 2,300 | **Phase 52** — 446 over clamped; the clamp bounds it, it doesn't fit it |
+| Matchday — latest | 2,468 | 2,300 | **Phase 52** — 156 over; head to head's tape, real content the old card didn't carry |
+| Matchday — clean sheet (12 named, a report, clamped / open) | 2,758 / 3,162 | 2,300 | **Phase 52** — 446 over clamped; the clamp bounds it, it doesn't fit it |
 | Matchday — walkover (no team sheet) | 1,533 | 2,300 | within |
-| Season | 2,494 | 2,200 | **Phase 52** — 290 over; see *Decisions* → *Open* |
-| Season → Stats | 5,501 | 2,200 | **Phases 70–72**, then 52. Ten full-width cards where the mock draws nine compact ones — expect about half. What is left over after that is a decision about what a season is for, and 52 takes it with the measurement in hand |
+| Season | 2,398 | 2,200 | **Phase 52** — 198 over; Phase 70's chip row took 96 off it. See *Decisions* → *Open* |
+| Season → Stats | 3,377 | 2,200 | **Phase 72**, then 52. 5,501 before the redesign reached it; Phase 70's frame and four small cards took it to 3,814 and Phase 71's single ranking to 3,377. The three player charts are what is left to redraw. What remains after that is a decision about what a season is for, and 52 takes it with the measurement in hand |
 | Players → Leaderboards | 1,296 | 1,400 | met (14, 24) |
 | Records → badges / honours / all-time | 1,729 / 1,069 / 1,807 | 2,000 | met (16); badges +62 for the bigger trophies (32–34). Honours is 1,626 on `pre-season`, the taller of its two states |
 | Player detail | 2,287 | 2,400 | met (21); +38 for the 40px shelf (33), +8 for *This is me* (48) |
