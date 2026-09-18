@@ -83,6 +83,16 @@ export function dayMonth(iso) {
   return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
 }
 
+/** "Sat 14 Mar" — the last-game bar's own line: the day of the week is worth
+ *  carrying there the way weekdayDate's is, but the result is necessarily
+ *  this season, so the year weekdayDate carries would only repeat one Home
+ *  already names once, on the form plate. */
+export function weekdayDayMonth(iso) {
+  if (!iso) return '';
+  const d = new Date(`${iso}T00:00:00`);
+  return d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+}
+
 /** "12 Aug 2026, 21:04" — for a stored timestamp (not a date-only column),
  *  where the time of day is the point: standings entered after the Saturday
  *  results are a different thing from standings entered on the Monday. */

@@ -103,10 +103,11 @@ main.page {
   animation: page-in var(--dur-pop) var(--ease-out) both;
 }
 
-/* Home draws its own full-bleed band flush under the masthead (Phase 67,
-   `DESIGN.md` → *Draft D is the specification*) — the one page that owns its
-   own column instead of taking this element's. `.home-column` (home.css)
-   re-applies the same 1400px width and gutters to everything under the band. */
+/* Home draws its own full-bleed band and last-game bar flush under the
+   masthead (phases 67-68, `DESIGN.md` → *Draft D is the specification*) — the
+   one page that owns its own column instead of taking this element's.
+   `.home-column` (home.css) re-applies the same 1400px width and gutters to
+   everything under them. */
 main.page:has(> .home) {
   padding: 0;
   max-width: none;

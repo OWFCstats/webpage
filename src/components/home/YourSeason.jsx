@@ -52,14 +52,14 @@ export default function YourSeason({ players, player, summary, onPick, onForget 
   return (
     <section className="sheet home-widget home-me">
       <div className="head">
-        <div>
-          <span className="label">Your season</span>
-          {/* The name is the heading and the heading is a link: the one place
-              on Home that leads to the reader's own page, which is where
-              everything this card has room for one line of is written out. */}
-          <h2><Link to={`/players/${player.id}`}>{player.name}</Link></h2>
+        <h2>Your season</h2>
+        <div className="ys-more">
+          {/* The name, not the heading, is the link: the one place on Home
+              that leads to the reader's own page, which is where everything
+              this card has room for one line of is written out. */}
+          <Link className="more" to={`/players/${player.id}`}>{player.name} →</Link>
+          <button type="button" className="secondary small" onClick={onForget}>Not you?</button>
         </div>
-        <button type="button" className="secondary small" onClick={onForget}>Not you?</button>
       </div>
 
       {summary.apps > 0 ? (

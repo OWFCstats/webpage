@@ -105,13 +105,17 @@ export default function Home() {
         fixture={<NextFixture next={next} teams={teams} />}
       />
 
-      {/* Everything under the band sits in the page's ordinary column —
-          main.page itself has none for Home, now the band owns being
+      {/* The last result, full-bleed like the band above it — the site's
+          second such strip (Phase 68, DESIGN.md → *The club band, under the
+          masthead*) — so the first screen leads with a result before
+          anything asks the reader to scroll. */}
+      <LastGameBar match={lastMatch} ctx={lastCtx} />
+
+      {/* Everything else sits in the page's ordinary column — main.page
+          itself has none for Home, now the band and the bar above own being
           full-bleed (styles/layout.css). */}
       <div className="home-column">
-        <LastGameBar match={lastMatch} ctx={lastCtx} />
-
-        {/* Second, under the result: the first screen owes the squad the last
+        {/* First in the column: the first screen owes the squad the last
             result and a name, and this is the section that makes one of those
             names the reader's own. */}
         <YourSeason
