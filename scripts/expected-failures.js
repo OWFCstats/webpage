@@ -51,7 +51,7 @@ export const EXPECTED = [
   },
   {
     invariant: 'icon-unmeasurable',
-    match: 'fixture-team.us > img',
+    match: 'nm-badge.us > img',
     owner: 'Phase 19',
     why:
       'The club band\'s fixture plate draws the same public/crest.png the '
@@ -63,7 +63,8 @@ export const EXPECTED = [
       + 'element and not to a route, because it used to say route "home", which '
       + 'meant Phase 48 adding two more states of that same page reported the '
       + 'same crest as two new bugs. Phase 57 moved the crest from the old '
-      + '.fixture-row into the club band\'s fixture plate — the finding is that '
-      + 'this component draws a bitmap, wherever it renders.',
+      + '.fixture-row into the club band\'s fixture plate; Phase 67 redrew the '
+      + 'plate to the mock\'s .nm-badge disc, so the selector moved with it — '
+      + 'the finding is that this component draws a bitmap, wherever it renders.',
   },
 ];

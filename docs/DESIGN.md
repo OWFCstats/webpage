@@ -319,23 +319,33 @@ have been written before Phase 57 and wasn't:
 
 ### The club band, under the masthead
 
-> **Phases 67–68.** Built, and not to the mock: the band sits inside the padded
-> column with paper above it, the plates carry a gold top edge rather than a
-> border, the fixture card is set in the data face with 32px badges, the form
-> card's squares are 26px and its label is burnt. See *Draft D is the
-> specification*; this section is rewritten when 67 and 68 land.
+> **Phase 68.** The band and its two plates are built to the mock (Phase 67);
+> the last-game bar under them is not — it is still `LastGameBar`'s old
+> sheet-card shape, inside `.home-column` with *Your season* rather than its
+> own full-bleed strip. See *Draft D is the specification*; this section is
+> rewritten again when 68 lands.
 
-The first thing on Home, and the first phase of the redesign (Phase 57): a
-dark band holding two paper plates with a gold hairline along the top of each.
-The first is the next fixture: home side first and away second by venue,
-kick-off and the ground between them, the date on its own ruled line, then a
-live countdown in days, hours and minutes, then *Add to calendar* (an `.ics`
-written from the fixture alone, `lib/ics.js`) and *Match details*. The second,
-added in Phase 58, is the form card — league position over the last five
-results as coloured squares, at half the fixture card's height and centred
-against it (`align-items: center` on the band's own grid) — and nothing else:
-no sentence, no button, because the fixture plate beside it and the league
-table two sections down already carry both.
+The first thing on Home, flush under the masthead and full-bleed — the first
+of the site's two full-bleed sections, the last-game bar the second once Phase
+68 lands (`main.page:has(> .home)` drops the page's own padding and column for
+Home; `.club-band-inner` re-applies the same 1400px column and gutters inside
+the band's own dark ground, the way `.home-column` does for everything under
+it). Two paper plates on a 1px gold border all round, stretched to one height
+past 860px. The first is the next fixture: home side first and away second by
+venue, 46px round badges with the crest inside the gold one, kick-off in the
+display face between them with the ground under it, the date on its own ruled
+line, a live countdown in days, hours and minutes, then *Add to calendar* (an
+`.ics` written from the fixture alone, `lib/ics.js`, with a confirmation line
+once it's used) and *Match details* — both pinned to the plate's own floor
+(`margin-top: auto`), which is what lines the two plates' bottom edges up
+without either needing to know the other's height. The second, added in Phase
+58 and redrawn to the mock in Phase 67, is the form card: the season and
+division as its own first line — Home's one `<h1>`, moved here rather than
+dropped — league position in the display face with an ordinal superscript and
+the points beside it, then the last five results as a capped strip of 62px
+squares, the latest ringed gold — and nothing else: no sentence, no button,
+because the fixture plate beside it and the league table two sections down
+already carry both.
 
 **The band is chrome, not a fourth surface.** It reuses the masthead's own
 `--board` tokens — the same register as the header and the tab bar — rather
@@ -349,9 +359,10 @@ rule, it isn't. `.club-plate` composes with `.sheet` and resets `color` back to
 direct text, and without the reset every plain string on the plate would
 inherit that pale ink onto paper.
 
-The band sits inside the page's ordinary padded column, not edge-to-edge —
-nothing else on the site breaks out of `main.page`'s margin, and a first
-full-bleed section would be its own decision rather than a detail of this one.
+The band's ground runs to the edge of the viewport; nothing else on the site
+does, and Draft D is the decision that these two strips are the exception
+(Phase 67, *Draft D is the specification*) — everywhere else, `main.page`'s own
+column still holds.
 
 ### Home, addressed to the reader
 
@@ -2120,8 +2131,11 @@ form card, and folded the last result from a board into a paper bar in the
 same phase: the form card cost the band almost nothing, since it sits inside
 the fixture card's own height (`align-items: center`), but the two changes
 together still land the page higher than Phase 57 left it — 2,413px unpicked,
-2,499px picked, 2,487px picked-with-no-apps. It is not a candidate for Phase 52
-to cut: the next fixture is what decides whether a reader turns up, which the
+2,499px picked, 2,487px picked-with-no-apps. Phase 67 redrew the band to the
+mock and, moving Home's own `<h1>` onto the form plate rather than leaving it
+as a separate line, took a little back — 2,329px unpicked, 2,423px picked,
+2,403px picked-with-no-apps. None of it is a candidate for Phase 52 to cut:
+the next fixture is what decides whether a reader turns up, which the
 redesign's own brief (`ROADMAP.md` → *The redesign*) puts ahead of the result
 behind it.
 `LeagueTable` and `RecentForm` alone are most of the page, and neither shrinks
