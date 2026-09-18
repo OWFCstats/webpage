@@ -231,6 +231,20 @@ dl.compare dt {
   margin-bottom: 0.3rem;
 }
 
+/* A strip of .tiles, three across — the mock's own grid. .six is a strip of
+   six rather than three: at 700px and under, three across a 375px phone
+   leaves each tile too narrow for two words and a number, so it drops to
+   two columns there and nowhere else. */
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--s2);
+}
+
+@media (max-width: 700px) {
+  .tiles.six { grid-template-columns: repeat(2, 1fr); }
+}
+
 /* A card's own head: a heading and, on its right, a quiet link to more of
    the same. Replaces .home-widget-head and .chart-head — one shape rather
    than three near-identical ones. A .label above the h2 earns its place only

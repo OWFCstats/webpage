@@ -1726,12 +1726,11 @@ people come to find their own.
 
 ## Charts
 
-> **Phases 70–72.** Two rules below change with the mock: "every chart keeps its
-> Show data table" narrows to the three plots that hide names behind dots or
-> lines, behind a quiet link in the foot rather than a button in the head; and
-> the scorelines, margins and goals split are CSS bars in a compact card, not
-> Recharts in a 320px body. The donut stays Recharts at 128px. See *Draft D is
-> the specification*.
+> **Phase 72.** One rule below still changes with the mock: "every chart keeps
+> its Show data table" narrows further, to a quiet link in the foot rather than
+> a button in the head, for the three plots that hide names behind dots or
+> lines — Golden boot race, Games against contributions, Appearance spread. See
+> *Draft D is the specification*.
 
 The charts used to read as generated, from `type="monotone"` smoothing and
 gradient area fills. Rules:
@@ -1755,9 +1754,13 @@ gradient area fills. Rules:
   there.
 - **Series colours from the token order.** Never a literal, never a per-call
   prop.
-- **Every chart keeps its "Show data" table.** This already exists and is the
-  best thing about the current charts — a chart is a view of the numbers, not a
-  replacement for them.
+- **A chart that hides identity behind a dot or a line keeps a "Show data"
+  table** — a chart is a view of the numbers, not a replacement for them —
+  currently behind a button in its head; Phase 72 moves it to a quiet link in
+  the foot. **A card whose own figures are already printed on it carries no
+  table at all**: the six per-game tiles, the W/D/L donut, the home/away goals
+  split, the scorelines, the margins, and the division's ranked lists (Phase
+  70; *A ranked list is not a plot* below).
 - **A chart is drawn once, at a canvas that fits 375px, and scales up.** Never
   a wide canvas fitted down: an SVG scaled to a phone scales its labels too, so
   a 12px label ships at 5px and reads as a design choice rather than a bug.
@@ -1773,16 +1776,17 @@ point" doesn't change between them.
 
 Two judgement calls on what gets labelled and what doesn't:
 
-- **Points accumulated labels the focused season only.** The other seasons on
-  that chart are grey context, drawn to show shape, not identity — the finding
-  sentence above the chart already names the one that matters, and "Show data"
-  still headers every column with its season. Labelling all of them would be
-  the legend again, just moved onto the plot. **Under *All seasons* it labels
-  every one**, because there is no focused season to name in the finding and
-  telling them apart is the only thing the mode is for; nothing is context
-  there, so each line takes its own series colour and its own end label. The
-  end labels stagger where two seasons finish on the same matchday on the same
-  points, which is the one way they land on each other.
+- **Points accumulated labels every season it draws.** Phase 70 took the card
+  off a single season entirely — one line comparing itself to nothing answered
+  nothing, and the mock has no such card — so *All seasons*, where the card
+  now lives exclusively, is the only state it still needs to draw: there is no
+  focused season to grey the rest against, and telling the seasons apart is
+  the whole reason the mode exists, so each line takes its own series colour
+  and its own end label. The end labels stagger where two seasons finish on
+  the same matchday on the same points, which is the one way they land on each
+  other. `PointsAccumulated` itself still accepts a single season — `season`
+  is a year or `'all'` — as the general shape the component was built with;
+  nothing in the app passes it a year any more.
 - **A label needs its own lane.** The career arc's three end labels stack
   vertically (`dy` of `-8`/`0`/`8`) because goals, assists and their sum
   converge at a career's end far more often than a season's results do — three
@@ -1792,14 +1796,27 @@ No end label renders below 700px (`useIsNarrow`) on any chart — a phone-width
 plot has no lane for one without crowding the line data itself. The tooltip and
 the data table carry series identity there instead.
 
-**A pie has no line end, so its labels sit in a caption row underneath
-instead** (Phase 62's W/D/L donut, `components/season/ResultSplit.jsx`) — not
-a re-added legend, since a donut never had a multi-line plot to read one off
-in the first place. `--win`/`--draw`/`--loss` colour the slices there rather
-than the chart series order: those three mean something specific everywhere
-else on the site (*Chart series* above) and a result split is never themed.
-`ChartCard`'s optional `bodyClassName` exists for this one case, where a plot
-needs less than the fixed height a line chart's axis band wants.
+**A pie has no line end, so its key sits beside it instead**
+(`components/season/ResultSplit.jsx`) — not a re-added legend, since a donut
+never had a multi-line plot to read one off in the first place, and every
+figure it would tell you is already printed in the key: `.donut-wrap` holds a
+128px Recharts pie and a `.donut-key` list, one ruled row a result with its
+count and share. `--win`/`--draw`/`--loss` colour the slices there rather than
+the chart series order: those three mean something specific everywhere else on
+the site (*Chart series* above) and a result split is never themed. Phase 70
+moved this off `ChartCard` entirely — a bare `.sheet` with a `.label.ruled`
+head, no finding sentence, no data table, because the key already is one.
+`components/season/VenueGoalsSplit.jsx` reads the same way, as one 32px
+`.split` bar in `--chart-1`/`--chart-2` rather than a pie — home goals against
+away, each half labelled with its own count and share, a neutral-ground goal
+named underneath rather than folded into either side. `ScorelineFrequency.jsx`
+and `MatchMargins.jsx` are `.hbars` now instead of a Recharts bar chart: up to
+seven rows for the scorelines, a `Draw` row plus `marginBuckets`' own four for
+the margins, each a `.hbar` — a filled track and the count on the right, the
+joint-most in `--chart-1` and the rest `.quiet` (`--chart-2`). None of the four
+needs a data table: a bar chart's whole job is standing in for numbers too
+crowded to print, and there's no crowd here — six tiles, three slices, up to
+seven scorelines, five margins.
 
 **A scatter of a squad is a scatter of piles, so the dot is the pile**
 (Phase 64's *Games against contributions*,
@@ -2107,23 +2124,32 @@ a ~40px rung against the ~80px row, with every game still on the page. That
 took Season from 3,224px to 2,494px, 734px back, but not the full 1,024px the
 2,200 budget asked for: the rest is the full league table and the aside
 (season at a glance, the appearances leaderboard), neither of which Phase 29's
-brief covered cutting. The remaining 290px is `ROADMAP.md` → *Decisions* →
-*Open*.
+brief covered cutting. Phase 70's chip-row filter, replacing the `<select>` in
+its own flex row, took a further 96px off the shared header every sub-page
+carries — 2,494px to 2,398px, **198px over**. The remainder is
+`ROADMAP.md` → *Decisions* → *Open*.
 Season → Stats stayed inside the budget through Phase 61's merge at 1,909px,
 then Phase 62 put it 1,476px over: six per-game tiles, a W/D/L donut, the most
 frequent scorelines and the winning and losing margins, four cards on top of
 the three the merge carried over. Phase 63's division card added 854px of that
 page — fourteen ranked rows, which is what ranking a division twice costs —
-for 4,546px, and Phase 64's two new charts a further 955 for **5,501px, 3,301
-over**. That is the shape final: the redesign has nothing further to add to
-this page. It is also, at ten cards, the clearest case on the site for the
-thing `ROADMAP.md` → *Page budgets* keeps saying — that closing a gap this size
-means cutting a section rather than shaving one — and the cut is a decision
-about what a season is for, not a measurement, so it belongs to a phase that
-takes it deliberately rather than to the phase that happened to add the last
-card. What Phase 64 owes the page it has paid: every card fits 375px, nothing
-scrolls sideways, and the three that a player opens the page for sit together
-rather than being spread through the club's own figures.
+for 4,546px, and Phase 64's two new charts a further 955 for 5,501px, 3,301
+over. Phase 70 built the page to Draft D rather than adding to it further:
+the six tiles collapsed a `.grid.cols-3` of `StatTile`s inside its own sheet
+into a bare `.tiles.six`, the donut lost its heading and finding sentence for
+a `.label.ruled` and a key beside it, the goals split is new (`--chart-1`
+home against `--chart-2` away, `VenueGoalsSplit.jsx`) but costs less than a
+Recharts card ever did, the scorelines and margins became `.hbar`s instead of
+two Recharts bar charts, and both Points accumulated and the goals-per-match
+line came off a single season entirely. **5,501px → 3,814px, 1,614px over** —
+about two-thirds of the old number, not the half the phase estimated going
+in, because the division's ranked lists and the three player charts are
+untouched here and are most of what's left; those are Phase 71 and 72's own
+cards to shrink or cut. It is still, at seven cards against the mock's own
+nine (the division counts as one on the mock's own layout, two lists behind a
+toggle rather than side by side, which is Phase 71), the clearest case on the
+site for the thing `ROADMAP.md` → *Page budgets* keeps saying — that closing a
+gap this size means cutting a section rather than shaving one.
 Home is 2,116px unpicked and 2,264px with a name picked: Phase 19 took it from
 2,113px to 1,882px (the result leading, the next-fixture card collapsing to a
 row, a redundant form-chip strip coming off Recent form), Phase 23's badge,

@@ -111,48 +111,132 @@
   .chart-body { height: 300px; }
 }
 
-/* The W/D/L donut has no line end to label, so its figures sit in a caption
-   row under the plot instead — the donut itself only needs to be as tall as
-   it is wide, not the fixed height a line chart's axis band wants. */
-.chart-body.chart-body-donut {
-  height: auto;
+/* ---- the four printed cards (Draft D, Phase 70) ----
+   Every figure on these is already on the card, so none of them is a
+   `ChartCard` — a bare `.sheet` with a `.label.ruled` head and nothing
+   else. Two columns past 900px, one below. */
+.stats-two {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: var(--s3);
+  gap: var(--s4);
 }
 
-.chart-body-donut .recharts-responsive-container {
-  max-width: 220px;
+@media (min-width: 900px) {
+  .stats-two {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--s4);
+    align-items: start;
+  }
 }
 
-.chart-donut-key {
+/* The W/D/L donut has no line end to label, so its figures sit in a key
+   beside it instead. */
+.donut-wrap {
   display: flex;
+  align-items: center;
+  gap: var(--s5);
   flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.5rem 1.25rem;
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  font-size: var(--t-small);
 }
 
-.chart-donut-key li {
+.donut-key {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s2);
+  font-size: var(--t-small);
+  flex: 1;
+  min-width: 150px;
+}
+
+.donut-key div {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  justify-content: space-between;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 0.32rem;
 }
 
-.chart-donut-key strong {
+.donut-key span { display: inline-flex; align-items: center; }
+
+.donut-key i {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--r-sm);
+  display: inline-block;
+  margin-right: 0.45rem;
+}
+
+.donut-key b {
   font-family: var(--font-data);
   font-variant-numeric: tabular-nums;
 }
 
-.chart-donut-swatch {
-  width: 10px;
-  height: 10px;
-  border-radius: 999px;
-  flex: none;
+/* Home goals against away, as one bar — the split reads left to right the
+   same way the donut key reads top to bottom: every figure printed on it. */
+.split {
+  display: flex;
+  height: 32px;
+  border-radius: var(--r);
+  overflow: hidden;
+}
+
+.split span {
+  display: grid;
+  place-items: center;
+  font-family: var(--font-data);
+  font-weight: 700;
+  font-size: var(--t-micro);
+  color: #fff;
+}
+
+.split .a { background: var(--chart-1); color: var(--board); }
+
+.split .b { background: var(--chart-2); }
+
+/* Scorelines and margins: a horizontal bar a row, the count on the right
+   rather than a Recharts axis — the same reasoning as the division's ranked
+   lists (*A ranked list is not a plot*). */
+.hbars {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.hbar {
+  display: grid;
+  grid-template-columns: 3.4rem 1fr 2.2rem;
+  align-items: center;
+  gap: var(--s2);
+  font-size: var(--t-small);
+}
+
+.hbar .k {
+  font-family: var(--font-data);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.hbar .track {
+  height: 15px;
+  background: var(--sheet);
+  border-radius: var(--r-sm);
+  overflow: hidden;
+}
+
+.hbar .fill {
+  display: block;
+  height: 100%;
+  background: var(--chart-1);
+}
+
+.hbar .fill.quiet { background: var(--chart-2); }
+
+.hbar .v {
+  text-align: right;
+  font-family: var(--font-data);
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
 }
 
 /* The division's ranked lists are not a plot either, so they take their own

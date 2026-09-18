@@ -1,63 +1,43 @@
 import { useMemo } from 'react';
-import { Bar, BarChart, CartesianGrid, LabelList, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 import { scorelineFrequency } from '../../lib/matches';
-import { plural } from '../../lib/format';
-import ChartCard from './ChartCard';
-import { chartColours, useChartAxis } from './chart-bits';
 
-// Past this many distinct scorelines the chart itself would be taller than the
-// finding it's illustrating; the full list is still one tap away in the table.
-const SHOWN = 8;
+// Seven rows fit a phone without the card growing past the tiles above it —
+// the full list is still in `lib/matches.js`, just not all drawn.
+const SHOWN = 7;
 
-function finding(entries) {
-  if (entries.length === 0) return null;
-  const top = entries[0];
-  if (top.count === 1) return 'No scoreline has repeated yet.';
-  const tied = entries.filter((e) => e.count === top.count);
-  if (tied.length > 1) return `${plural(tied.length, 'scoreline', 'scorelines')} tied on ${top.count}.`;
-  return `${top.scoreline} has come up ${plural(top.count, 'time', 'times')}.`;
-}
-
-/** Which final scores have actually come round again. One season at a time —
- *  across every season this is a career tally, and that's Records' (CLAUDE.md
- *  → Sections). */
+/** Which final scores have actually come round again, as bars rather than a
+ *  data table — every figure here is already printed on the row. One season
+ *  at a time: across every season this is a career tally, and that's
+ *  Records' (CLAUDE.md → *Sections*). */
 export default function ScorelineFrequency({ season, matches }) {
-  const c = chartColours();
-  const { tick } = useChartAxis();
-
   const entries = useMemo(
     () => scorelineFrequency(matches.filter((m) => m.season === season)),
     [season, matches],
   );
+  const shown = entries.slice(0, SHOWN);
+  const max = shown[0]?.count ?? 0;
 
   return (
-    <ChartCard
-      title="Common scorelines"
-      finding={finding(entries)}
-      empty={entries.length === 0}
-      table={
-        <table className="data">
-          <thead>
-            <tr><th>Scoreline</th><th className="num">Times</th></tr>
-          </thead>
-          <tbody>
-            {entries.map((e) => (
-              <tr key={e.scoreline}><td>{e.scoreline}</td><td className="num">{e.count}</td></tr>
-            ))}
-          </tbody>
-        </table>
-      }
-    >
-      <ResponsiveContainer>
-        <BarChart data={entries.slice(0, SHOWN)} layout="vertical" margin={{ top: 8, right: 28, bottom: 8, left: 4 }}>
-          <CartesianGrid stroke={c.grid} horizontal={false} />
-          <XAxis type="number" allowDecimals={false} tick={tick} axisLine={false} tickLine={false} />
-          <YAxis type="category" dataKey="scoreline" tick={tick} axisLine={false} tickLine={false} width={48} />
-          <Bar dataKey="count" name="Times" fill={c.positive} radius={[0, 3, 3, 0]}>
-            <LabelList dataKey="count" position="right" style={tick} />
-          </Bar>
-        </BarChart>
-      </ResponsiveContainer>
-    </ChartCard>
+    <section className="sheet">
+      <span className="label ruled">Most frequent scorelines</span>
+      {shown.length === 0 ? (
+        <div className="empty">Not enough data yet — this fills in as matches are recorded.</div>
+      ) : (
+        <div className="hbars">
+          {shown.map((e) => (
+            <div className="hbar" key={e.scoreline}>
+              <span className="k">{e.scoreline}</span>
+              <span className="track">
+                <i
+                  className={`fill${e.count === max ? '' : ' quiet'}`}
+                  style={{ width: `${(e.count / max) * 100}%` }}
+                />
+              </span>
+              <span className="v">{e.count}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
   );
 }

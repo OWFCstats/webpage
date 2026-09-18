@@ -1,12 +1,14 @@
 import { useState } from 'react';
 
 /**
- * The card every chart on Season → Stats sits in: a finding as its subtitle —
+ * The card for a chart that hides identity behind a dot or a line and so
+ * still needs its numbers spelled out somewhere: a finding as its subtitle —
  * a sentence, not a description of the axes — and the data table one press
- * away (docs/DESIGN.md → *Charts*).
- *
- * Its own file rather than a helper inside the page, because the merged Stats
- * page is a stack of these and phases 62 to 64 each add more.
+ * away (docs/DESIGN.md → *Charts*). Phase 70 moved every card whose own
+ * figures are already printed on it — the tiles, the donut, the goals split,
+ * the scorelines, the margins, the division's ranked lists — off this
+ * component onto a bare `.sheet`; what's left is the division (until Phase
+ * 71), Points accumulated, and the three player charts.
  */
 export default function ChartCard({
   title, finding, children, empty, emptyNote, table, bodyClassName,

@@ -1,66 +1,51 @@
 import { useMemo } from 'react';
-import { Bar, BarChart, CartesianGrid, Label, LabelList, ResponsiveContainer, XAxis, YAxis } from 'recharts';
-import { extremeMargins, marginBuckets } from '../../lib/matches';
-import ChartCard from './ChartCard';
-import { chartColours, useChartAxis } from './chart-bits';
+import { marginBuckets, seasonSummary } from '../../lib/matches';
+import { plural } from '../../lib/format';
 
-function finding({ biggestWin, heaviestLoss }) {
-  if (biggestWin == null && heaviestLoss == null) return null;
-  if (heaviestLoss == null) return `Biggest win by ${biggestWin} — nothing lost yet.`;
-  if (biggestWin == null) return `Heaviest defeat by ${heaviestLoss}.`;
-  return `Biggest win by ${biggestWin}, heaviest defeat by ${heaviestLoss}.`;
-}
-
-/** How the season's decided games tended to go — a goal either way is the
- *  common case everywhere, and this is where that stops being true. Draws
- *  carry no margin, so they don't appear here at all. */
+/** How the season's decided games tended to go, draws included — a goal
+ *  either way is the common case everywhere, and this is where that stops
+ *  being true. `marginBuckets` already splits wins from losses; the row here
+ *  is the two combined, with the split named in its title for whoever
+ *  hovers or taps it. */
 export default function MatchMargins({ season, matches }) {
-  const c = chartColours();
-  const { tick, yWidth } = useChartAxis();
-
-  const { buckets, extremes } = useMemo(() => {
+  const { rows, max } = useMemo(() => {
     const pool = matches.filter((m) => m.season === season);
-    return { buckets: marginBuckets(pool), extremes: extremeMargins(pool) };
+    const drawn = seasonSummary(pool).drawn;
+    const rows = [
+      { margin: 'Draw', count: drawn, title: `${plural(drawn, 'draw', 'draws')}` },
+      ...marginBuckets(pool).map((b) => ({
+        margin: b.margin === '4+' ? 'By 4+' : `By ${b.margin}`,
+        count: b.wins + b.losses,
+        title: `${plural(b.wins, 'win', 'wins')}, ${plural(b.losses, 'loss', 'losses')}`,
+      })),
+    ];
+    const max = Math.max(...rows.map((r) => r.count), 0);
+    return { rows, max };
   }, [season, matches]);
 
-  const hasData = buckets.some((b) => b.wins > 0 || b.losses > 0);
-  const label = (v) => (v > 0 ? v : '');
+  const hasData = rows.some((r) => r.count > 0);
 
   return (
-    <ChartCard
-      title="Winning and losing margins"
-      finding={finding(extremes)}
-      empty={!hasData}
-      table={
-        <table className="data">
-          <thead>
-            <tr><th>Margin</th><th className="num">Wins</th><th className="num">Losses</th></tr>
-          </thead>
-          <tbody>
-            {buckets.map((b) => (
-              <tr key={b.margin}>
-                <td>{b.margin}</td><td className="num">{b.wins}</td><td className="num">{b.losses}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      }
-    >
-      <ResponsiveContainer>
-        <BarChart data={buckets} margin={{ top: 20, right: 16, bottom: 24, left: 4 }}>
-          <CartesianGrid stroke={c.grid} vertical={false} />
-          <XAxis dataKey="margin" tick={tick} axisLine={false} tickLine={false}>
-            <Label value="Goals" position="insideBottom" offset={-12} style={tick} />
-          </XAxis>
-          <YAxis allowDecimals={false} tick={tick} axisLine={false} tickLine={false} width={yWidth} />
-          <Bar dataKey="wins" name="Won by" fill={c.win} radius={[3, 3, 0, 0]}>
-            <LabelList dataKey="wins" position="top" style={tick} formatter={label} />
-          </Bar>
-          <Bar dataKey="losses" name="Lost by" fill={c.loss} radius={[3, 3, 0, 0]}>
-            <LabelList dataKey="losses" position="top" style={tick} formatter={label} />
-          </Bar>
-        </BarChart>
-      </ResponsiveContainer>
-    </ChartCard>
+    <section className="sheet">
+      <span className="label ruled">Winning and losing margins</span>
+      {!hasData ? (
+        <div className="empty">Not enough data yet — this fills in as matches are recorded.</div>
+      ) : (
+        <div className="hbars">
+          {rows.map((r) => (
+            <div className="hbar" key={r.margin} title={r.title}>
+              <span className="k">{r.margin}</span>
+              <span className="track">
+                <i
+                  className={`fill${r.count === max ? '' : ' quiet'}`}
+                  style={{ width: `${max ? (r.count / max) * 100 : 0}%` }}
+                />
+              </span>
+              <span className="v">{r.count}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
   );
 }
