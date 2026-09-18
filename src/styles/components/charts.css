@@ -76,6 +76,15 @@
   flex: none;
 }
 
+/* The scatter's tooltip names the players standing on one spot, so it wraps
+   rather than taking the swatch-and-figure row every other tooltip uses. The
+   width cap is what stops "and 9 more" reaching the edge of a 375px screen. */
+.chart-tip-names {
+  margin: 0;
+  max-width: 22ch;
+  color: var(--ink-soft);
+}
+
 .recharts-surface:focus { outline: none; }
 
 /* Tabular figures on every axis, same as the tooltip above and every other

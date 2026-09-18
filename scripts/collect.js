@@ -10,7 +10,7 @@
 // wrapped table satisfies by definition, since the wrap's whole job is to
 // scroll. See DESIGN.md → Mobile.
 //
-// Six invariants, and they are meant not to overlap: one bug should produce
+// Seven invariants, and they are meant not to overlap: one bug should produce
 // one finding. A table inside a scrolling wrap is a hidden column, not also
 // forty overflowing cells, so anything inside a clipping ancestor is left to
 // the ancestor's own finding.
@@ -363,6 +363,30 @@ export async function collector() {
     const drawn = Math.min(box.width, box.height);
     if (drawn < floor - SLACK) {
       add('icon-below-floor', el, `${el.dataset.badge} draws at ${Math.round(drawn)}px, floor is ${floor}px`);
+    }
+  }
+
+  // ---- 7. Nothing a chart writes is smaller than the type floor. ----------
+  // The page's own text can't get below --t-micro, because it is set in rem
+  // off one scale. A chart can, and silently: an SVG drawn on a wide canvas
+  // and fitted to a phone scales its labels with everything else, so a 12px
+  // label ships at 5px and looks like a rendering choice rather than a bug
+  // (ROADMAP → Phase 64). What is measured is the size on the glass —
+  // font-size times whatever the element's own transform chain does to it —
+  // so the only way to pass is to draw at a canvas that fits the phone, which
+  // is the rule this exists to hold.
+  const TYPE_FLOOR = 12;
+  for (const el of visible) {
+    if (el.namespaceURI !== 'http://www.w3.org/2000/svg' || el.tagName !== 'text') continue;
+    if (!(el.textContent || '').trim()) continue;
+    const declared = parseFloat(styleOf(el).fontSize);
+    const ctm = el.getScreenCTM ? el.getScreenCTM() : null;
+    // The average of the two axis scales: a non-uniform scale is a different
+    // bug and this would report it as a small one.
+    const scale = ctm ? (Math.hypot(ctm.a, ctm.b) + Math.hypot(ctm.c, ctm.d)) / 2 : 1;
+    const drawn = declared * scale;
+    if (drawn < TYPE_FLOOR - SLACK) {
+      add('chart-text-below-floor', el, `draws at ${drawn.toFixed(1)}px, floor is ${TYPE_FLOOR}px`);
     }
   }
 

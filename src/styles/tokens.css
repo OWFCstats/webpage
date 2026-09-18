@@ -52,12 +52,16 @@
   --diamond-3: #8ec2d3;
   --diamond-4: #c8e7f1;
 
-  /* ---- chart series: fixed order, assigned in sequence, never cycled ---- */
-  --series-1: #8c6716;
-  --series-2: #3f6b5c;
-  --series-3: #a2551a;
-  --series-4: #2f6b46;
-  --series-5: #4a3f7a;
+  /* ---- chart series: fixed order, assigned in sequence, never cycled ----
+     Three pigments at reading depth, then two of them again at half the
+     lightness. Five separable hues do not exist inside "dark enough to read on
+     paper" once a dichromat is looking, so depth carries what hue can't —
+     measured, not judged: tests/palette.test.js. */
+  --series-1: #8c6716; /* brass */
+  --series-2: #16796a; /* verdigris */
+  --series-3: #7361a8; /* plum */
+  --series-4: #4a3a18; /* brass, deep */
+  --series-5: #423659; /* plum, deep */
 
   /* ---- rules and radius ---- */
   --rule: #e2ded2;
