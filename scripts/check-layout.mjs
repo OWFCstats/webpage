@@ -162,10 +162,10 @@ if (stale.length > 0) {
   }
 }
 
-// Heights are reported, not asserted. Every page but Matchday is over budget
-// today and the phase that meets each one is named in ROADMAP → Page budgets;
-// failing here would make the check red for eleven phases and it would stop
-// being read. `npm run shots` reports the same numbers in full.
+// Heights are reported, not asserted — a page that grows real content (a
+// richer report, a wider table) between phases shouldn't turn this check red,
+// and ROADMAP → Page budgets tracks each page against the number decided for
+// it. `npm run shots` reports the same numbers in full.
 const overBudget = heights
   .filter((h) => h.width === 375 && h.dataset === 'mid-season' && h.budget && budgets.get(h.budget))
   .filter((h) => h.height > budgets.get(h.budget));

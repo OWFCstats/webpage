@@ -390,10 +390,11 @@ was kept out of the palette in Phase 72; and **a claim about the
 club's data is checked against `backups/` too**, not the fixture by itself —
 `venue` was said to be null everywhere and was not.
 
-**The order in `docs/ROADMAP.md` → *Now* is the whole of what to do now**:
-phases 65 to 74, in order. 65 to 73 have landed, so the mock is built and what
-is left is Phase 74 — the docs condensed — with Phase 52 — the page budgets —
-inside it now the pages are the mock's and can be measured as such.
+**The redesign is done.** Phases 65 to 74 have all landed: the mock is built,
+the docs describe what shipped rather than a prose brief, and Phase 52's page
+budgets are decided against real measurements rather than deferred until "the
+shape is final." `docs/ROADMAP.md` → *Now* is empty; what's next is the
+*Launch* checklist, then the *Next* list, in that order.
 
 **The squad has it.** They played the first game of 2026/27 on 5 September 2026
 and reported a bug on the honours the same weekend, which is Phase 55. So the
