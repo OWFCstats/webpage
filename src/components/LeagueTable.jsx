@@ -11,19 +11,25 @@ import { leagueStandings } from '../lib/league';
  *
  * Two independent choices: `full` picks the window (the whole division, as
  * Season shows it, against our row plus two clubs either side, which is what
- * Home has room for) and `compact` picks the shape (Phase 69's four-column
- * snapshot — `#` · Club · P · Pts, headed by the division name itself rather
- * than a generic "League table" — against the full ten-column table). Home
- * uses the narrow window with the compact shape; Season uses the whole
+ * Home has room for) and `compact` picks the shape (the mock's five-column
+ * snapshot — `#` · Club · P · Pts · Form, headed by the division name itself
+ * rather than a generic "League table" — against the full ten-column table).
+ * Home uses the narrow window with the compact shape; Season uses the whole
  * division with the full shape. Nothing stops the other two combinations,
  * there's just no caller for them yet.
+ *
+ * Form is on the compact shape only. Ten columns is already 309px of the 341
+ * a phone gives the full table (docs/DESIGN.md → *Mobile*), so there is no
+ * eleventh — and the snapshot is where a reader asks who's in form anyway.
  *
  * A season with nothing entered yet keeps the placeholder line rather than a
  * mocked-up table for data that isn't there.
  */
 export default function LeagueTable({ season, full = false, compact = false, showSeasonLink = true }) {
-  const { leagueRows, teams } = useData();
-  const { rows, division, updatedAt } = leagueStandings(leagueRows, teams, season);
+  const { leagueRows, teams, matches } = useData();
+  // Every rival's form is typed on its row; ours is derived from our league
+  // results, which is what `matches` is here for (see leagueStandings).
+  const { rows, division, updatedAt } = leagueStandings(leagueRows, teams, season, matches);
   // Ranked before the window is taken, so the numbers down the side of Home's
   // five rows are still the club's real positions in the division.
   const ranked = rows.map((r, i) => ({ ...r, rank: r.position ?? i + 1 }));
@@ -73,6 +79,7 @@ export default function LeagueTable({ season, full = false, compact = false, sho
                     </>
                   )}
                   <th className="num">Pts</th>
+                  {compact && <th className="num">Form</th>}
                 </tr>
               </thead>
               <tbody>
@@ -100,17 +107,45 @@ export default function LeagueTable({ season, full = false, compact = false, sho
                       </>
                     )}
                     <td className="num lt-pts">{r.points}</td>
+                    {compact && (
+                      <td className="lt-form">
+                        <FormChips form={r.form} />
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
           {updatedAt && (
-            <p className="muted lt-updated">Entered by hand · updated {formatDateTime(updatedAt)}</p>
+            <p className="muted lt-updated">
+              Entered by hand · updated {formatDateTime(updatedAt)}
+              {/* Our own chips come off our league results only, so they part
+                  company with the form card above after a cup tie. Saying which
+                  is cheaper than a reader finding the two disagree. */}
+              {compact && ' · form: league only'}
+            </p>
           )}
         </>
       )}
     </section>
+  );
+}
+
+/** One club's last five, oldest first — the mock's fifth column. A club with
+ *  nothing typed (and us, before a league game is played) gets no squares
+ *  rather than five empty ones: the column is narrow enough that a blank row
+ *  reads as "not entered" on its own. */
+function FormChips({ form }) {
+  if (!form || form.length === 0) return null;
+  return (
+    <div className="chips">
+      {form.map((r, i) => (
+        // Position in the run is the key: the same five letters in the same
+        // order are the same five squares, and there is no id to use.
+        <span key={i} className={`chip ${r}`}>{r}</span>
+      ))}
+    </div>
   );
 }
 

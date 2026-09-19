@@ -5,9 +5,10 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { DATASETS } from '../fixtures/datasets.js';
-import { divisionRatios, leagueStandings, twoRows } from '../src/lib/league.js';
+import { divisionRatios, leagueStandings, parseForm, twoRows } from '../src/lib/league.js';
+import { recentFormLine } from '../src/lib/matches.js';
 
-const { league_rows: leagueRows, teams } = DATASETS['mid-season'].data;
+const { league_rows: leagueRows, teams, matches } = DATASETS['mid-season'].data;
 const SEASON = '2025/26';
 const teamId = (name) => teams.find((t) => t.name === name).id;
 
@@ -53,6 +54,87 @@ test('points and goal difference are derived, not read off the raw row', () => {
   assert.equal(us.goalDifference, us.goals_for - us.goals_against);
   assert.equal(them.points, them.won * 3 + them.drawn);
   assert.equal(them.goalDifference, them.goals_for - them.goals_against);
+});
+
+// ---------------------------------------------------------------------------
+// Form — the one column stored for some rows and derived for others (Phase 73).
+//
+// A W/D/L total carries no order, so no rival's run of five is derivable from
+// anything we hold: theirs is typed into the same grid as the rest of their
+// row. Ours we played, so ours is derived — and the two must never both be
+// true of the same row, which is what these assert.
+// ---------------------------------------------------------------------------
+
+const formOfRow = (rows, name) => rows.find((r) => r.name === name).form;
+
+test('a rival\'s form is the typed string, split oldest first', () => {
+  const { rows } = leagueStandings(leagueRows, teams, SEASON, matches);
+  const raw = leagueRows.find((r) => r.team_id === teamId('Old Cheltonians')).form;
+  assert.equal(formOfRow(rows, 'Old Cheltonians').join(''), raw);
+});
+
+test('a club with fewer than five results keeps the run it has', () => {
+  const { rows } = leagueStandings(leagueRows, teams, SEASON, matches);
+  // Old Salopians have four in the fixture on purpose: the column draws what
+  // the league published, not a fixed five.
+  assert.deepEqual(formOfRow(rows, 'Old Salopians'), ['L', 'L', 'D', 'L']);
+});
+
+test('our own form is derived from our results, never the stored column', () => {
+  const stored = leagueRows.find((r) => r.team_id === teamId('Old Wellingtonians'));
+  assert.equal(stored.form ?? null, null);
+  const { rows } = leagueStandings(leagueRows, teams, SEASON, matches);
+  assert.deepEqual(rows.find((r) => r.isUs).form, ['D', 'L', 'D', 'W', 'L']);
+});
+
+test('a typed string on our own row is ignored — ours is played, not entered', () => {
+  const lying = leagueRows.map((r) =>
+    r.team_id === teamId('Old Wellingtonians') ? { ...r, form: 'WWWWW' } : r,
+  );
+  const { rows } = leagueStandings(lying, teams, SEASON, matches);
+  assert.deepEqual(rows.find((r) => r.isUs).form, ['D', 'L', 'D', 'W', 'L']);
+});
+
+test('our league form is not the form card, which counts every competition', () => {
+  const { rows } = leagueStandings(leagueRows, teams, SEASON, matches);
+  const card = recentFormLine(matches.filter((m) => m.season === SEASON)).map((f) => f.result);
+  // The fixture has a friendly and a cup tie inside the last five, so the two
+  // genuinely differ — which is why the table's foot says *League only*.
+  assert.deepEqual(card, ['L', 'W', 'D', 'W', 'L']);
+  assert.notDeepEqual(rows.find((r) => r.isUs).form, card);
+});
+
+test('our row has no chips at all before a league game is played', () => {
+  const { rows } = leagueStandings(leagueRows, teams, SEASON, []);
+  assert.deepEqual(rows.find((r) => r.isUs).form, []);
+});
+
+test('a malformed string draws nothing rather than part of a run', () => {
+  // The check constraint and the admin input both refuse an X; a row that has
+  // somehow acquired one must not put three real-looking chips on Home.
+  assert.deepEqual(parseForm('WDX'), []);
+  assert.deepEqual(parseForm('WWWWWW'), []);
+  assert.deepEqual(parseForm(''), []);
+  assert.deepEqual(parseForm(null), []);
+  assert.deepEqual(parseForm(undefined), []);
+  assert.deepEqual(parseForm('wdl'), ['W', 'D', 'L']);
+});
+
+test('a rival with a malformed string keeps the rest of its row', () => {
+  const broken = leagueRows.map((r) =>
+    r.team_id === teamId('Old Stoics') ? { ...r, form: 'WDX' } : r,
+  );
+  const { rows } = leagueStandings(broken, teams, SEASON, matches);
+  const stoics = rows.find((r) => r.name === 'Old Stoics');
+  assert.deepEqual(stoics.form, []);
+  assert.equal(stoics.points, stoics.won * 3 + stoics.drawn);
+});
+
+test('leagueStandings still works with no matches passed at all', () => {
+  // twoRows and divisionRatios call it that way — neither draws a chip.
+  const { rows } = leagueStandings(leagueRows, teams, SEASON);
+  assert.deepEqual(rows.find((r) => r.isUs).form, []);
+  assert.equal(formOfRow(rows, 'Old Cheltonians').length, 5);
 });
 
 // ---------------------------------------------------------------------------

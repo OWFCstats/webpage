@@ -89,7 +89,7 @@ to the reason it's there:
 | Next season's fixtures | The `pre-season` dataset |
 | Venues, kick-off times | The spreadsheet had neither; one match keeps both null, which is what every pre-migration row looks like |
 | Teams | The import has none, and without them no opponent page resolves |
-| League standings | Hand-entered in the real thing. Our own row is computed from the dataset's own league results, so the fixture can't contradict itself |
+| League standings | Hand-entered in the real thing. Our own row is computed from the dataset's own league results, so the fixture can't contradict itself — including its form, which is `null` on our row because `leagueStandings` derives it. One rival has four results rather than five, so the *Form* column is measured drawing a short run |
 | Player of the Season | The one award no formula produces |
 | A published-honours row | `season_status`, on `pre-season` only: the club pressing "publish the honours" at the dinner. It agrees with the date rule there, and it is what exercises the table's read path and the admin switch at all |
 | Two match reports | Roughly the club's own hit rate, and Matchday needs both branches |

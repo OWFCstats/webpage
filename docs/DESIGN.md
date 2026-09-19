@@ -251,12 +251,12 @@ about the reader. See *An installed app has to open with no signal*.
 
 ### Draft D is the specification
 
-> **Phase 73.** Everything in this section is decided and drawn —
+> **Phase 74.** Everything in this section is decided and drawn —
 > `docs/mocks/home-stats-draft-d.html`, two pages at two widths — and all of it
-> is built except the league snapshot's *Form* column, which is Phase 73.
-> Phases 57–64 built Home and Season → Stats from a prose description of that
-> mock and the pages did not match it; the sections below that described them
-> are rewritten as each phase lands. `docs/ROADMAP.md` → *The redesign — what
+> is built. Phases 57–64 built Home and Season → Stats from a prose description
+> of that mock and the pages did not match it; the sections below that
+> described them are rewritten as each phase lands, and Phase 74 finishes that
+> and folds this marker into them. `docs/ROADMAP.md` → *The redesign — what
 > went wrong* has the seven findings. Where a paragraph below and the mock
 > disagree, the mock wins until its phase says otherwise and names the rule.
 
@@ -300,8 +300,11 @@ have been written before Phase 57 and wasn't:
   a W/D/L edge, the opponent with the scorers or the ground under, H/A —
   `ResultList`'s `outlook` variant. (Phase 69)
 - **The league snapshot is five columns**: position, club, played, points,
-  form. The form column is typed for every other club and derived for ours
-  (Phase 73); the ten-column table stays on Season. (Phases 69, 73)
+  form. The form column is typed for every other club and derived for ours;
+  the ten-column table stays on Season. The mock's own snapshot needs 385px
+  at 375 and hides 76px of itself, so the metrics are ours: the club name
+  wraps and the cell padding tightens below 480, and below 360 the card gives
+  its padding back the way the full table already did. (Phases 69, 73)
 - **Season so far is the record**: won, drawn, lost as three display-face
   figures coloured by result with a percentage under, then *For* / *Against*
   bars. Played, clean sheets and win rate are Stats' tiles. (Phase 69)
@@ -452,15 +455,31 @@ the retired sentence itself). The row above is what the old paragraph here
 already asked a future phase to build: an extension of `ResultList` rather
 than a seventh scoreline shape.
 
-**The league snapshot is four columns, headed by the division.** `LeagueTable`
-gained a `compact` shape for Home: `#` · Club · P · Pts, headed by the
+**The league snapshot is five columns, headed by the division.** `LeagueTable`
+gained a `compact` shape for Home: `#` · Club · P · Pts · Form, headed by the
 division's own name (*Division 5*) rather than the generic *League table* the
 full standings keep, with *Full table →* on the right. Our own row washes gold
 with a 3px gold inset on its first cell (`.lt-compact tr.lt-us
 td:first-child`) rather than the hover-only tick every other `table.data` row
-carries — the wash alone doesn't read as "us" at four columns wide. The form
-column the mock draws waits on Phase 73, which types it in; the full
-ten-column table on Season is untouched by any of this.
+carries — the wash alone doesn't read as "us" at five columns wide. The full
+ten-column table on Season is untouched by any of this and takes no *Form*
+column: ten columns is already 309px of the 341 a phone gives it (*Mobile*),
+so there is no eleventh.
+
+**The chips are 17px, and the fifth column is what made the snapshot measure
+itself.** `.chips` / `.chip` in `components/league-table.css` — the mock's own
+size, not the 26px `.form-badge` the form card draws, because five of them a
+row across five rows is a different object from one run on a card. Adding the
+column took the table from 344px to 385, which is 76px more than a 375px
+phone gives it, and the mock is no help: its own snapshot side-scrolls at that
+width. So the narrow-width treatment the full table has had since Phase 2 —
+the club name wrapping, cell padding at `0.5rem 0.25rem`, the end cells
+keeping their inset — stops being scoped to the full shape and covers both;
+and below 360, where that still leaves the snapshot 18px short, the card gives
+its own padding back to the table the way `:not(.g-league)` already did.
+Measured at four widths: 286/294/309/348px of 286/294/309/348 available. At
+375 the snapshot still sits inside its card padding, which is how the mock
+draws it.
 
 **Season so far is the record.** `SeasonStats` becomes `SeasonSoFar`: won,
 drawn and lost as three display-face figures coloured by result
@@ -470,20 +489,29 @@ rate come off — they're Stats' own tiles now (Phase 70), not this card's job
 — and so does the *Full season →* link the old card carried: the mock gives
 this one no way back to Season beyond the nav.
 
-**Phase 60 — no form column on the league table.** The mock-up draws five
-coloured chips on every row of the league snapshot; `ROADMAP.md`'s own finding
-that `league_rows` holds totals and not results rules that out — there is no
-way to derive another club's last five, so only our own row could ever carry
-the chips. Filling that one row and leaving the rest blank would be honest but
-would read as broken data, and the chips already exist: the form card
-(Phase 58) is the one place the site draws them, against our own position over
-our own last five results. The league table stays what it has always shown —
-position and points on the snapshot, the full ten columns on Season — and
-doesn't grow a column it can only ever fill for one row. **Reversed by Phase
-73**, which types the form in for every other club rather than deriving it —
-the constraint above was about what `league_rows` stored, not a rule about the
-column, and typing in the missing fact is the same move Phase 56 already made
-for `venue`.
+**Form is stored for the other clubs and derived for us, and that is one
+source per row, not two.** Phase 60 read `league_rows` holding totals and not
+results as "no form column": only our own row could ever carry the chips, and
+one filled row above four blank ones reads as broken data. The constraint was
+real and the conclusion wasn't — it was about what `league_rows` *stored*, and
+the answer to a fact our rows cannot hold is the one this table already is.
+Phase 73 types it in, in the same grid on the same night as the rest of the
+row, which is the move Phase 56 made for `venue`.
+
+What keeps it from being a stored aggregate is the split. `leagueStandings`
+hands every row a `form` array: for a rival, `league_rows.form` parsed; for
+us, `formOf` over our own league results. Our own row's column is never
+written — the admin grid shows it read-only, and the save sends `null` for it
+— so no row has two sources and nothing can drift. Ours counts league games
+only, so it parts company with the form card (*The club band*) the week after
+a cup tie, and the table's foot says *form: league only* rather than leaving a
+reader to find the two disagree.
+
+The string is up to five of `W`, `D` and `L`, oldest first, so it reads left to
+right the way the chips are drawn. A check constraint on the column says so,
+the admin input drops anything else as it is typed, and `parseForm` applies
+the same rule a third time on the way out: a malformed string draws no chips
+at all rather than the part of it that happens to be legible.
 
 ### A result is a row, not a sentence
 
@@ -2425,10 +2453,16 @@ growing past ~80 lines means something in it should have been a primitive.
   label choice for a familiar shorthand, not new data collection, and the
   table's footnote says so. See *Mobile*.
 - **No stored aggregates.** Still true and still the load-bearing rule:
-  everything is derived. There are three exceptions and each one is a fact about
+  everything is derived. There are four exceptions and each one is a fact about
   the world our rows cannot hold: league standings, the voted Player of the
-  Season, and — from Phase 55 — whether a season has ended (`season_status`,
-  and only where an admin overrides the calendar). There is not a fourth.
+  Season, whether a season has ended (`season_status`, from Phase 55, and only
+  where an admin overrides the calendar), and — from Phase 73 — the other
+  clubs' recent form (`league_rows.form`). The fourth is the first one again
+  rather than a new kind: `league_rows` already stores other clubs' results,
+  and a W/D/L total simply carries no order, so their last five is typed into
+  the same grid on the same night as the rest of their row. **Our own row
+  never is** — ours is derived from our own league results, the same way points
+  and goal difference are, so every row has one source. There is not a fifth.
 - **No accounts for readers.** The only login on the site is the admin's. A
   player identifying themselves is a cookie on their own phone, not a user
   record — see *What the site remembers*. Thirty accounts and thirty forgotten

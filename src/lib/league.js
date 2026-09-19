@@ -1,5 +1,36 @@
 // League standings: the one table that can't be derived from our own results.
 
+import { formOf, resultOf } from './matches.js';
+
+/** Five squares is the column's whole width, and the same rule the check
+ *  constraint on `league_rows.form` applies (see the migration). A string that
+ *  doesn't match is not half-true data, so it draws nothing rather than a
+ *  partial run: the input and the database both refuse one, and a row that has
+ *  somehow acquired one shouldn't put a chip on Home that says `X`. */
+const FORM = /^[WDL]{1,5}$/;
+
+/** A typed form string as chips, oldest first. Null, empty and malformed all
+ *  come back as no chips at all. */
+export function parseForm(form) {
+  const clean = (form ?? '').trim().toUpperCase();
+  return FORM.test(clean) ? [...clean] : [];
+}
+
+/**
+ * Our own five, oldest first, off our own league results — never the stored
+ * column, which is only ever filled in for the other clubs. This is not the
+ * band's form card on Home: that one is every competition, so the two differ
+ * the week after a cup tie, which is why the table's foot says *League only*.
+ */
+function ourForm(matches, season, n = 5) {
+  // formOf already drops anything without a score, so a fixture in the diary
+  // can't take a square.
+  const league = matches.filter(
+    (m) => m.season === season && m.competition?.trim().toLowerCase() === 'league',
+  );
+  return formOf(league, n).reverse().map(resultOf);
+}
+
 /**
  * The standings for one season: hand-entered `league_rows` (see
  * supabase/migration_2026_08_league.sql) joined to their `teams` row, with
@@ -11,11 +42,20 @@
  * points, then goal difference, then goals scored, then name — so a table
  * entered without positions still ranks itself.
  *
+ * Form is the one figure on the row that is stored for some clubs and derived
+ * for others, and deliberately: a W/D/L total carries no order, so no rival's
+ * run of five is derivable from anything we hold — it is typed in, like the
+ * rest of their row. Ours is not, because ours we played. Each row has one
+ * source and never two (Phase 73).
+ *
  * Returns the division label and the most recent edit alongside the rows, both
  * of which the widget shows and neither of which is worth a second pass.
  */
-export function leagueStandings(leagueRows, teams, season) {
+export function leagueStandings(leagueRows, teams, season, matches = []) {
   const teamById = new Map(teams.map((t) => [t.id, t]));
+  // Derived once for the whole table rather than inside the map: every row
+  // asks the same question of the same fixture list, and only one row is us.
+  const us = ourForm(matches, season);
   const rows = leagueRows
     .filter((r) => r.season === season)
     .map((r) => {
@@ -34,6 +74,7 @@ export function leagueStandings(leagueRows, teams, season) {
         points: r.won * 3 + r.drawn - (r.walkover_losses ?? 0) * 3,
         goalDifference: r.goals_for - r.goals_against,
         isUs: team?.is_club === true,
+        form: team?.is_club === true ? us : parseForm(r.form),
       };
     })
     .sort((a, b) => {

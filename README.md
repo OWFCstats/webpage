@@ -283,8 +283,9 @@ its own. Nothing else in the workflow needs to change.
 Everything on the site is computed from `players`, `matches`, `appearances`
 and `teams` at load time — nothing is hardcoded and no stat is stored twice. The
 exceptions are the facts our own rows cannot hold, each typed in by an admin:
-the league table (`league_rows`, see *League standings* below), the voted
-Player of the Season (`season_awards`), and whether a season has ended
+the league table (`league_rows`, see *League standings* below), the other
+clubs' recent form (`league_rows.form` — ours is derived), the voted Player of
+the Season (`season_awards`), and whether a season has ended
 (`season_status`). `CLAUDE.md` → *Everything is derived* is the rule. Clean sheets are derived
 and team-wide: every player who appeared in a match where the team conceded
 zero gets one (positions are optional labels and affect no stat). Match
@@ -325,14 +326,24 @@ Points and goal difference are **not** columns. Both are derived in the client
 stored total can never drift from the W/D/L it summarises — and there are two
 fewer boxes to fill in on a Saturday night.
 
+Recent form (`form`) is the one column that is typed for some rows and derived
+for others, because a W/D/L total carries no order: a rival's last five can't
+be worked out from anything here, so it goes in the same grid — up to five of
+`W`, `D` and `L`, oldest first, refused by a check constraint if it's anything
+else. Our own row's is never stored: `leagueStandings` derives it from our own
+league results, so it counts league games only and can differ from the form
+card on Home, which counts every competition. The admin grid shows our row's
+chips read-only for the same reason.
+
 Rows sort on points, then goal difference, then goals scored. Where a row
 carries an explicit `position` that wins instead, since leagues apply their own
 tie-breaks and points deductions that a W/D/L line can't show. Home shows our
 row with two clubs either side; the season page shows the whole division. Below
 360px the P, D, GF and GA columns come out rather than let the table scroll
-sideways; from 360px up all ten show (`docs/DESIGN.md` → *Mobile*). Phase 69
-cuts Home's snapshot to position, club, played and points, and Phase 73 adds
-the form column beside them — `docs/ROADMAP.md` → *Now*.
+sideways; from 360px up all ten show (`docs/DESIGN.md` → *Mobile*). Home's
+snapshot is five columns — position, club, played, points, form — and the full
+ten-column table on Season carries no form column, because ten is already 309px
+of the 341 a phone gives it.
 
 ## Admin flow
 

@@ -234,7 +234,7 @@ mock's "Fixture to be confirmed" to "Fixture TBC", the first `text-clipped` at
 strip. `LeagueTable` gained a `compact` shape for Home: `#` · Club · P · Pts,
 headed by the division's own name rather than the generic *League table*, our
 row washed gold with a 3px gold inset on its first cell (`.lt-compact tr.lt-us
-td:first-child`); the *Form* column waits on Phase 73, and the full
+td:first-child`); Phase 73 added the *Form* column beside it, and the full
 ten-column table on Season is untouched. `components/home/SeasonStats.jsx`
 became `SeasonSoFar.jsx`: `.record` — Won / Drawn / Lost as three cells, the
 figure in the display face at `--t-headline` in `--win`/`--ink-soft`/`--loss`,
@@ -341,37 +341,38 @@ and `appearanceSpread` returns the ever-present; three new tests (222 total,
 all green). `check:layout` PASS, 40 known failures, nothing new. Season →
 Stats: **3,377px → 3,107px, 907px over**.
 
-**Phase 73 — Form, typed in.** The one the owner asked for: the mock's *Form*
-column on the league snapshot, which Phase 60 ruled out because `league_rows`
-holds totals and not results. It still does — so the results are typed.
+**Phase 73 — Form, typed in.** Done. `league_rows` gained a `form text check
+(form is null or form ~ '^[WDL]{0,5}$')` — `migration_2026_09_league_form.sql`,
+`schema.sql` to match — and the mock's fifth column is on Home's snapshot:
+`.chips` of 17px `.chip` squares, oldest first. **The fourth stored fact, and
+the first one again rather than a new kind**: `league_rows` already stores other
+clubs' results, a W/D/L total carries no order, so a rival's last five is typed
+into the same grid on the same night as the rest of their row. **Our own row
+never is.** `leagueStandings` takes `matches` as a fourth argument and hands
+every row a `form` array — `formOf` over our league games for us, the typed
+string parsed for everyone else — so each row has one source and nothing can
+drift; the admin grid shows our chips read-only and the save sends `null` for
+that row. Ours counts league games only, so it differs from the band's form
+card after a cup tie (D·L·D·W·L against L·W·D·W·L in the committed fixture, a
+test), and the foot says *form: league only*. A bad string is refused three
+times: the check constraint, the input (`cleanForm` drops anything that isn't
+W/D/L as it is pressed — `pattern` alone validates nothing outside a `<form>`),
+and `parseForm`, which draws no chips at all rather than the legible part of
+one. Nine new tests, 231 total, all green.
 
-- `supabase/migration_2026_09_league_form.sql`: `alter table public.league_rows
-  add column form text check (form is null or form ~ '^[WDL]{0,5}$')`, a
-  comment, `schema.sql` to match. Stored oldest-first, as the grid asks for it.
-- **Our own row is derived; every other row is typed.** `leagueStandings`
-  returns `form: string[]` per row — for the club, `formOf` over its league
-  games (which is not the band's form card: that is every competition, so the
-  two differ after a cup tie and the table's foot says *League only*); for a
-  rival, the typed string split. `LeagueGrid` gains a text input per row
-  (`maxLength` 5, `pattern`, caption *Form, oldest first — WDLWW*) and shows
-  our row's chips read-only, from results. One source per row; nothing stored
-  twice.
-- `LeagueTable`'s compact shape gains the *Form* column — `.chips` of 17px
-  `.chip` squares, right-aligned, the mock's fifth column. The full table on
-  Season does not: ten columns is already 309px of the 341 a phone gives it
-  (`DESIGN.md` → *Mobile*).
-- `fixtures/datasets.js` → `leagueRows()` gives each rival a string and ours
-  none; `scripts/backup.mjs` selects `*` and picks the column up unchanged;
-  `tests/league.test.js` covers derived against typed, and a bad string.
-- `DESIGN.md` → *Deliberately not doing* → *No stored aggregates* and
-  `CLAUDE.md` → *Everything is derived* gain the fourth exception with its
-  argument: it is the same fact `league_rows` already stores — other clubs'
-  results, which our rows cannot hold — typed in the same grid on the same
-  night, and our own row never is.
-- **Done means** a rival's form typed on a phone is on Home after one save; our
-  row's chips agree with Matchday's ladder for league games; a string with an
-  `X` in it is refused by the input and by the check constraint.
-- **Model:** Opus 5 · xhigh — a schema change.
+**The mock's own snapshot does not fit a phone, so the metrics here are ours.**
+Measured before building around it: at 375px the mock's league card wants 385px
+inside a 309px hold and hides 76px of itself, which is the rule `CLAUDE.md`
+names as a bug *including inside a `.table-wrap`* — and adding the column took
+the real table from 344px to the same 385. The fix is the narrow-width
+treatment the full table has had since Phase 2, with its `:not(.lt-compact)`
+scope lifted: the club name wraps, cell padding goes to `0.5rem 0.25rem`, the
+end cells keep their inset. That left 320px still 18px short, so below 360 —
+and only there — the snapshot gives its own card padding back to the table the
+way the full one already did. 286/294/309/348px of 286/294/309/348 available.
+At 375 it still sits inside its padding, which is how the mock draws it.
+`check:layout` PASS, 41 known failures, nothing new. Home: 2,469px → 2,483px
+at 375, the fourteen being the club names now wrapping.
 
 **Phase 74 — The docs, condensed; then Phase 52.**
 
@@ -392,12 +393,12 @@ holds totals and not results. It still does — so the results are typed.
 
 ---
 
-**One branch a phase, in this order.** 66 to 72 have landed; Home and Season →
-Stats are the mock's pages now. 73 is the only migration and is what is left of
-the mock, then 74. Each phase condenses to one *Done* row in the commit that
-closes it and writes its ruling into `DESIGN.md` in the same commit — the rule
-at the top of this file, which the first pass followed to the letter while
-building the wrong thing.
+**One branch a phase, in this order.** 66 to 73 have landed; Home and Season →
+Stats are the mock's pages now, and with 73's *Form* column the mock is built.
+What is left is 74. Each phase condenses in the commit that closes it and
+writes its ruling into `DESIGN.md` in the same commit — the rule at the top of
+this file, which the first pass followed to the letter while building the
+wrong thing.
 
 ---
 
@@ -544,8 +545,9 @@ rest are how it propagated.
 56–64:
 
 - **`league_rows` holds totals, not results**, so no other club's form is
-  derivable. Phase 60 read that as "no form column"; Phase 73 reads it as
-  "typed in" — the same class of fact `league_rows` already is.
+  derivable. Phase 60 read that as "no form column"; Phase 73 read it as
+  "typed in" — the same class of fact `league_rows` already is — and built it
+  that way, with our own row still derived.
 - **Five separable hues do not exist for a self-labelling line** inside 4.5:1
   on paper and ΔE 15 under every dichromacy; the series palette is three
   pigments at two depths because of it (`DESIGN.md` → *Chart series*). That
@@ -649,7 +651,7 @@ Named so they don't get lost.
 - **A figure recipe in the type layer** — the display face at 600 with
   `-0.015em` and tabular figures is written out in twelve rules. One decision in
   `DESIGN.md`'s *Type* section.
-- **Form on the full league table** — Phase 73 puts it on Home's five-column
+- **Form on the full league table** — Phase 73 put it on Home's five-column
   snapshot only; the ten-column table has no room for an eleventh at 375px.
   Above 700px it could carry one. Phase 52's call, with the measurement.
 

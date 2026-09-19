@@ -17,6 +17,11 @@ import { seasonsOf } from '../../lib/matches';
  * Points and goal difference are shown but never sent: both are derived from
  * W/D/L and the goals (see leagueStandings), so there's nothing to keep in
  * step and two fewer boxes to fill in.
+ *
+ * Form is the same idea one row short of the whole table: the other clubs'
+ * runs are typed, because a W/D/L total carries no order and nothing we hold
+ * can produce theirs, and ours is derived from our own league results and
+ * never sent (Phase 73).
  */
 
 const blankRow = () => ({
@@ -29,6 +34,7 @@ const blankRow = () => ({
   goals_for: 0,
   goals_against: 0,
   walkover_losses: 0,
+  form: '',
 });
 
 export default function LeagueAdmin() {
@@ -60,6 +66,7 @@ export default function LeagueAdmin() {
           season={season}
           existing={leagueRows.filter((r) => r.season === season)}
           teams={teams}
+          matches={matches}
         />
       ) : (
         <div className="sheet empty">Pick a season above to enter its table.</div>
@@ -68,9 +75,21 @@ export default function LeagueAdmin() {
   );
 }
 
-function SeasonEditor({ season, existing, teams }) {
+function SeasonEditor({ season, existing, teams, matches }) {
   const { refresh } = useData();
-  const { rows: sorted, division: savedDivision, updatedAt } = leagueStandings(existing, teams, season);
+  const {
+    rows: sorted,
+    division: savedDivision,
+    updatedAt,
+  } = leagueStandings(existing, teams, season, matches);
+  // Our row's own chips, derived the same way the public table derives them —
+  // read off leagueStandings rather than worked out again here, so the grid
+  // can't disagree with what it produces.
+  const ourForm = sorted.find((r) => r.isUs)?.form ?? [];
+  // The boxes take the string as typed, not leagueStandings' chips: that
+  // function hands every row a `form` array, ours derived and theirs parsed,
+  // and what the grid edits is the column behind it.
+  const typed = new Map(existing.map((r) => [r.team_id, r.form ?? '']));
 
   const [division, setDivision] = useState(savedDivision ?? '');
   const [rows, setRows] = useState(() =>
@@ -85,6 +104,7 @@ function SeasonEditor({ season, existing, teams }) {
           goals_for: r.goals_for,
           goals_against: r.goals_against,
           walkover_losses: r.walkover_losses ?? 0,
+          form: typed.get(r.team_id) ?? '',
         }))
       : [blankRow()],
   );
@@ -93,6 +113,7 @@ function SeasonEditor({ season, existing, teams }) {
   const [saved, setSaved] = useState(false);
 
   const clubs = teams.slice().sort((a, b) => a.name.localeCompare(b.name));
+  const isUs = (teamId) => teams.find((t) => t.id === teamId)?.is_club === true;
   const used = rows.filter((r) => r.team_id);
   const taken = new Set(used.map((r) => r.team_id));
   const duplicate = taken.size !== used.length;
@@ -151,6 +172,9 @@ function SeasonEditor({ season, existing, teams }) {
       goals_for: Number(r.goals_for) || 0,
       goals_against: Number(r.goals_against) || 0,
       walkover_losses: Number(r.walkover_losses) || 0,
+      // Never for our own row: ours is derived, and writing it here would be
+      // the one figure on this site stored twice.
+      form: isUs(r.team_id) ? null : r.form.trim() || null,
       updated_at: now,
     }));
     // Rows dropped from the grid are deleted, so relegating a club out of the
@@ -198,6 +222,7 @@ function SeasonEditor({ season, existing, teams }) {
         rows={rows}
         clubs={clubs}
         taken={taken}
+        ourForm={ourForm}
         onUpdate={update}
         onMove={move}
         onRemove={removeRow}
