@@ -112,16 +112,15 @@ nothing is stored twice**, and **a component that gains a second page moves up t
 
 ---
 
-## Now — the redesign, built to the mock
+## The redesign, phase by phase — done
 
-**Phases 57 to 64 shipped, and the pages they built do not look like Draft D.**
+**Phases 57 to 64 shipped, and the pages they built did not look like Draft D.**
 The mock was signed off, described in prose in this file, and never committed —
 so every phase was built from the description and mapped each drawn element
-onto the nearest primitive the site already had. Home and Season → Stats have
+onto the nearest primitive the site already had. Home and Season → Stats had
 the mock's *contents* and almost none of its *shape or colour*. *The redesign —
-what went wrong* below has the findings; this section is the fix, and it is the
-whole of what to do now — after anything the squad has actually hit, which
-still outranks all of it.
+what went wrong* below has the findings; phases 65 to 74, kept here in full as
+the record of the fix, closed every one of them.
 
 **Two rules for every phase here, because they are the two the first pass
 lacked.**
@@ -374,31 +373,29 @@ At 375 it still sits inside its padding, which is how the mock draws it.
 `check:layout` PASS, 41 known failures, nothing new. Home: 2,469px → 2,483px
 at 375, the fourteen being the club names now wrapping.
 
-**Phase 74 — The docs, condensed; then Phase 52.**
-
-- `DESIGN.md` → *Page length* becomes the table and one paragraph; the running
-  log of measurements under it comes out (the numbers live in *Page budgets*
-  here, which is where page-by-page tracking has always belonged). The sections
-  describing the first pass — *The club band*, *Match outlook*, Phase 60's
-  paragraph, *A ranked list is not a plot*, the *Charts* rules — are rewritten
-  to describe what 66–73 built, and their `> **Phase**` markers come out with
-  *Draft D is the specification* folded into them. `README.md` → *How stats
-  work* and *League standings* brought current.
-- Then **Phase 52 is taken straight after**: re-measure all four budget rows
-  and decide each. Stats' argument is written now so it is not fitted later —
-  the page absorbed Charts in Phase 61 and holds nine cards on the mock, so
-  its budget probably moves the way Matchday's did in Phase 25, with the
-  arithmetic — but the decision waits for the measurement.
-- **Model:** Sonnet 5 · medium for the docs; Opus 5 · high for 52.
+**Phase 74 — The docs, condensed; then Phase 52.** Done. `DESIGN.md` → *Page
+length* is the table and two short paragraphs now; the phase-by-phase log of
+measurements came out, because the numbers already live in *Page budgets*
+below and tracking them twice is how a doc drifts. `Draft D is the
+specification` lost its `> **Phase 74.**` marker, folded into plain prose —
+the sections it points at (*The club band*, *Match outlook*, *A ranked list is
+not a plot*, *Charts*) were already rewritten to describe what 66–73 built as
+each phase landed, so there was nothing stale left under them. `README.md` →
+*How stats work* and *League standings* were checked against the same
+question and were already current. Then **Phase 52**: all four budget rows
+re-measured against `main` rather than the last phase that touched each page,
+and each decided rather than left open a further time — *Decisions* →
+*Settled* has the arguments, *Page budgets* the numbers they were decided
+against. Home moves to 2,600px, Matchday to 2,800px with the clean-sheet
+report's open state uncapped, Season to 2,450px, and Season → Stats becomes
+its own row at 3,200px rather than sharing Season's number.
 
 ---
 
-**One branch a phase, in this order.** 66 to 73 have landed; Home and Season →
-Stats are the mock's pages now, and with 73's *Form* column the mock is built.
-What is left is 74. Each phase condenses in the commit that closes it and
-writes its ruling into `DESIGN.md` in the same commit — the rule at the top of
-this file, which the first pass followed to the letter while building the
-wrong thing.
+**66 to 74 have landed.** The redesign that started at Phase 56 is built,
+documented and measured against real numbers rather than a prose brief. What's
+next is the *Launch* checklist, then the *Next* list below, in that order —
+unless the squad has hit something first, which still outranks both.
 
 ---
 
@@ -429,8 +426,8 @@ step that fails:
 ## Next — after the redesign, in this order
 
 One line each. A phase gets written out in full when it is picked up, not
-before — that is what keeps this file short. **Phase 52 is not on this list
-because Phase 74 takes it.**
+before — that is what keeps this file short. Phase 52 isn't on this list
+because Phase 74 already took it.
 
 1. **Phase 36 — Losing a form on a phone.** Nothing on the write side warns
    before it drops what you typed. The wizard holds four steps in memory and
@@ -563,66 +560,70 @@ rest are how it propagated.
 
 `DESIGN.md`'s *Page length* table is the authority for the numbers — they are a
 design constraint and a component author reads that file. This is the tracking
-view. *Now* is `npm run shots` on the `mid-season` fixture at 375px; every row
-that is over its budget was re-measured in Phase 72, and the rows that are
-within it were last measured after Phase 64. Phase 52 (inside Phase 74) decides
-each.
+view. *Now* is `npm run shots` on the `mid-season` fixture at 375px, re-measured
+against Phase 52's decisions below.
 
 | Page | Now | Budget | Owner |
 | --- | --- | --- | --- |
-| Home — unpicked / a name picked / picked, no apps this season | 2,447 / 2,530 / 2,509 | 1,600 | **Phase 52**. Phases 67–68 landed lighter than what they replaced; Phase 69's richer outlook row cost more than the shorter season card gave back, so the number rose for the first time since Phase 19. Three rows because they are three states of one page, and only the first is what a stranger sees |
-| Matchday — latest | 2,468 | 2,300 | **Phase 52** — 156 over; head to head's tape, real content the old card didn't carry |
-| Matchday — clean sheet (12 named, a report, clamped / open) | 2,758 / 3,162 | 2,300 | **Phase 52** — 446 over clamped; the clamp bounds it, it doesn't fit it |
-| Matchday — walkover (no team sheet) | 1,533 | 2,300 | within |
-| Season | 2,398 | 2,200 | **Phase 52** — 198 over; Phase 70's chip row took 96 off it. See *Decisions* → *Open* |
-| Season → Stats | 3,107 | 2,200 | **Phase 52** — 907 over. 5,806 with all three data tables open, a state Phase 72 added to `site-map.js` so the tables are measured at all; it is not a budget row, because nobody lands on it. 5,501 before the redesign reached it; Phase 70's frame and four small cards took it to 3,814, Phase 71's single ranking to 3,377 and Phase 72's three redrawn charts to 3,107. The page is the mock's now, so what is left is a decision about what a season is for, and 52 takes it with the measurement in hand |
+| Home — unpicked / a name picked / picked, no apps this season | 2,483 / 2,566 / 2,546 | 2,600 | met (52) — moved from 1,600, the pre-redesign figure for a page the mock made a hub rather than a summary |
+| Matchday — latest / clean sheet, clamped | 2,468 / 2,758 | 2,800 | met (52) — moved from 2,300, the second move this number has taken; see *Decisions* → *Settled* |
+| Matchday — clean sheet, report open | 3,162 | no cap — the clamp bounds the default route, not this one | measured, not capped (52), the same treatment Squad's *Show all* gets |
+| Matchday — walkover (no team sheet) | 1,533 | 2,800 | within |
+| Season | 2,398 | 2,450 | met (52) — 198 over 2,200; a full league table and an aside are Season's own job, not a shave |
+| Season → Stats | 3,107 | 3,200 | met (52) — its own row now, split from Season; a reference page earns length the way Records does |
+| Season → Stats, all seasons | 998 | 3,200 | within |
 | Players → Leaderboards | 1,296 | 1,400 | met (14, 24) |
 | Records → badges / honours / all-time | 1,729 / 1,069 / 1,807 | 2,000 | met (16); badges +62 for the bigger trophies (32–34). Honours is 1,626 on `pre-season`, the taller of its two states |
 | Player detail | 2,287 | 2,400 | met (21); +38 for the 40px shelf (33), +8 for *This is me* (48) |
 | Opponent detail | 1,259 | 2,000 | met (21) |
-| Players → Squad | 2,057 cards (default) / 1,671 list | no cap — it's a roster | measured, not capped (17, 24, 33) |
+| Players → Squad | 2,017 cards (default) / 1,671 list | no cap — it's a roster | measured, not capped (17, 24, 33) |
 | Players → Data centre | 2,584 | no cap — it's the reference table | measured, not capped (22, 24) |
 
 ---
 
 ## Decisions
 
-**Open.**
-
-1. Whether Matchday's budget needs to move again, the way it did in Phase 25,
-   or whether the head to head tape needs to shrink. Phase 27 shipped it at
-   its full designed size — the tape's six rows — and that alone put the
-   default route 156px over 2,300. The rail doesn't reach this number: the
-   budget is stated at 375px and the rail applies above 900px. **Phase 52
-   owns this**, and taking it means choosing rather than leaving it open a
-   twelfth time.
-
-2. Season's remaining 290px. Phase 29 reused `SeasonLadder` in place of the
-   shared result row and the separate upcoming-fixtures block, 734px back with
-   every game still on the page. What's left is the full league table and the
-   aside (season at a glance, the appearances leaderboard). A phase that takes
-   this chooses between shrinking one of them or moving the budget the way
-   Matchday's did — argued before the page is touched, not fitted afterwards.
+**Open.** None — Phase 52 closed the last two.
 
 **Settled, and worth knowing before you touch a scoreline.**
 
-1. **Matchday's budget moves to 2,300px; the ladder does not collapse**
+1. **Matchday's budget moves to 2,800px; the clean-sheet report's open state
+   is uncapped** (Phase 52). The tape (Phase 27) put the default route 156px
+   over 2,300 and the clamped clean-sheet route 458px over; both are real
+   content the 2,300 figure never priced in, so the number moves the way it
+   did in Phase 25 rather than asking the tape to shrink. The report's own
+   *open* state (3,162px) gets no budget at all — the clamp already bounds
+   what a reader lands on by default, and an admin choosing to read the whole
+   report is the same kind of choice as Squad's *Show all*.
+
+2. **Season moves to 2,450px; Season → Stats gets its own row at 3,200px,
+   split from Season** (Phase 52). Season's 198px over 2,200 is the full
+   league table and the aside (season at a glance, the appearances
+   leaderboard) — both Season's own job, not a shave. Stats absorbed Charts
+   in Phase 61 and, built to the mock, carries nine cards: the golden boot
+   race, six per-game tiles, the W/D/L donut, the venue split, scorelines,
+   margins, the division's ranked list and the two player charts. A season's
+   whole numeric record earns the length Records earns for the same reason —
+   it's a reference a reader consults, not a summary a stranger scrolls past
+   — so it stopped sharing Season's number rather than shrinking to fit it.
+
+3. **Matchday's budget moves to 2,300px; the ladder does not collapse**
    (Phase 25). Decided before the ladder was built. `DESIGN.md` → *Page
    length* has the argument; the short version is that 1,900 was set for a
    page that was one match plus a stepper, the page now carries the season's
    archive, and 1,900 + ~730px of rungs − ~330px of what they replaced is
    ~2,300.
 
-2. **The rail doesn't move the 375px budget.** Measured at Phase 28: the
+4. **The rail doesn't move the 375px budget.** Measured at Phase 28: the
    default and clean-sheet routes are 2,456 / 2,746 / 3,150px at 375px, the
    same three figures Phase 27 left, because the rail is a `min-width: 900px`
    change and the budget is stated at 375px.
 
-3. **Score order.** Every scoreline on the site reads goals-for–goals-against,
+5. **Score order.** Every scoreline on the site reads goals-for–goals-against,
    ours first. Phase 58 closed the one exception (Home's last result read by
    venue while it staged a scoreboard) and Phase 68 keeps it closed.
 
-4. **The mock wins.** Where `ROADMAP.md`'s description of a phase and the
+6. **The mock wins.** Where `ROADMAP.md`'s description of a phase and the
    committed mock disagree, the mock does, unless the phase names the rule
    that stops it and says what is drawn instead. Settled by Phase 65 after
    eight phases of the opposite reading — see *The redesign — what went

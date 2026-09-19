@@ -72,7 +72,7 @@ export const ROUTES = [
     id: 'matchday-clean-sheet-open',
     route: `/matchday/${match('2026-02-07', 'Wellington IX')}`,
     name: 'Matchday — clean sheet, report open',
-    budget: 'Matchday',
+    budget: 'Matchday — clean sheet, report open',
     open: true,
   },
   {
@@ -81,7 +81,7 @@ export const ROUTES = [
     name: 'Matchday — walkover, no team sheet',
     budget: 'Matchday',
   },
-  { id: 'season', route: '/season', name: 'Season', budget: 'Season → any sub-page' },
+  { id: 'season', route: '/season', name: 'Season', budget: 'Season' },
   // Two, because the sub-page has two shapes: one season, and the season-by-
   // season comparison the All seasons filter puts up. The second is a different
   // chart (every season lit and labelled rather than one) on a page with two
@@ -90,7 +90,7 @@ export const ROUTES = [
     id: 'season-stats',
     route: '/season/stats',
     name: 'Season — stats',
-    budget: 'Season → any sub-page',
+    budget: 'Season → Stats',
     charts: true,
   },
   // The three player charts hide their data table behind a *Data* link, and a
@@ -101,7 +101,7 @@ export const ROUTES = [
     id: 'season-stats-data',
     route: '/season/stats',
     name: 'Season — stats, data tables open',
-    budget: 'Season → any sub-page',
+    budget: 'Season → Stats',
     charts: true,
     open: 'button.chart-data',
   },
@@ -109,7 +109,7 @@ export const ROUTES = [
     id: 'season-stats-all',
     route: '/season/stats?season=all',
     name: 'Season — stats, every season compared',
-    budget: 'Season → any sub-page',
+    budget: 'Season → Stats',
     charts: true,
   },
   { id: 'players', route: '/players', name: 'Players — leaderboards', budget: 'Players → Leaderboards' },
