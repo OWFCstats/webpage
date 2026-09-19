@@ -263,14 +263,20 @@ const DIVISION = 'Arthurian League Division 5';
 // per game has to rank them the other way round from the raw totals. Phase 63
 // ranks the division on exactly that, and a division where every club is on
 // the same number of games would never have caught a wrong divisor.
+// Form is the ninth column and the one thing here that is typed rather than
+// totalled — a W/D/L total carries no order, so a rival's last five is not
+// derivable from the eight before it (Phase 73). Oldest first, as the grid
+// takes it. Old Salopians have four: the string is what the league published,
+// not a fixed five, and a column that only ever renders five squares would
+// never have shown that. Ours is absent on purpose: our row derives its own.
 const RIVALS = [
-  // name, position, played, won, drawn, lost, for, against
-  ['Old Cheltonians', 1, 12, 10, 1, 1, 44, 15],
-  ['Old Worthians', 2, 12, 8, 2, 2, 38, 21],
-  ['Old Oundelians', 3, 12, 7, 2, 3, 31, 22],
-  ["Old King's Scholars", 4, 12, 5, 3, 4, 26, 25],
-  ['Old Stoics', 6, 10, 3, 2, 5, 22, 34],
-  ['Old Salopians', 7, 12, 1, 3, 8, 17, 40],
+  // name, position, played, won, drawn, lost, for, against, form
+  ['Old Cheltonians', 1, 12, 10, 1, 1, 44, 15, 'WWDWW'],
+  ['Old Worthians', 2, 12, 8, 2, 2, 38, 21, 'WLWWD'],
+  ['Old Oundelians', 3, 12, 7, 2, 3, 31, 22, 'DWWLW'],
+  ["Old King's Scholars", 4, 12, 5, 3, 4, 26, 25, 'LWDLW'],
+  ['Old Stoics', 6, 10, 3, 2, 5, 22, 34, 'LLWDL'],
+  ['Old Salopians', 7, 12, 1, 3, 8, 17, 40, 'LLDL'],
 ];
 
 function leagueRows(matches, season, ourPosition) {
@@ -294,9 +300,12 @@ function leagueRows(matches, season, ourPosition) {
       team_id: fixtureId(`team:${CLUB}`),
       position: ourPosition,
       ...us,
+      // Null, not a string: our row's form is derived from our own league
+      // results, and a fixture that typed one in would be storing it twice.
+      form: null,
       updated_at: '2026-03-16T20:12:00.000Z',
     },
-    ...RIVALS.map(([name, position, played, won, drawn, lost, gf, ga]) => ({
+    ...RIVALS.map(([name, position, played, won, drawn, lost, gf, ga, form]) => ({
       id: fixtureId(`league:${season}:${name}`),
       season,
       division: DIVISION,
@@ -308,6 +317,7 @@ function leagueRows(matches, season, ourPosition) {
       lost,
       goals_for: gf,
       goals_against: ga,
+      form,
       updated_at: '2026-03-16T20:12:00.000Z',
     })),
   ];

@@ -236,9 +236,20 @@ form, badges, points, goal difference — all computed from `players`, `matches`
 it summarises; a derived one can't. The exceptions are deliberate and few, and
 each one is a fact about the world our own rows cannot hold: league standings
 (`league_rows`) need other clubs' results, which we don't have; a hand-picked
-award needs a human; and **whether a season has ended** (`season_status`) is a
-calendar question, which is Phase 55. All three are typed in by an admin. Don't
-add a fourth without a reason that good.
+award needs a human; **whether a season has ended** (`season_status`) is a
+calendar question, which is Phase 55; and the other clubs' **recent form**
+(`league_rows.form`) is Phase 73. All four are typed in by an admin. Don't add
+a fifth without a reason that good.
+
+The fourth is the first one again rather than a new kind, which is the only
+reason it is allowed: `league_rows` already holds other clubs' results, and a
+W/D/L total carries no order, so a rival's last five is not derivable from
+anything we have. It is typed into the same grid on the same night as the rest
+of their row. **Our own row's form is never stored** — `leagueStandings`
+derives it from our own league results, the admin grid shows it read-only, and
+the save sends `null` for it, so every row has one source and nothing can
+drift. It counts league games only, so it is not the band's form card, which
+counts every competition; the table's foot says so.
 
 The third is the smallest and is mostly not typed in at all. **An end-of-season
 award needs the season to have ended**, and three of the four are derived —
@@ -368,8 +379,8 @@ sits beside the mock at 375 and 1400 and is the same page** — `check:layout`
 green was true of all eight phases that got this wrong.
 
 Three findings about the data still bind every phase: `league_rows` holds
-totals and not results, so no other club's form is derivable (Phase 73 has it
-typed in — the same class of fact `league_rows` already is); five separable hues
+totals and not results, so no other club's form is derivable (Phase 73 typed it
+in — the same class of fact `league_rows` already is); five separable hues
 do not exist for a line that labels itself inside the floors a series colour
 has, so the series palette is three pigments at two depths — and it governs
 *lines only*; every bar, wash and split takes the mock's two pigments, gold and
@@ -380,10 +391,9 @@ club's data is checked against `backups/` too**, not the fixture by itself —
 `venue` was said to be null everywhere and was not.
 
 **The order in `docs/ROADMAP.md` → *Now* is the whole of what to do now**:
-phases 65 to 74, in order. 65 to 72 have landed, so what is left of the mock is
-Phase 73 — the league snapshot's *Form* column — then 74, with Phase 52 — the
-page budgets — inside it now the pages are the mock's and can be measured as
-such.
+phases 65 to 74, in order. 65 to 73 have landed, so the mock is built and what
+is left is Phase 74 — the docs condensed — with Phase 52 — the page budgets —
+inside it now the pages are the mock's and can be measured as such.
 
 **The squad has it.** They played the first game of 2026/27 on 5 September 2026
 and reported a bug on the honours the same weekend, which is Phase 55. So the

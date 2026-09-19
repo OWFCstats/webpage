@@ -108,6 +108,12 @@ create table if not exists public.league_rows (
   -- each one costs 3 points on top of the loss itself (see leagueStandings in
   -- src/lib/league.js), which a W/D/L line alone can't show.
   walkover_losses integer not null default 0 check (walkover_losses >= 0),
+  -- Recent form, oldest first, e.g. 'WDLWW' -- the one thing on the published
+  -- table a W/D/L total can't produce, because a total has no order in it.
+  -- Typed in for rivals only: our own row's form is derived from our own
+  -- league results in leagueStandings() (src/lib/league.js), so it is stored
+  -- once, not twice. Five is the column's whole width.
+  form          text check (form is null or form ~ '^[WDL]{0,5}$'),
   -- Set explicitly on every save by the admin page; no trigger.
   updated_at    timestamptz not null default now()
 );

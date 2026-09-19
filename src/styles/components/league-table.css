@@ -32,6 +32,43 @@ table.data.league-table.lt-compact tr.lt-us td:first-child {
   box-shadow: inset 3px 0 0 var(--gold);
 }
 
+/* ---- the Form column (Phase 73) ----
+   The snapshot's fifth column: five squares a club, oldest first, right-aligned
+   against the numbers to their left. Typed in for the other clubs — a W/D/L
+   total carries no order, so nothing we hold can produce theirs — and derived
+   from our own league results for us.
+
+   Not the 26px .form-badge in primitives.css: that is the everyday mark, drawn
+   one run to a card. Five of them a row across five rows is a different object,
+   and the mock sizes it at 17px. */
+.chips {
+  display: flex;
+  gap: 3px;
+  justify-content: flex-end;
+}
+
+.chip {
+  width: 17px;
+  height: 17px;
+  border-radius: var(--r-sm);
+  display: grid;
+  place-items: center;
+  font-family: var(--font-data);
+  /* Relative to the table's own --t-small rather than a token of its own:
+     --t-micro is 12px, which a 17px square can't hold with a border-radius
+     still visible around it. */
+  font-size: 0.72em;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--on-board);
+}
+
+.chip.W { background: var(--win); }
+
+.chip.D { background: var(--draw); }
+
+.chip.L { background: var(--loss); }
+
 /* The standings are typed in by hand, so when they were last touched is part
    of reading them. */
 .lt-updated { margin: var(--s3) 0 0; font-size: var(--t-small); }
@@ -67,21 +104,21 @@ table.data.league-table.lt-compact tr.lt-us td:first-child {
     padding-right: var(--s4);
   }
 
-  table.data.league-table:not(.lt-compact) th,
-  table.data.league-table:not(.lt-compact) td { padding: 0.5rem 0.25rem; }
+  table.data.league-table th,
+  table.data.league-table td { padding: 0.5rem 0.25rem; }
 
   /* The row rules still run edge to edge — it's an engraved line across the
   sheet, not a box — so the breathing room at the two ends goes on the end
   cells rather than on the table. */
-  table.data.league-table:not(.lt-compact) th:first-child,
-  table.data.league-table:not(.lt-compact) td:first-child { padding-left: var(--s2); }
+  table.data.league-table th:first-child,
+  table.data.league-table td:first-child { padding-left: var(--s2); }
 
-  table.data.league-table:not(.lt-compact) th:last-child,
-  table.data.league-table:not(.lt-compact) td:last-child { padding-right: var(--s2); }
+  table.data.league-table th:last-child,
+  table.data.league-table td:last-child { padding-right: var(--s2); }
 
   /* The club name is what forces the table wider than the columns need —
   letting it wrap is what buys the last of the room. */
-  .league-table:not(.lt-compact) td.lt-club { white-space: normal; max-width: 34vw; }
+  .league-table td.lt-club { white-space: normal; max-width: 34vw; }
 }
 
 /* Below 360px even the full width isn't enough: the ten columns need 303px and
@@ -90,4 +127,21 @@ table.data.league-table.lt-compact tr.lt-us td:first-child {
    come out there — measured, and the only width where they do. */
 @media (max-width: 359px) {
   .league-table .lt-hide-narrow { display: none; }
+
+  /* And the snapshot takes the sheet's own padding back at the same width,
+     which is the trick above with the exception lifted. Five columns need
+     272px at 320px and the card leaves 254px; running to the hairline leaves
+     286px, and nothing in the table has to shrink. Only here: at 375 the
+     snapshot fits inside its padding, which is how the mock draws it. */
+  .home-widget.home-table.g-league {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .home-table.g-league > .head,
+  .home-table.g-league > .lt-updated,
+  .home-table.g-league > .lt-placeholder {
+    padding-left: var(--s4);
+    padding-right: var(--s4);
+  }
 }
