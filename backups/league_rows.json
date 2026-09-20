@@ -12,7 +12,8 @@
     "goals_for": 22,
     "goals_against": 28,
     "updated_at": "2026-08-24T13:02:02.133+00:00",
-    "walkover_losses": 0
+    "walkover_losses": 0,
+    "form": null
   },
   {
     "id": "32e23a93-b45b-405d-ae3f-cba322e5d471",
@@ -27,7 +28,8 @@
     "goals_for": 16,
     "goals_against": 68,
     "updated_at": "2026-08-24T13:02:02.133+00:00",
-    "walkover_losses": 0
+    "walkover_losses": 0,
+    "form": null
   },
   {
     "id": "2eff075a-aa6f-462f-903c-a5b6188aac74",
@@ -42,7 +44,8 @@
     "goals_for": 42,
     "goals_against": 27,
     "updated_at": "2026-08-24T13:02:02.133+00:00",
-    "walkover_losses": 0
+    "walkover_losses": 0,
+    "form": null
   },
   {
     "id": "b1f787d2-3305-46cc-a418-d59cd972e3df",
@@ -57,7 +60,8 @@
     "goals_for": 25,
     "goals_against": 33,
     "updated_at": "2026-08-24T13:02:02.133+00:00",
-    "walkover_losses": 1
+    "walkover_losses": 1,
+    "form": null
   },
   {
     "id": "a2369e09-43bf-4846-8138-2379e5725736",
@@ -72,7 +76,8 @@
     "goals_for": 34,
     "goals_against": 24,
     "updated_at": "2026-08-24T13:02:02.133+00:00",
-    "walkover_losses": 1
+    "walkover_losses": 1,
+    "form": null
   },
   {
     "id": "77bc768d-a2a7-4ee2-bbff-a2abc865f8b7",
@@ -87,7 +92,8 @@
     "goals_for": 39,
     "goals_against": 18,
     "updated_at": "2026-08-24T13:02:02.133+00:00",
-    "walkover_losses": 0
+    "walkover_losses": 0,
+    "form": null
   },
   {
     "id": "469018ce-f4d5-4359-9133-f0b2e95b9244",
@@ -102,7 +108,8 @@
     "goals_for": 43,
     "goals_against": 23,
     "updated_at": "2026-08-24T13:02:02.133+00:00",
-    "walkover_losses": 0
+    "walkover_losses": 0,
+    "form": null
   },
   {
     "id": "4b541dad-086e-40dc-91ff-f5a1f4b19fc5",
@@ -116,8 +123,9 @@
     "lost": 1,
     "goals_for": 1,
     "goals_against": 7,
-    "updated_at": "2026-09-15T05:47:36.55+00:00",
-    "walkover_losses": 0
+    "updated_at": "2026-09-19T11:57:20.108+00:00",
+    "walkover_losses": 0,
+    "form": "L"
   },
   {
     "id": "3ade2da9-f43d-438d-832a-88e15cf942f0",
@@ -131,8 +139,9 @@
     "lost": 0,
     "goals_for": 9,
     "goals_against": 5,
-    "updated_at": "2026-09-15T05:47:36.55+00:00",
-    "walkover_losses": 0
+    "updated_at": "2026-09-19T11:57:20.108+00:00",
+    "walkover_losses": 0,
+    "form": "WW"
   },
   {
     "id": "4e940acd-374f-47ed-b77a-3f9efd8aaef4",
@@ -146,8 +155,9 @@
     "lost": 1,
     "goals_for": 3,
     "goals_against": 4,
-    "updated_at": "2026-09-15T05:47:36.55+00:00",
-    "walkover_losses": 0
+    "updated_at": "2026-09-19T11:57:20.108+00:00",
+    "walkover_losses": 0,
+    "form": "L"
   },
   {
     "id": "b245b1e0-ce26-4617-93fc-60d61672c674",
@@ -161,8 +171,9 @@
     "lost": 0,
     "goals_for": 4,
     "goals_against": 0,
-    "updated_at": "2026-09-15T05:47:36.55+00:00",
-    "walkover_losses": 0
+    "updated_at": "2026-09-19T11:57:20.108+00:00",
+    "walkover_losses": 0,
+    "form": "W"
   },
   {
     "id": "af077cc7-170c-43d1-956d-53138c701762",
@@ -176,8 +187,9 @@
     "lost": 1,
     "goals_for": 0,
     "goals_against": 1,
-    "updated_at": "2026-09-15T05:47:36.55+00:00",
-    "walkover_losses": 0
+    "updated_at": "2026-09-19T11:57:20.108+00:00",
+    "walkover_losses": 0,
+    "form": "L"
   },
   {
     "id": "3152ee04-27f3-48fc-b875-d7971f959dd7",
@@ -191,8 +203,9 @@
     "lost": 0,
     "goals_for": 1,
     "goals_against": 0,
-    "updated_at": "2026-09-15T05:47:36.55+00:00",
-    "walkover_losses": 0
+    "updated_at": "2026-09-19T11:57:20.108+00:00",
+    "walkover_losses": 0,
+    "form": "W"
   },
   {
     "id": "64a2d6d7-7f70-46fb-bd3a-99b70deaf4ab",
@@ -206,8 +219,9 @@
     "lost": 0,
     "goals_for": 7,
     "goals_against": 1,
-    "updated_at": "2026-09-15T05:47:36.55+00:00",
-    "walkover_losses": 0
+    "updated_at": "2026-09-19T11:57:20.108+00:00",
+    "walkover_losses": 0,
+    "form": null
   },
   {
     "id": "13025e34-7e05-48a0-b69f-965853fa9928",
@@ -221,8 +235,9 @@
     "lost": 0,
     "goals_for": 0,
     "goals_against": 0,
-    "updated_at": "2026-09-15T05:47:36.55+00:00",
-    "walkover_losses": 0
+    "updated_at": "2026-09-19T11:57:20.108+00:00",
+    "walkover_losses": 0,
+    "form": null
   },
   {
     "id": "adbc7767-8690-4509-9a22-c2afcb887e26",
@@ -236,7 +251,8 @@
     "lost": 2,
     "goals_for": 2,
     "goals_against": 9,
-    "updated_at": "2026-09-15T05:47:36.55+00:00",
-    "walkover_losses": 0
+    "updated_at": "2026-09-19T11:57:20.108+00:00",
+    "walkover_losses": 0,
+    "form": "LL"
   }
 ]

@@ -7,7 +7,7 @@
 -- first (delete from season_status, season_awards, league_rows, appearances,
 -- matches, players, teams — that order) and then running this.
 --
--- Taken 2026-09-17T09:25:39.419Z
+-- Taken 2026-09-20T09:16:11.152Z
 
 insert into public.teams ("id", "name", "short_name", "slug", "is_club", "pitch_name", "pitch_address", "postcode", "map_url", "notes", "created_at") values
   ('02f0dbf5-04d6-4c07-a931-2a1b9e38670f', 'Old Bradfieldians II', null, 'old-bradfieldians-ii', false, 'Ground 1', 'Kings House Sports Ground, RIVERSIDE DRIVE, LONDON W4 2SP', 'W4 2SP', 'https://www.google.com/maps/place/King''s+House+School+Sports+Ground/@51.476538,-0.2561366,737m/data=!3m2!1e3!4b1!4m6!3m5!1s0x48760e5e5e9b00d7:0xc0aef9bb62cccf41!8m2!3d51.476538!4d-0.2535617!16s%2Fg%2F11bwdwbq9y?entry=ttu&g_ep=EgoyMDI2MDgzMS4wIKXMDSoASAFQAw%3D%3D', null, '2026-08-13T13:45:35.91997+00:00'),
@@ -320,23 +320,23 @@ on conflict (id) do update set
   "motm" = excluded."motm",
   "dropout" = excluded."dropout";
 
-insert into public.league_rows ("id", "season", "division", "team_id", "position", "played", "won", "drawn", "lost", "goals_for", "goals_against", "updated_at", "walkover_losses") values
-  ('cb151475-93f9-41e0-95fb-12e5ee5aab24', '2025/26', 'The Arthurian League Division 5', '2e1dbdbc-41c4-4539-822e-d5a4079b24cf', 5, 12, 3, 4, 5, 22, 28, '2026-08-24T13:02:02.133+00:00', 0),
-  ('32e23a93-b45b-405d-ae3f-cba322e5d471', '2025/26', 'The Arthurian League Division 5', '35b12114-fb3a-4a52-b2e6-58d1862cbf2d', 7, 12, 1, 0, 11, 16, 68, '2026-08-24T13:02:02.133+00:00', 0),
-  ('2eff075a-aa6f-462f-903c-a5b6188aac74', '2025/26', 'The Arthurian League Division 5', '3a0e5ea8-51b5-4422-ac9e-234a1bc1ab1e', 3, 12, 6, 2, 4, 42, 27, '2026-08-24T13:02:02.133+00:00', 0),
-  ('b1f787d2-3305-46cc-a418-d59cd972e3df', '2025/26', 'The Arthurian League Division 5', 'b7fa946a-7605-46d4-8450-ac5cb334b85e', 6, 12, 2, 3, 7, 25, 33, '2026-08-24T13:02:02.133+00:00', 1),
-  ('a2369e09-43bf-4846-8138-2379e5725736', '2025/26', 'The Arthurian League Division 5', 'eccf9c51-e927-46b6-8827-ff01705b3da9', 4, 12, 5, 2, 5, 34, 24, '2026-08-24T13:02:02.133+00:00', 1),
-  ('77bc768d-a2a7-4ee2-bbff-a2abc865f8b7', '2025/26', 'The Arthurian League Division 5', 'ef40cc79-680a-4fd5-8830-cd9d4373b356', 1, 12, 9, 2, 1, 39, 18, '2026-08-24T13:02:02.133+00:00', 0),
-  ('469018ce-f4d5-4359-9133-f0b2e95b9244', '2025/26', 'The Arthurian League Division 5', 'f4d6f0de-5112-42d1-a9f6-b84f83eb606a', 2, 12, 9, 1, 2, 43, 23, '2026-08-24T13:02:02.133+00:00', 0),
-  ('4b541dad-086e-40dc-91ff-f5a1f4b19fc5', '2026/27', 'The Arthurian League Division 5', '02f0dbf5-04d6-4c07-a931-2a1b9e38670f', 8, 1, 0, 0, 1, 1, 7, '2026-09-15T05:47:36.55+00:00', 0),
-  ('3ade2da9-f43d-438d-832a-88e15cf942f0', '2026/27', 'The Arthurian League Division 5', '06276e0c-90ab-42f1-8462-31e9a24d8fbc', 1, 2, 2, 0, 0, 9, 5, '2026-09-15T05:47:36.55+00:00', 0),
-  ('4e940acd-374f-47ed-b77a-3f9efd8aaef4', '2026/27', 'The Arthurian League Division 5', '2e1dbdbc-41c4-4539-822e-d5a4079b24cf', 6, 1, 0, 0, 1, 3, 4, '2026-09-15T05:47:36.55+00:00', 0),
-  ('b245b1e0-ce26-4617-93fc-60d61672c674', '2026/27', 'The Arthurian League Division 5', '35b12114-fb3a-4a52-b2e6-58d1862cbf2d', 3, 1, 1, 0, 0, 4, 0, '2026-09-15T05:47:36.55+00:00', 0),
-  ('af077cc7-170c-43d1-956d-53138c701762', '2026/27', 'The Arthurian League Division 5', '6cd9ce1b-dc06-4489-9bcb-da43b4fb8881', 7, 1, 0, 0, 1, 0, 1, '2026-09-15T05:47:36.55+00:00', 0),
-  ('3152ee04-27f3-48fc-b875-d7971f959dd7', '2026/27', 'The Arthurian League Division 5', '82a990d4-7b76-44b8-9c49-18b7f026dfe7', 4, 1, 1, 0, 0, 1, 0, '2026-09-15T05:47:36.55+00:00', 0),
-  ('64a2d6d7-7f70-46fb-bd3a-99b70deaf4ab', '2026/27', 'The Arthurian League Division 5', 'b7fa946a-7605-46d4-8450-ac5cb334b85e', 2, 1, 1, 0, 0, 7, 1, '2026-09-15T05:47:36.55+00:00', 0),
-  ('13025e34-7e05-48a0-b69f-965853fa9928', '2026/27', 'The Arthurian League Division 5', 'd4a97ab0-34b4-40d9-9cba-c7e7b603fc40', 5, 0, 0, 0, 0, 0, 0, '2026-09-15T05:47:36.55+00:00', 0),
-  ('adbc7767-8690-4509-9a22-c2afcb887e26', '2026/27', 'The Arthurian League Division 5', 'eccf9c51-e927-46b6-8827-ff01705b3da9', 9, 2, 0, 0, 2, 2, 9, '2026-09-15T05:47:36.55+00:00', 0)
+insert into public.league_rows ("id", "season", "division", "team_id", "position", "played", "won", "drawn", "lost", "goals_for", "goals_against", "updated_at", "walkover_losses", "form") values
+  ('cb151475-93f9-41e0-95fb-12e5ee5aab24', '2025/26', 'The Arthurian League Division 5', '2e1dbdbc-41c4-4539-822e-d5a4079b24cf', 5, 12, 3, 4, 5, 22, 28, '2026-08-24T13:02:02.133+00:00', 0, null),
+  ('32e23a93-b45b-405d-ae3f-cba322e5d471', '2025/26', 'The Arthurian League Division 5', '35b12114-fb3a-4a52-b2e6-58d1862cbf2d', 7, 12, 1, 0, 11, 16, 68, '2026-08-24T13:02:02.133+00:00', 0, null),
+  ('2eff075a-aa6f-462f-903c-a5b6188aac74', '2025/26', 'The Arthurian League Division 5', '3a0e5ea8-51b5-4422-ac9e-234a1bc1ab1e', 3, 12, 6, 2, 4, 42, 27, '2026-08-24T13:02:02.133+00:00', 0, null),
+  ('b1f787d2-3305-46cc-a418-d59cd972e3df', '2025/26', 'The Arthurian League Division 5', 'b7fa946a-7605-46d4-8450-ac5cb334b85e', 6, 12, 2, 3, 7, 25, 33, '2026-08-24T13:02:02.133+00:00', 1, null),
+  ('a2369e09-43bf-4846-8138-2379e5725736', '2025/26', 'The Arthurian League Division 5', 'eccf9c51-e927-46b6-8827-ff01705b3da9', 4, 12, 5, 2, 5, 34, 24, '2026-08-24T13:02:02.133+00:00', 1, null),
+  ('77bc768d-a2a7-4ee2-bbff-a2abc865f8b7', '2025/26', 'The Arthurian League Division 5', 'ef40cc79-680a-4fd5-8830-cd9d4373b356', 1, 12, 9, 2, 1, 39, 18, '2026-08-24T13:02:02.133+00:00', 0, null),
+  ('469018ce-f4d5-4359-9133-f0b2e95b9244', '2025/26', 'The Arthurian League Division 5', 'f4d6f0de-5112-42d1-a9f6-b84f83eb606a', 2, 12, 9, 1, 2, 43, 23, '2026-08-24T13:02:02.133+00:00', 0, null),
+  ('4b541dad-086e-40dc-91ff-f5a1f4b19fc5', '2026/27', 'The Arthurian League Division 5', '02f0dbf5-04d6-4c07-a931-2a1b9e38670f', 8, 1, 0, 0, 1, 1, 7, '2026-09-19T11:57:20.108+00:00', 0, 'L'),
+  ('3ade2da9-f43d-438d-832a-88e15cf942f0', '2026/27', 'The Arthurian League Division 5', '06276e0c-90ab-42f1-8462-31e9a24d8fbc', 1, 2, 2, 0, 0, 9, 5, '2026-09-19T11:57:20.108+00:00', 0, 'WW'),
+  ('4e940acd-374f-47ed-b77a-3f9efd8aaef4', '2026/27', 'The Arthurian League Division 5', '2e1dbdbc-41c4-4539-822e-d5a4079b24cf', 6, 1, 0, 0, 1, 3, 4, '2026-09-19T11:57:20.108+00:00', 0, 'L'),
+  ('b245b1e0-ce26-4617-93fc-60d61672c674', '2026/27', 'The Arthurian League Division 5', '35b12114-fb3a-4a52-b2e6-58d1862cbf2d', 3, 1, 1, 0, 0, 4, 0, '2026-09-19T11:57:20.108+00:00', 0, 'W'),
+  ('af077cc7-170c-43d1-956d-53138c701762', '2026/27', 'The Arthurian League Division 5', '6cd9ce1b-dc06-4489-9bcb-da43b4fb8881', 7, 1, 0, 0, 1, 0, 1, '2026-09-19T11:57:20.108+00:00', 0, 'L'),
+  ('3152ee04-27f3-48fc-b875-d7971f959dd7', '2026/27', 'The Arthurian League Division 5', '82a990d4-7b76-44b8-9c49-18b7f026dfe7', 4, 1, 1, 0, 0, 1, 0, '2026-09-19T11:57:20.108+00:00', 0, 'W'),
+  ('64a2d6d7-7f70-46fb-bd3a-99b70deaf4ab', '2026/27', 'The Arthurian League Division 5', 'b7fa946a-7605-46d4-8450-ac5cb334b85e', 2, 1, 1, 0, 0, 7, 1, '2026-09-19T11:57:20.108+00:00', 0, null),
+  ('13025e34-7e05-48a0-b69f-965853fa9928', '2026/27', 'The Arthurian League Division 5', 'd4a97ab0-34b4-40d9-9cba-c7e7b603fc40', 5, 0, 0, 0, 0, 0, 0, '2026-09-19T11:57:20.108+00:00', 0, null),
+  ('adbc7767-8690-4509-9a22-c2afcb887e26', '2026/27', 'The Arthurian League Division 5', 'eccf9c51-e927-46b6-8827-ff01705b3da9', 9, 2, 0, 0, 2, 2, 9, '2026-09-19T11:57:20.108+00:00', 0, 'LL')
 on conflict (id) do update set
   "season" = excluded."season",
   "division" = excluded."division",
@@ -349,7 +349,8 @@ on conflict (id) do update set
   "goals_for" = excluded."goals_for",
   "goals_against" = excluded."goals_against",
   "updated_at" = excluded."updated_at",
-  "walkover_losses" = excluded."walkover_losses";
+  "walkover_losses" = excluded."walkover_losses",
+  "form" = excluded."form";
 
 insert into public.season_awards ("id", "season", "award_key", "player_id", "note", "updated_at") values
   ('fec60164-a843-491c-82bc-9b30c37ef372', '2025/26', 'player-of-the-season', '2cb2c5a0-d51a-4f08-aa00-3883a22e2e5f', 'Voted in due to his commitment to playing every game!', '2026-08-20T19:48:58.971+00:00')
