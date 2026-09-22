@@ -304,5 +304,41 @@
     "walkover": false,
     "opponent_team_id": "06276e0c-90ab-42f1-8462-31e9a24d8fbc",
     "kickoff_time": "12:00:00"
+  },
+  {
+    "id": "2db088bf-c2fc-4b1c-bfd7-c533601e50a3",
+    "season": "2026/27",
+    "date": "2026-10-03",
+    "opponent": "Old Malvernians",
+    "competition": "League",
+    "goals_for": null,
+    "goals_against": null,
+    "own_goals_for": 0,
+    "own_goals_against": 0,
+    "result": null,
+    "report": null,
+    "created_at": "2026-09-21T16:16:29.410276+00:00",
+    "venue": "H",
+    "walkover": false,
+    "opponent_team_id": "d4a97ab0-34b4-40d9-9cba-c7e7b603fc40",
+    "kickoff_time": "10:00:00"
+  },
+  {
+    "id": "66b4c2ba-cca0-47ec-8e54-2da5bdc1dc51",
+    "season": "2026/27",
+    "date": "2026-10-10",
+    "opponent": "Old Harrovians III",
+    "competition": "League",
+    "goals_for": null,
+    "goals_against": null,
+    "own_goals_for": 0,
+    "own_goals_against": 0,
+    "result": null,
+    "report": null,
+    "created_at": "2026-09-21T16:17:04.917901+00:00",
+    "venue": "H",
+    "walkover": false,
+    "opponent_team_id": "6cd9ce1b-dc06-4489-9bcb-da43b4fb8881",
+    "kickoff_time": "10:00:00"
   }
 ]
