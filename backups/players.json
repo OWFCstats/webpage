@@ -7,6 +7,13 @@
     "created_at": "2026-07-28T14:09:26.44542+00:00"
   },
   {
+    "id": "287a32ac-8829-473d-819c-f9a6620b4dd7",
+    "name": "Alex Costello",
+    "position": "FWD",
+    "status": "active",
+    "created_at": "2026-09-28T09:05:35.803782+00:00"
+  },
+  {
     "id": "6fbec745-da76-4df7-91cd-a11c844f7420",
     "name": "Alex Hannon",
     "position": "DEF",
@@ -192,7 +199,7 @@
     "id": "7e9322d3-cc09-42be-9bf4-a1d7fb20724b",
     "name": "Jake Aungier",
     "position": "MID",
-    "status": "active",
+    "status": "inactive",
     "created_at": "2026-07-28T14:09:26.44542+00:00"
   },
   {
@@ -294,6 +301,13 @@
     "created_at": "2026-07-28T14:00:47.000721+00:00"
   },
   {
+    "id": "2ca18691-3e0c-4e63-b148-94befd9a3a43",
+    "name": "Patchi Costello",
+    "position": "MID",
+    "status": "active",
+    "created_at": "2026-09-28T09:05:47.36074+00:00"
+  },
+  {
     "id": "f0e0ee29-83c3-41ef-91c2-6f8b04b3adac",
     "name": "Petscheck",
     "position": "MID",
@@ -334,6 +348,13 @@
     "position": "DEF",
     "status": "active",
     "created_at": "2026-07-28T14:09:26.44542+00:00"
+  },
+  {
+    "id": "3ec30bcf-9531-4a42-83f7-fb8fbe262180",
+    "name": "Theo Aspinall",
+    "position": "MID",
+    "status": "active",
+    "created_at": "2026-09-28T09:06:35.881569+00:00"
   },
   {
     "id": "2262d92d-bee2-415a-9a3a-6cb1f7b608aa",
