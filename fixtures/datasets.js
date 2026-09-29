@@ -359,6 +359,47 @@ const SEASON_STATUS = [
 const played2526 = withReports([...realMatches, WALKOVER, CLEAN_SHEET]);
 const appearances2526 = [...season2526.appearances, ...CLEAN_SHEET_SQUAD];
 
+// The group chat, which the spreadsheet never recorded: everyone who turned out
+// more than once, so the one-game ringers are left out as they are in the real
+// chat. Asked the poll whatever their status.
+const turnedOut = new Map();
+for (const a of appearances2526) {
+  if (!a.dropout) turnedOut.set(a.player_id, (turnedOut.get(a.player_id) ?? 0) + 1);
+}
+const players2526 = season2526.players.map((p) => ({
+  ...p,
+  in_chat: (turnedOut.get(p.id) ?? 0) >= 2,
+}));
+const chat = players2526.filter((p) => p.in_chat);
+
+// Availability is admin-only in the database, and the fixture has no RLS, so
+// these rows are only ever read by the admin pages here too. Every played game
+// has a poll — whoever played said yes, and of the rest every third never
+// answered — and the next fixture has one half-typed in, which is the state
+// the page is used in on a Thursday night. The game after that has none.
+function pollFor(matchId, saidYes, answered) {
+  return chat
+    .map((p, i) => {
+      if (saidYes(p, i)) return true;
+      return answered(p, i) ? false : null;
+    })
+    .map((available, i) => ({
+      id: fixtureId(`availability:${matchId}:${chat[i].id}`),
+      match_id: matchId,
+      player_id: chat[i].id,
+      available,
+      updated_at: '2026-03-18T20:00:00.000Z',
+    }))
+    .filter((r) => r.available != null);
+}
+const AVAILABILITY = [
+  ...played2526.flatMap((m) => {
+    const squad = new Set(appearances2526.filter((a) => a.match_id === m.id).map((a) => a.player_id));
+    return squad.size === 0 ? [] : pollFor(m.id, (p) => squad.has(p.id), (p, i) => i % 3 !== 0);
+  }),
+  ...pollFor(UPCOMING[0].id, (p, i) => i % 4 === 1, (p, i) => i % 2 === 0),
+];
+
 // `now` travels with the dataset because three things on the site read the
 // clock — the fixture countdown among them — and a screenshot whose caption
 // changes with the day it was taken is not a measurement. The harness pins the
@@ -368,7 +409,7 @@ export const DATASETS = {
     label: 'Mid-season — results behind, fixtures ahead',
     now: '2026-03-20T10:00:00.000Z',
     data: {
-      players: season2526.players,
+      players: players2526,
       matches: [...played2526, ...UPCOMING],
       appearances: appearances2526,
       teams: TEAMS,
@@ -377,19 +418,21 @@ export const DATASETS = {
       // Nothing: 2025/26 is still being played on 20 March, so its four
       // honours are named on the cabinet's shelf and won by nobody yet.
       season_status: [],
+      availability: AVAILABILITY,
     },
   },
   'pre-season': {
     label: 'Pre-season — last season finished, next season entered, nothing played',
     now: '2026-08-15T10:00:00.000Z',
     data: {
-      players: season2526.players,
+      players: players2526,
       matches: [...played2526, ...NEXT_SEASON],
       appearances: appearances2526,
       teams: TEAMS,
       league_rows: leagueRows(played2526, '2025/26', 5),
       season_awards: SEASON_AWARDS,
       season_status: SEASON_STATUS,
+      availability: AVAILABILITY.filter((r) => !UPCOMING.some((m) => m.id === r.match_id)),
     },
   },
 };

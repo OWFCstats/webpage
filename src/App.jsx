@@ -27,6 +27,8 @@ const MatchForm = lazy(() => import('./pages/admin/MatchForm'));
 const Lineup = lazy(() => import('./pages/admin/Lineup'));
 const ReportEditor = lazy(() => import('./pages/admin/ReportEditor'));
 const AddResult = lazy(() => import('./pages/admin/AddResult'));
+const AvailabilityAdmin = lazy(() => import('./pages/admin/AvailabilityAdmin'));
+const MatchAvailability = lazy(() => import('./pages/admin/MatchAvailability'));
 
 // Old match links carried the id under /matches/ — Matchday absorbed the
 // per-match page, so the id just needs to move across.
@@ -91,10 +93,12 @@ export default function App() {
                   <Route path="teams" element={<TeamsAdmin />} />
                   <Route path="league" element={<LeagueAdmin />} />
                   <Route path="awards" element={<AwardsAdmin />} />
+                  <Route path="availability" element={<AvailabilityAdmin />} />
                   <Route path="matches" element={<MatchesAdmin />} />
                   <Route path="matches/new" element={<MatchForm />} />
                   <Route path="matches/:matchId" element={<MatchForm />} />
                   <Route path="matches/:matchId/lineup" element={<Lineup />} />
+                  <Route path="matches/:matchId/availability" element={<MatchAvailability />} />
                   <Route path="matches/:matchId/report" element={<ReportEditor />} />
                 </Route>
               </Route>

@@ -5,6 +5,7 @@ import { useData } from '../../context/DataContext';
 import { Spinner } from '../../components/bits';
 import LineupSlot from '../../components/lineup/LineupSlot';
 import { formatDate } from '../../lib/format';
+import { useSaidIn } from '../../lib/useAvailability';
 
 // A matchday squad is usually 11 + subs; start with enough slots for that and
 // let the admin add more if needed.
@@ -26,6 +27,7 @@ export default function Lineup() {
   const { matchId } = useParams();
   const { players, matches, appearances, loading } = useData();
   const match = matches.find((m) => m.id === matchId);
+  const saidIn = useSaidIn(match?.id);
 
   if (loading) return <Spinner />;
   if (!match) return <Navigate to="/admin/matches" replace />;
@@ -36,11 +38,12 @@ export default function Lineup() {
       match={match}
       players={players}
       existing={appearances.filter((a) => a.match_id === matchId)}
+      saidIn={saidIn}
     />
   );
 }
 
-function LineupInner({ match, players, existing }) {
+function LineupInner({ match, players, existing, saidIn }) {
   const { refresh } = useData();
 
   // Saved appearances fill the first slots; the rest start empty.
@@ -89,6 +92,20 @@ function LineupInner({ match, players, existing }) {
     setSaved(false);
   }
 
+  // Everyone who said yes in the chat's poll and isn't on the sheet yet, into
+  // the empty slots first. Ringers aren't in the chat; they're still added by
+  // hand, into whatever is left.
+  const toFill = [...saidIn].filter((id) => !taken.has(id) && players.some((p) => p.id === id));
+
+  function fillFromPoll() {
+    setSlots((prev) => {
+      const queue = [...toFill];
+      const next = prev.map((s) => (s.playerId || queue.length === 0 ? s : { ...blankSlot(), playerId: queue.shift() }));
+      return [...next, ...queue.map((playerId) => ({ ...blankSlot(), playerId }))];
+    });
+    setSaved(false);
+  }
+
   function removeSlot(index) {
     setSlots((prev) => (prev.length <= 1 ? [blankSlot()] : prev.filter((_, i) => i !== index)));
     setSaved(false);
@@ -132,7 +149,10 @@ function LineupInner({ match, players, existing }) {
     <div className="section">
       <div className="section-head">
         <h2>Lineup &amp; stats — vs {match.opponent}, {formatDate(match.date)}</h2>
-        <Link className="btn secondary small" to={`/admin/matches/${match.id}`}>Edit match</Link>
+        <span className="controls" style={{ marginBottom: 0 }}>
+          <Link className="btn secondary small" to={`/admin/matches/${match.id}/availability`}>Availability</Link>
+          <Link className="btn secondary small" to={`/admin/matches/${match.id}`}>Edit match</Link>
+        </span>
       </div>
 
       <div className="sheet">
@@ -141,6 +161,13 @@ function LineupInner({ match, players, existing }) {
           empty. {active.length} playing · {starterCount} starting
           {dropoutCount > 0 && ` · ${dropoutCount} dropped out`}.
         </p>
+        {toFill.length > 0 && (
+          <div className="controls">
+            <button type="button" className="secondary small" onClick={fillFromPoll}>
+              Fill from availability ({toFill.length})
+            </button>
+          </div>
+        )}
         {goalsMismatch && (
           <div className="notice error" style={{ margin: '0.6rem 0' }}>
             Player goals ({goalsTotal}) plus own goals ({ownGoals}) don’t add up

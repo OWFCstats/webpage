@@ -6,7 +6,7 @@ import { formatDate } from '../../lib/format';
 import { isPlayed, resultOf, seasonsOf } from '../../lib/matches';
 
 /**
- * Every match, newest first, with its three editors on the row. A season chip
+ * Every match, newest first, with its four editors on the row. A season chip
  * row rather than a Season column: the column repeated one value eighteen
  * times, and the thing an admin actually wants is one season at a time.
  */
@@ -96,6 +96,7 @@ export default function MatchesAdmin() {
               actions={
                 <>
                   <Link className="btn secondary small" to={`/admin/matches/${m.id}`}>Edit</Link>
+                  <Link className="btn secondary small" to={`/admin/matches/${m.id}/availability`}>Availability</Link>
                   <Link className="btn secondary small" to={`/admin/matches/${m.id}/lineup`}>Lineup</Link>
                   <Link className="btn secondary small" to={`/admin/matches/${m.id}/report`}>Report</Link>
                 </>

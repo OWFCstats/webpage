@@ -93,6 +93,7 @@ to the reason it's there:
 | Player of the Season | The one award no formula produces |
 | A published-honours row | `season_status`, on `pre-season` only: the club pressing "publish the honours" at the dinner. It agrees with the date rule there, and it is what exercises the table's read path and the admin switch at all |
 | Two match reports | Roughly the club's own hit rate, and Matchday needs both branches |
+| The group chat and its polls | `in_chat` on everyone who played more than once, and an `availability` row per answer: every played game polled, the next fixture half-typed in. Admin-only in the database; the fixture has no RLS, so it is only the admin pages that read it here too |
 
 Six of the 53 players never appear, which is real: the club's rotating squad is
 why the badge ladder excludes most of it, and a fixture that quietly filled

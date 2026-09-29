@@ -59,12 +59,13 @@ export default function AdminList({
 
 /**
  * One record: an optional mark, what it is, what's true about it, and what can
- * be done to it. The actions drop to their own full-width line below 700px,
- * which is the whole reason this exists rather than a table cell.
+ * be done to it. The actions drop to their own full-width line below 560px,
+ * which is the whole reason this exists rather than a table cell — unless the
+ * row is `inline`, for actions small enough to stay beside the name.
  */
-export function AdminRow({ lead, title, meta, actions }) {
+export function AdminRow({ lead, title, meta, actions, inline = false }) {
   return (
-    <div className="admin-row">
+    <div className={`admin-row${inline ? ' inline' : ''}`}>
       {lead && <span className="admin-row-lead">{lead}</span>}
       <span className="admin-row-body">
         <span className="admin-row-title">{title}</span>

@@ -11,6 +11,7 @@ import WalkoverForm from '../../components/WalkoverForm';
 import WizardActions from '../../components/add-result/WizardActions';
 import WizardSteps from '../../components/add-result/WizardSteps';
 import { blankResultForm, fixtureFor, fixturesToFill, resultFormFrom } from '../../lib/admin';
+import { useSaidIn } from '../../lib/useAvailability';
 import { todayISO } from '../../lib/format';
 import { latestResult, seasonsOf } from '../../lib/matches';
 
@@ -64,6 +65,8 @@ export default function AddResult() {
       : new Set();
     return { lastMatch: last, lastSquadIds: ids };
   }, [matches, appearances]);
+  // Who said yes in the chat's poll, for a fixture that was in the diary.
+  const saidIn = useSaidIn(fixtureId);
   const recentSeasons = seasonsOf(matches).slice(0, 3);
   const defaultSeason = recentSeasons[0] ?? '';
 
@@ -73,10 +76,12 @@ export default function AddResult() {
   // and a squad with nobody in it, and no clue why.
   if (loadError) return <ErrorNote message={loadError} />;
 
+  // An inactive club legend who said yes is still listed.
   const active = players
-    .filter((p) => p.status === 'active' || picked.has(p.id))
+    .filter((p) => p.status === 'active' || picked.has(p.id) || saidIn.has(p.id))
     .sort(
       (a, b) =>
+        saidIn.has(b.id) - saidIn.has(a.id) ||
         lastSquadIds.has(b.id) - lastSquadIds.has(a.id) ||
         a.name.localeCompare(b.name),
     );
@@ -123,10 +128,10 @@ export default function AddResult() {
     });
   }
 
-  function selectLastSquad() {
+  function selectAll(ids) {
     setPicked((prev) => {
       const next = new Map(prev);
-      for (const id of lastSquadIds) if (!next.has(id)) next.set(id, blank());
+      for (const id of ids) if (!next.has(id)) next.set(id, blank());
       return next;
     });
   }
@@ -253,10 +258,12 @@ export default function AddResult() {
           picked={picked}
           lastSquadIds={lastSquadIds}
           lastMatch={lastMatch}
+          saidIn={saidIn}
           query={query}
           setQuery={setQuery}
           onToggle={toggle}
-          onSelectLastSquad={selectLastSquad}
+          onSelectLastSquad={() => selectAll(lastSquadIds)}
+          onSelectSaidIn={() => selectAll(saidIn)}
         />
       )}
 
