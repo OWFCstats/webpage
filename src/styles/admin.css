@@ -322,10 +322,31 @@
   .admin-row-actions {
     width: 100%;
     justify-content: flex-start;
+    /* Four editors on a match row are wider than a 360px phone; they wrap to
+       a second line rather than run off the edge. */
+    flex-wrap: wrap;
   }
 
   .admin-row-actions > * { flex: 1; text-align: center; }
 }
+
+/* An inline row keeps its actions beside the name on a phone. For a pair of
+   small buttons only: the availability poll is forty names long, and at two
+   lines a name it was a 4,000px page. A long name still wraps them under. */
+@media (max-width: 560px) {
+  .admin-row.inline .admin-row-actions { width: auto; }
+
+  .admin-row.inline .admin-row-actions > * { flex: none; }
+}
+
+/* ---- admin: availability ---- */
+
+/* An answer has to read at a glance down forty rows, which the segmented
+   control's paper thumb doesn't. The result pill's own pairs: ink on the win
+   and loss fills, already measured. */
+.seg .said-in.active { background: var(--win); color: var(--on-board); }
+
+.seg .said-out.active { background: var(--loss); color: var(--on-board); }
 
 /* ---- admin: attention list + wizard ---- */
 .admin-cta {

@@ -14,7 +14,8 @@ import { fileURLToPath } from 'node:url';
 // them up: the alias is only added when FIXTURE is set, which no deploy does.
 //
 // The regex matches every relative spelling of the import — '../lib/supabase'
-// from context/, '../../lib/supabase' from pages/admin/ — because a path alias
+// from context/, '../../lib/supabase' from pages/admin/, './supabase' from
+// lib/useAvailability.js, the one reader inside lib/ — because a path alias
 // keyed on one of them would silently miss the others and leave half the app
 // talking to a client that isn't there.
 const fixtureMode = Boolean(process.env.FIXTURE);
@@ -58,6 +59,6 @@ export default defineConfig({
   plugins: [react(), siteUrlPlugin],
   base: './',
   resolve: {
-    alias: fixtureMode ? [{ find: /^(?:\.\.\/)+lib\/supabase$/, replacement: stub }] : [],
+    alias: fixtureMode ? [{ find: /^(?:(?:\.\.\/)+lib\/|\.\/)supabase$/, replacement: stub }] : [],
   },
 });

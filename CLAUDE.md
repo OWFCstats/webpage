@@ -151,9 +151,9 @@ which grows per match, per appearance or per season pages the same way.
 
 **Reads and writes use two different clients.** `lib/supabase.js` exports
 `supabase`, which carries the admin's session, and `supabaseRead`, which sends
-the publishable key and nothing else; `DataContext` — which holds every read the
-site makes — uses the second. Every table is `for select using (true)`, so a
-read never needed a login, and sharing one client meant a just-refreshed token
+the publishable key and nothing else; `DataContext` — which holds every public read the
+site makes — uses the second. Every table but one is `for select using (true)`,
+so a public read never needed a login, and sharing one client meant a just-refreshed token
 the API rejected ("JWT issued at future") turned the whole site into an error
 note until a manual reload. There is no reload on a phone's home screen, so
 `DataContext` also retries twice before it reports anything at all.
@@ -230,6 +230,16 @@ to tell a reader's own page from somebody else's (`my-page` against
 `player-page` — see `lib/analytics.js`), which is the question this file's job 1
 actually asks.
 
+**Availability is the admin's, not the squad's** (Phase 75). The main chat's
+poll for each match is typed in on Admin → Availability — `players.in_chat` for
+who is asked, `availability` for each answer — and it is **the one table with no
+public read policy**: who ignores the club's polls is not a public figure.
+So `DataContext` never loads it, the admin pages read it through
+`lib/useAvailability.js` on the signed-in `supabase` client, and the daily
+backup, which reads with the publishable key, never sees it — accepted, since it
+is working data and not the club's history. A new reader of it goes through that
+hook. It is not Phase 53, which is players answering on the site themselves.
+
 **Everything is derived, nothing is stored twice.** Player totals, records,
 form, badges, points, goal difference — all computed from `players`, `matches`,
 `appearances` and `teams` at load time. A stored total can drift from the rows
@@ -266,7 +276,7 @@ honours go up* in `docs/DESIGN.md`.
 When a page defines its own presentational sub-components inline it has stopped
 being a page — move them to `components/`. Anything over ~250 lines is telling
 you something. One file is over it today and it is on Phase 51's list:
-`pages/admin/AddResult.jsx` at 295. `components/season/SeasonCharts.jsx` was the
+`pages/admin/AddResult.jsx` at 301. `components/season/SeasonCharts.jsx` was the
 other at 374, and Phase 61 split it on the way to becoming `SeasonStats.jsx`:
 one file per chart card under `components/season/`, the page itself the stack of
 them, with `chart-bits.jsx` as the shared frame — `ChartSheet`, the card Draft D

@@ -254,6 +254,15 @@ export const ROUTES = [
     name: 'Admin — match report',
     admin: true,
   },
+  // The next fixture, because its poll is the half-typed-in one: some in, some
+  // out, some not yet answered — every state a row can be in.
+  {
+    id: 'admin-match-availability',
+    route: `/admin/matches/${match('2026-03-28', 'Old Cheltonians')}/availability`,
+    name: 'Admin — one match’s availability',
+    admin: true,
+  },
+  { id: 'admin-availability', route: '/admin/availability', name: 'Admin — availability', admin: true },
   { id: 'admin-league', route: '/admin/league', name: 'Admin — league table', admin: true },
   { id: 'admin-awards', route: '/admin/awards', name: 'Admin — awards', admin: true },
 ];

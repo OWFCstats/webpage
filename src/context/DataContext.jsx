@@ -16,6 +16,10 @@ import { describeLoadFailure } from '../lib/offline';
 // carries an admin's override of when a season's honours go up, and no row
 // means "follow the rule in lib/awards.js" — which is where every season
 // starts and where nearly all of them stay.
+//
+// `availability` is not one of them and must not become one: it is admin-only,
+// so the public client gets no rows, and loading it here would hand who
+// ignores the club's polls to every visitor. See lib/availability.js.
 
 const DataContext = createContext(null);
 

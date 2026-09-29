@@ -2,9 +2,10 @@ import { useRef, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useData } from '../../context/DataContext';
 import AdminList, { AdminRow } from '../../components/AdminList';
+import { describeAvailabilityError } from '../../lib/availability';
 
 const POSITIONS = ['GK', 'DEF', 'MID', 'FWD'];
-const BLANK = { name: '', position: '', status: 'active' };
+const BLANK = { name: '', position: '', status: 'active', in_chat: false };
 
 export default function PlayersAdmin() {
   const { players, refresh } = useData();
@@ -12,6 +13,7 @@ export default function PlayersAdmin() {
   const [editingId, setEditingId] = useState(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
+  const [listError, setListError] = useState(null);
   const nameRef = useRef(null);
 
   // The form is one sheet at the top of a list fifty-three names long, so on a
@@ -20,7 +22,7 @@ export default function PlayersAdmin() {
   // admin to the thing they just opened.
   function startEdit(p) {
     setEditingId(p.id);
-    setForm({ name: p.name, position: p.position ?? '', status: p.status });
+    setForm({ name: p.name, position: p.position ?? '', status: p.status, in_chat: Boolean(p.in_chat) });
     setError(null);
     nameRef.current?.scrollIntoView({ block: 'center' });
     nameRef.current?.focus({ preventScroll: true });
@@ -36,17 +38,31 @@ export default function PlayersAdmin() {
     e.preventDefault();
     setBusy(true);
     setError(null);
-    const payload = { name: form.name.trim(), position: form.position || null, status: form.status };
+    const payload = {
+      name: form.name.trim(),
+      position: form.position || null,
+      status: form.status,
+      in_chat: form.in_chat,
+    };
     const { error: err } = editingId
       ? await supabase.from('players').update(payload).eq('id', editingId)
       : await supabase.from('players').insert(payload);
     setBusy(false);
     if (err) {
-      setError(err.message);
+      setError(describeAvailabilityError(err.message));
       return;
     }
     reset();
     refresh();
+  }
+
+  // One tap on the row, because setting the chat up is forty of them and the
+  // edit form is a scroll away from every one.
+  async function toggleChat(p) {
+    setListError(null);
+    const { error: err } = await supabase.from('players').update({ in_chat: !p.in_chat }).eq('id', p.id);
+    if (err) setListError(describeAvailabilityError(err.message));
+    else refresh();
   }
 
   async function remove(p) {
@@ -81,6 +97,11 @@ export default function PlayersAdmin() {
                 <option value="inactive">inactive</option>
               </select>
             </label>
+            <label className="field checkbox">
+              <input type="checkbox" checked={form.in_chat}
+                onChange={(e) => setForm({ ...form, in_chat: e.target.checked })} />
+              <span>In the main chat — asked the availability poll</span>
+            </label>
           </div>
           {error && <div className="notice error" style={{ marginTop: '0.8rem' }}>{error}</div>}
           <div className="form-actions">
@@ -92,12 +113,14 @@ export default function PlayersAdmin() {
 
       <div className="sheet section">
         <h2>Squad</h2>
+        <p className="muted">{players.filter((p) => p.in_chat).length} in the main chat.</p>
+        {listError && <div className="notice error">{listError}</div>}
         <AdminList
           filterable
           filterLabel="Find a player…"
           rows={players}
           rowKey={(p) => p.id}
-          filterValue={(p) => `${p.name} ${p.position ?? ''} ${p.status}`}
+          filterValue={(p) => `${p.name} ${p.position ?? ''} ${p.status} ${p.in_chat ? 'chat' : ''}`}
           emptyText="No players yet — add the squad above."
         >
           {(p) => (
@@ -107,10 +130,14 @@ export default function PlayersAdmin() {
                   {p.name}
                   {p.position && <span className="tag">{p.position}</span>}
                   {p.status !== 'active' && <span className="tag orange">inactive</span>}
+                  {p.in_chat && <span className="tag">chat</span>}
                 </>
               }
               actions={
                 <>
+                  <button type="button" className={`small${p.in_chat ? '' : ' secondary'}`}
+                    aria-pressed={Boolean(p.in_chat)}
+                    onClick={() => toggleChat(p)}>{p.in_chat ? 'In chat ✓' : 'Add to chat'}</button>
                   <button type="button" className="secondary small"
                     onClick={() => startEdit(p)}>Edit</button>
                   <button type="button" className="danger small"

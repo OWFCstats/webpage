@@ -230,6 +230,12 @@ turns the front page from a club noticeboard into something addressed to the
 person holding the phone. See *Home, addressed to the reader* below for what it
 says and *A name is a link* for where the tap is offered.
 
+**The chat's poll answers are the admin's** (Phase 75). Who said in, who said
+out and who never answers are typed in on Admin → Availability and read back
+only there: the table has no public read policy, so a visitor's browser never
+receives a row of it, and nothing public derives a figure from it. It is the
+one piece of club data that isn't the squad's to see.
+
 It is worth being blunt about what that preference is not. It is not secure and
 does not need to be: every figure on this site is already public and read-only,
 so the worst case is picking the wrong name and seeing the wrong stats
@@ -2144,6 +2150,17 @@ The design target, not a fallback. Every change gets checked at 375px first.
   needed it: a record per row, its actions on the row, and below 560px those
   actions take their own full-width line. **A new admin screen listing records
   uses it rather than `SortableTable`,** which is for reading, not for editing.
+  The one exception to the full-width line is `inline`, for actions small
+  enough to stay beside the name: the availability poll's In/Out pair, forty
+  rows long, measured 4,337px at 375px with the pair on its own line and
+  2,815px beside the name. An answer that has to be read at a glance down that
+  list takes the result pill's win and loss fills when it is picked, not the
+  segmented control's paper thumb, which is too quiet for it.
+- **An answer saves when it is given, on a list too long to trust to one Save
+  button.** The availability page writes each tap as it happens and puts it
+  back if the write fails; the lineup editor and the league grid keep their
+  sticky Save because what they hold is checked as a whole — a score that has
+  to add up, a table that has to balance — and a poll answer is not.
 - **An input under a hidden header row carries its own caption.** Both admin
   grids drop their header on a phone. `LeagueGrid` captions every input against
   that (`.lg-stat > .label`); the lineup editor did not, so entry on a phone was

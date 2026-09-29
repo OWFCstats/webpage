@@ -35,6 +35,11 @@ const key = process.env.VITE_SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_PU
 // appearances at both matches and players, so teams and players come first.
 // Every `order` ends in a unique column so two runs over unchanged data
 // produce byte-identical files and the diff means something.
+//
+// `availability` is missing on purpose: it has no public read policy, so the
+// publishable key this reads with gets nothing back. It is the admin's working
+// data rather than the club's history, and not backing it up was the decision
+// (Phase 75).
 const TABLES = [
   { name: 'teams', order: 'name.asc,id.asc' },
   { name: 'players', order: 'name.asc,id.asc' },

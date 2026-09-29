@@ -27,8 +27,10 @@ export const supabase = supabaseConfigured
 // the site saved to the home screen there is no address bar to reload from,
 // which made a transient failure a dead end.
 //
-// Every table is `for select using (true)` (supabase/schema.sql), so a read
-// never needed the session in the first place. Supplying `accessToken` is what
+// Every table but `availability` is `for select using (true)`
+// (supabase/schema.sql), so a public read never needed the session in the
+// first place. `availability` is admin-only and read on `supabase` below, by
+// lib/useAvailability.js — never through this client. Supplying `accessToken` is what
 // makes this client sessionless: supabase-js then skips its auth module
 // entirely, so nothing here starts a second session, refreshes a token or
 // touches storage. It answers null — "no session" — rather than the key itself,

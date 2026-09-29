@@ -12,6 +12,9 @@ create table if not exists public.players (
   -- Optional informational label; no stat depends on it.
   position   text check (position in ('GK', 'DEF', 'MID', 'FWD')),
   status     text not null default 'active' check (status in ('active', 'inactive')),
+  -- In the main WhatsApp chat, and so asked the availability poll. Not the same
+  -- as status: an inactive club legend can be in the chat, and a ringer isn't.
+  in_chat    boolean not null default false,
   created_at timestamptz not null default now()
 );
 
@@ -155,11 +158,26 @@ create table if not exists public.season_status (
   updated_at        timestamptz not null default now()
 );
 
+-- Who answered the group chat's poll for a match, typed in by the admin. No
+-- row is "no reply"; clearing an answer deletes the row. Admin-only, read
+-- included -- see the Row Level Security section below.
+create table if not exists public.availability (
+  id         uuid primary key default gen_random_uuid(),
+  match_id   uuid not null references public.matches (id) on delete cascade,
+  player_id  uuid not null references public.players (id) on delete cascade,
+  -- True said yes, false said no. There is no maybe on the poll.
+  available  boolean not null,
+  -- Set explicitly by the admin page on every save; no trigger.
+  updated_at timestamptz not null default now(),
+  unique (match_id, player_id)
+);
+
 create index if not exists appearances_match_id_idx  on public.appearances (match_id);
 create index if not exists appearances_player_id_idx on public.appearances (player_id);
 create index if not exists matches_season_idx        on public.matches (season);
 create index if not exists matches_date_idx          on public.matches (date);
 create index if not exists matches_opponent_team_id_idx on public.matches (opponent_team_id);
+create index if not exists availability_player_id_idx on public.availability (player_id);
 
 -- Case-insensitive: "Old Wimbledonians" and "old wimbledonians" are the same
 -- club and must collide on insert rather than fork a second row.
@@ -189,7 +207,8 @@ create unique index if not exists season_status_season_idx
 
 -- ---------------------------------------------------------------------------
 -- Row Level Security
--- Public (anon) visitors: read-only. Logged-in (authenticated) admins: full write.
+-- Public (anon) visitors: read-only, every table but `availability`. Logged-in
+-- (authenticated) admins: full write.
 -- ---------------------------------------------------------------------------
 
 alter table public.players     enable row level security;
@@ -222,10 +241,27 @@ begin
   end loop;
 end $$;
 
+-- The one table the public can't read. Who ignores the club's polls is the
+-- admin's business, so there is no "Public read" policy: a signed-out request
+-- gets no rows back, and the daily backup -- which reads with the publishable
+-- key -- never sees it. That is accepted; it is working data, not history.
+alter table public.availability enable row level security;
+
+drop policy if exists "Admin read"   on public.availability;
+drop policy if exists "Admin insert" on public.availability;
+drop policy if exists "Admin update" on public.availability;
+drop policy if exists "Admin delete" on public.availability;
+
+create policy "Admin read"   on public.availability for select to authenticated using (true);
+create policy "Admin insert" on public.availability for insert to authenticated with check (true);
+create policy "Admin update" on public.availability for update to authenticated using (true) with check (true);
+create policy "Admin delete" on public.availability for delete to authenticated using (true);
+
 -- ---------------------------------------------------------------------------
 -- Admin accounts
 -- ---------------------------------------------------------------------------
--- Writes are allowed for any authenticated user, so keep self-signup OFF:
+-- Writes -- and reading `availability` -- are allowed for any authenticated
+-- user, so keep self-signup OFF:
 --   Dashboard → Authentication → Sign In / Up → disable "Allow new users to sign up".
 -- Then create each admin by hand:
 --   Dashboard → Authentication → Users → Add user → email + password.
