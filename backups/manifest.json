@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-09-28T10:52:08.422Z",
+  "generated_at": "2026-09-30T10:28:21.525Z",
   "tables": {
     "teams": {
       "rows": 14,
       "digest": "98006ca1a2331ee7"
     },
     "players": {
-      "rows": 57,
-      "digest": "823699343d7eaa83"
+      "rows": 63,
+      "digest": "9edad9608f3eb801"
     },
     "matches": {
       "rows": 19,
