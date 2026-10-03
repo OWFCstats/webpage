@@ -7,7 +7,7 @@
 -- first (delete from season_status, season_awards, league_rows, appearances,
 -- matches, players, teams — that order) and then running this.
 --
--- Taken 2026-09-30T10:28:21.525Z
+-- Taken 2026-10-03T09:50:50.793Z
 
 insert into public.teams ("id", "name", "short_name", "slug", "is_club", "pitch_name", "pitch_address", "postcode", "map_url", "notes", "created_at") values
   ('02f0dbf5-04d6-4c07-a931-2a1b9e38670f', 'Old Bradfieldians II', null, 'old-bradfieldians-ii', false, 'Ground 1', 'Kings House Sports Ground, RIVERSIDE DRIVE, LONDON W4 2SP', 'W4 2SP', 'https://www.google.com/maps/place/King''s+House+School+Sports+Ground/@51.476538,-0.2561366,737m/data=!3m2!1e3!4b1!4m6!3m5!1s0x48760e5e5e9b00d7:0xc0aef9bb62cccf41!8m2!3d51.476538!4d-0.2535617!16s%2Fg%2F11bwdwbq9y?entry=ttu&g_ep=EgoyMDI2MDgzMS4wIKXMDSoASAFQAw%3D%3D', null, '2026-08-13T13:45:35.91997+00:00'),
@@ -56,6 +56,7 @@ insert into public.players ("id", "name", "position", "status", "created_at", "i
   ('b9ed2734-11d1-4d2e-a946-b102fa955772', 'Dhaneal Nagra', 'FWD', 'active', '2026-07-28T14:09:26.44542+00:00', true),
   ('76794163-1369-4fc9-ac30-ba3c188a879c', 'Dom Bonham-Lloyd', 'MID', 'active', '2026-07-28T14:09:26.44542+00:00', true),
   ('d622343a-bf30-4c2a-89da-883d124a55ba', 'Ed Bagley', 'MID', 'active', '2026-07-28T14:09:26.44542+00:00', true),
+  ('a7724b8d-9fcf-4cd5-8e82-6236241a945e', 'Finn Ducker', 'MID', 'active', '2026-10-03T09:36:05.451383+00:00', false),
   ('1ab53540-059d-4328-a6e2-1ac6c994ac82', 'Frazer Marsden', 'MID', 'active', '2026-07-28T14:09:26.44542+00:00', false),
   ('021eddc4-8a0a-46e1-8405-66cf75021dbf', 'Gideon', 'MID', 'active', '2026-07-28T14:09:26.44542+00:00', true),
   ('b091641d-8c8b-4f44-bae0-7b7078da2750', 'Gus Hill', 'MID', 'active', '2026-07-28T14:09:26.44542+00:00', false),
@@ -91,11 +92,13 @@ insert into public.players ("id", "name", "position", "status", "created_at", "i
   ('76b8d60e-5cbe-4a85-8c54-621513bf8044', 'Richard Byers', 'DEF', 'active', '2026-07-28T14:09:26.44542+00:00', true),
   ('e99edf53-0e74-4d70-a68e-f10946b0e2dc', 'Sam Abbs', 'MID', 'active', '2026-07-28T14:09:26.44542+00:00', true),
   ('8d049204-0c82-4b52-8381-55be1845320d', 'Sam Cooke', 'MID', 'active', '2026-07-28T14:09:26.44542+00:00', true),
+  ('54f6819d-0314-484d-b36a-45bfabd7d3ce', 'Samuel Abbs', 'FWD', 'active', '2026-10-03T09:35:33.026438+00:00', false),
   ('2ced7ee6-20ef-4edc-aa36-68d70a023e84', 'Seb Moseley', 'DEF', 'active', '2026-07-28T14:09:26.44542+00:00', true),
   ('3ec30bcf-9531-4a42-83f7-fb8fbe262180', 'Theo Aspinall', 'MID', 'active', '2026-09-28T09:06:35.881569+00:00', false),
   ('2262d92d-bee2-415a-9a3a-6cb1f7b608aa', 'Tobias Scalabrini', 'MID', 'active', '2026-07-28T14:09:26.44542+00:00', false),
   ('12c65343-1056-4ab7-8e34-71719546be60', 'Tom Simeon', 'FWD', 'active', '2026-07-28T14:09:26.44542+00:00', true),
   ('79c8a7ba-4081-4656-b8cb-2304fafae2ce', 'Will', null, 'active', '2026-09-29T13:37:43.06793+00:00', true),
+  ('40f8f63b-095a-4fd0-bc22-f7b4321e790f', 'Will Beardmore', 'DEF', 'active', '2026-10-03T09:35:58.273246+00:00', false),
   ('5a424794-81ae-4345-b717-d88f3d8bf2d9', 'Will Line', 'FWD', 'active', '2026-07-28T14:09:26.44542+00:00', true),
   ('04eeb03d-8e60-475d-89ff-5ca8f7b10b29', 'Will MC', 'MID', 'active', '2026-07-28T14:09:26.44542+00:00', false),
   ('5f8c1d7d-e738-4bb3-9b9f-eb06c1e93ca8', 'Will Miller', 'MID', 'active', '2026-07-28T14:09:26.44542+00:00', false),
