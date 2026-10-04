@@ -320,6 +320,14 @@
     "in_chat": false
   },
   {
+    "id": "8da9315e-6e6a-48bc-86c1-2aff5641ea1f",
+    "name": "Lukas KM",
+    "position": "DEF",
+    "status": "active",
+    "created_at": "2026-10-03T17:22:23.171265+00:00",
+    "in_chat": false
+  },
+  {
     "id": "10eafed3-5c60-4f94-a097-a23ab83a5fb6",
     "name": "Matt Summers",
     "position": null,
