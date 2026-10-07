@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-04T10:33:47.724Z",
+  "generated_at": "2026-10-07T11:03:09.940Z",
   "tables": {
     "teams": {
       "rows": 14,
@@ -10,8 +10,8 @@
       "digest": "7204d04730b7d77b"
     },
     "matches": {
-      "rows": 19,
-      "digest": "528696ffaa3f367f"
+      "rows": 20,
+      "digest": "dcdc8950c33254e7"
     },
     "appearances": {
       "rows": 200,

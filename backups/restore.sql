@@ -7,7 +7,7 @@
 -- first (delete from season_status, season_awards, league_rows, appearances,
 -- matches, players, teams — that order) and then running this.
 --
--- Taken 2026-10-04T10:33:47.724Z
+-- Taken 2026-10-07T11:03:09.940Z
 
 insert into public.teams ("id", "name", "short_name", "slug", "is_club", "pitch_name", "pitch_address", "postcode", "map_url", "notes", "created_at") values
   ('02f0dbf5-04d6-4c07-a931-2a1b9e38670f', 'Old Bradfieldians II', null, 'old-bradfieldians-ii', false, 'Ground 1', 'Kings House Sports Ground, RIVERSIDE DRIVE, LONDON W4 2SP', 'W4 2SP', 'https://www.google.com/maps/place/King''s+House+School+Sports+Ground/@51.476538,-0.2561366,737m/data=!3m2!1e3!4b1!4m6!3m5!1s0x48760e5e5e9b00d7:0xc0aef9bb62cccf41!8m2!3d51.476538!4d-0.2535617!16s%2Fg%2F11bwdwbq9y?entry=ttu&g_ep=EgoyMDI2MDgzMS4wIKXMDSoASAFQAw%3D%3D', null, '2026-08-13T13:45:35.91997+00:00'),
@@ -130,7 +130,8 @@ insert into public.matches ("id", "season", "date", "opponent", "competition", "
   ('f9b23669-2a06-4c7d-886f-42fb7aff7a54', '2026/27', '2026-09-12', 'Old Bradfieldians II', 'League', 7, 1, 0, 0, 'W', 'Victory tastes sweetest when no one expects it. Down to a bare 11 following Tom and Hugh celebrating Mr Grindon’s big birthday bonanza (Happy Birthday), the bookies only had it going one way as the O Dubz lined up against a new Bradfield outfit whose first team boasts regular success in the prem. How wrong they were. The boys locked in, got their heads down and played out of their skins. 1-0 up at half time following a very even 45 mins, we were rewarded by a double injury that saw the oppo down to 10 men. Once that happened it was curtains for the league’s new boys. The lads queued up and slotted in 6 more, led by a ringer far too good for us who the bitter Bradfieldians were questioning whether he even went to the school. An outrageous accusation. (He was briefed that his name was Jake Kasaska at half time, congrats Jake you scored a hatrick today). Very excited by the new signings Carter and Guy who locked down the midfield. What a start to the season. 3 points. On On.', '2026-08-13T14:20:18.973888+00:00', 'H', false, '02f0dbf5-04d6-4c07-a931-2a1b9e38670f', '10:00:00'),
   ('73f89756-5eb3-47b5-b25b-31f2193b9470', '2026/27', '2026-09-26', 'Old St Edwardians', 'League', 0, 1, 0, 0, 'L', 'Tough 1-0 loss to take. Pitch was basically a beach, covered in sand to fill alll their potholes - surprised they said it was playable. All over them 2nd half and they were parked up but just couldn’t get the goal. We go again next week.', '2026-09-03T14:07:54.9505+00:00', 'A', false, '06276e0c-90ab-42f1-8462-31e9a24d8fbc', '12:00:00'),
   ('2db088bf-c2fc-4b1c-bfd7-c533601e50a3', '2026/27', '2026-10-03', 'Old Malvernians', 'League', 1, 2, 0, 0, 'L', null, '2026-09-21T16:16:29.410276+00:00', 'H', false, 'd4a97ab0-34b4-40d9-9cba-c7e7b603fc40', '10:00:00'),
-  ('66b4c2ba-cca0-47ec-8e54-2da5bdc1dc51', '2026/27', '2026-10-10', 'Old Harrovians III', 'League', null, null, 0, 0, null, null, '2026-09-21T16:17:04.917901+00:00', 'H', false, '6cd9ce1b-dc06-4489-9bcb-da43b4fb8881', '10:00:00')
+  ('66b4c2ba-cca0-47ec-8e54-2da5bdc1dc51', '2026/27', '2026-10-10', 'Old Harrovians III', 'League', null, null, 0, 0, null, null, '2026-09-21T16:17:04.917901+00:00', 'H', false, '6cd9ce1b-dc06-4489-9bcb-da43b4fb8881', '10:00:00'),
+  ('72044301-dfc2-4614-b8df-ee810ab1a9c5', '2026/27', '2026-10-17', 'Old Salopians II', 'League', null, null, 0, 0, null, null, '2026-10-06T14:28:01.001903+00:00', 'A', false, '2e1dbdbc-41c4-4539-822e-d5a4079b24cf', '12:00:00')
 on conflict (id) do update set
   "season" = excluded."season",
   "date" = excluded."date",

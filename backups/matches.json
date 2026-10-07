@@ -340,5 +340,23 @@
     "walkover": false,
     "opponent_team_id": "6cd9ce1b-dc06-4489-9bcb-da43b4fb8881",
     "kickoff_time": "10:00:00"
+  },
+  {
+    "id": "72044301-dfc2-4614-b8df-ee810ab1a9c5",
+    "season": "2026/27",
+    "date": "2026-10-17",
+    "opponent": "Old Salopians II",
+    "competition": "League",
+    "goals_for": null,
+    "goals_against": null,
+    "own_goals_for": 0,
+    "own_goals_against": 0,
+    "result": null,
+    "report": null,
+    "created_at": "2026-10-06T14:28:01.001903+00:00",
+    "venue": "A",
+    "walkover": false,
+    "opponent_team_id": "2e1dbdbc-41c4-4539-822e-d5a4079b24cf",
+    "kickoff_time": "12:00:00"
   }
 ]
