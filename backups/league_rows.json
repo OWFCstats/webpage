@@ -123,7 +123,7 @@
     "lost": 1,
     "goals_for": 13,
     "goals_against": 10,
-    "updated_at": "2026-10-08T08:57:34.173+00:00",
+    "updated_at": "2026-10-10T13:51:55.89+00:00",
     "walkover_losses": 0,
     "form": "LWWW"
   },
@@ -139,7 +139,7 @@
     "lost": 0,
     "goals_for": 21,
     "goals_against": 5,
-    "updated_at": "2026-10-08T08:57:34.173+00:00",
+    "updated_at": "2026-10-10T13:51:55.89+00:00",
     "walkover_losses": 0,
     "form": "WWWW"
   },
@@ -155,7 +155,7 @@
     "lost": 3,
     "goals_for": 8,
     "goals_against": 12,
-    "updated_at": "2026-10-08T08:57:34.173+00:00",
+    "updated_at": "2026-10-10T13:51:55.89+00:00",
     "walkover_losses": 0,
     "form": "LLL"
   },
@@ -171,7 +171,7 @@
     "lost": 1,
     "goals_for": 4,
     "goals_against": 6,
-    "updated_at": "2026-10-08T08:57:34.173+00:00",
+    "updated_at": "2026-10-10T13:51:55.89+00:00",
     "walkover_losses": 0,
     "form": "WL"
   },
@@ -181,15 +181,15 @@
     "division": "The Arthurian League Division 5",
     "team_id": "6cd9ce1b-dc06-4489-9bcb-da43b4fb8881",
     "position": 6,
-    "played": 3,
+    "played": 4,
     "won": 1,
-    "drawn": 0,
+    "drawn": 1,
     "lost": 2,
-    "goals_for": 6,
-    "goals_against": 3,
-    "updated_at": "2026-10-08T08:57:34.173+00:00",
+    "goals_for": 7,
+    "goals_against": 4,
+    "updated_at": "2026-10-10T13:51:55.89+00:00",
     "walkover_losses": 0,
-    "form": "LWL"
+    "form": "LWLD"
   },
   {
     "id": "3152ee04-27f3-48fc-b875-d7971f959dd7",
@@ -203,7 +203,7 @@
     "lost": 3,
     "goals_for": 5,
     "goals_against": 21,
-    "updated_at": "2026-10-08T08:57:34.173+00:00",
+    "updated_at": "2026-10-10T13:51:55.89+00:00",
     "walkover_losses": 0,
     "form": "WLLL"
   },
@@ -213,13 +213,13 @@
     "division": "The Arthurian League Division 5",
     "team_id": "b7fa946a-7605-46d4-8450-ac5cb334b85e",
     "position": 5,
-    "played": 3,
+    "played": 4,
     "won": 1,
-    "drawn": 0,
+    "drawn": 1,
     "lost": 2,
-    "goals_for": 8,
-    "goals_against": 4,
-    "updated_at": "2026-10-08T08:57:34.173+00:00",
+    "goals_for": 9,
+    "goals_against": 5,
+    "updated_at": "2026-10-10T13:51:55.89+00:00",
     "walkover_losses": 0,
     "form": null
   },
@@ -235,7 +235,7 @@
     "lost": 1,
     "goals_for": 7,
     "goals_against": 9,
-    "updated_at": "2026-10-08T08:57:34.173+00:00",
+    "updated_at": "2026-10-10T13:51:55.89+00:00",
     "walkover_losses": 0,
     "form": "LWW"
   },
@@ -251,7 +251,7 @@
     "lost": 2,
     "goals_for": 14,
     "goals_against": 15,
-    "updated_at": "2026-10-08T08:57:34.173+00:00",
+    "updated_at": "2026-10-10T13:51:55.89+00:00",
     "walkover_losses": 0,
     "form": "LLWW"
   }
