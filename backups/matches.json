@@ -376,5 +376,41 @@
     "walkover": false,
     "opponent_team_id": "35b12114-fb3a-4a52-b2e6-58d1862cbf2d",
     "kickoff_time": "11:00:00"
+  },
+  {
+    "id": "1d7fa161-3088-4286-a797-078e2067b84a",
+    "season": "2026/27",
+    "date": "2026-11-07",
+    "opponent": "Old Oundelians",
+    "competition": "League",
+    "goals_for": null,
+    "goals_against": null,
+    "own_goals_for": 0,
+    "own_goals_against": 0,
+    "result": null,
+    "report": null,
+    "created_at": "2026-10-27T10:11:37.101403+00:00",
+    "venue": "A",
+    "walkover": false,
+    "opponent_team_id": "eccf9c51-e927-46b6-8827-ff01705b3da9",
+    "kickoff_time": "11:00:00"
+  },
+  {
+    "id": "7de617f1-7f05-4408-8200-07c26e280924",
+    "season": "2026/27",
+    "date": "2026-11-14",
+    "opponent": "Old Salopians II",
+    "competition": "League",
+    "goals_for": null,
+    "goals_against": null,
+    "own_goals_for": 0,
+    "own_goals_against": 0,
+    "result": null,
+    "report": null,
+    "created_at": "2026-10-27T10:12:14.799616+00:00",
+    "venue": "H",
+    "walkover": false,
+    "opponent_team_id": "2e1dbdbc-41c4-4539-822e-d5a4079b24cf",
+    "kickoff_time": "10:00:00"
   }
 ]
