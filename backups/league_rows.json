@@ -123,7 +123,7 @@
     "lost": 2,
     "goals_for": 20,
     "goals_against": 16,
-    "updated_at": "2026-10-31T18:18:23.942+00:00",
+    "updated_at": "2026-11-02T10:10:44.566+00:00",
     "walkover_losses": 0,
     "form": "WWWLW"
   },
@@ -139,7 +139,7 @@
     "lost": 0,
     "goals_for": 40,
     "goals_against": 10,
-    "updated_at": "2026-10-31T18:18:23.942+00:00",
+    "updated_at": "2026-11-02T10:10:44.566+00:00",
     "walkover_losses": 0,
     "form": "WWWWW"
   },
@@ -155,7 +155,7 @@
     "lost": 3,
     "goals_for": 15,
     "goals_against": 17,
-    "updated_at": "2026-10-31T18:18:23.942+00:00",
+    "updated_at": "2026-11-02T10:10:44.566+00:00",
     "walkover_losses": 0,
     "form": "LLWDD"
   },
@@ -171,7 +171,7 @@
     "lost": 5,
     "goals_for": 10,
     "goals_against": 26,
-    "updated_at": "2026-10-31T18:18:23.942+00:00",
+    "updated_at": "2026-11-02T10:10:44.566+00:00",
     "walkover_losses": 0,
     "form": "LLLLL"
   },
@@ -187,7 +187,7 @@
     "lost": 3,
     "goals_for": 16,
     "goals_against": 17,
-    "updated_at": "2026-10-31T18:18:23.942+00:00",
+    "updated_at": "2026-11-02T10:10:44.566+00:00",
     "walkover_losses": 0,
     "form": "LDWLD"
   },
@@ -197,13 +197,13 @@
     "division": "The Arthurian League Division 5",
     "team_id": "82a990d4-7b76-44b8-9c49-18b7f026dfe7",
     "position": 9,
-    "played": 5,
+    "played": 7,
     "won": 1,
     "drawn": 0,
     "lost": 6,
     "goals_for": 15,
     "goals_against": 39,
-    "updated_at": "2026-10-31T18:18:23.942+00:00",
+    "updated_at": "2026-11-02T10:10:44.566+00:00",
     "walkover_losses": 0,
     "form": "LLLLL"
   },
@@ -219,7 +219,7 @@
     "lost": 2,
     "goals_for": 17,
     "goals_against": 8,
-    "updated_at": "2026-10-31T18:18:23.942+00:00",
+    "updated_at": "2026-11-02T10:10:44.566+00:00",
     "walkover_losses": 0,
     "form": null
   },
@@ -235,7 +235,7 @@
     "lost": 1,
     "goals_for": 13,
     "goals_against": 11,
-    "updated_at": "2026-10-31T18:18:23.942+00:00",
+    "updated_at": "2026-11-02T10:10:44.566+00:00",
     "walkover_losses": 0,
     "form": "LWWW"
   },
@@ -251,7 +251,7 @@
     "lost": 3,
     "goals_for": 19,
     "goals_against": 22,
-    "updated_at": "2026-10-31T18:18:23.942+00:00",
+    "updated_at": "2026-11-02T10:10:44.566+00:00",
     "walkover_losses": 1,
     "form": "LWWLW"
   }
