@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-02T12:19:56.991Z",
+  "generated_at": "2026-11-06T12:04:01.404Z",
   "tables": {
     "teams": {
       "rows": 14,
@@ -7,7 +7,7 @@
     },
     "players": {
       "rows": 67,
-      "digest": "0453082d46b03b36"
+      "digest": "609b6cfae0cd9bf8"
     },
     "matches": {
       "rows": 23,

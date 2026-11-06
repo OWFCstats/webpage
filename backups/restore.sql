@@ -7,7 +7,7 @@
 -- first (delete from season_status, season_awards, league_rows, appearances,
 -- matches, players, teams — that order) and then running this.
 --
--- Taken 2026-11-02T12:19:56.991Z
+-- Taken 2026-11-06T12:04:01.404Z
 
 insert into public.teams ("id", "name", "short_name", "slug", "is_club", "pitch_name", "pitch_address", "postcode", "map_url", "notes", "created_at") values
   ('02f0dbf5-04d6-4c07-a931-2a1b9e38670f', 'Old Bradfieldians II', null, 'old-bradfieldians-ii', false, 'Ground 1', 'Kings House Sports Ground, RIVERSIDE DRIVE, LONDON W4 2SP', 'W4 2SP', 'https://www.google.com/maps/place/King''s+House+School+Sports+Ground/@51.476538,-0.2561366,737m/data=!3m2!1e3!4b1!4m6!3m5!1s0x48760e5e5e9b00d7:0xc0aef9bb62cccf41!8m2!3d51.476538!4d-0.2535617!16s%2Fg%2F11bwdwbq9y?entry=ttu&g_ep=EgoyMDI2MDgzMS4wIKXMDSoASAFQAw%3D%3D', null, '2026-08-13T13:45:35.91997+00:00'),
@@ -93,7 +93,7 @@ insert into public.players ("id", "name", "position", "status", "created_at", "i
   ('76b8d60e-5cbe-4a85-8c54-621513bf8044', 'Richard Byers', 'DEF', 'active', '2026-07-28T14:09:26.44542+00:00', true),
   ('e99edf53-0e74-4d70-a68e-f10946b0e2dc', 'Sam Abbs', 'MID', 'active', '2026-07-28T14:09:26.44542+00:00', true),
   ('8d049204-0c82-4b52-8381-55be1845320d', 'Sam Cooke', 'MID', 'active', '2026-07-28T14:09:26.44542+00:00', true),
-  ('54f6819d-0314-484d-b36a-45bfabd7d3ce', 'Samuel Abbs', 'FWD', 'active', '2026-10-03T09:35:33.026438+00:00', false),
+  ('472a868b-5836-441f-afd9-a62577a30698', 'Sam James', null, 'active', '2026-11-05T13:07:15.314541+00:00', true),
   ('2ced7ee6-20ef-4edc-aa36-68d70a023e84', 'Seb Moseley', 'DEF', 'active', '2026-07-28T14:09:26.44542+00:00', true),
   ('3ec30bcf-9531-4a42-83f7-fb8fbe262180', 'Theo Aspinall', 'MID', 'active', '2026-09-28T09:06:35.881569+00:00', false),
   ('2262d92d-bee2-415a-9a3a-6cb1f7b608aa', 'Tobias Scalabrini', 'MID', 'active', '2026-07-28T14:09:26.44542+00:00', false),
