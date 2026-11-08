@@ -7,7 +7,7 @@
 -- first (delete from season_status, season_awards, league_rows, appearances,
 -- matches, players, teams — that order) and then running this.
 --
--- Taken 2026-11-06T12:04:01.404Z
+-- Taken 2026-11-08T11:15:01.194Z
 
 insert into public.teams ("id", "name", "short_name", "slug", "is_club", "pitch_name", "pitch_address", "postcode", "map_url", "notes", "created_at") values
   ('02f0dbf5-04d6-4c07-a931-2a1b9e38670f', 'Old Bradfieldians II', null, 'old-bradfieldians-ii', false, 'Ground 1', 'Kings House Sports Ground, RIVERSIDE DRIVE, LONDON W4 2SP', 'W4 2SP', 'https://www.google.com/maps/place/King''s+House+School+Sports+Ground/@51.476538,-0.2561366,737m/data=!3m2!1e3!4b1!4m6!3m5!1s0x48760e5e5e9b00d7:0xc0aef9bb62cccf41!8m2!3d51.476538!4d-0.2535617!16s%2Fg%2F11bwdwbq9y?entry=ttu&g_ep=EgoyMDI2MDgzMS4wIKXMDSoASAFQAw%3D%3D', null, '2026-08-13T13:45:35.91997+00:00'),
@@ -43,6 +43,7 @@ insert into public.players ("id", "name", "position", "status", "created_at", "i
   ('6fbec745-da76-4df7-91cd-a11c844f7420', 'Alex Hannon', 'DEF', 'active', '2026-07-28T14:09:26.44542+00:00', false),
   ('6627d8ec-64ba-4d39-aa84-4b7498e85435', 'Alex Wessely', 'FWD', 'active', '2026-07-28T14:09:26.44542+00:00', true),
   ('918b419a-90f4-4e67-ae1f-d34de9f1a7ff', 'Archie Carter', 'MID', 'active', '2026-09-29T13:00:52.119176+00:00', true),
+  ('2682c853-3171-4925-bc7b-b5167ea85672', 'Archie Valentine', 'DEF', 'active', '2026-11-07T13:29:43.455595+00:00', false),
   ('a6445076-0dc3-42cb-aae8-8a43c1f48f1a', 'Artem Naydenov', 'MID', 'active', '2026-07-28T14:09:26.44542+00:00', true),
   ('1811f772-3cb7-4ce4-bd2f-c3b359cb8432', 'Ben', 'MID', 'active', '2026-07-28T14:09:26.44542+00:00', false),
   ('44253d7f-9745-4bf5-9516-9b63c606ed5b', 'Ben Barnard', 'MID', 'active', '2026-09-29T13:45:05.102228+00:00', true),
@@ -80,6 +81,7 @@ insert into public.players ("id", "name", "position", "status", "created_at", "i
   ('8da9315e-6e6a-48bc-86c1-2aff5641ea1f', 'Lukas KM', 'DEF', 'active', '2026-10-03T17:22:23.171265+00:00', false),
   ('10eafed3-5c60-4f94-a097-a23ab83a5fb6', 'Matt Summers', null, 'active', '2026-09-13T07:13:39.442721+00:00', false),
   ('83189d45-71e9-427e-8886-b9847b2edda4', 'Max Burke', 'MID', 'active', '2026-07-28T14:09:26.44542+00:00', true),
+  ('f5293c3d-9fc1-41c8-b58e-58edbc04a2e1', 'Max Gosby', 'DEF', 'active', '2026-11-07T13:29:22.4548+00:00', false),
   ('5936ead5-bffe-475b-9382-64ccc6cb9635', 'Maxwell Aitkin', 'MID', 'active', '2026-07-28T14:09:26.44542+00:00', true),
   ('dcba26e8-32f1-4b8d-888b-d42e65decfdb', 'Nate Morrison', null, 'active', '2026-09-29T13:34:27.967753+00:00', true),
   ('cc213091-df8b-4030-acc4-b7c94072d32d', 'Nick Britton', 'MID', 'active', '2026-07-28T14:09:26.44542+00:00', false),
@@ -133,7 +135,10 @@ insert into public.matches ("id", "season", "date", "opponent", "competition", "
   ('66b4c2ba-cca0-47ec-8e54-2da5bdc1dc51', '2026/27', '2026-10-10', 'Old Harrovians III', 'League', 1, 1, 0, 0, 'D', null, '2026-09-21T16:17:04.917901+00:00', 'A', false, '6cd9ce1b-dc06-4489-9bcb-da43b4fb8881', '10:00:00'),
   ('72044301-dfc2-4614-b8df-ee810ab1a9c5', '2026/27', '2026-10-17', 'Old Salopians II', 'League', 1, 1, 0, 0, 'D', null, '2026-10-06T14:28:01.001903+00:00', 'A', false, '2e1dbdbc-41c4-4539-822e-d5a4079b24cf', '12:00:00'),
   ('25f7d8cb-ee02-4b35-99bf-be9581e2c8c8', '2026/27', '2026-10-31', 'Old Stoics', 'League', 7, 2, 0, 0, 'W', 'Rocked up feeling confident and the chaps delivered. A long ranger and pen spared them complete embarrassment but it was one way traffic from the start. Pez brought out all the recipes and cheffed in the middle alongside Guy who is quickly becoming an essential cog in this team. Excited to see what’s to come from that midfield partnership. Owen a joy to watch as always, bagging himself another brace, and Richard once again combining the control and safety that makes me feel safe and happy. Important to get the three points after a couple of draws that could’ve gone our way. The march continues.', '2026-10-12T12:48:58.674143+00:00', 'A', false, '35b12114-fb3a-4a52-b2e6-58d1862cbf2d', '11:00:00'),
-  ('1d7fa161-3088-4286-a797-078e2067b84a', '2026/27', '2026-11-07', 'Old Oundelians', 'League', null, null, 0, 0, null, null, '2026-10-27T10:11:37.101403+00:00', 'A', false, 'eccf9c51-e927-46b6-8827-ff01705b3da9', '11:00:00'),
+  ('1d7fa161-3088-4286-a797-078e2067b84a', '2026/27', '2026-11-07', 'Old Oundelians', 'League', 5, 1, 0, 0, 'W', 'Going into the weekend without some key players there were some nerves in finding an 11. Those were squashed quickly as we arrived on Saturday morning fielding a full squad and 2 subs. Big thanks to ringers Max and Archie who filled in the defence and a last minute addition of Seb to sure us up. 
+Game started perfectly with a halfway line worldie free kick from @⁨Jacob Kasaska⁩ in the first minute, some say un-saveable (dribbled along the floor all the way through). From that point we controlled the game. A solid midfield gave us control and we were quickly 2 up.
+From that point it was one way traffic, and we quickly put on 3 more. @⁨Tom⁩ finally getting off the mark and @⁨Hugh Grindon⁩ making it 2 from 2. Gibbo grabbing himself another brace. 
+Confidence was high that we were looking at our first clean sheet in 2 years with @⁨Ollie Robertson⁩ pulling off a worldie save in the first half. Unfortunately with 5 minutes to go a lose ball at the back gave them the chance and they took it. Doesn’t take away from a huge performance and a 2nd win on the road.', '2026-10-27T10:11:37.101403+00:00', 'A', false, 'eccf9c51-e927-46b6-8827-ff01705b3da9', '11:00:00'),
   ('7de617f1-7f05-4408-8200-07c26e280924', '2026/27', '2026-11-14', 'Old Salopians II', 'League', null, null, 0, 0, null, null, '2026-10-27T10:12:14.799616+00:00', 'H', false, '2e1dbdbc-41c4-4539-822e-d5a4079b24cf', '10:00:00')
 on conflict (id) do update set
   "season" = excluded."season",
@@ -153,6 +158,19 @@ on conflict (id) do update set
   "kickoff_time" = excluded."kickoff_time";
 
 insert into public.appearances ("id", "match_id", "player_id", "started", "goals", "assists", "yellows", "reds", "motm", "dropout") values
+  ('3ff2400e-7a77-4a4b-ab2b-1e7e9aa83927', '1d7fa161-3088-4286-a797-078e2067b84a', '12c65343-1056-4ab7-8e34-71719546be60', true, 1, 1, 0, 0, false, false),
+  ('530448aa-1dc1-49d8-af76-8cdf3e8c16a5', '1d7fa161-3088-4286-a797-078e2067b84a', '2682c853-3171-4925-bc7b-b5167ea85672', true, 0, 0, 0, 0, false, false),
+  ('badbe136-2808-4d56-9824-7b9574007d10', '1d7fa161-3088-4286-a797-078e2067b84a', '2b532d6b-3741-4c2b-a02f-7328508ed71f', true, 0, 0, 0, 0, false, false),
+  ('174e9ccf-1f57-4f2c-9786-23cfbb4b0d59', '1d7fa161-3088-4286-a797-078e2067b84a', '2cb2c5a0-d51a-4f08-aa00-3883a22e2e5f', true, 1, 0, 0, 0, false, false),
+  ('6d7eb305-f158-4dec-bfed-d3a07077cc79', '1d7fa161-3088-4286-a797-078e2067b84a', '2ced7ee6-20ef-4edc-aa36-68d70a023e84', true, 0, 0, 0, 0, false, false),
+  ('56883b6e-c3ee-4eed-8e36-a36e82ff1604', '1d7fa161-3088-4286-a797-078e2067b84a', '30cc5ad5-d20b-4a00-b886-9a2a8922ec76', true, 2, 1, 0, 0, true, false),
+  ('262f944f-22b0-48fd-a31d-6f39ffa9628b', '1d7fa161-3088-4286-a797-078e2067b84a', '39447313-ad42-46a9-8eeb-bc0f56916e5d', true, 0, 0, 0, 0, false, false),
+  ('1703d191-d195-40e5-9a72-0989f0818a29', '1d7fa161-3088-4286-a797-078e2067b84a', '40f8f63b-095a-4fd0-bc22-f7b4321e790f', true, 0, 0, 0, 0, false, false),
+  ('edf8aec3-2cc5-4c6f-87c4-74825b89cf26', '1d7fa161-3088-4286-a797-078e2067b84a', '5a424794-81ae-4345-b717-d88f3d8bf2d9', true, 0, 1, 0, 0, false, false),
+  ('a86fd337-4f3f-45ab-a03a-e77fa04df272', '1d7fa161-3088-4286-a797-078e2067b84a', '8cad1b81-ceb8-4965-817a-06a8ac21d181', true, 0, 0, 0, 0, false, false),
+  ('5baf597a-fa46-4a4d-bd65-c6cc6df6317f', '1d7fa161-3088-4286-a797-078e2067b84a', 'afbbe66e-afdf-4744-bf3e-1184af3eb5b7', true, 1, 0, 0, 0, false, false),
+  ('89a9c8ed-aaa4-43e0-8677-47149d549995', '1d7fa161-3088-4286-a797-078e2067b84a', 'bd19fb0a-4186-43b8-9ab0-cf46f9c4c273', true, 0, 0, 0, 0, false, false),
+  ('b85c5d9a-81d9-4e88-a49b-009e8802f340', '1d7fa161-3088-4286-a797-078e2067b84a', 'f5293c3d-9fc1-41c8-b58e-58edbc04a2e1', true, 0, 1, 0, 0, false, false),
   ('feedc58a-f43e-4b72-8769-8de5a4c5aec0', '25f7d8cb-ee02-4b35-99bf-be9581e2c8c8', '12c65343-1056-4ab7-8e34-71719546be60', true, 0, 1, 0, 0, false, false),
   ('91fbbee0-aad1-40f9-afd3-63264dc3afb3', '25f7d8cb-ee02-4b35-99bf-be9581e2c8c8', '2b532d6b-3741-4c2b-a02f-7328508ed71f', true, 0, 0, 0, 0, false, false),
   ('4a9bd58e-cd89-40ed-8698-090324da102c', '25f7d8cb-ee02-4b35-99bf-be9581e2c8c8', '2cb2c5a0-d51a-4f08-aa00-3883a22e2e5f', true, 1, 0, 0, 0, false, false),
@@ -409,15 +427,15 @@ insert into public.league_rows ("id", "season", "division", "team_id", "position
   ('a2369e09-43bf-4846-8138-2379e5725736', '2025/26', 'The Arthurian League Division 5', 'eccf9c51-e927-46b6-8827-ff01705b3da9', 4, 12, 5, 2, 5, 34, 24, '2026-08-24T13:02:02.133+00:00', 1, null),
   ('77bc768d-a2a7-4ee2-bbff-a2abc865f8b7', '2025/26', 'The Arthurian League Division 5', 'ef40cc79-680a-4fd5-8830-cd9d4373b356', 1, 12, 9, 2, 1, 39, 18, '2026-08-24T13:02:02.133+00:00', 0, null),
   ('469018ce-f4d5-4359-9133-f0b2e95b9244', '2025/26', 'The Arthurian League Division 5', 'f4d6f0de-5112-42d1-a9f6-b84f83eb606a', 2, 12, 9, 1, 2, 43, 23, '2026-08-24T13:02:02.133+00:00', 0, null),
-  ('4b541dad-086e-40dc-91ff-f5a1f4b19fc5', '2026/27', 'The Arthurian League Division 5', '02f0dbf5-04d6-4c07-a931-2a1b9e38670f', 2, 6, 4, 0, 2, 20, 16, '2026-11-02T10:10:44.566+00:00', 0, 'WWWLW'),
-  ('3ade2da9-f43d-438d-832a-88e15cf942f0', '2026/27', 'The Arthurian League Division 5', '06276e0c-90ab-42f1-8462-31e9a24d8fbc', 1, 8, 8, 0, 0, 40, 10, '2026-11-02T10:10:44.566+00:00', 0, 'WWWWW'),
-  ('4e940acd-374f-47ed-b77a-3f9efd8aaef4', '2026/27', 'The Arthurian League Division 5', '2e1dbdbc-41c4-4539-822e-d5a4079b24cf', 7, 6, 1, 2, 3, 15, 17, '2026-11-02T10:10:44.566+00:00', 0, 'LLWDD'),
-  ('b245b1e0-ce26-4617-93fc-60d61672c674', '2026/27', 'The Arthurian League Division 5', '35b12114-fb3a-4a52-b2e6-58d1862cbf2d', 8, 6, 1, 0, 5, 10, 26, '2026-11-02T10:10:44.566+00:00', 0, 'LLLLL'),
-  ('af077cc7-170c-43d1-956d-53138c701762', '2026/27', 'The Arthurian League Division 5', '6cd9ce1b-dc06-4489-9bcb-da43b4fb8881', 5, 7, 2, 2, 3, 16, 17, '2026-11-02T10:10:44.566+00:00', 0, 'LDWLD'),
-  ('3152ee04-27f3-48fc-b875-d7971f959dd7', '2026/27', 'The Arthurian League Division 5', '82a990d4-7b76-44b8-9c49-18b7f026dfe7', 9, 7, 1, 0, 6, 15, 39, '2026-11-02T10:10:44.566+00:00', 0, 'LLLLL'),
-  ('64a2d6d7-7f70-46fb-bd3a-99b70deaf4ab', '2026/27', 'The Arthurian League Division 5', 'b7fa946a-7605-46d4-8450-ac5cb334b85e', 4, 6, 2, 2, 2, 17, 8, '2026-11-02T10:10:44.566+00:00', 0, null),
-  ('13025e34-7e05-48a0-b69f-965853fa9928', '2026/27', 'The Arthurian League Division 5', 'd4a97ab0-34b4-40d9-9cba-c7e7b603fc40', 3, 4, 3, 0, 1, 13, 11, '2026-11-02T10:10:44.566+00:00', 0, 'LWWW'),
-  ('adbc7767-8690-4509-9a22-c2afcb887e26', '2026/27', 'The Arthurian League Division 5', 'eccf9c51-e927-46b6-8827-ff01705b3da9', 6, 6, 3, 0, 3, 19, 22, '2026-11-02T10:10:44.566+00:00', 1, 'LWWLW')
+  ('4b541dad-086e-40dc-91ff-f5a1f4b19fc5', '2026/27', 'The Arthurian League Division 5', '02f0dbf5-04d6-4c07-a931-2a1b9e38670f', 2, 6, 4, 0, 2, 20, 16, '2026-11-07T15:55:36.653+00:00', 0, 'WWWLW'),
+  ('3ade2da9-f43d-438d-832a-88e15cf942f0', '2026/27', 'The Arthurian League Division 5', '06276e0c-90ab-42f1-8462-31e9a24d8fbc', 1, 9, 8, 1, 0, 41, 11, '2026-11-07T15:55:36.653+00:00', 0, 'WWWWD'),
+  ('4e940acd-374f-47ed-b77a-3f9efd8aaef4', '2026/27', 'The Arthurian League Division 5', '2e1dbdbc-41c4-4539-822e-d5a4079b24cf', 6, 7, 1, 3, 3, 16, 18, '2026-11-07T15:55:36.653+00:00', 0, 'LLWDD'),
+  ('b245b1e0-ce26-4617-93fc-60d61672c674', '2026/27', 'The Arthurian League Division 5', '35b12114-fb3a-4a52-b2e6-58d1862cbf2d', 8, 6, 1, 0, 5, 10, 26, '2026-11-07T15:55:36.653+00:00', 0, 'LLLLL'),
+  ('af077cc7-170c-43d1-956d-53138c701762', '2026/27', 'The Arthurian League Division 5', '6cd9ce1b-dc06-4489-9bcb-da43b4fb8881', 5, 8, 2, 2, 4, 18, 21, '2026-11-07T15:55:36.653+00:00', 0, 'WLDLL'),
+  ('3152ee04-27f3-48fc-b875-d7971f959dd7', '2026/27', 'The Arthurian League Division 5', '82a990d4-7b76-44b8-9c49-18b7f026dfe7', 9, 7, 1, 0, 6, 15, 39, '2026-11-07T15:55:36.653+00:00', 0, 'LLLLL'),
+  ('64a2d6d7-7f70-46fb-bd3a-99b70deaf4ab', '2026/27', 'The Arthurian League Division 5', 'b7fa946a-7605-46d4-8450-ac5cb334b85e', 4, 7, 3, 2, 2, 22, 9, '2026-11-07T15:55:36.653+00:00', 0, null),
+  ('13025e34-7e05-48a0-b69f-965853fa9928', '2026/27', 'The Arthurian League Division 5', 'd4a97ab0-34b4-40d9-9cba-c7e7b603fc40', 3, 5, 4, 0, 1, 17, 13, '2026-11-07T15:55:36.653+00:00', 0, 'LWWWW'),
+  ('adbc7767-8690-4509-9a22-c2afcb887e26', '2026/27', 'The Arthurian League Division 5', 'eccf9c51-e927-46b6-8827-ff01705b3da9', 7, 7, 3, 0, 4, 20, 27, '2026-11-07T15:55:36.653+00:00', 1, 'WWLWL')
 on conflict (id) do update set
   "season" = excluded."season",
   "division" = excluded."division",

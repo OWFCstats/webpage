@@ -1,25 +1,25 @@
 {
-  "generated_at": "2026-11-06T12:04:01.404Z",
+  "generated_at": "2026-11-08T11:15:01.194Z",
   "tables": {
     "teams": {
       "rows": 14,
       "digest": "98006ca1a2331ee7"
     },
     "players": {
-      "rows": 67,
-      "digest": "609b6cfae0cd9bf8"
+      "rows": 69,
+      "digest": "ff45d7c96ff98494"
     },
     "matches": {
       "rows": 23,
-      "digest": "60b9f62194629dc4"
+      "digest": "06e040f9956cc774"
     },
     "appearances": {
-      "rows": 237,
-      "digest": "38cfc733fde42689"
+      "rows": 250,
+      "digest": "3ea05724b8f7e573"
     },
     "league_rows": {
       "rows": 16,
-      "digest": "5db6ceffacad2025"
+      "digest": "ffe3553616091b02"
     },
     "season_awards": {
       "rows": 1,

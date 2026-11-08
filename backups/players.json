@@ -48,6 +48,14 @@
     "in_chat": true
   },
   {
+    "id": "2682c853-3171-4925-bc7b-b5167ea85672",
+    "name": "Archie Valentine",
+    "position": "DEF",
+    "status": "active",
+    "created_at": "2026-11-07T13:29:43.455595+00:00",
+    "in_chat": false
+  },
+  {
     "id": "a6445076-0dc3-42cb-aae8-8a43c1f48f1a",
     "name": "Artem Naydenov",
     "position": "MID",
@@ -342,6 +350,14 @@
     "status": "active",
     "created_at": "2026-07-28T14:09:26.44542+00:00",
     "in_chat": true
+  },
+  {
+    "id": "f5293c3d-9fc1-41c8-b58e-58edbc04a2e1",
+    "name": "Max Gosby",
+    "position": "DEF",
+    "status": "active",
+    "created_at": "2026-11-07T13:29:22.4548+00:00",
+    "in_chat": false
   },
   {
     "id": "5936ead5-bffe-475b-9382-64ccc6cb9635",
