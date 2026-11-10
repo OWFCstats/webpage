@@ -7,7 +7,7 @@
 -- first (delete from season_status, season_awards, league_rows, appearances,
 -- matches, players, teams — that order) and then running this.
 --
--- Taken 2026-11-08T11:15:01.194Z
+-- Taken 2026-11-10T12:36:07.483Z
 
 insert into public.teams ("id", "name", "short_name", "slug", "is_club", "pitch_name", "pitch_address", "postcode", "map_url", "notes", "created_at") values
   ('02f0dbf5-04d6-4c07-a931-2a1b9e38670f', 'Old Bradfieldians II', null, 'old-bradfieldians-ii', false, 'Ground 1', 'Kings House Sports Ground, RIVERSIDE DRIVE, LONDON W4 2SP', 'W4 2SP', 'https://www.google.com/maps/place/King''s+House+School+Sports+Ground/@51.476538,-0.2561366,737m/data=!3m2!1e3!4b1!4m6!3m5!1s0x48760e5e5e9b00d7:0xc0aef9bb62cccf41!8m2!3d51.476538!4d-0.2535617!16s%2Fg%2F11bwdwbq9y?entry=ttu&g_ep=EgoyMDI2MDgzMS4wIKXMDSoASAFQAw%3D%3D', null, '2026-08-13T13:45:35.91997+00:00'),
@@ -139,7 +139,10 @@ insert into public.matches ("id", "season", "date", "opponent", "competition", "
 Game started perfectly with a halfway line worldie free kick from @⁨Jacob Kasaska⁩ in the first minute, some say un-saveable (dribbled along the floor all the way through). From that point we controlled the game. A solid midfield gave us control and we were quickly 2 up.
 From that point it was one way traffic, and we quickly put on 3 more. @⁨Tom⁩ finally getting off the mark and @⁨Hugh Grindon⁩ making it 2 from 2. Gibbo grabbing himself another brace. 
 Confidence was high that we were looking at our first clean sheet in 2 years with @⁨Ollie Robertson⁩ pulling off a worldie save in the first half. Unfortunately with 5 minutes to go a lose ball at the back gave them the chance and they took it. Doesn’t take away from a huge performance and a 2nd win on the road.', '2026-10-27T10:11:37.101403+00:00', 'A', false, 'eccf9c51-e927-46b6-8827-ff01705b3da9', '11:00:00'),
-  ('7de617f1-7f05-4408-8200-07c26e280924', '2026/27', '2026-11-14', 'Old Salopians II', 'League', null, null, 0, 0, null, null, '2026-10-27T10:12:14.799616+00:00', 'H', false, '2e1dbdbc-41c4-4539-822e-d5a4079b24cf', '10:00:00')
+  ('7de617f1-7f05-4408-8200-07c26e280924', '2026/27', '2026-11-14', 'Old Salopians II', 'League', null, null, 0, 0, null, null, '2026-10-27T10:12:14.799616+00:00', 'H', false, '2e1dbdbc-41c4-4539-822e-d5a4079b24cf', '10:00:00'),
+  ('62a267c2-d5cf-4289-b781-17407d594dc5', '2026/27', '2026-11-28', 'Old Cheltonians', 'Cup', null, null, 0, 0, null, null, '2026-11-09T17:26:01.74824+00:00', 'H', false, 'ef40cc79-680a-4fd5-8830-cd9d4373b356', '14:00:00'),
+  ('0ae5c543-4ced-4783-acbf-87a1362d5ad1', '2026/27', '2026-12-05', 'Old Harrovians III', 'League', null, null, 0, 0, null, null, '2026-11-09T17:26:28.683974+00:00', 'H', false, '6cd9ce1b-dc06-4489-9bcb-da43b4fb8881', '10:00:00'),
+  ('b6c356f2-7ac0-4ccc-86fa-19d6296a7815', '2026/27', '2026-12-12', 'Old Oundelians', 'League', null, null, 0, 0, null, null, '2026-11-09T17:26:49.042616+00:00', 'H', false, 'eccf9c51-e927-46b6-8827-ff01705b3da9', '10:00:00')
 on conflict (id) do update set
   "season" = excluded."season",
   "date" = excluded."date",
