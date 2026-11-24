@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-16T12:42:06.983Z",
+  "generated_at": "2026-11-24T14:50:25.808Z",
   "tables": {
     "teams": {
       "rows": 14,
@@ -19,7 +19,7 @@
     },
     "league_rows": {
       "rows": 16,
-      "digest": "39c9bde0fd86549d"
+      "digest": "966eac26eaf7ea63"
     },
     "season_awards": {
       "rows": 1,
